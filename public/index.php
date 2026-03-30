@@ -1,12 +1,17 @@
 <?php
-echo "<h1>SISTEM PPID V2: PHP BERHASIL JALAN</h1>";
-echo "Lokasi Folder: " . __DIR__ . "<br>";
-$path = realpath(__DIR__ . '/../../ppid_version2');
-echo "Path ke Source: " . ($path ? $path : "TIDAK DITEMUKAN");
 
-/* 
-// Nanti kita aktifkan lagi jika tes ini berhasil
-require __DIR__.'/../../ppid_version2/vendor/autoload.php';
-$app = require_once __DIR__.'/../../ppid_version2/bootstrap/app.php';
-$app->handleRequest(Illuminate\Http\Request::capture());
-*/
+use Illuminate\Http\Request;
+
+define('LARAVEL_START', microtime(true));
+
+// Path absolut yang sudah terbukti jalan di tes tadi
+$basePath = '/home/ppidkab/ppid_version2';
+
+// 1. Register Autoloader
+require $basePath . '/vendor/autoload.php';
+
+// 2. Bootstrap Laravel
+$app = require_once $basePath . '/bootstrap/app.php';
+
+// 3. Handle Request
+$app->handleRequest(Request::capture());
