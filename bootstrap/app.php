@@ -11,13 +11,6 @@ return Application::configure(basePath: dirname(__DIR__))
         api: __DIR__.'/../routes/api.php',
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
-        then: function () {
-            // Muat rute admin secara eksplisit
-            Route::middleware('web')
-                ->prefix('admin') // Tambahkan prefix admin agar tidak bentrok dengan root /
-                ->name('admin.')
-                ->group(base_path('routes/admin.php'));
-        },
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->validateCsrfTokens(except: [
