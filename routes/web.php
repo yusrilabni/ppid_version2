@@ -177,6 +177,9 @@ Route::post('/pbj/{year}', [PbjController::class, 'store'])->name('pbj.store')->
 Route::get('/lhkpn/view/{lhkpn}', [LhkpnController::class, 'viewFile'])->name('frontend.lhkpn.view');
 Route::get('/lhkpn/{year?}', [LhkpnController::class, 'index'])->name('frontend.lhkpn.index');
 
+// Route for serving storage files with fallback priorities
+Route::get('storage/{path}', [App\Http\Controllers\StorageController::class, 'show'])->where('path', '.*')->name('storage.fallback');
+
 // Generic page routes
 
 Route::get('/{page}/{subpage?}', [FrontendController::class, 'page'])->where([

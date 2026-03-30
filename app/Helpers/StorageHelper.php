@@ -15,20 +15,22 @@ class StorageHelper
     {
         if (!$path) return asset('assets/img/default.png');
 
-        // Path Absolut cPanel yang sudah terbukti
+        // Path Absolut cPanel
         $p1 = '/home/ppidkab/public_html/v2/storage/' . $path;
         $p2 = '/home/ppidkab/ppid_version2/storage/app/public/' . $path;
 
-        // PRIORITAS 1: v2/storage (File Baru di Server)
+        // PRIORITAS 1: v2/storage (File Baru)
+        // Gunakan file_exists karena ini path absolut server
         if (file_exists($p1)) {
             return asset('storage/' . $path);
         }
 
-        // PRIORITAS 2: ppid_version2/storage (File Lama hasil Copy)
+        // PRIORITAS 2: ppid_version2/storage (File Lama)
         if (file_exists($p2)) {
             return asset('storage_local/' . $path);
         }
 
-        return asset('assets/img/not-found.png');
+        // Jika tidak ketemu, coba asumsikan itu path relatif dari storage/app/public
+        return asset('storage_local/' . $path);
     }
 }
