@@ -15,13 +15,13 @@ use App\Http\Controllers\Admin\ProfilPpidController;
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth', 'verified'])->prefix('admin')->name('admin.')->group(function () {
+Route::middleware(['auth', 'verified'])->name('admin.')->group(function () {
     // Routes for managing the single structure image per organization for admins
     Route::get('my-structure', [\App\Http\Controllers\Admin\StrukturOrganisasiController::class, 'myStructure'])->name('my-structure.manage');
     Route::post('my-structure', [\App\Http\Controllers\Admin\StrukturOrganisasiController::class, 'updateMyStructure'])->name('my-structure.update');
 });
 
-Route::middleware(['auth', 'verified', \App\Http\Middleware\SuperadminMiddleware::class])->prefix('admin')
+Route::middleware(['auth', 'verified', \App\Http\Middleware\SuperadminMiddleware::class])
 ->name('admin.')->group(function () {
     Route::get('/dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('sliders', SliderController::class);
@@ -52,6 +52,7 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\SuperadminMiddleware
 
     Route::middleware([\App\Http\Middleware\SuperadminMiddleware::class])->group(function () {
         Route::resource('organizations', \App\Http\Controllers\Admin\OrganizationController::class);
+
 
         // Routes for managing the single structure image per organization
         Route::get('organizations/{organization}/structure', [\App\Http\Controllers\Admin\StrukturOrganisasiController::class, 'manage'])->name('organizations.structure.manage');
