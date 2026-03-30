@@ -9,10 +9,6 @@ use App\Http\Controllers\Admin\SurveyResponseController;
 use App\Http\Controllers\Admin\AdminSettingController;
 use App\Http\Controllers\Admin\ProfilPpidController;
 
-Route::get('/admin-test-2', function () {
-    return 'Admin Test 2 OK';
-});
-
 /*
 |--------------------------------------------------------------------------
 | Admin Routes
