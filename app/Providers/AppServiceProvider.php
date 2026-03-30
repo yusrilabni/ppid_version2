@@ -33,6 +33,16 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Paksa HTTPS jika di production
+        if (config('app.env') === 'production') {
+            \Illuminate\Support\Facades\URL::forceScheme('https');
+        }
+
+        // Deteksi jika berjalan di sub-folder /v2
+        if (strpos(request()->getRequestUri(), '/v2') === 0) {
+            \Illuminate\Support\Facades\URL::forceRootUrl(config('app.url'));
+        }
+
         // Removed the log entry from here
         $this->bootRoutes();
 
