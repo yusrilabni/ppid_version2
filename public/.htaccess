@@ -1,5 +1,11 @@
 RewriteEngine On
 RewriteBase /v2/
+
+# Redirect trailing slash secara internal untuk menghindari 405
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteCond %{REQUEST_URI} (.+)/$
+RewriteRule ^ %1 [L,R=301]
+
 RewriteCond %{REQUEST_FILENAME} !-f
 RewriteCond %{REQUEST_FILENAME} !-d
 RewriteRule . index.php [L]
