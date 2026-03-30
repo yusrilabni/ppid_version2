@@ -1,6 +1,14 @@
-RewriteEngine On
-RewriteBase /v2/
-RewriteRule ^index\.php$ - [L]
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule . index.php [L]
+<IfModule mod_rewrite.c>
+    RewriteEngine On
+    RewriteBase /v2/
+
+    # JANGAN lakukan redirect trailing slash yang mengarah ke root
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteCond %{REQUEST_URI} ^/v2/(.+)/$
+    RewriteRule ^(.*)/$ /v2/$1 [L,R=301]
+
+    # Kirim semua permintaan ke index.php di dalam v2
+    RewriteCond %{REQUEST_FILENAME} !-f
+    RewriteCond %{REQUEST_FILENAME} !-d
+    RewriteRule ^ index.php [L]
+</IfModule>
