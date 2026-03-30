@@ -11,10 +11,9 @@ if (preg_match('/\/storage\/(.+)$/', $uri, $matches)) {
     $filePath = explode('?', $matches[1])[0];
     
     // Prioritas Lokasi File:
-    // 1. Relatif terhadap folder aplikasi ppid_version2
-    // 2. Path absolut cPanel
+    // Pada cPanel, dari /public_html/v2/, folder aplikasi ada di /ppid_version2/
     $priorities = [
-        __DIR__ . '/../storage/app/public/' . $filePath,
+        __DIR__ . '/../../ppid_version2/storage/app/public/' . $filePath,
         '/home/ppidkab/ppid_version2/storage/app/public/' . $filePath
     ];
 
@@ -36,8 +35,12 @@ use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
-// Tentukan path ke folder aplikasi ppid_version2
-$appPath = __DIR__.'/..';
+/**
+ * PENYESUAIAN PATH CPANEL
+ * Karena index.php ada di /public_html/v2/
+ * Dan aplikasi ada di /ppid_version2/
+ */
+$appPath = __DIR__.'/../../ppid_version2';
 
 // 1. Cek Maintenance Mode
 if (file_exists($maintenance = $appPath.'/storage/framework/maintenance.php')) {
@@ -45,10 +48,18 @@ if (file_exists($maintenance = $appPath.'/storage/framework/maintenance.php')) {
 }
 
 // 2. Register Autoloader
-require $appPath.'/vendor/autoload.php';
+if (file_exists($autoload = $appPath.'/vendor/autoload.php')) {
+    require $autoload;
+} else {
+    die("Autoloader tidak ditemukan di: " . $autoload);
+}
 
 // 3. Bootstrap Laravel
-$app = require_once $appPath.'/bootstrap/app.php';
+if (file_exists($bootstrap = $appPath.'/bootstrap/app.php')) {
+    $app = require_once $bootstrap;
+} else {
+    die("Bootstrap tidak ditemukan di: " . $bootstrap);
+}
 
 // 4. Handle Request
 $app->handleRequest(Request::capture());
