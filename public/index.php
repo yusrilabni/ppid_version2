@@ -4,7 +4,7 @@ use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
-// 1. Cek Maintenance Mode (Arahkan langsung ke ppid_version2)
+// 1. Cek Maintenance Mode
 if (file_exists($maintenance = __DIR__.'/../../ppid_version2/storage/framework/maintenance.php')) {
     require $maintenance;
 }
