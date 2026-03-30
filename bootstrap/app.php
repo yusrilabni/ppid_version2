@@ -12,11 +12,11 @@ return Application::configure(basePath: dirname(__DIR__))
         commands: __DIR__.'/../routes/console.php',
         health: '/up',
         then: function () {
+            // Muat rute admin secara eksplisit
             Route::middleware('web')
+                ->prefix('admin') // Tambahkan prefix admin agar tidak bentrok dengan root /
+                ->name('admin.')
                 ->group(base_path('routes/admin.php'));
-            
-            // Debugging API login
-            Route::post('/api/login', [\App\Http\Controllers\Api\LoginController::class, 'login']);
         },
     )
     ->withMiddleware(function (Middleware $middleware) {
