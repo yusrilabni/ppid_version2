@@ -1,20 +1,19 @@
 <?php
 
-use Illuminate\Foundation\Application;
 use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
-// Determine if the application is in maintenance mode...
-if (file_exists($maintenance = __DIR__.'/../storage/framework/maintenance.php')) {
+// 1. Cek Maintenance Mode
+if (file_exists($maintenance = __DIR__.'/../../ppid_version2/storage/framework/maintenance.php')) {
     require $maintenance;
 }
 
-// Register the Composer autoloader...
-require __DIR__.'/../vendor/autoload.php';
+// 2. Register Autoloader (Arahkan ke ppid_version2)
+require __DIR__.'/../../ppid_version2/vendor/autoload.php';
 
-// Bootstrap Laravel and handle the request...
-/** @var Application $app */
-$app = require_once __DIR__.'/../bootstrap/app.php';
+// 3. Bootstrap Laravel (Arahkan ke ppid_version2)
+$app = require_once __DIR__.'/../../ppid_version2/bootstrap/app.php';
 
+// 4. Handle Request
 $app->handleRequest(Request::capture());
