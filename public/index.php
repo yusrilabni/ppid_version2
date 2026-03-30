@@ -1,35 +1,12 @@
 <?php
+echo "<h1>SISTEM PPID V2: PHP BERHASIL JALAN</h1>";
+echo "Lokasi Folder: " . __DIR__ . "<br>";
+$path = realpath(__DIR__ . '/../../ppid_version2');
+echo "Path ke Source: " . ($path ? $path : "TIDAK DITEMUKAN");
 
-// Paksa tampilkan error jika ada masalah PHP
-ini_set('display_errors', 1);
-ini_set('display_startup_errors', 1);
-error_reporting(E_ALL);
-
-use Illuminate\Http\Request;
-
-define('LARAVEL_START', microtime(true));
-
-// Tentukan lokasi folder source code (ppid_version2) secara absolut
-// Ini lebih aman daripada menggunakan ../../
-$basePath = realpath(__DIR__ . '/../../ppid_version2');
-
-if (!$basePath) {
-    die("Error: Folder 'ppid_version2' tidak ditemukan. Pastikan folder tersebut ada di root (sejajar dengan public_html).");
-}
-
-// 1. Register Autoloader
-$autoload = $basePath . '/vendor/autoload.php';
-if (!file_exists($autoload)) {
-    die("Error: File '$autoload' tidak ditemukan. Sudahkah Anda mengupload folder 'vendor'?");
-}
-require $autoload;
-
-// 2. Bootstrap Laravel
-$appFile = $basePath . '/bootstrap/app.php';
-if (!file_exists($appFile)) {
-    die("Error: File '$appFile' tidak ditemukan.");
-}
-$app = require_once $appFile;
-
-// 3. Handle Request
-$app->handleRequest(Request::capture());
+/* 
+// Nanti kita aktifkan lagi jika tes ini berhasil
+require __DIR__.'/../../ppid_version2/vendor/autoload.php';
+$app = require_once __DIR__.'/../../ppid_version2/bootstrap/app.php';
+$app->handleRequest(Illuminate\Http\Request::capture());
+*/
