@@ -1,0 +1,82 @@
+/* Custom Swiper Navigation Styles */
+
+/* Ensure the container is relative (already set in Blade but good for robustness) */
+.news-carousel,
+.info-carousel {
+    position: relative;
+}
+
+/* Base styles for all Swiper navigation buttons */
+.swiper-button-next,
+.swiper-button-prev {
+    /* Visual Styling */
+    background-color: rgba(128, 128, 128, 0.75);
+    color: white;
+    padding: 0.5rem;
+    border-radius: 9999px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+
+    /* Size */
+    width: 2.5rem;
+    height: 2.5rem;
+    overflow: hidden;
+
+    /* Transition for hover effects */
+    transition: all 300ms ease;
+}
+
+/* Hover effects */
+.swiper-button-next:hover,
+.swiper-button-prev:hover {
+    background-color: #3b82f6;
+    transform: scale(1.05);
+}
+
+/* Positioning for previous buttons */
+.swiper-button-prev {
+    left: 1rem;
+    right: auto;
+}
+
+/* Positioning for next buttons */
+.swiper-button-next {
+    right: 1rem;
+    left: auto;
+}
+
+/* Icon size override */
+.swiper-button-next i,
+.swiper-button-prev i {
+    width: 1rem;  /* h-4 w-4 */
+    height: 1rem;
+    display: block;
+}
+
+/* Remove Swiper's default arrow */
+.swiper-button-next:after,
+.swiper-button-prev:after {
+    display: none;
+}
+
+/* Custom styles for Swiper Pagination to place it above the cards */
+.swiper-pagination {
+    position: static !important; /* Override Swiper's default absolute positioning */
+    text-align: center;
+    margin-top: 1rem; /* Space from the subtitle above */
+    margin-bottom: 1rem; /* Space from the swiper-wrapper (cards) below */
+}
+
+/* Ensure pagination bullets are visible and styled */
+.swiper-pagination-bullet {
+    background-color: #6b7280; /* A neutral gray */
+    opacity: 0.6;
+    transition: opacity 0.3s ease;
+}
+
+.swiper-pagination-bullet-active {
+    background-color: #3b82f6; /* A primary blue */
+    opacity: 1;
+}
