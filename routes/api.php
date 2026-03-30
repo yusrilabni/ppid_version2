@@ -12,6 +12,7 @@ use App\Http\Controllers\Api\StatistikController;
 use App\Http\Controllers\Api\MenuController;
 use App\Http\Controllers\Api\ContactController;
 use App\Http\Controllers\Api\LoginController;
+use App\Http\Controllers\Api\LinkAccessLogController;
 use App\Http\Controllers\Api\GoogleLoginController;
 use App\Http\Controllers\Api\Admin\AdminDashboardController;
 use App\Http\Controllers\Admin\OrganizationController;
