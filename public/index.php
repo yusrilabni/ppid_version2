@@ -2,29 +2,48 @@
 
 /**
  * DIRECT STORAGE FALLBACK (SINJAI PPID)
- * Bypass routing Laravel jika request adalah file storage yang tidak ada di public_html.
+ * Memaksa server mengambil file dari folder ppid_version2 jika di public_html tidak ada.
  */
 $uri = $_SERVER['REQUEST_URI'] ?? '';
-// Jika mengandung /storage/
-if (preg_match('/\/storage\/(.+)$/', $uri, $matches)) {
-    // Ambil path setelah /storage/ (buang query string jika ada)
-    $filePath = explode('?', $matches[1])[0];
+
+// Cari apakah URL mengandung kata 'storage/'
+if (strpos($uri, '/storage/') !== false) {
+    // Ambil bagian setelah 'storage/'
+    $parts = explode('/storage/', $uri);
+    $filePath = end($parts);
+    $filePath = explode('?', $filePath)[0]; // Buang query string
     
-    // Prioritas Lokasi File:
-    // Pada cPanel, dari /public_html/v2/, folder aplikasi ada di /ppid_version2/
-    $priorities = [
-        __DIR__ . '/../../ppid_version2/storage/app/public/' . $filePath,
-        '/home/ppidkab/ppid_version2/storage/app/public/' . $filePath
+    // Tentukan lokasi absolut folder storage aplikasi
+    // 1. Berdasarkan folder saat ini (public_html/v2/) ke ppid_version2
+    $basePath1 = __DIR__ . '/../../ppid_version2/storage/app/public/';
+    // 2. Berdasarkan path absolut cPanel Anda
+    $basePath2 = '/home/ppidkab/ppid_version2/storage/app/public/';
+
+    $locations = [
+        $basePath1 . $filePath,
+        $basePath2 . $filePath
     ];
 
-    foreach ($priorities as $fullPath) {
+    foreach ($locations as $fullPath) {
         if (file_exists($fullPath) && is_file($fullPath)) {
-            $mime = 'image/png'; // Default
-            if (function_exists('mime_content_type')) {
-                $mime = @mime_content_type($fullPath) ?: $mime;
-            }
+            // Deteksi MIME Type sederhana
+            $ext = strtolower(pathinfo($fullPath, PATHINFO_EXTENSION));
+            $mimes = [
+                'png'  => 'image/png',
+                'jpg'  => 'image/jpeg',
+                'jpeg' => 'image/jpeg',
+                'gif'  => 'image/gif',
+                'webp' => 'image/webp',
+                'pdf'  => 'application/pdf',
+                'svg'  => 'image/svg+xml',
+            ];
+            
+            $mime = $mimes[$ext] ?? 'application/octet-stream';
+            
+            // Kirim file ke browser
             header("Content-Type: $mime");
             header("Content-Length: " . filesize($fullPath));
+            header("Access-Control-Allow-Origin: *"); // Izinkan akses dari mana saja
             readfile($fullPath);
             exit;
         }
@@ -35,11 +54,7 @@ use Illuminate\Http\Request;
 
 define('LARAVEL_START', microtime(true));
 
-/**
- * PENYESUAIAN PATH CPANEL
- * Karena index.php ada di /public_html/v2/
- * Dan aplikasi ada di /ppid_version2/
- */
+// Path ke aplikasi
 $appPath = __DIR__.'/../../ppid_version2';
 
 // 1. Cek Maintenance Mode
@@ -48,18 +63,10 @@ if (file_exists($maintenance = $appPath.'/storage/framework/maintenance.php')) {
 }
 
 // 2. Register Autoloader
-if (file_exists($autoload = $appPath.'/vendor/autoload.php')) {
-    require $autoload;
-} else {
-    die("Autoloader tidak ditemukan di: " . $autoload);
-}
+require $appPath.'/vendor/autoload.php';
 
 // 3. Bootstrap Laravel
-if (file_exists($bootstrap = $appPath.'/bootstrap/app.php')) {
-    $app = require_once $bootstrap;
-} else {
-    die("Bootstrap tidak ditemukan di: " . $bootstrap);
-}
+$app = require_once $appPath.'/bootstrap/app.php';
 
 // 4. Handle Request
 $app->handleRequest(Request::capture());
