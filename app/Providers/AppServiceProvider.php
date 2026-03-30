@@ -38,11 +38,6 @@ class AppServiceProvider extends ServiceProvider
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
 
-        // Deteksi jika berjalan di sub-folder /v2
-        if (strpos(request()->getRequestUri(), '/v2') === 0) {
-            \Illuminate\Support\Facades\URL::forceRootUrl(env('APP_URL', 'https://ppidkab.sinjaikab.go.id/v2'));
-        }
-
         // Removed the log entry from here
         $this->bootRoutes();
 
