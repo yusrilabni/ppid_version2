@@ -88,19 +88,7 @@ Route::get('/informasi/detail/{slug}', [FrontendController::class, 'detailBySlug
 Route::get('/informasi/download/{id}', [FrontendController::class, 'download'])->name('frontend.informasi.download');
 Route::get('/informasi/visit-url/{id}', [FrontendController::class, 'visitUrl'])->name('frontend.informasi.visit-url');
 
-// Organizational Structure Routes
-Route::prefix('admin')->name('admin.')->middleware(['auth', 'verified'])->group(function () {
-    Route::namespace('App\Http\Controllers\Admin')->group(function () {
-        Route::resource('organizations', 'OrganizationController');
-        Route::resource('organizations.positions', 'OrganizationPositionController')->shallow();
-
-        // Additional routes for organizational structures
-        Route::get('structures', 'OrganizationPositionController@structures')->name('organizations.structures');
-        Route::get('organizations/{organization}/positions/tree', 'OrganizationPositionController@apiTree')->name('organizations.positions.tree');
-        Route::post('organizations/{organization}/positions/reorder', 'OrganizationPositionController@reorder')->name('organizations.positions.reorder');
-        Route::get('organizations/{organization}/svg-chart', 'OrganizationPositionController@generateSvgChart')->name('organizations.svg.chart');
-    });
-});
+// Organizational Structure Routes moved to admin.php or handled via bootstrap/app.php
 
 // Public organizational structure SVG download route
 Route::get('organizations/{organization}/svg-chart', [App\Http\Controllers\Admin\OrganizationPositionController::class, 'generatePublicSvgChart'])->name('public.organizations.svg.chart');
