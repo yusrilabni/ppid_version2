@@ -11,6 +11,16 @@
     </title>
     <meta name="description" content="Pejabat Pengelola Informasi dan Dokumentasi">
 
+    <script>
+        // Visibility Lock: Mencegah flicker slider saat refresh di posisi scroll bawah
+        (function() {
+            var pos = sessionStorage.getItem('scrollPos_' + window.location.pathname);
+            if (pos && parseInt(pos) > 100) {
+                document.documentElement.style.visibility = 'hidden';
+            }
+        })();
+    </script>
+
     <!-- Favicons -->
     <link rel="shortcut icon" href="{{ asset('storage/logo/favicon_io/favicon.ico') }}" type="image/x-icon">
     <link rel="icon" type="image/webp" href="{{ asset('storage/logo/favicon_io/ppid.webp') }}">
@@ -409,10 +419,18 @@
     } : {}"
     :style="{ fontSize: $store.accConfig ? $store.accConfig.getFontSize() + 'px' : '16px' }">
     <script>
-        // Instant Scroll Restoration (Execute immediately before any rendering)
+        // Instant Scroll & Unlock (Jauh lebih agresif daripada native browser)
         (function() {
             var pos = sessionStorage.getItem('scrollPos_' + window.location.pathname);
-            if (pos) window.scrollTo(0, pos);
+            if (pos && parseInt(pos) > 100) {
+                window.scrollTo(0, parseInt(pos));
+                // Beri browser waktu 1 frame (30-50ms) untuk menggambar posisi yang benar sebelum ditampilkan
+                setTimeout(function() {
+                    document.documentElement.style.visibility = 'visible';
+                }, 40);
+            } else {
+                document.documentElement.style.visibility = 'visible';
+            }
         })();
     </script>
 
