@@ -19,8 +19,8 @@
             <div class="lg:col-span-2 space-y-8">
                 
                 {{-- Penjelasan Singkat RSS --}}
-                <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 text-gray-800">
+                    <h2 class="text-2xl font-bold mb-4 flex items-center">
                         <span class="w-2 h-8 bg-blue-500 rounded-full mr-3"></span>
                         Apa itu RSS Feed?
                     </h2>
@@ -30,8 +30,8 @@
                 </section>
 
                 {{-- Detail Struktur Data RSS --}}
-                <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 text-gray-800">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center">
                         <span class="w-2 h-8 bg-green-500 rounded-full mr-3"></span>
                         Struktur Data RSS
                     </h2>
@@ -56,8 +56,8 @@
                 </section>
 
                 {{-- Kustomisasi URL --}}
-                <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
-                    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 text-gray-800">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center">
                         <span class="w-2 h-8 bg-orange-500 rounded-full mr-3"></span>
                         Kustomisasi URL Feed
                     </h2>
@@ -78,7 +78,7 @@
                     </div>
 
                     <div x-data="{ open: false }" class="mt-6">
-                        <button @click="open = !open" class="text-blue-600 hover:text-blue-800 font-bold text-sm flex items-center">
+                        <button @click="open = !open" class="text-blue-600 hover:text-blue-800 font-bold text-sm flex items-center transition-colors">
                             <i class="fas" :class="open ? 'fa-chevron-up' : 'fa-list-ul'"></i> 
                             <span class="ml-2" x-text="open ? 'Sembunyikan Daftar ID OPD' : 'Lihat Daftar ID OPD Semua Instansi'"></span>
                         </button>
@@ -87,7 +87,7 @@
                                 @foreach($organizations as $org)
                                     <div class="flex justify-between p-2 bg-gray-50 rounded-lg hover:bg-blue-50 transition-colors">
                                         <span class="text-gray-700 font-medium truncate pr-4">{{ $org->name }}</span>
-                                        <span class="text-blue-600 font-bold font-mono">ID: {{ $org->unit_id }}</span>
+                                        <span class="text-blue-600 font-bold font-mono uppercase">ID: {{ $org->unit_id }}</span>
                                     </div>
                                 @endforeach
                             </div>
@@ -99,14 +99,14 @@
             {{-- Sidebar --}}
             <div class="space-y-8">
                 {{-- Sinkronisasi Sosial --}}
-                <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
-                    <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
+                <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 text-gray-800">
+                    <h2 class="text-lg font-bold mb-4 flex items-center">
                         <i class="fas fa-sync-alt text-blue-500 mr-2"></i> Sinkronisasi Sosial
                     </h2>
                     <div class="text-xs text-gray-600 space-y-4 leading-relaxed">
                         <p>Bagikan update otomatis ke akun <strong>Facebook, X, atau Telegram</strong> Anda tanpa mengetik ulang.</p>
                         
-                        <div class="space-y-2">
+                        <div class="space-y-2 text-[10px]">
                             <div class="flex items-center p-2 bg-gray-50 rounded-lg">
                                 <i class="fas fa-rss text-orange-500 w-5 text-center"></i>
                                 <span class="ml-2 font-bold">1. Trigger:</span> <span class="ml-1">Data baru di RSS</span>
@@ -139,15 +139,15 @@
                 </section>
 
                 {{-- Social Sync Tools --}}
-                <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
-                    <h3 class="text-sm font-bold text-gray-800 mb-4 uppercase tracking-widest text-center border-b pb-2">Alat Autopost</h3>
+                <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 text-gray-800">
+                    <h3 class="text-sm font-bold mb-4 uppercase tracking-widest text-center border-b pb-2">Alat Autopost</h3>
                     <div class="space-y-3">
                         <a href="https://ifttt.com" target="_blank" class="flex items-center p-3 bg-gray-50 rounded-xl hover:bg-black hover:text-white transition-all group border border-gray-100 shadow-sm">
-                            <div class="w-8 h-8 bg-black text-white rounded flex items-center justify-center mr-3 font-black text-xs">IF</div>
+                            <div class="w-8 h-8 bg-black text-white rounded flex items-center justify-center mr-3 font-black text-xs transition-colors">IF</div>
                             <div class="text-[10px] font-bold">IFTTT (Mudah)</div>
                         </a>
                         <a href="https://zapier.com" target="_blank" class="flex items-center p-3 bg-gray-50 rounded-xl hover:bg-orange-500 hover:text-white transition-all group border border-gray-100 shadow-sm">
-                            <div class="w-8 h-8 bg-orange-500 text-white rounded flex items-center justify-center mr-3 font-black text-xs">Z</div>
+                            <div class="w-8 h-8 bg-orange-500 text-white rounded flex items-center justify-center mr-3 font-black text-xs transition-colors">Z</div>
                             <div class="text-[10px] font-bold">Zapier (Lengkap)</div>
                         </a>
                     </div>
@@ -157,8 +157,8 @@
 
         {{-- FULL WIDTH CODE EXAMPLES SECTION --}}
         <div class="mt-12">
-            <section class="bg-white rounded-[3rem] shadow-sm border border-gray-100 p-8 md:p-12 overflow-hidden">
-                <h2 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
+            <section class="bg-white rounded-[3rem] shadow-sm border border-gray-100 p-8 md:p-12 overflow-hidden text-gray-800">
+                <h2 class="text-3xl font-bold mb-8 flex items-center">
                     <span class="w-12 h-12 bg-purple-600 text-white rounded-2xl flex items-center justify-center mr-4 shadow-lg shadow-purple-200">
                         <i class="fas fa-code"></i>
                     </span>
@@ -173,7 +173,7 @@
                         <button @click="tab = 'ci'" :class="tab === 'ci' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500'" class="py-3 px-6 rounded-xl text-xs font-bold transition-all uppercase tracking-widest">CodeIgniter</button>
                     </div>
 
-                    <div class="bg-gray-900 rounded-[2.5rem] p-8 md:p-12 font-mono text-sm leading-relaxed text-gray-300 shadow-2xl">
+                    <div class="bg-gray-900 rounded-[2.5rem] p-8 md:p-12 font-mono text-sm leading-relaxed text-gray-300 shadow-2xl overflow-x-hidden">
                         <template x-if="tab === 'html'">
                             <div class="space-y-4">
                                 <p class="text-blue-400 text-xs italic">// Copy kode ini ke file HTML Anda. Ganti parameter ?unit_id= jika perlu.</p>
@@ -185,26 +185,19 @@
 
   fetch(RSS_URL)
     .then(res => {
-      if (!res.ok) throw new Error('Gagal mengambil data dari server');
+      if (!res.ok) throw new Error('Gagal mengambil data');
       return res.text();
     })
     .then(xmlString => {
       const xml = new DOMParser().parseFromString(xmlString, "text/xml");
       const items = xml.querySelectorAll("item");
-
-      if (items.length === 0) {
-        document.getElementById("ppid-list").innerHTML = "Tidak ada informasi ditemukan.";
-        return;
-      }
-
-      let html = '&lt;h3 style="margin-top:0;"&gt;Update Informasi Terbaru&lt;/h3&gt;&lt;ul style="padding:0; margin:0; list-style:none;"&gt;';
-
+      let html = '&lt;ul style="padding:0; margin:0; list-style:none;"&gt;';
+      
       items.forEach(el => {
         const title = el.querySelector("title").textContent;
         const link = el.querySelector("link").textContent;
-        const dateRaw = el.querySelector("pubDate").textContent;
-        const date = new Date(dateRaw).toLocaleDateString('id-ID');
-
+        const date = new Date(el.querySelector("pubDate").textContent).toLocaleDateString('id-ID');
+        
         html += `&lt;li style="margin-bottom:20px; padding:15px; background:#f9f9f9; border-radius:12px; border-left: 5px solid #0052FF;"&gt;
                    &lt;a href="${link}" target="_blank" style="text-decoration:none; color:#0052FF; font-weight:bold; font-size:16px;"&gt;${title}&lt;/a&gt;
                    &lt;div style="color:#888; font-size:12px; margin-top:5px;"&gt;📅 Dipublikasikan: ${date}&lt;/div&gt;
@@ -213,10 +206,9 @@
       document.getElementById("ppid-list").innerHTML = html + '&lt;/ul&gt;';
     })
     .catch(err => {
-      console.error(err);
-      document.getElementById("ppid-list").innerHTML = "&lt;p style='color:red'&gt;Gagal memuat data. Pastikan koneksi internet stabil.&lt;/p&gt;";
+      document.getElementById("ppid-list").innerHTML = "Gagal memuat data.";
     });
-&lt;/script&gt;
+&lt;/script&gt;</code></pre>
                             </div>
                         </template>
                         
@@ -228,8 +220,8 @@ $rss = simplexml_load_file('{{ route('extra.rss.generate') }}');
 echo "&lt;ul&gt;";
 foreach ($rss->channel->item as $info) {
     echo "&lt;li&gt;";
-    echo "&lt;a href='{$info->link}' target='_blank' font-weight:bold;'&gt;{$info->title}&lt;/a&gt;&lt;br&gt;";
-    echo "&lt;small&gt;📁 {$info->category} | 📅 {$info->pubDate}&lt;/small&gt;";
+    echo "&lt;a href='{$info->link}' target='_blank'&gt;{$info->title}&lt;/a&gt;&lt;br&gt;";
+    echo "&lt;small&gt;Kategori: {$info->category} | Tanggal: {$info->pubDate}&lt;/small&gt;";
     echo "&lt;/li&gt;";
 }
 echo "&lt;/ul&gt;";
@@ -240,44 +232,43 @@ echo "&lt;/ul&gt;";
                         <template x-if="tab === 'laravel'">
                             <div class="space-y-4">
                                 <p class="text-blue-400 text-xs italic">// Implementasi di Laravel (Blade + Controller).</p>
-                                <pre class="whitespace-pre-wrap"><code>@verbatim// 1. Di Controller Anda
+                                <pre class="whitespace-pre-wrap"><code>// 1. Di Controller Anda
 public function showFeed() {
-    $url = "@endverbatim{{ route('extra.rss.generate') }}@verbatim";
+    $url = "{{ route('extra.rss.generate') }}";
     $xml = simplexml_load_file($url);
     return view('your_view', ['feeds' => $xml->channel->item]);
 }
 
 // 2. Di File .blade.php
-<ul>
-    @foreach($feeds as $item)
-        <li>
-            <a href="{{ $item->link }}">{{ $item->title }}</a>
-            <p>{{ Str::limit($item->description, 100) }}</p>
-        </li>
-    @endforeach
-</ul>@endverbatim</code></pre>
+&lt;ul&gt;
+    @@foreach($feeds as $item)
+        &lt;li&gt;
+            &lt;a href="@{{ $item->link }}"&gt;@{{ $item->title }}&lt;/a&gt;
+        &lt;/li&gt;
+    @@endforeach
+&lt;/ul&gt;</code></pre>
                             </div>
                         </template>
 
                         <template x-if="tab === 'ci'">
                             <div class="space-y-4">
                                 <p class="text-blue-400 text-xs italic">// Implementasi di CodeIgniter (Controller + View).</p>
-                                <pre class="whitespace-pre-wrap"><code>@verbatim// 1. Di Controller (misal: Welcome.php)
+                                <pre class="whitespace-pre-wrap"><code>// 1. Di Controller (misal: Welcome.php)
 public function index() {
-    $url = "@endverbatim{{ route('extra.rss.generate') }}@verbatim";
+    $url = "{{ route('extra.rss.generate') }}";
     $data['feeds'] = simplexml_load_file($url);
     $this->load->view('rss_view', $data);
 }
 
 // 2. Di View (rss_view.php)
-<ul>
-    <?php foreach ($feeds->channel->item as $item): ?>
-        <li>
-            <a href="<?= $item->link ?>"><?= $item->title ?></a>
-            <small><?= $item->pubDate ?></small>
-        </li>
-    <?php endforeach; ?>
-</ul>@endverbatim</code></pre>
+&lt;ul&gt;
+    &lt;?php foreach ($feeds->channel->item as $item): ?&gt;
+        &lt;li&gt;
+            &lt;a href="&lt;?= $item->link ?&gt;"&gt;&lt;?= $item->title ?&gt;&lt;/a&gt;
+            &lt;small&gt;&lt;?= $item->pubDate ?&gt;&lt;/small&gt;
+        &lt;/li&gt;
+    &lt;?php endforeach; ?&gt;
+&lt;/ul&gt;</code></pre>
                             </div>
                         </template>
                     </div>
