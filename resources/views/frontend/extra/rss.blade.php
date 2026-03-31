@@ -31,7 +31,32 @@
                     </p>
                 </section>
 
-                {{-- 2. Kustomisasi URL --}}
+                {{-- 2. Struktur Data Detail (SEKARANG DI ATAS) --}}
+                <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 text-left">
+                    <h2 class="text-2xl font-bold mb-6 flex items-center text-green-600">
+                        <span class="w-2 h-8 bg-green-500 rounded-full mr-3"></span> Struktur Data Detail
+                    </h2>
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
+                        <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                            <p class="text-blue-600 font-bold font-mono">&lt;title&gt;</p>
+                            <p class="text-gray-500 mt-1">Judul resmi dokumen atau pengumuman yang ditampilkan pada feed.</p>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                            <p class="text-blue-600 font-bold font-mono">&lt;organization&gt;</p>
+                            <p class="text-gray-500 mt-1">Nama Dinas / Instansi pemilik data yang menerbitkan informasi.</p>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                            <p class="text-blue-600 font-bold font-mono">&lt;status&gt;</p>
+                            <p class="text-gray-500 mt-1">Kondisi dokumen (BERLAKU / ARSIP) untuk validasi data publik.</p>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
+                            <p class="text-blue-600 font-bold font-mono">&lt;category&gt;</p>
+                            <p class="text-gray-500 mt-1">Klasifikasi data informasi berdasarkan standar PPID Kabupaten Sinjai.</p>
+                        </div>
+                    </div>
+                </section>
+
+                {{-- 3. Kustomisasi URL Feed (Filter) (SEKARANG DI BAWAH) --}}
                 <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 text-left">
                     <h2 class="text-2xl font-bold mb-6 flex items-center text-orange-600">
                         <span class="w-2 h-8 bg-orange-500 rounded-full mr-3"></span> Kustomisasi URL Feed (Filter)
@@ -66,31 +91,6 @@
                                     </div>
                                 @endforeach
                             </div>
-                        </div>
-                    </div>
-                </section>
-
-                {{-- 3. Struktur Data Detail --}}
-                <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 text-left">
-                    <h2 class="text-2xl font-bold mb-6 flex items-center text-green-600">
-                        <span class="w-2 h-8 bg-green-500 rounded-full mr-3"></span> Struktur Data Detail
-                    </h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
-                        <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                            <p class="text-blue-600 font-bold font-mono">&lt;title&gt;</p>
-                            <p class="text-gray-500 mt-1">Judul resmi dokumen atau pengumuman yang ditampilkan pada feed.</p>
-                        </div>
-                        <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                            <p class="text-blue-600 font-bold font-mono">&lt;organization&gt;</p>
-                            <p class="text-gray-500 mt-1">Nama Dinas / Instansi pemilik data yang menerbitkan informasi.</p>
-                        </div>
-                        <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                            <p class="text-blue-600 font-bold font-mono">&lt;status&gt;</p>
-                            <p class="text-gray-500 mt-1">Kondisi dokumen (BERLAKU / ARSIP) untuk validasi data publik.</p>
-                        </div>
-                        <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
-                            <p class="text-blue-600 font-bold font-mono">&lt;category&gt;</p>
-                            <p class="text-gray-500 mt-1">Klasifikasi data informasi berdasarkan standar PPID Kabupaten Sinjai.</p>
                         </div>
                     </div>
                 </section>
