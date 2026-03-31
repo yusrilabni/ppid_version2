@@ -57,7 +57,7 @@
 
                 {{-- Kustomisasi URL --}}
                 <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 text-gray-800">
-                    <h2 class="text-2xl font-bold mb-6 flex items-center">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
                         <span class="w-2 h-8 bg-orange-500 rounded-full mr-3"></span>
                         Kustomisasi URL Feed
                     </h2>
@@ -74,6 +74,10 @@
                         <div>
                             <p class="text-blue-400 font-bold mb-1">// Limit Jumlah Data (Contoh: 5 item terbaru)</p>
                             <code class="break-all">{{ route('extra.rss.generate') }}?limit=5</code>
+                        </div>
+                        <div class="pt-2 border-t border-white/10">
+                            <p class="text-orange-400 font-black mb-1 uppercase tracking-widest">// Contoh Gabungan 3 Filter Sekaligus:</p>
+                            <code class="break-all text-white">{{ route('extra.rss.generate') }}?unit_id=34&year=2023&limit=5</code>
                         </div>
                     </div>
 
@@ -140,7 +144,7 @@
 
                 {{-- Social Sync Tools --}}
                 <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 text-gray-800">
-                    <h3 class="text-sm font-bold mb-4 uppercase tracking-widest text-center border-b pb-2">Alat Autopost</h3>
+                    <h3 class="text-sm font-bold text-gray-800 mb-4 uppercase tracking-widest text-center border-b pb-2">Alat Autopost</h3>
                     <div class="space-y-3">
                         <a href="https://ifttt.com" target="_blank" class="flex items-center p-3 bg-gray-50 rounded-xl hover:bg-black hover:text-white transition-all group border border-gray-100 shadow-sm">
                             <div class="w-8 h-8 bg-black text-white rounded flex items-center justify-center mr-3 font-black text-xs transition-colors">IF</div>
@@ -173,23 +177,40 @@
                         <button @click="tab = 'ci'" :class="tab === 'ci' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500'" class="py-3 px-6 rounded-xl text-xs font-bold transition-all uppercase tracking-widest">CodeIgniter</button>
                     </div>
 
-                    <div class="bg-gray-900 rounded-[2.5rem] p-8 md:p-12 font-mono text-sm leading-relaxed text-gray-300 shadow-2xl overflow-x-hidden">
+                    <div class="bg-gray-900 rounded-[2.5rem] p-8 md:p-12 font-mono text-sm leading-relaxed text-gray-300 shadow-2xl overflow-x-hidden relative group">
+                        {{-- Tombol Salin --}}
+                        <button @click="
+                            let codeText = '';
+                            if (tab === 'html') codeText = document.getElementById('code-html').innerText;
+                            if (tab === 'php') codeText = document.getElementById('code-php').innerText;
+                            if (tab === 'laravel') codeText = document.getElementById('code-laravel').innerText;
+                            if (tab === 'ci') codeText = document.getElementById('code-ci').innerText;
+                            
+                            navigator.clipboard.writeText(codeText).then(() => {
+                                alert('Kode ' + tab.toUpperCase() + ' berhasil disalin!');
+                            });
+                        " class="absolute top-6 right-6 bg-white/10 hover:bg-white/20 text-white px-4 py-2 rounded-xl text-xs font-bold backdrop-blur-md transition-all border border-white/10 z-10 flex items-center transition-all">
+                            <i class="fas fa-copy mr-2"></i> SALIN KODE
+                        </button>
+
                         <template x-if="tab === 'html'">
                             <div class="space-y-4">
-                                <p class="text-blue-400 text-xs italic">// Copy kode ini ke file HTML Anda. Ganti parameter ?unit_id= jika perlu.</p>
-                                <pre class="whitespace-pre-wrap"><code>&lt;!-- Wadah daftar berita --&gt;
-&lt;div id="ppid-list" style="font-family: sans-serif; max-width: 100%;"&gt;Memuat data...&lt;/div&gt;
+                                <p class="text-blue-400 text-xs italic">// Copy kode ini ke file HTML Anda. Jumlah data dikontrol melalui URL (?limit=5).</p>
+                                <pre class="whitespace-pre-wrap"><code id="code-html">&lt;!-- Wadah daftar berita --&gt;
+&lt;div id="ppid-list" style="font-family: sans-serif; max-width: 100%; border: 1px solid #eee; padding: 20px; border-radius: 15px;"&gt;
+  Memuat data terbaru...
+&lt;/div&gt;
 
 &lt;script&gt;
-  const RSS_URL = '{{ route('extra.rss.generate') }}';
+  // Ganti limit=5 untuk mengubah jumlah item yang tampil
+  const RSS_URL = '{{ route('extra.rss.generate') }}?unit_id=34&year=2023&limit=5';
 
   fetch(RSS_URL)
     .then(res => res.text())
     .then(xmlString => {
       const xml = new DOMParser().parseFromString(xmlString, "text/xml");
-      const items = Array.from(xml.querySelectorAll("item")).slice(0, 5); // Tampilkan Hanya 5 Item
-      
-      let html = '&lt;h3 style="margin-top:0; color:#333;"&gt;5 Update Informasi Terbaru&lt;/h3&gt;&lt;ul style="padding:0; margin:0; list-style:none;"&gt;';
+      const items = xml.querySelectorAll("item"); // Menampilkan semua item yang dikirim server
+      let html = '&lt;h3 style="margin-top:0;"&gt;Informasi Terbaru&lt;/h3&gt;&lt;ul style="padding:0; margin:0; list-style:none;"&gt;';
       
       items.forEach(el => {
         const title = el.querySelector("title").textContent;
@@ -201,14 +222,14 @@
         
         const statusColor = (status === 'BERLAKU' || status === 'AKTIF') ? '#10b981' : '#ef4444';
 
-        html += `&lt;li style="margin-bottom:20px; padding:15px; background:#fff; border:1px solid #eee; border-radius:15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);"&gt;
+        html += `&lt;li style="margin-bottom:20px; padding:15px; background:#fff; border:1px solid #eee; border-radius:12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);"&gt;
                    &lt;div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"&gt;
                      &lt;span style="font-size:10px; font-weight:bold; color:#666;"&gt;🏛️ ${organization}&lt;/span&gt;
-                     &lt;span style="font-size:9px; font-weight:bold; padding:2px 8px; border-radius:5px; background:${statusColor}20; color:${statusColor};"&gt;${status}&lt;/span&gt;
+                     &lt;span style="font-size:9px; font-weight:bold; padding:2px 8px; border-radius:5px; background:${statusColor}20; color:${statusColor}; border:1px solid ${statusColor}40;"&gt;${status}&lt;/span&gt;
                    &lt;/div&gt;
-                   &lt;a href="${link}" target="_blank" style="text-decoration:none; color:#0052FF; font-weight:bold; font-size:15px;"&gt;${title}&lt;/a&gt;
-                   &lt;div style="font-size:11px; color:#888; margin-top:8px;"&gt;
-                     📅 ${date} | 👤 Pengupload: ${uploader}
+                   &lt;a href="${link}" target="_blank" style="text-decoration:none; color:#0052FF; font-weight:bold; font-size:15px; line-height:1.4; display:block; margin-bottom:8px;"&gt;${title}&lt;/a&gt;
+                   &lt;div style="font-size:11px; color:#888;"&gt;
+                     📅 ${date} | 👤 Pengunggah: ${uploader}
                    &lt;/div&gt;
                  &lt;/li&gt;`;
       });
@@ -223,16 +244,23 @@
                         
                         <template x-if="tab === 'php'">
                             <div class="space-y-4">
-                                <p class="text-blue-400 text-xs italic">// Gunakan kode PHP ini di server Anda.</p>
-                                <pre class="whitespace-pre-wrap"><code>&lt;?php
-$rss = simplexml_load_file('{{ route('extra.rss.generate') }}');
-echo "&lt;ul&gt;";
+                                <p class="text-blue-400 text-xs italic">// Gunakan kode PHP ini di server Anda. Mendukung filter gabungan.</p>
+                                <pre class="whitespace-pre-wrap"><code id="code-php">&lt;?php
+// Contoh URL dengan gabungan filter Unit, Tahun, dan Limit
+$url = "{{ route('extra.rss.generate') }}?unit_id=34&year=2023&limit=5";
+$rss = simplexml_load_file($url);
+
+echo "&lt;h2&gt;Update Informasi PPID Sinjai&lt;/h2&gt;";
+echo "&lt;ul style='list-style:none; padding:0;'&gt;";
+
 foreach ($rss->channel->item as $info) {
-    echo "&lt;li&gt;";
-    echo "&lt;a href='{$info->link}' target='_blank'&gt;{$info->title}&lt;/a&gt;&lt;br&gt;";
-    echo "&lt;small&gt;Kategori: {$info->category} | Tanggal: {$info->pubDate}&lt;/small&gt;";
+    echo "&lt;li style='margin-bottom:20px; padding:10px; border-bottom:1px solid #eee;'&gt;";
+    echo "&lt;a href='{$info->link}' target='_blank' style='color:#0052FF; font-weight:bold; text-decoration:none;'&gt;{$info->title}&lt;/a&gt;&lt;br&gt;";
+    echo "&lt;small style='color:#666;'&gt;🏛️ {$info->organization} | ✅ {$info->status}&lt;/small&gt;&lt;br&gt;";
+    echo "&lt;small style='color:#888;'&gt;📅 {$info->pubDate}&lt;/small&gt;";
     echo "&lt;/li&gt;";
 }
+
 echo "&lt;/ul&gt;";
 ?&gt;</code></pre>
                             </div>
@@ -241,9 +269,9 @@ echo "&lt;/ul&gt;";
                         <template x-if="tab === 'laravel'">
                             <div class="space-y-4">
                                 <p class="text-blue-400 text-xs italic">// Implementasi di Laravel (Blade + Controller).</p>
-                                <pre class="whitespace-pre-wrap"><code>// 1. Di Controller Anda
+                                <pre class="whitespace-pre-wrap"><code id="code-laravel">// 1. Di Controller Anda
 public function showFeed() {
-    $url = "{{ route('extra.rss.generate') }}";
+    $url = "{{ route('extra.rss.generate') }}?limit=10";
     $xml = simplexml_load_file($url);
     return view('your_view', ['feeds' => $xml->channel->item]);
 }
@@ -253,6 +281,7 @@ public function showFeed() {
     @@foreach($feeds as $item)
         &lt;li&gt;
             &lt;a href="@{{ $item->link }}"&gt;@{{ $item->title }}&lt;/a&gt;
+            &lt;p&gt;Status: @{{ $item->status }}&lt;/p&gt;
         &lt;/li&gt;
     @@endforeach
 &lt;/ul&gt;</code></pre>
@@ -262,9 +291,9 @@ public function showFeed() {
                         <template x-if="tab === 'ci'">
                             <div class="space-y-4">
                                 <p class="text-blue-400 text-xs italic">// Implementasi di CodeIgniter (Controller + View).</p>
-                                <pre class="whitespace-pre-wrap"><code>// 1. Di Controller (misal: Welcome.php)
+                                <pre class="whitespace-pre-wrap"><code id="code-ci">// 1. Di Controller
 public function index() {
-    $url = "{{ route('extra.rss.generate') }}";
+    $url = "{{ route('extra.rss.generate') }}?unit_id=34&limit=5";
     $data['feeds'] = simplexml_load_file($url);
     $this->load->view('rss_view', $data);
 }
@@ -274,7 +303,7 @@ public function index() {
     &lt;?php foreach ($feeds->channel->item as $item): ?&gt;
         &lt;li&gt;
             &lt;a href="&lt;?= $item->link ?&gt;"&gt;&lt;?= $item->title ?&gt;&lt;/a&gt;
-            &lt;small&gt;&lt;?= $item->pubDate ?&gt;&lt;/small&gt;
+            &lt;small&gt;&lt;?= $item->organization ?&gt; (&lt;?= $item->status ?&gt;)&lt;/small&gt;
         &lt;/li&gt;
     &lt;?php endforeach; ?&gt;
 &lt;/ul&gt;</code></pre>
