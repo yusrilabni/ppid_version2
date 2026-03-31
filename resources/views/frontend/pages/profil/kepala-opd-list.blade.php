@@ -69,14 +69,7 @@
                                                             $jabatan_tampilan = $jabatan_asli;
                                                             $status_jabatan = $official->status_jabatan;
 
-                                                            if ($status_jabatan !== 'Definitif' && !empty($status_jabatan)) {
-                                                                preg_match('/\((\w+)\)/', $status_jabatan, $matches);
-                                                                $prefix = $matches[1] ?? '';
-                                                                if (!empty($prefix)) {
-                                                                    $jabatan_tampilan = trim($prefix) . '. ' . $jabatan_tampilan;
-                                                                }
-                                                            }
-
+                                                            // 1. Tentukan Nama Jabatan Berdasarkan Instansi
                                                             if (strtolower($jabatan_asli) === 'kepala opd' && $official->organization) {
                                                                 $orgName = $official->organization->name;
                                                                 $orgNameLower = strtolower($orgName);
@@ -101,6 +94,20 @@
                                                                 } elseif (str_contains($orgNameLower, 'sekretariat dprd')) {
                                                                     $jabatan_tampilan = 'Sekretaris DPRD (Sekwan) Kabupaten Sinjai';
                                                                 }
+                                                            }
+
+                                                            // 2. Tambahkan Awalan jika bukan Definitif (Plt, Plh, dll)
+                                                            if ($status_jabatan !== 'Definitif' && !empty($status_jabatan)) {
+                                                                // Ambil teks di dalam kurung jika ada (misal: "Plt (Plt)" -> "Plt")
+                                                                if (preg_match('/\((\w+)\)/', $status_jabatan, $matches)) {
+                                                                    $prefix = $matches[1];
+                                                                } else {
+                                                                    $prefix = $status_jabatan;
+                                                                }
+                                                                
+                                                                // Tambahkan titik jika belum ada
+                                                                $prefix = rtrim($prefix, '.');
+                                                                $jabatan_tampilan = $prefix . '. ' . $jabatan_tampilan;
                                                             }
                                                         @endphp
                                                         {{ $jabatan_tampilan }}
