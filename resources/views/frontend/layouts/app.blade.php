@@ -71,11 +71,31 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
+        // Service Worker Registration for Instant Loading (Shell Cache)
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js').then(reg => {
+                    console.log('SW Registered');
+                }).catch(err => console.log('SW Error:', err));
+            });
+        }
+
+        // Scroll Persistence Logic (Save scroll position before unload, restore on load)
+        window.addEventListener('beforeunload', () => {
+            sessionStorage.setItem('scrollPos_' + window.location.pathname, window.scrollY);
+        });
+
         // Turbo Configuration
         Turbo.setProgressBarDelay(50); // Show progress bar faster (50ms)
         
         // Handle Turbo transitions
         document.addEventListener('turbo:load', () => {
+            // Restore scroll position for the current page
+            const pos = sessionStorage.getItem('scrollPos_' + window.location.pathname);
+            if (pos) {
+                window.scrollTo(0, parseInt(pos));
+            }
+
             // Re-run Tailwind to pick up any new classes in the swapped main content
             if (window.tailwind) { window.tailwind.run(); }
             // Re-run Lucide
@@ -85,11 +105,11 @@
         // Prefetch on hover for instant feel
         document.addEventListener('mouseover', (event) => {
             if (event.target.tagName === 'A' && event.target.href) {
-                // Turbo will handle internal links automatically if prefetch is enabled
+                // Turbo handles prefetch via turbo-track or link-hover (not built-in by default, but we help it here)
             }
         });
         
-        // Prevent scroll jump on refresh
+        // Prevent default browser scroll restoration to use ours
         if ('scrollRestoration' in history) {
             history.scrollRestoration = 'manual';
         }
