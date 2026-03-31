@@ -29,11 +29,11 @@
             </div>
 
             <!-- Search and Filter Controls -->
-            <div class="mt-6 p-3 bg-gray-50 rounded-lg border border-gray-200">
+            <div class="mt-6 p-3 bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
                 <form id="searchForm" method="GET" action="">
-                    <div class="flex flex-col md:flex-row md:flex-wrap gap-3 md:items-end">
+                    <div class="flex flex-col lg:flex-row gap-3 lg:items-end">
                         <!-- Combined Search Input (Title/Description/Unit) -->
-                        <div class="w-full md:flex-1 md:min-w-[250px]">
+                        <div class="w-full lg:flex-1 lg:min-w-[200px]">
                             <label for="search" class="block text-xs font-medium text-gray-600 mb-1">Pencarian</label>
                             <input
                                 type="text"
@@ -45,35 +45,35 @@
                             >
                         </div>
 
-                        <div class="grid grid-cols-2 md:contents gap-3">
+                        <div class="grid grid-cols-2 md:grid-cols-4 lg:contents gap-2">
                             <!-- Date From Filter -->
-                            <div class="md:flex-1 md:min-w-[130px]">
-                                <label for="date_from" class="block text-xs font-medium text-gray-600 mb-1">Tgl Awal</label>
+                            <div class="w-full">
+                                <label for="date_from" class="block text-[10px] font-medium text-gray-600 mb-1 uppercase">Tgl Awal</label>
                                 <input
                                     type="date"
                                     id="date_from"
                                     name="date_from"
                                     value="{{ request('date_from') ?? '' }}"
-                                    class="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    class="w-full border border-gray-300 rounded-md px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 >
                             </div>
 
                             <!-- Date To Filter -->
-                            <div class="md:flex-1 md:min-w-[130px]">
-                                <label for="date_to" class="block text-xs font-medium text-gray-600 mb-1">Tgl Akhir</label>
+                            <div class="w-full">
+                                <label for="date_to" class="block text-[10px] font-medium text-gray-600 mb-1 uppercase">Tgl Akhir</label>
                                 <input
                                     type="date"
                                     id="date_to"
                                     name="date_to"
                                     value="{{ request('date_to') ?? '' }}"
-                                    class="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
+                                    class="w-full border border-gray-300 rounded-md px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
                                 >
                             </div>
 
                             <!-- Sort Control -->
-                            <div class="md:flex-1 md:min-w-[150px]">
-                                <label for="sort" class="block text-xs font-medium text-gray-600 mb-1">Urutkan</label>
-                                <select id="sort" name="sort" class="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            <div class="w-full">
+                                <label for="sort" class="block text-[10px] font-medium text-gray-600 mb-1 uppercase">Urutkan</label>
+                                <select id="sort" name="sort" class="w-full border border-gray-300 rounded-md px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500">
                                     <option value="tanggal_upload_desc" {{ request('sort') === 'tanggal_upload_desc' || !request('sort') ? 'selected' : '' }}>Terbaru</option>
                                     <option value="tanggal_upload_asc" {{ request('sort') === 'tanggal_upload_asc' ? 'selected' : '' }}>Terlama</option>
                                     <option value="title_asc" {{ request('sort') === 'title_asc' ? 'selected' : '' }}>Judul (A-Z)</option>
@@ -82,9 +82,9 @@
                             </div>
 
                             <!-- Items Per Page Control -->
-                            <div class="md:flex-1 md:min-w-[120px]">
-                                <label for="per_page" class="block text-xs font-medium text-gray-600 mb-1">Tampilan</label>
-                                <select id="per_page" name="per_page" class="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500">
+                            <div class="w-full">
+                                <label for="per_page" class="block text-[10px] font-medium text-gray-600 mb-1 uppercase">Tampilan</label>
+                                <select id="per_page" name="per_page" class="w-full border border-gray-300 rounded-md px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500">
                                     <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10/hal</option>
                                     <option value="20" {{ request('per_page', 10) == 20 ? 'selected' : '' }}>20/hal</option>
                                     <option value="50" {{ request('per_page', 10) == 50 ? 'selected' : '' }}>50/hal</option>
@@ -93,12 +93,12 @@
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="grid grid-cols-2 md:flex gap-2 mb-1">
-                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-sm font-medium py-1.5 px-4 rounded-md transition flex items-center justify-center">
-                                <i class="fas fa-search mr-2"></i> Cari
+                        <div class="grid grid-cols-2 gap-2 mt-2 lg:mt-0">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-4 rounded-md transition flex items-center justify-center">
+                                <i class="fas fa-search mr-2"></i> CARI
                             </button>
-                            <button type="button" onclick="clearFilters()" class="bg-gray-600 hover:bg-gray-700 text-white text-sm font-medium py-1.5 px-4 rounded-md transition flex items-center justify-center">
-                                <i class="fas fa-eraser mr-2"></i> Reset
+                            <button type="button" onclick="clearFilters()" class="bg-gray-600 hover:bg-gray-700 text-white text-xs font-bold py-2 px-4 rounded-md transition flex items-center justify-center">
+                                <i class="fas fa-eraser mr-2"></i> RESET
                             </button>
                         </div>
                     </div>
@@ -273,6 +273,14 @@
                                     <a href="{{ route('informasi-crud.edit', $informasi) }}" class="p-2 text-yellow-600 bg-yellow-50 rounded-md">
                                         <i class="fas fa-edit text-sm"></i>
                                     </a>
+                                @endcan
+                                @can('delete', $informasi)
+                                    <form action="{{ route('informasi-crud.destroy', $informasi) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus?')">
+                                        @csrf @method('DELETE')
+                                        <button type="submit" class="p-2 text-red-600 bg-red-50 rounded-md">
+                                            <i class="fas fa-trash text-sm"></i>
+                                        </button>
+                                    </form>
                                 @endcan
                             </div>
                         </div>
