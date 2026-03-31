@@ -80,58 +80,46 @@ class AppServiceProvider extends ServiceProvider
             $view->with('socialMedia', $socialMedia);
 
             // New navigation links logic
-            $navLinks = [];
+            $popularLinks = [];
             
-            // Get top 5 most accessed links
+            // Get top 3 most accessed links
             $topAccessedLinks = \App\Models\LinkAccessLog::orderByDesc('access_count')
                                                           ->orderByDesc('last_accessed_at')
-                                                          ->take(5)
+                                                          ->take(3)
                                                           ->get();
 
             foreach ($topAccessedLinks as $linkLog) {
-                $navLinks[] = [
+                $popularLinks[] = [
                     'title' => $linkLog->title,
                     'url' => $linkLog->url,
                 ];
             }
 
-            // If fewer than 5 dynamic links, supplement with important static links
+            // If fewer than 3 dynamic links, supplement with important static links
             $staticLinks = [
                 ['title' => 'Profil PPID', 'url' => route('frontend.profil-ppid.show')],
                 ['title' => 'Galeri', 'url' => route('frontend.galeri.all')],
                 ['title' => 'Permohonan Informasi', 'url' => route('laporan.permohonan.create')],
                 ['title' => 'Kontak', 'url' => route('home') . '#kontak'],
-                ['title' => 'Informasi Berkala', 'url' => url('/informasi/berkala')],
-                ['title' => 'Informasi Setiap Saat', 'url' => url('/informasi/setiap-saat')],
             ];
 
-            // Add static links only if they are not already in navLinks and if we need more links
             foreach ($staticLinks as $sLink) {
-                if (count($navLinks) >= 5) {
-                    break;
-                }
+                if (count($popularLinks) >= 3) break;
+                
                 $exists = false;
-                foreach ($navLinks as $nLink) {
-                    if ($nLink['url'] === $sLink['url']) {
+                foreach ($popularLinks as $pLink) {
+                    if ($pLink['url'] === $sLink['url']) {
                         $exists = true;
                         break;
                     }
                 }
-                if (!$exists) {
-                    $navLinks[] = $sLink;
-                }
+                if (!$exists) $popularLinks[] = $sLink;
             }
 
-            // Ensure only top 5 unique links
-            $navLinks = collect($navLinks)->unique('url')->take(5)->values()->toArray();
-
-            // Sort remaining links alphabetically by title
-            usort($navLinks, function($a, $b) {
-                return strcmp($a['title'], $b['title']);
-            });
-            // Ensure we only pass up to 5 links after sorting
-            $navLinks = array_slice($navLinks, 0, 5);
-
+            // Combine with 2 fixed links (RSS & Widget)
+            $navLinks = $popularLinks;
+            $navLinks[] = ['title' => 'RSS Feed', 'url' => route('extra.rss')];
+            $navLinks[] = ['title' => 'Widget Informasi', 'url' => route('extra.widget')];
 
             $view->with('navLinks', $navLinks);
         });
