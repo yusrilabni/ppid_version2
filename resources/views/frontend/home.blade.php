@@ -187,12 +187,49 @@
                         $informasiMenu = collect(config('menu'))->firstWhere('title', 'Jenis Informasi');
                         $informasiItems = $informasiMenu['children'] ?? [];
                         $cardData = [
-                            'Informasi Berkala' => ['color' => 'blue', 'icon' => 'info-circle', 'points' => ['Profil badan publik','Profil pejabat','Ringkasan laporan', 'Informasi layanan publik']],
-                            'Informasi Tersedia Setiap Saat' => ['color' => 'green', 'icon' => 'clock', 'points' => ['Dokumen administratif','SOP, SK','Arsip dokumen', 'Kebijakan internal']],
-                            'Informasi Serta Merta' => ['color' => 'yellow', 'icon' => 'exclamation-circle', 'points' => ['Bencana alam','Darurat','Gangguan luas', 'Ancaman keselamatan']],
-                            'Informasi Dikecualikan' => ['color' => 'red', 'icon' => 'lock', 'points' => ['Data pribadi','Rahasia negara','Uji konsekuensi', 'Dokumen rahasia']],
+                            'Informasi Berkala' => [
+                                'color' => 'blue',
+                                'icon' => 'info-circle',
+                                'points' => [
+                                    'Profil badan publik',
+                                    'Profil pejabat',
+                                    'Ringkasan laporan',
+                                    'Informasi layanan publik',
+                                ],
+                            ],
+                            'Informasi Tersedia Setiap Saat' => [
+                                'color' => 'green',
+                                'icon' => 'clock',
+                                'points' => [
+                                    'Dokumen administratif',
+                                    'SOP, SK',
+                                    'Arsip dokumen',
+                                    'Kebijakan internal',
+                                ],
+                            ],
+                            'Informasi Serta Merta' => [
+                                'color' => 'yellow',
+                                'icon' => 'exclamation-circle',
+                                'points' => [
+                                    'Bencana alam',
+                                    'Darurat',
+                                    'Gangguan luas',
+                                    'Ancaman keselamatan',
+                                ],
+                            ],
+                            'Informasi Dikecualikan' => [
+                                'color' => 'red',
+                                'icon' => 'lock',
+                                'points' => [
+                                    'Data pribadi',
+                                    'Rahasia negara',
+                                    'Uji konsekuensi',
+                                    'Dokumen rahasia',
+                                ],
+                            ],
                         ];
                     @endphp
+
                     @foreach ($informasiItems as $item)
                         @php $data = $cardData[$item['title']] ?? ['color' => 'gray', 'icon' => 'info-circle', 'points' => []]; @endphp
                         <div class="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all p-8 border border-gray-100 flex flex-col">
@@ -366,9 +403,14 @@
                 slidesPerView: 1, 
                 spaceBetween: 20, 
                 loop: true, 
+                slidesPerGroup: 1,
                 autoplay: { delay: 5000, disableOnInteraction: false }, 
                 pagination: { el: '.swiper-pagination', clickable: true },
-                breakpoints: { 640: { slidesPerView: 2 }, 768: { slidesPerView: 3 }, 1024: { slidesPerView: 4 } } 
+                breakpoints: { 
+                    640: { slidesPerView: 2, slidesPerGroup: 2 }, 
+                    768: { slidesPerView: 3, slidesPerGroup: 3 }, 
+                    1024: { slidesPerView: 4, slidesPerGroup: 4 } 
+                } 
             });
 
             new Swiper('.info-carousel', {
