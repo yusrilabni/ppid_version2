@@ -23,7 +23,7 @@
             @foreach ($elements as $element)
                 {{-- "Three Dots" Separator --}}
                 @if (is_string($element))
-                    <span aria-disabled="true" class="hidden md:inline">
+                    <span aria-disabled="true" class="flex">
                         <span class="flex items-center justify-center w-10 h-10 text-gray-400">{{ $element }}</span>
                     </span>
                 @endif
