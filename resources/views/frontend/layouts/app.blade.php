@@ -19,8 +19,12 @@
     <script src="https://unpkg.com/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js"></script>
     <style>
         [x-cloak] { display: none !important; }
-        .fouc-fix { opacity: 0; transition: opacity 0.2s ease-in; }
-        .fouc-ready { opacity: 1; }
+        /* Turbo Progress Bar Styling */
+        .turbo-progress-bar {
+            height: 3px;
+            background-color: #2563eb;
+            z-index: 100000;
+        }
         /* Skeleton/Placeholder for Swiper to prevent layout shift */
         .swiper-container:not(.swiper-initialized) .swiper-wrapper {
             display: flex;
@@ -67,17 +71,22 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
-        // Handle FOUC and Turbo transitions
-        function revealPage() {
-            document.body.classList.add('fouc-ready');
-        }
-        document.addEventListener('DOMContentLoaded', revealPage);
+        // Turbo Configuration
+        Turbo.setProgressBarDelay(50); // Show progress bar faster (50ms)
+        
+        // Handle Turbo transitions
         document.addEventListener('turbo:load', () => {
-            revealPage();
-            // Re-run Tailwind to pick up any new classes in the swapped body
+            // Re-run Tailwind to pick up any new classes in the swapped main content
             if (window.tailwind) { window.tailwind.run(); }
             // Re-run Lucide
             if (window.lucide) { window.lucide.createIcons(); }
+        });
+
+        // Prefetch on hover for instant feel
+        document.addEventListener('mouseover', (event) => {
+            if (event.target.tagName === 'A' && event.target.href) {
+                // Turbo will handle internal links automatically if prefetch is enabled
+            }
         });
         
         // Prevent scroll jump on refresh
@@ -358,7 +367,7 @@
     @stack('styles')
 </head>
 
-<body class="antialiased bg-gray-100 text-gray-800 fouc-fix" data-turbo="true" x-data="{}" 
+<body class="antialiased bg-gray-100 text-gray-800" data-turbo="true" x-data="{}" 
     x-init="$store.accConfig.applyPersisted()"
     :class="$store.accConfig ? { 
         'acc-highlight-links': $store.accConfig.links, 
@@ -389,11 +398,13 @@
             'acc-hide-images': $store.accConfig.hideImages
         } : {}"
         style="min-height: 100vh;">
-        <header style="min-height: 64px;">
+        <header id="main-navbar-container" data-turbo-permanent style="min-height: 64px;">
             @include('frontend.layouts.navbar')
         </header>
         <main>@yield('content')</main>
-        @include('frontend.layouts.footer')
+        <div id="main-footer-container" data-turbo-permanent>
+            @include('frontend.layouts.footer')
+        </div>
     </div>
 
     <div class="acc-reading-mask" id="reading-mask"></div>
