@@ -131,8 +131,11 @@ class OfficialProfileController extends Controller
                          ->with(['position', 'organization']);
 
         $user = \Illuminate\Support\Facades\Auth::user();
-        if (!$user || ($user && !$user->isAdmin())) { // If not logged in OR logged in but not an Admin/SuperAdmin
-            $query->where('status', '!=', 'draft');
+        if (!$user || ($user && !$user->isAdmin())) { 
+            // Untuk publik/user biasa: Hanya tampilkan yang berstatus aktif DAN biodatanya tidak kosong
+            $query->where('status', 'active')
+                  ->whereNotNull('biography')
+                  ->where('biography', '!=', '');
         }
         
         $kepalaOpdsRaw = $query->orderBy('full_name')->get();
