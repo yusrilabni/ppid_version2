@@ -6,7 +6,7 @@
 <div class="bg-gray-50 py-12">
     <div class="container mx-auto px-4 max-w-6xl">
         {{-- Header Section --}}
-        <div class="text-center mb-16">
+        <div class="text-center mb-12">
             <div class="inline-block p-3 bg-blue-100 rounded-2xl mb-4">
                 <i class="fas fa-plug text-blue-600 text-3xl"></i>
             </div>
@@ -15,7 +15,7 @@
         </div>
 
         {{-- Generator Widget --}}
-        <section class="bg-white rounded-[3rem] shadow-xl border border-gray-100 p-8 md:p-12 mb-16 relative overflow-hidden">
+        <section class="bg-white rounded-[3rem] shadow-xl border border-gray-100 p-8 md:p-12 mb-12 relative overflow-hidden">
             <div class="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full -mr-32 -mt-32 opacity-50"></div>
             
             <div class="relative z-10">
@@ -83,9 +83,14 @@
                             <div class="pt-6">
                                 <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Salin Kode Embed</label>
                                 <div class="relative group">
-                                    <textarea readonly x-text="'<iframe src=\'' + embedUrl + '\' width=\'100%\' height=\'450\' frameborder=\'0\'></iframe>'" 
+                                    <textarea id="embedCode" readonly x-text="'<iframe src=\'' + embedUrl + '\' width=\'100%\' height=\'450\' frameborder=\'0\'></iframe>'" 
                                         class="w-full bg-gray-900 text-blue-400 font-mono text-xs p-4 rounded-2xl h-24 border-0 focus:ring-0 resize-none"></textarea>
-                                    <button @click="$clipboard('<iframe src=\'' + embedUrl + '\' width=\'100%\' height=\'450\' frameborder=\'0\'></iframe>'); alert('Kode disalin!')"
+                                    <button @click="
+                                        const el = document.getElementById('embedCode');
+                                        el.select();
+                                        document.execCommand('copy');
+                                        alert('Kode berhasil disalin ke clipboard!');
+                                    "
                                         class="absolute top-2 right-2 bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-lg text-[10px] font-bold backdrop-blur-sm transition-all">
                                         SALIN KODE
                                     </button>
@@ -112,46 +117,111 @@
             </div>
         </section>
 
-        {{-- Additional Content: Guides & FAQ --}}
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
-            <div class="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
-                <div class="w-12 h-12 bg-green-100 text-green-600 rounded-2xl flex items-center justify-center mb-6">
-                    <i class="fas fa-rocket text-xl"></i>
-                </div>
-                <h3 class="text-xl font-bold text-gray-800 mb-3">Keunggulan Widget</h3>
-                <p class="text-sm text-gray-500 leading-relaxed">Widget kami dibangun dengan teknologi asinkron sehingga tidak akan memperlambat loading website Anda. Konten akan terupdate secara otomatis setiap detik tanpa perlu campur tangan manual.</p>
+        {{-- DETAIL GUIDE SECTION (WordPress & Custom) --}}
+        <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mb-16">
+            {{-- WordPress Detailed Steps --}}
+            <div class="lg:col-span-2 space-y-8">
+                <section class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 p-8 md:p-10">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                        <i class="fab fa-wordpress text-blue-500 mr-3 text-3xl"></i>
+                        Langkah Detail Pemasangan di WordPress
+                    </h2>
+                    
+                    <div class="space-y-8">
+                        <div class="flex items-start">
+                            <div class="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">1</div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">Gunakan Block "Custom HTML"</h4>
+                                <p class="text-sm text-gray-600 mt-1">Buka editor postingan atau halaman Anda. Klik tombol <strong>(+) Tambah Blok</strong>, cari dan pilih blok bernama <strong>"Custom HTML"</strong> (atau HTML Khusus).</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">2</div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">Tempelkan Kode Iframe</h4>
+                                <p class="text-sm text-gray-600 mt-1">Salin kode dari generator di atas, lalu tempelkan ke dalam kotak input HTML yang muncul di WordPress.</p>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start border-l-4 border-blue-500 pl-6 bg-blue-50 py-4 rounded-r-2xl">
+                            <div>
+                                <h4 class="font-bold text-blue-800 flex items-center">
+                                    <i class="fas fa-arrows-alt-v mr-2"></i> Mengatur Lebar & Tinggi (PENTING)
+                                </h4>
+                                <div class="mt-3 space-y-3 text-sm text-blue-900/80">
+                                    <p><strong>Lebar (Width):</strong> Selalu biarkan <code>width="100%"</code> agar widget otomatis mengikuti lebar area sidebar atau konten Anda (Responsive).</p>
+                                    <p><strong>Tinggi (Height):</strong> Atur nilai <code>height="..."</code> sesuai dengan jumlah item yang Anda pilih agar tidak muncul scrollbar ganda:</p>
+                                    <ul class="list-disc ml-5 space-y-1">
+                                        <li>3 Item: Gunakan <code>height="300"</code></li>
+                                        <li>5 Item: Gunakan <code>height="450"</code></li>
+                                        <li>10 Item: Gunakan <code>height="800"</code></li>
+                                    </ul>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="flex items-start">
+                            <div class="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">3</div>
+                            <div>
+                                <h4 class="font-bold text-gray-800">Pratinjau & Simpan</h4>
+                                <p class="text-sm text-gray-600 mt-1">Klik tombol <strong>Preview</strong> di atas blok untuk melihat hasilnya. Jika sudah pas, klik <strong>Publish/Update</strong>.</p>
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                <section class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 p-8">
+                    <h2 class="text-xl font-bold text-gray-800 mb-4 flex items-center">
+                        <i class="fas fa-code text-purple-500 mr-2"></i> Integrasi Elementor
+                    </h2>
+                    <p class="text-sm text-gray-600 mb-4">Jika Anda menggunakan Elementor Page Builder, gunakan widget <strong>"HTML"</strong>. Seret widget tersebut ke kolom yang diinginkan, lalu tempel kode iframe yang sudah Anda salin.</p>
+                    <div class="bg-gray-50 p-4 rounded-xl text-xs text-purple-800 font-medium">
+                        Tips: Gunakan pengaturan "Margin" atau "Padding" pada kolom Elementor untuk merapikan jarak widget dengan elemen lain.
+                    </div>
+                </section>
             </div>
 
-            <div class="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
-                <div class="w-12 h-12 bg-purple-100 text-purple-600 rounded-2xl flex items-center justify-center mb-6">
-                    <i class="fas fa-search-plus text-xl"></i>
-                </div>
-                <h3 class="text-xl font-bold text-gray-800 mb-3">Manfaat SEO</h3>
-                <p class="text-sm text-gray-500 leading-relaxed">Menampilkan informasi publik yang relevan dapat meningkatkan relevansi konten di website Anda, memberikan nilai tambah bagi pengunjung, dan membantu meningkatkan visibilitas di mesin pencari.</p>
-            </div>
+            {{-- Sidebar Technical Info --}}
+            <div class="space-y-8">
+                <section class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-[2.5rem] p-8 text-white">
+                    <h3 class="text-lg font-bold mb-4 flex items-center text-blue-400">
+                        <i class="fas fa-info-circle mr-2"></i> Tips Teknis
+                    </h3>
+                    <div class="space-y-6 text-sm opacity-90">
+                        <div>
+                            <h4 class="font-bold text-white">Auto-Update</h4>
+                            <p class="mt-1">Konten di dalam widget ini di-cache selama 5 menit. Perubahan di database kami akan muncul otomatis tanpa perlu ganti kode.</p>
+                        </div>
+                        <hr class="border-white/10">
+                        <div>
+                            <h4 class="font-bold text-white">SSL (HTTPS)</h4>
+                            <p class="mt-1">Widget kami mendukung HTTPS secara penuh, sehingga aman dipasang di website mana pun tanpa peringatan keamanan.</p>
+                        </div>
+                        <hr class="border-white/10">
+                        <div>
+                            <h4 class="font-bold text-white">No-Style Conflict</h4>
+                            <p class="mt-1">Karena menggunakan Iframe, CSS website Anda tidak akan merusak tampilan widget, dan CSS widget tidak akan merusak website Anda.</p>
+                        </div>
+                    </div>
+                </section>
 
-            <div class="bg-white p-8 rounded-[2.5rem] border border-gray-100 shadow-sm">
-                <div class="w-12 h-12 bg-orange-100 text-orange-600 rounded-2xl flex items-center justify-center mb-6">
-                    <i class="fas fa-tools text-xl"></i>
-                </div>
-                <h3 class="text-xl font-bold text-gray-800 mb-3">Mudah Dipasang</h3>
-                <p class="text-sm text-gray-500 leading-relaxed">Cukup salin kode iframe di atas dan tempelkan di mana saja. Bisa di sidebar WordPress, footer website custom, atau halaman berita internal perusahaan Anda.</p>
+                <section class="bg-blue-50 border border-blue-100 rounded-[2.5rem] p-8">
+                    <h3 class="text-lg font-bold text-blue-800 mb-4">Bantuan Teknis</h3>
+                    <p class="text-sm text-blue-700 leading-relaxed">Jika Anda mengalami kendala saat pemasangan widget pada CMS tertentu, tim IT kami siap membantu integrasi secara gratis.</p>
+                    <a href="{{ route('home') }}#kontak" class="mt-4 inline-flex items-center text-blue-600 font-bold hover:underline">
+                        Hubungi Admin <i class="fas fa-arrow-right ml-2"></i>
+                    </a>
+                </section>
             </div>
         </div>
 
-        {{-- WordPress Section --}}
-        <div class="mt-16 bg-gradient-to-r from-blue-600 to-blue-800 rounded-[3rem] p-12 text-white flex flex-col md:flex-row items-center">
-            <div class="flex-grow md:pr-12 mb-8 md:mb-0">
-                <h2 class="text-3xl font-extrabold mb-4">Integrasi WordPress & Elementor</h2>
-                <p class="text-lg opacity-80 leading-relaxed">Gunakan Widget HTML atau block Custom HTML untuk memasang widget ini. Anda dapat menyesuaikan lebar (width) dan tinggi (height) sesuai dengan tata letak tema WordPress Anda.</p>
-            </div>
-            <div class="flex-shrink-0 flex space-x-4">
-                <div class="bg-white/10 p-4 rounded-3xl backdrop-blur-md">
-                    <i class="fab fa-wordpress text-5xl"></i>
-                </div>
-                <div class="bg-white/10 p-4 rounded-3xl backdrop-blur-md">
-                    <i class="fab fa-elementor text-5xl"></i>
-                </div>
+        {{-- Footer Call to Action --}}
+        <div class="bg-blue-600 rounded-[3rem] p-12 text-white text-center shadow-2xl shadow-blue-200">
+            <h2 class="text-3xl font-extrabold mb-4">Sudah Siap Memasang Widget?</h2>
+            <p class="text-lg opacity-80 mb-8 max-w-2xl mx-auto">Tingkatkan transparansi informasi di portal Anda sekarang juga dengan widget resmi dari PPID Kabupaten Sinjai.</p>
+            <div class="flex justify-center space-x-4">
+                <a href="#embedCode" class="bg-white text-blue-600 px-8 py-3 rounded-full font-bold shadow-lg hover:bg-gray-100 transition-all">Mulai Kustomisasi</a>
             </div>
         </div>
     </div>

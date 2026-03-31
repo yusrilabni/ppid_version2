@@ -129,21 +129,32 @@ public function getPpidFeed() {
                 {{-- WordPress Guide --}}
                 <section class="bg-blue-600 rounded-3xl shadow-lg p-8 text-white relative overflow-hidden">
                     <i class="fab fa-wordpress absolute -bottom-4 -right-4 text-8xl opacity-20"></i>
-                    <h3 class="text-xl font-bold mb-4">Panduan WordPress</h3>
-                    <ul class="space-y-4 text-sm opacity-90">
-                        <li class="flex items-start">
-                            <span class="bg-white/20 w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 text-xs font-bold">1</span>
-                            <span>Cari block <strong>"RSS"</strong> di editor Gutenberg.</span>
-                        </li>
-                        <li class="flex items-start">
-                            <span class="bg-white/20 w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 text-xs font-bold">2</span>
-                            <span>Tempelkan URL RSS kami.</span>
-                        </li>
-                        <li class="flex items-start">
-                            <span class="bg-white/20 w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 text-xs font-bold">3</span>
-                            <span>Atur jumlah item yang ingin ditampilkan.</span>
-                        </li>
-                    </ul>
+                    <h3 class="text-xl font-bold mb-4">Langkah Detail WordPress</h3>
+                    <div class="space-y-6 text-sm">
+                        <div class="flex items-start">
+                            <span class="bg-white text-blue-600 w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 font-black">1</span>
+                            <p>Gunakan block <strong>"RSS"</strong> di Gutenberg Editor.</p>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="bg-white text-blue-600 w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 font-black">2</span>
+                            <p>Tempel URL Feed kami dan klik <strong>Gunakan URL</strong>.</p>
+                        </div>
+                        <div class="flex items-start bg-blue-700/50 p-4 rounded-2xl border border-blue-400/30">
+                            <div>
+                                <p class="font-bold mb-2 underline decoration-yellow-400 underline-offset-4 text-xs uppercase tracking-widest">Pengaturan Wajib:</p>
+                                <ul class="space-y-2 text-[11px] opacity-90 italic">
+                                    <li>- Ceklis "Tampilkan Ringkasan"</li>
+                                    <li>- Ceklis "Tampilkan Penulis"</li>
+                                    <li>- Ceklis "Tampilkan Tanggal"</li>
+                                    <li>- Set Maksimum Item ke 10</li>
+                                </ul>
+                            </div>
+                        </div>
+                        <div class="flex items-start">
+                            <span class="bg-white text-blue-600 w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 font-black">3</span>
+                            <p>Simpan dan Widget akan terupdate otomatis selamanya.</p>
+                        </div>
+                    </div>
                 </section>
 
                 {{-- FAQ Section --}}
