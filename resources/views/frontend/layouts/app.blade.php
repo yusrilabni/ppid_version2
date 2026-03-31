@@ -153,7 +153,16 @@
         #acc-main-wrapper.acc-sat-low { filter: saturate(0.5) !important; }
         #acc-main-wrapper.acc-sat-high { filter: saturate(2) !important; }
         #acc-main-wrapper.acc-sat-mono { filter: grayscale(1) !important; }
-        #acc-main-wrapper.acc-highlight-links a:not(.acc-ignore) { outline: 4px solid #ff00ff !important; outline-offset: 2px !important; background-color: #ffff00 !important; color: #000 !important; font-weight: bold !important; }
+        #acc-main-wrapper.acc-highlight-links a:not(.acc-ignore) { outline: 4px solid #ff00ff !important; outline-offset: 2px !important; background-color: #ffff00 !important; color: #000 !important; font-weight: bold !important; text-decoration: underline !important; }
+        
+        /* Fokus Baca & Navigasi Keyboard */
+        .acc-reading-mask { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999998; background: rgba(0,0,0,0.8); display: none; clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%, 0% 0%, 0% 45%, 100% 45%, 100% 55%, 0% 55%, 0% 45%); }
+        .acc-reading-guide { position: fixed; left: 0; width: 100%; height: 50px; background: rgba(255,255,0,0.4); border-top: 3px solid yellow; border-bottom: 3px solid yellow; pointer-events: none; z-index: 999998; display: none; transform: translateY(-50%); }
+        body.acc-focus-mask .acc-reading-mask { display: block !important; }
+        body.acc-focus-guide .acc-reading-guide { display: block !important; }
+        body.acc-big-cursor * { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z'/%3E%3Cpath d='M13 13l6 6'/%3E%3C/svg%3E"), auto !important; }
+        body.acc-keyboard-nav *:focus { outline: 5px solid #0052FF !important; outline-offset: 4px !important; box-shadow: 0 0 0 10px rgba(0, 82, 255, 0.3) !important; }
+        
         #acc-main-wrapper.acc-highlight-headings h1, #acc-main-wrapper.acc-highlight-headings h2, #acc-main-wrapper.acc-highlight-headings h3 { background-color: #0000ff !important; color: #fff !important; padding: 8px !important; border-left: 12px solid #ffff00 !important; display: block !important; }
         #acc-main-wrapper.acc-text-spacing *:not(.acc-ignore) { letter-spacing: 2px !important; }
         #acc-main-wrapper.acc-hide-images img { visibility: hidden !important; opacity: 0 !important; }
@@ -488,6 +497,19 @@
                         if (!this.isSoundEnabled || !this.isHoverActive || e.target.closest('.acc-widget-container')) return;
                         clearTimeout(this.hoverTimeout);
                         this.hoverTimeout = setTimeout(() => { this.handleElementSource(e.target, true); }, 600);
+                    });
+
+                    // Logika untuk Masker dan Panduan Baca
+                    document.addEventListener('mousemove', (e) => {
+                        const mask = document.getElementById('reading-mask');
+                        const guide = document.getElementById('reading-guide');
+                        if (mask && Alpine.store('accConfig').focus === 'mask') {
+                            const y = e.clientY;
+                            mask.style.clipPath = `polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%, 0% 0%, 0% ${y - 50}px, 100% ${y - 50}px, 100% ${y + 50}px, 0% ${y + 50}px, 0% ${y - 50}px)`;
+                        }
+                        if (guide && Alpine.store('accConfig').focus === 'guide') {
+                            guide.style.top = e.clientY + 'px';
+                        }
                     });
                 },
                 toggleMasterSound() {
