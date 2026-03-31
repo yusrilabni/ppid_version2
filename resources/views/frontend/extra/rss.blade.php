@@ -145,34 +145,33 @@
                     <span class="w-12 h-12 bg-purple-600 text-white rounded-2xl flex items-center justify-center mr-4 shadow-lg shadow-purple-200">
                         <i class="fas fa-code"></i>
                     </span>
-                    Contoh Kode Siap Pakai (Full Width)
+                    Contoh Kode Siap Pakai (Copy-Paste)
                 </h2>
 
                 <div x-data="{ tab: 'html' }">
-                    <div class="flex space-x-2 mb-8 bg-gray-100 p-1 rounded-2xl w-fit">
-                        <button @click="tab = 'html'" :class="tab === 'html' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500'" class="py-3 px-8 rounded-xl text-sm font-bold transition-all uppercase tracking-widest">HTML & JAVASCRIPT</button>
-                        <button @click="tab = 'php'" :class="tab === 'php' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500'" class="py-3 px-8 rounded-xl text-sm font-bold transition-all uppercase tracking-widest">PHP NATIVE</button>
+                    <div class="flex flex-wrap gap-2 mb-8 bg-gray-100 p-1 rounded-2xl w-fit">
+                        <button @click="tab = 'html'" :class="tab === 'html' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500'" class="py-3 px-6 rounded-xl text-xs font-bold transition-all uppercase tracking-widest">HTML & JS</button>
+                        <button @click="tab = 'php'" :class="tab === 'php' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500'" class="py-3 px-6 rounded-xl text-xs font-bold transition-all uppercase tracking-widest">PHP Native</button>
+                        <button @click="tab = 'laravel'" :class="tab === 'laravel' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500'" class="py-3 px-6 rounded-xl text-xs font-bold transition-all uppercase tracking-widest">Laravel Blade</button>
+                        <button @click="tab = 'ci'" :class="tab === 'ci' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500'" class="py-3 px-6 rounded-xl text-xs font-bold transition-all uppercase tracking-widest">CodeIgniter</button>
                     </div>
 
                     <div class="bg-gray-900 rounded-[2.5rem] p-8 md:p-12 font-mono text-sm leading-relaxed text-gray-300 shadow-2xl">
                         <template x-if="tab === 'html'">
                             <div class="space-y-4">
                                 <p class="text-blue-400 text-xs italic">// Copy kode ini ke file HTML Anda. Ganti parameter ?unit_id= jika perlu.</p>
-                                <pre class="whitespace-pre-wrap"><code>&lt;!-- 1. Wadah untuk menampilkan daftar berita --&gt;
-&lt;div id="ppid-list" style="font-family: sans-serif; max-width: 100%; border: 1px solid #eee; padding: 20px; border-radius: 15px;"&gt;
-  Memuat data terbaru...
-&lt;/div&gt;
+                                <pre class="whitespace-pre-wrap"><code>&lt;!-- Wadah daftar berita --&gt;
+&lt;div id="ppid-list" style="font-family: sans-serif; max-width: 100%;"&gt;Memuat data...&lt;/div&gt;
 
 &lt;script&gt;
-  // 2. Gunakan URL RSS kami langsung (Contoh dengan filter Unit ID)
-  const RSS_URL = '{{ route('extra.rss.generate') }}?unit_id=34';
+  const RSS_URL = '{{ route('extra.rss.generate') }}';
 
   fetch(RSS_URL)
     .then(res => res.text())
     .then(xmlString => {
       const xml = new DOMParser().parseFromString(xmlString, "text/xml");
       const items = xml.querySelectorAll("item");
-      let html = '&lt;h3 style="margin-top:0;"&gt;Update Informasi Terbaru&lt;/h3&gt;&lt;ul style="padding:0; margin:0; list-style:none;"&gt;';
+      let html = '&lt;ul style="padding:0; margin:0; list-style:none;"&gt;';
       
       items.forEach(el => {
         const title = el.querySelector("title").textContent;
@@ -180,39 +179,74 @@
         const date = new Date(el.querySelector("pubDate").textContent).toLocaleDateString('id-ID');
         
         html += `&lt;li style="margin-bottom:20px; padding:15px; background:#f9f9f9; border-radius:12px; border-left: 5px solid #0052FF;"&gt;
-                   &lt;a href="${link}" target="_blank" style="text-decoration:none; color:#0052FF; font-weight:bold; font-size:16px;"&gt;${title}&lt;/a&gt;
+                   &lt;a href="${link}" target="_blank" style="text-decoration:none; color:#0052FF; font-weight:bold;"&gt;${title}&lt;/a&gt;
                    &lt;div style="color:#888; font-size:12px; margin-top:5px;"&gt;📅 Dipublikasikan: ${date}&lt;/div&gt;
                  &lt;/li&gt;`;
       });
-      
       document.getElementById("ppid-list").innerHTML = html + '&lt;/ul&gt;';
     });
 &lt;/script&gt;</code></pre>
                             </div>
                         </template>
+                        
                         <template x-if="tab === 'php'">
                             <div class="space-y-4">
-                                <p class="text-blue-400 text-xs italic">// Gunakan kode PHP ini di server Anda. Mendukung filter tahun & instansi.</p>
+                                <p class="text-blue-400 text-xs italic">// Gunakan kode PHP ini di server Anda.</p>
                                 <pre class="whitespace-pre-wrap"><code>&lt;?php
-// 1. URL RSS (Ganti unit_id atau year sesuai kebutuhan)
-$url = "{{ route('extra.rss.generate') }}?unit_id=34&year=2023";
-
-// 2. Ambil file XML
-$rss = simplexml_load_file($url);
-
-echo "&lt;h2&gt;Update Informasi PPID Sinjai&lt;/h2&gt;";
-echo "&lt;ul style='list-style:none; padding:0;'&gt;";
-
-// 3. Loop melalui setiap item berita yang ditemukan
+$rss = simplexml_load_file('{{ route('extra.rss.generate') }}');
+echo "&lt;ul&gt;";
 foreach ($rss->channel->item as $info) {
-    echo "&lt;li style='margin-bottom:20px; padding:10px; border-bottom:1px solid #eee;'&gt;";
-    echo "&lt;a href='{$info->link}' target='_blank' style='color:#0052FF; font-weight:bold; text-decoration:none;'&gt;{$info->title}&lt;/a&gt;&lt;br&gt;";
-    echo "&lt;small style='color:#666;'&gt;📁 Kategori: {$info->category} | 📅 Tanggal: {$info->pubDate}&lt;/small&gt;";
+    echo "&lt;li&gt;";
+    echo "&lt;a href='{$info->link}' target='_blank' font-weight:bold;'&gt;{$info->title}&lt;/a&gt;&lt;br&gt;";
+    echo "&lt;small&gt;📁 {$info->category} | 📅 {$info->pubDate}&lt;/small&gt;";
     echo "&lt;/li&gt;";
 }
-
 echo "&lt;/ul&gt;";
 ?&gt;</code></pre>
+                            </div>
+                        </template>
+
+                        <template x-if="tab === 'laravel'">
+                            <div class="space-y-4">
+                                <p class="text-blue-400 text-xs italic">// Implementasi di Laravel (Blade + Controller).</p>
+                                <pre class="whitespace-pre-wrap"><code>@verbatim// 1. Di Controller Anda
+public function showFeed() {
+    $url = "@endverbatim{{ route('extra.rss.generate') }}@verbatim";
+    $xml = simplexml_load_file($url);
+    return view('your_view', ['feeds' => $xml->channel->item]);
+}
+
+// 2. Di File .blade.php
+<ul>
+    @foreach($feeds as $item)
+        <li>
+            <a href="{{ $item->link }}">{{ $item->title }}</a>
+            <p>{{ Str::limit($item->description, 100) }}</p>
+        </li>
+    @endforeach
+</ul>@endverbatim</code></pre>
+                            </div>
+                        </template>
+
+                        <template x-if="tab === 'ci'">
+                            <div class="space-y-4">
+                                <p class="text-blue-400 text-xs italic">// Implementasi di CodeIgniter (Controller + View).</p>
+                                <pre class="whitespace-pre-wrap"><code>@verbatim// 1. Di Controller (misal: Welcome.php)
+public function index() {
+    $url = "@endverbatim{{ route('extra.rss.generate') }}@verbatim";
+    $data['feeds'] = simplexml_load_file($url);
+    $this->load->view('rss_view', $data);
+}
+
+// 2. Di View (rss_view.php)
+<ul>
+    <?php foreach ($feeds->channel->item as $item): ?>
+        <li>
+            <a href="<?= $item->link ?>"><?= $item->title ?></a>
+            <small><?= $item->pubDate ?></small>
+        </li>
+    <?php endforeach; ?>
+</ul>@endverbatim</code></pre>
                             </div>
                         </template>
                     </div>
