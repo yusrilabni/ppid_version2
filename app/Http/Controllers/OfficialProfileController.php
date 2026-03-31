@@ -48,16 +48,26 @@ class OfficialProfileController extends Controller
             }
 
             // Find an active official in either position
-            $official = Official::whereIn('position_id', $positionIds)
-                              ->where('status', 'active')
-                              ->with(['position', 'organization', 'careerHistories', 'educations', 'awards', 'children', 'trainingHistories', 'organizationalHistories'])
-                              ->first();
+            $query = Official::whereIn('position_id', $positionIds)
+                              ->with(['position', 'organization', 'careerHistories', 'educations', 'awards', 'children', 'trainingHistories', 'organizationalHistories']);
+            
+            $user = \Illuminate\Support\Facades\Auth::user();
+            if (!$user || ($user && !$user->isAdmin())) {
+                $query->where('status', 'active');
+            }
+            
+            $official = $query->first();
         } else {
             // If the slug is not a special position, assume it's an official's slug.
-            $official = Official::where('slug', $slug)
-                              ->where('status', 'active')
-                              ->with(['position', 'organization', 'careerHistories', 'educations', 'awards', 'children', 'trainingHistories', 'organizationalHistories'])
-                              ->first();
+            $query = Official::where('slug', $slug)
+                              ->with(['position', 'organization', 'careerHistories', 'educations', 'awards', 'children', 'trainingHistories', 'organizationalHistories']);
+
+            $user = \Illuminate\Support\Facades\Auth::user();
+            if (!$user || ($user && !$user->isAdmin())) {
+                $query->where('status', 'active');
+            }
+
+            $official = $query->first();
 
             // If no official is found, we might be looking for a Kepala OPD via the organization slug as a fallback.
             if (!$official) {
@@ -65,11 +75,15 @@ class OfficialProfileController extends Controller
                 if ($organization) {
                     $position = Position::where('slug', 'kepala-opd')->first();
                     if ($position) {
-                        $official = Official::where('position_id', $position->id)
+                        $query = Official::where('position_id', $position->id)
                                           ->where('organization_id', $organization->id)
-                                          ->where('status', 'active')
-                                          ->with(['position', 'organization', 'careerHistories', 'educations', 'awards', 'children', 'trainingHistories', 'organizationalHistories'])
-                                          ->first();
+                                          ->with(['position', 'organization', 'careerHistories', 'educations', 'awards', 'children', 'trainingHistories', 'organizationalHistories']);
+                        
+                        if (!$user || ($user && !$user->isAdmin())) {
+                            $query->where('status', 'active');
+                        }
+                        
+                        $official = $query->first();
                     }
                 }
             }
