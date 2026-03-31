@@ -83,13 +83,20 @@
                             <div class="pt-6">
                                 <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Salin Kode Embed</label>
                                 <div class="relative group">
-                                    <textarea id="embedCode" readonly x-text="'<iframe src=\'' + embedUrl + '\' width=\'100%\' height=\'450\' frameborder=\'0\'></iframe>'" 
+                                    <textarea id="embedCodeInput" readonly x-text="'<iframe src=\'' + embedUrl + '\' width=\'100%\' height=\'450\' frameborder=\'0\'></iframe>'" 
                                         class="w-full bg-gray-900 text-blue-400 font-mono text-xs p-4 rounded-2xl h-24 border-0 focus:ring-0 resize-none"></textarea>
-                                    <button @click="
-                                        const el = document.getElementById('embedCode');
-                                        el.select();
-                                        document.execCommand('copy');
-                                        alert('Kode berhasil disalin ke clipboard!');
+                                    <button type="button" @click="
+                                        const code = '<iframe src=\'' + embedUrl + '\' width=\'100%\' height=\'450\' frameborder=\'0\'></iframe>';
+                                        if (navigator.clipboard && navigator.clipboard.writeText) {
+                                            navigator.clipboard.writeText(code).then(() => {
+                                                alert('Kode berhasil disalin ke clipboard!');
+                                            });
+                                        } else {
+                                            const el = document.getElementById('embedCodeInput');
+                                            el.select();
+                                            document.execCommand('copy');
+                                            alert('Kode disalin!');
+                                        }
                                     "
                                         class="absolute top-2 right-2 bg-white/10 hover:bg-white/20 text-white px-3 py-1 rounded-lg text-[10px] font-bold backdrop-blur-sm transition-all">
                                         SALIN KODE
