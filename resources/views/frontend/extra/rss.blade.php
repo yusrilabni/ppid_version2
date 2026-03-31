@@ -11,7 +11,7 @@
                 <i class="fas fa-rss text-3xl"></i>
             </div>
             <h1 class="text-4xl font-extrabold text-gray-900 mb-4 tracking-tight uppercase">RSS FEED & INTEGRASI SISTEM</h1>
-            <p class="text-lg text-gray-600 max-w-3xl mx-auto">Dokumentasi lengkap penggunaan Feed XML untuk sindikasi konten otomatis.</p>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">Dokumentasi lengkap penggunaan Feed XML untuk sindikasi konten otomatis ke platform lain.</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -27,7 +27,7 @@
                         <span class="w-2 h-8 bg-blue-500 rounded-full mr-3"></span> Apa itu RSS Feed?
                     </h2>
                     <p class="text-gray-600 text-sm leading-relaxed relative z-10">
-                        RSS (Really Simple Syndication) adalah teknologi standar yang memungkinkan Anda berlangganan konten dari website kami secara otomatis. Setiap kali admin PPID melakukan pembaruan informasi, URL RSS ini akan langsung memperbarui datanya sehingga platform Anda selalu mendapatkan konten terkini tanpa perlu pemantauan manual. Teknologi ini sangat efisien untuk menjaga keterbukaan informasi publik secara real-time.
+                        RSS (Really Simple Syndication) adalah teknologi standar yang memungkinkan Anda berlangganan konten dari website kami secara otomatis. Setiap kali admin PPID melakukan pembaruan informasi, URL RSS ini akan langsung memperbarui datanya sehingga platform Anda selalu mendapatkan konten terkini tanpa perlu pemantauan manual secara terus-menerus.
                     </p>
                 </section>
 
@@ -36,19 +36,19 @@
                     <h2 class="text-2xl font-bold mb-6 flex items-center text-orange-600">
                         <span class="w-2 h-8 bg-orange-500 rounded-full mr-3"></span> Kustomisasi URL Feed (Filter)
                     </h2>
-                    <p class="text-sm text-gray-600 mb-6">Gunakan parameter di bawah ini untuk mendapatkan data yang sangat spesifik melalui URL:</p>
+                    <p class="text-sm text-gray-600 mb-6">Gunakan parameter di bawah ini untuk mendapatkan data yang spesifik melalui URL:</p>
                     <div class="bg-gray-900 rounded-2xl p-6 text-[11px] font-mono text-gray-300 space-y-4 border-l-4 border-orange-500 shadow-xl">
                         <div>
-                            <p class="text-blue-400 font-bold mb-1">// Filter per Instansi (Diskominfo Sinjai)</p>
+                            <p class="text-blue-400 font-bold mb-1">// Filter per Instansi (Contoh: Diskominfo)</p>
                             <code class="break-all text-white">{{ route('extra.rss.generate') }}?unit_id=730714</code>
                         </div>
                         <div>
-                            <p class="text-blue-400 font-bold mb-1">// Filter per Tahun (Contoh: 2023)</p>
-                            <code class="break-all text-white">{{ route('extra.rss.generate') }}?year=2023</code>
+                            <p class="text-blue-400 font-bold mb-1">// Filter per Tahun (Contoh: 2024)</p>
+                            <code class="break-all text-white">{{ route('extra.rss.generate') }}?year=2024</code>
                         </div>
                         <div class="pt-2 border-t border-white/10">
-                            <p class="text-orange-400 font-black mb-1 uppercase tracking-widest text-[10px]">// Gabungan 3 Filter (Limit 6):</p>
-                            <code class="break-all text-white">{{ route('extra.rss.generate') }}?unit_id=730714&year=2023&limit=6</code>
+                            <p class="text-orange-400 font-black mb-1 uppercase tracking-widest text-[10px]">// Gabungan Filter (Limit 10):</p>
+                            <code class="break-all text-white">{{ route('extra.rss.generate') }}?unit_id=730714&year=2024&limit=10</code>
                         </div>
                     </div>
 
@@ -78,19 +78,19 @@
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-xs">
                         <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
                             <p class="text-blue-600 font-bold font-mono">&lt;title&gt;</p>
-                            <p class="text-gray-500 mt-1">Judul resmi dokumen atau pengumuman yang diunggah oleh admin.</p>
+                            <p class="text-gray-500 mt-1">Judul resmi dokumen atau pengumuman.</p>
                         </div>
                         <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
                             <p class="text-blue-600 font-bold font-mono">&lt;organization&gt;</p>
-                            <p class="text-gray-500 mt-1">Nama Dinas / Instansi pemilik data yang bertanggung jawab atas informasi.</p>
+                            <p class="text-gray-500 mt-1">Nama Dinas / Instansi pemilik data.</p>
                         </div>
                         <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
                             <p class="text-blue-600 font-bold font-mono">&lt;status&gt;</p>
-                            <p class="text-gray-500 mt-1">Kondisi dokumen (BERLAKU / ARSIP) untuk memastikan validitas data.</p>
+                            <p class="text-gray-500 mt-1">Kondisi dokumen (BERLAKU / ARSIP).</p>
                         </div>
                         <div class="p-4 bg-gray-50 rounded-xl border border-gray-100">
                             <p class="text-blue-600 font-bold font-mono">&lt;category&gt;</p>
-                            <p class="text-gray-500 mt-1">Klasifikasi data informasi berdasarkan standar klasifikasi informasi publik.</p>
+                            <p class="text-gray-500 mt-1">Klasifikasi data informasi publik.</p>
                         </div>
                     </div>
                 </section>
@@ -99,79 +99,66 @@
             {{-- Sidebar (Kanan) --}}
             <div class="space-y-8">
                 
-                {{-- A. Panduan WordPress (Detail Lebih Panjang) --}}
-                <section class="bg-blue-600 rounded-[2rem] shadow-lg p-8 text-white relative overflow-hidden group text-left">
+                {{-- A. Panduan WordPress --}}
+                <section class="bg-blue-600 rounded-[2rem] shadow-lg p-7 text-white relative overflow-hidden group text-left">
                     <i class="fab fa-wordpress absolute -bottom-4 -right-4 text-9xl opacity-10 group-hover:scale-110 transition-transform duration-700"></i>
-                    <h3 class="text-xl font-black mb-6 uppercase tracking-widest flex items-center border-b border-white/20 pb-4">
+                    <h3 class="text-lg font-black mb-5 uppercase tracking-widest flex items-center border-b border-white/20 pb-3">
                         <i class="fab fa-wordpress mr-3 text-2xl"></i> WordPress
                     </h3>
-                    <div class="space-y-6 text-xs opacity-95 leading-relaxed font-medium">
+                    <div class="space-y-4 text-[11px] opacity-95 leading-relaxed font-medium">
                         <div class="flex items-start">
-                            <span class="bg-white text-blue-600 w-6 h-6 rounded-lg flex items-center justify-center mr-3 flex-shrink-0 font-black">1</span>
-                            <p>Masuk ke Editor Halaman atau Postingan WordPress Anda (Gutenberg atau Classic Editor).</p>
+                            <span class="bg-white text-blue-600 w-5 h-5 rounded-md flex items-center justify-center mr-3 flex-shrink-0 font-black">1</span>
+                            <p>Buka Editor Post/Halaman Anda.</p>
                         </div>
                         <div class="flex items-start">
-                            <span class="bg-white text-blue-600 w-6 h-6 rounded-lg flex items-center justify-center mr-3 flex-shrink-0 font-black">2</span>
-                            <p>Klik tombol <strong>(+) Tambah Blok</strong> dan cari blok bernama <strong>"RSS"</strong> di kolom pencarian blok.</p>
+                            <span class="bg-white text-blue-600 w-5 h-5 rounded-md flex items-center justify-center mr-3 flex-shrink-0 font-black">2</span>
+                            <p>Cari & tambah blok <strong>"RSS"</strong>.</p>
                         </div>
                         <div class="flex items-start">
-                            <span class="bg-white text-blue-600 w-6 h-6 rounded-lg flex items-center justify-center mr-3 flex-shrink-0 font-black">3</span>
-                            <p>Tempelkan <strong>URL Feed</strong> yang sudah Anda kustomisasi (pilih dari daftar filter di sebelah kiri).</p>
+                            <span class="bg-white text-blue-600 w-5 h-5 rounded-md flex items-center justify-center mr-3 flex-shrink-0 font-black">3</span>
+                            <p>Tempel <strong>URL Feed</strong> pilihan Anda.</p>
                         </div>
                         <div class="flex items-start">
-                            <span class="bg-white text-blue-600 w-6 h-6 rounded-lg flex items-center justify-center mr-3 flex-shrink-0 font-black">4</span>
-                            <p>Klik tombol <strong>"Gunakan URL"</strong> untuk segera memuat data terbaru dari server kami.</p>
-                        </div>
-                        <div class="flex items-start">
-                            <span class="bg-white text-blue-600 w-6 h-6 rounded-lg flex items-center justify-center mr-3 flex-shrink-0 font-black">5</span>
-                            <p>Sesuaikan pengaturan gaya (style) pada sidebar pengaturan blok agar selaras dengan tema situs Anda.</p>
+                            <span class="bg-white text-blue-600 w-5 h-5 rounded-md flex items-center justify-center mr-3 flex-shrink-0 font-black">4</span>
+                            <p>Simpan dan publikasikan halaman.</p>
                         </div>
                         
-                        <div class="bg-black/20 p-5 rounded-2xl border border-white/10 mt-4 shadow-inner">
-                            <p class="font-black mb-3 text-[10px] uppercase tracking-widest text-blue-200">Pengaturan Tampilan Wajib:</p>
-                            <ul class="space-y-3 text-[11px] opacity-90">
-                                <li class="flex items-center"><i class="fas fa-check-circle mr-2 text-green-400"></i> Aktifkan "Tampilkan Ringkasan"</li>
-                                <li class="flex items-center"><i class="fas fa-check-circle mr-2 text-green-400"></i> Aktifkan "Tampilkan Penulis" (OPD)</li>
-                                <li class="flex items-center"><i class="fas fa-check-circle mr-2 text-green-400"></i> Aktifkan "Tampilkan Tanggal"</li>
-                                <li class="flex items-center"><i class="fas fa-list-ol mr-2 text-green-400"></i> Atur "Jumlah Item" (5-10 item)</li>
-                                <li class="flex items-center"><i class="fas fa-columns mr-2 text-green-400"></i> Pilih "Tampilan List atau Grid"</li>
+                        <div class="bg-black/20 p-4 rounded-xl border border-white/10 mt-3">
+                            <p class="font-black mb-2 text-[9px] uppercase tracking-widest text-blue-200">Tips:</p>
+                            <ul class="space-y-1 text-[10px]">
+                                <li><i class="fas fa-check mr-1 text-green-400"></i> Aktifkan Ringkasan</li>
+                                <li><i class="fas fa-check mr-1 text-green-400"></i> Aktifkan Tanggal</li>
                             </ul>
                         </div>
                     </div>
                 </section>
 
-                {{-- B. Blogger (Detail Lebih Panjang) --}}
-                <section class="bg-orange-600 rounded-[2rem] shadow-lg p-8 text-white relative overflow-hidden group text-left">
+                {{-- B. Blogger --}}
+                <section class="bg-orange-600 rounded-[2rem] shadow-lg p-7 text-white relative overflow-hidden group text-left">
                     <i class="fab fa-google absolute -bottom-4 -right-4 text-9xl opacity-10 group-hover:scale-110 transition-transform duration-700"></i>
-                    <h3 class="text-xl font-black mb-6 uppercase tracking-widest flex items-center border-b border-white/20 pb-4">
+                    <h3 class="text-lg font-black mb-5 uppercase tracking-widest flex items-center border-b border-white/20 pb-3">
                         <i class="fab fa-google mr-3 text-xl"></i> Blogger
                     </h3>
-                    <div class="space-y-6 text-xs opacity-95 leading-relaxed font-medium">
+                    <div class="space-y-4 text-[11px] opacity-95 leading-relaxed font-medium">
                         <div class="flex items-start">
-                            <span class="bg-white text-orange-600 w-6 h-6 rounded-lg flex items-center justify-center mr-3 flex-shrink-0 font-black">1</span>
-                            <p>Masuk ke Dashboard <strong>Blogger.com</strong> dan pilih blog yang ingin dikonfigurasi.</p>
+                            <span class="bg-white text-orange-600 w-5 h-5 rounded-md flex items-center justify-center mr-3 flex-shrink-0 font-black">1</span>
+                            <p>Masuk ke menu <strong>Tata Letak</strong>.</p>
                         </div>
                         <div class="flex items-start">
-                            <span class="bg-white text-orange-600 w-6 h-6 rounded-lg flex items-center justify-center mr-3 flex-shrink-0 font-black">2</span>
-                            <p>Pilih menu <strong>Tata Letak (Layout)</strong> pada panel navigasi di sebelah kiri.</p>
+                            <span class="bg-white text-orange-600 w-5 h-5 rounded-md flex items-center justify-center mr-3 flex-shrink-0 font-black">2</span>
+                            <p>Klik <strong>Tambahkan Gadget</strong>.</p>
                         </div>
                         <div class="flex items-start">
-                            <span class="bg-white text-orange-600 w-6 h-6 rounded-lg flex items-center justify-center mr-3 flex-shrink-0 font-black">3</span>
-                            <p>Klik <strong>Tambahkan Gadget</strong> pada bagian Sidebar, Footer, atau lokasi gadget lainnya.</p>
+                            <span class="bg-white text-orange-600 w-5 h-5 rounded-md flex items-center justify-center mr-3 flex-shrink-0 font-black">3</span>
+                            <p>Pilih gadget <strong>"Feed"</strong>.</p>
                         </div>
                         <div class="flex items-start">
-                            <span class="bg-white text-orange-600 w-6 h-6 rounded-lg flex items-center justify-center mr-3 flex-shrink-0 font-black">4</span>
-                            <p>Cari dan pilih gadget bernama <strong>"Feed"</strong> dari jendela pop-up yang muncul.</p>
-                        </div>
-                        <div class="flex items-start">
-                            <span class="bg-white text-orange-600 w-6 h-6 rounded-lg flex items-center justify-center mr-3 flex-shrink-0 font-black">5</span>
-                            <p>Tempelkan <strong>URL RSS Feed</strong> kami, klik lanjutkan, lalu atur opsi tampilan feed.</p>
+                            <span class="bg-white text-orange-600 w-5 h-5 rounded-md flex items-center justify-center mr-3 flex-shrink-0 font-black">4</span>
+                            <p>Tempel URL Feed & Simpan.</p>
                         </div>
                         
-                        <div class="bg-black/20 p-5 rounded-2xl border border-white/10 mt-4 shadow-inner">
-                            <p class="font-black mb-2 text-[10px] uppercase tracking-widest text-orange-200">Tips Optimasi Blogger:</p>
-                            <p class="text-[11px] italic mb-3">Pastikan Anda memberikan judul gadget yang menarik seperti "Informasi Terbaru PPID".</p>
-                            <p class="text-[11px] opacity-90 leading-relaxed">Setelah disimpan, Blogger akan secara otomatis merender daftar informasi publik terbaru dengan gaya CSS bawaan dari tema Blogger Anda. Tidak diperlukan keahlian koding tambahan untuk sinkronisasi ini.</p>
+                        <div class="bg-black/20 p-4 rounded-xl border border-white/10 mt-3">
+                            <p class="text-[10px] italic">Blogger akan merender daftar informasi terbaru secara otomatis sesuai gaya tema Anda.</p>
                         </div>
                     </div>
                 </section>
@@ -241,7 +228,7 @@
 &lt;/style&gt;
 &lt;div id="ppid-grid" class="ppid-grid"&gt;Memuat data...&lt;/div&gt;
 &lt;script&gt;
-  const RSS_URL = '{{ route('extra.rss.generate') }}?unit_id=730714&limit=6';
+  const RSS_URL = '{{ route('extra.rss.generate') }}?limit=6';
   fetch(RSS_URL).then(res => res.text()).then(xmlString => {
     const xml = new DOMParser().parseFromString(xmlString, "text/xml");
     const items = xml.querySelectorAll("item");
@@ -258,7 +245,7 @@
 &lt;/script&gt;</code></pre>
                                 </template>
                                 <template x-if="codeTab === 'php'"><pre class="whitespace-pre-wrap"><code id="code-card-php">&lt;?php
-$url = "{{ route('extra.rss.generate') }}?unit_id=730714&limit=6";
+$url = "{{ route('extra.rss.generate') }}?limit=6";
 $rss = simplexml_load_file($url);
 echo "&lt;div style='display:grid; grid-template-columns:repeat(3, 1fr); gap:20px;'&gt;";
 foreach ($rss->channel->item as $info) {
@@ -328,7 +315,7 @@ $this->load->view('rss_view', $data);
     function rssCodeHandler() {
         return {
             motherTab: 'card', codeTab: 'html', showPreview: false, loading: false,
-            get currentUrl() { return '{{ route('extra.rss.generate') }}?unit_id=730714&limit=' + (this.motherTab === 'card' ? '6' : '10'); },
+            get currentUrl() { return '{{ route('extra.rss.generate') }}?limit=' + (this.motherTab === 'card' ? '6' : '10'); },
             copyCode() {
                 const elId = `code-${this.motherTab}-${this.codeTab}`;
                 const el = document.getElementById(elId);
