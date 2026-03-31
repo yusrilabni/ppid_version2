@@ -16,13 +16,13 @@ use App\Http\Controllers\Admin\ProfilPpidController;
 */
 
 Route::middleware(['auth', 'verified'])->group(function () {
-    // My Structure
+    // Routes for managing the single structure image per organization for admins
     Route::get('my-structure', [\App\Http\Controllers\Admin\StrukturOrganisasiController::class, 'myStructure'])->name('my-structure.manage');
     Route::post('my-structure', [\App\Http\Controllers\Admin\StrukturOrganisasiController::class, 'updateMyStructure'])->name('my-structure.update');
 });
 
 Route::middleware(['auth', 'verified', \App\Http\Middleware\SuperadminMiddleware::class])->group(function () {
-    // Dashboard
+    // Dashboard (ONLY SUPERADMIN)
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     
     // Resources
@@ -33,7 +33,6 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\SuperadminMiddleware
     Route::resource('standar-layanan', \App\Http\Controllers\Admin\SubStandarLayananController::class);
     Route::resource('laporan', \App\Http\Controllers\Admin\LaporanController::class);
     Route::resource('statistik', \App\Http\Controllers\Admin\StatistikController::class);
-    Route::resource('organizations', \App\Http\Controllers\Admin\OrganizationController::class);
     Route::resource('officials', \App\Http\Controllers\Admin\OfficialController::class);
     Route::resource('surveys', SurveyController::class);
     Route::resource('profil-ppid', ProfilPpidController::class);
@@ -57,11 +56,14 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\SuperadminMiddleware
     Route::get('officials/{official}/lhkpn/create', [\App\Http\Controllers\Admin\LhkpnController::class, 'createForOfficial'])->name('officials.lhkpn.create');
     Route::post('officials/{official}/lhkpn', [\App\Http\Controllers\Admin\LhkpnController::class, 'storeForOfficial'])->name('officials.lhkpn.store');
 
-    // Organization & Positions
-    Route::get('organizations/{organization}/structure', [\App\Http\Controllers\Admin\StrukturOrganisasiController::class, 'manage'])->name('organizations.structure.manage');
-    Route::post('organizations/{organization}/structure', [\App\Http\Controllers\Admin\StrukturOrganisasiController::class, 'update'])->name('organizations.structure.update');
-    Route::get('organizations/{organization}/positions', [\App\Http\Controllers\Admin\OrganizationPositionController::class, 'index'])->name('organizations.positions.index');
-    Route::post('reorder-positions', [\App\Http\Controllers\Admin\OrganizationPositionController::class, 'reorder'])->name('reorder-positions');
+    // Organizations & Positions (Strictly Superadmin)
+    Route::middleware([\App\Http\Middleware\SuperadminMiddleware::class])->group(function () {
+        Route::resource('organizations', \App\Http\Controllers\Admin\OrganizationController::class);
+        Route::get('organizations/{organization}/structure', [\App\Http\Controllers\Admin\StrukturOrganisasiController::class, 'manage'])->name('organizations.structure.manage');
+        Route::post('organizations/{organization}/structure', [\App\Http\Controllers\Admin\StrukturOrganisasiController::class, 'update'])->name('organizations.structure.update');
+        Route::get('organizations/{organization}/positions', [\App\Http\Controllers\Admin\OrganizationPositionController::class, 'index'])->name('organizations.positions.index');
+        Route::post('reorder-positions', [\App\Http\Controllers\Admin\OrganizationPositionController::class, 'reorder'])->name('reorder-positions');
+    });
 
     // Official Actions
     Route::post('officials/{official}/status', [\App\Http\Controllers\Admin\OfficialController::class, 'updateStatus'])->name('officials.status.update');
