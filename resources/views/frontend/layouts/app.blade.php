@@ -17,9 +17,17 @@
 
     <!-- Scripts -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
+        // Re-initialize Lucide icons on Turbo load
+        document.addEventListener('turbo:load', () => {
+            if (window.lucide) {
+                window.lucide.createIcons();
+            }
+        });
+
         document.addEventListener('alpine:init', () => {
             Alpine.store('pedomanModal', {
                 open: false, allowClose: false,
@@ -324,7 +332,7 @@
             'acc-hide-images': $store.accConfig.hideImages
         } : {}"
         style="min-height: 100vh;">
-        @include('frontend.layouts.navbar')
+        @include('frontend.layouts.navbar', ['id' => 'main-navbar', 'data-turbo-permanent' => ''])
         <main>@yield('content')</main>
         @include('frontend.layouts.footer')
     </div>

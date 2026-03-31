@@ -1,4 +1,4 @@
-<nav x-data="{ open: false, searchOpen: false, activeSubMenu: null }" class="bg-white shadow-lg sticky top-0 z-50 border-b border-blue-100"
+<nav id="main-navbar" data-turbo-permanent x-data="{ open: false, searchOpen: false, activeSubMenu: null }" class="bg-white shadow-lg sticky top-0 z-50 border-b border-blue-100"
     style="background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);">
     <div class="w-full">
         <!-- Tinggi navbar tetap sama -->
