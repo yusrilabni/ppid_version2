@@ -99,26 +99,16 @@
             {{-- Sidebar (Kanan) --}}
             <div class="space-y-8">
                 
-                {{-- A. Panduan WordPress (Pindah ke Sini) --}}
+                {{-- A. Panduan WordPress --}}
                 <section class="bg-blue-600 rounded-3xl shadow-lg p-6 text-white relative overflow-hidden group">
                     <i class="fab fa-wordpress absolute -bottom-2 -right-2 text-7xl opacity-20 group-hover:scale-110 transition-transform duration-500"></i>
-                    <h3 class="text-lg font-bold mb-4 uppercase tracking-widest flex items-center">
+                    <h3 class="text-lg font-bold mb-3 uppercase tracking-widest flex items-center">
                         <i class="fab fa-wordpress mr-2"></i> WordPress
                     </h3>
-                    <div class="space-y-4 text-[11px] opacity-95 leading-relaxed font-medium">
-                        <div class="space-y-2">
-                            <p>1. Tambah blok <strong>"RSS"</strong> di editor.</p>
-                            <p>2. Tempel URL Feed yang sudah difilter.</p>
-                            <p>3. Klik <strong>"Gunakan URL"</strong>.</p>
-                        </div>
-                        <div class="bg-white/10 p-3 rounded-xl border border-white/20">
-                            <p class="font-bold mb-1 text-[9px] uppercase">Wajib Diaktifkan:</p>
-                            <ul class="space-y-1 opacity-80 italic">
-                                <li>- Tampilkan Ringkasan</li>
-                                <li>- Tampilkan Penulis & Tanggal</li>
-                                <li>- Atur Jumlah Item (Sesuai Link)</li>
-                            </ul>
-                        </div>
+                    <div class="space-y-2 text-[11px] opacity-95 leading-relaxed font-medium">
+                        <p>1. Editor WP > Tambah Blok <strong>"RSS"</strong>.</p>
+                        <p>2. Tempel URL Feed & Klik <strong>Gunakan URL</strong>.</p>
+                        <p>3. Aktifkan: Ringkasan, Penulis, & Tanggal.</p>
                     </div>
                 </section>
 
