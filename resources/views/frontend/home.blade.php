@@ -150,7 +150,7 @@
                 @if (!empty($rss_items))
                     <div class="relative px-1">
                         <div class="swiper-container news-carousel relative overflow-hidden pt-0">
-                            <div class="swiper-pagination !relative !top-0 !bottom-auto mb-2 mt-4"></div> <!-- Reduced margin mb-6 to mb-2 -->
+                            <div class="swiper-pagination !relative !top-0 !bottom-auto mb-2 mt-4"></div>
                             <div class="swiper-wrapper">
                                 @foreach ($rss_items as $item)
                                     <div class="swiper-slide h-auto">
@@ -178,6 +178,12 @@
                                     </div>
                                 @endforeach
                             </div>
+                            <button class="news-button-prev absolute left-0 top-1/2 -translate-y-1/2 -translate-x-4 bg-white shadow-xl rounded-full p-3 z-10 text-gray-700 hover:bg-blue-600 hover:text-white transition-all border border-gray-100 hidden md:block">
+                                <i class="fas fa-chevron-left"></i>
+                            </button>
+                            <button class="news-button-next absolute right-0 top-1/2 -translate-y-1/2 translate-x-4 bg-white shadow-xl rounded-full p-3 z-10 text-gray-700 hover:bg-blue-600 hover:text-white transition-all border border-gray-100 hidden md:block">
+                                <i class="fas fa-chevron-right"></i>
+                            </button>
                         </div>
                     </div>
                 @endif
@@ -223,7 +229,7 @@
                             <div class="swiper-slide !flex !items-center !justify-center p-2">
                                 <div class="h-full w-full">
                                     <div class="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 h-full flex flex-col group border border-gray-200 overflow-hidden min-h-[350px] md:min-h-[400px]">
-                                        <div class="h-2 bg-gradient-to-r bg-{{ $data['color'] }}-500"></div>
+                                        <div class="h-2 bg-gradient-to-r from-{{ $data['color'] }}-500 to-{{ $data['color'] }}-600"></div>
                                         <div class="p-5 md:p-8 flex-grow flex flex-col">
                                             <div class="flex items-center mb-4 md:mb-6">
                                                 <div class="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-{{ $data['color'] }}-500 flex items-center justify-center mr-3 md:mr-4 flex-shrink-0">
@@ -392,7 +398,7 @@
         function initHomePlugins() {
             if (window.lucide) { window.lucide.createIcons(); }
             new Swiper('.latest-info-carousel', { slidesPerView: 1, spaceBetween: 20, loop: true, autoplay: { delay: 4000, disableOnInteraction: false }, navigation: { nextEl: '.latest-info-next', prevEl: '.latest-info-prev' }, breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 }, 1280: { slidesPerView: 4 } } });
-            new Swiper('.news-carousel', { slidesPerView: 1, spaceBetween: 20, loop: true, autoplay: { delay: 5000, disableOnInteraction: false }, pagination: { el: '.swiper-pagination', clickable: true }, breakpoints: { 640: { slidesPerView: 2, slidesPerGroup: 2 }, 768: { slidesPerView: 3, slidesPerGroup: 3 }, 1024: { slidesPerView: 4, slidesPerGroup: 4 } } });
+            new Swiper('.news-carousel', { slidesPerView: 1, spaceBetween: 20, loop: true, autoplay: { delay: 5000, disableOnInteraction: false }, pagination: { el: '.swiper-pagination', clickable: true }, navigation: { nextEl: '.news-button-next', prevEl: '.news-button-prev' }, breakpoints: { 640: { slidesPerView: 2, slidesPerGroup: 2 }, 768: { slidesPerView: 3, slidesPerGroup: 3 }, 1024: { slidesPerView: 4, slidesPerGroup: 4 } } });
             new Swiper('.info-carousel', { slidesPerView: 1, spaceBetween: 30, loop: false, autoHeight: true, pagination: { el: '.swiper-pagination', clickable: true }, navigation: { nextEl: '.info-button-next', prevEl: '.info-button-prev' }, breakpoints: { 640: { slidesPerView: 1, spaceBetween: 20 }, 768: { slidesPerView: 2, spaceBetween: 30 }, 1024: { slidesPerView: 3, spaceBetween: 30 } } });
             const contactForm = document.getElementById('contactForm');
             if (contactForm && !contactForm.dataset.initialized) {
