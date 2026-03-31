@@ -15,7 +15,7 @@
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {{-- Main Column (Kiri) --}}
+            {{-- Main Column --}}
             <div class="lg:col-span-2 space-y-8">
                 
                 {{-- Penjelasan Singkat RSS --}}
@@ -62,22 +62,26 @@
                         Kustomisasi URL Feed
                     </h2>
                     <p class="text-gray-600 mb-6 text-sm">Gunakan parameter berikut untuk filter data yang spesifik:</p>
-                    <div class="bg-gray-900 rounded-2xl p-6 text-xs font-mono text-gray-300 space-y-4">
+                    <div class="bg-gray-900 rounded-2xl p-6 text-xs font-mono text-gray-300 space-y-4 border-l-4 border-orange-500">
                         <div>
-                            <p class="text-blue-400 font-bold mb-1">// Filter per Instansi (Contoh ID 34 = RSUD)</p>
+                            <p class="text-blue-400 font-bold mb-1">// Filter per Instansi (Contoh: RSUD Sinjai)</p>
                             <code class="break-all">{{ route('extra.rss.generate') }}?unit_id=34</code>
                         </div>
                         <div>
-                            <p class="text-blue-400 font-bold mb-1">// Filter per Tahun (Contoh 2023)</p>
+                            <p class="text-blue-400 font-bold mb-1">// Filter per Tahun (Contoh: 2023)</p>
                             <code class="break-all">{{ route('extra.rss.generate') }}?year=2023</code>
+                        </div>
+                        <div>
+                            <p class="text-blue-400 font-bold mb-1">// Limit Jumlah Data (Contoh: 5 item terbaru)</p>
+                            <code class="break-all">{{ route('extra.rss.generate') }}?limit=5</code>
                         </div>
                     </div>
                 </section>
             </div>
 
-            {{-- Sidebar (Kanan) --}}
+            {{-- Sidebar --}}
             <div class="space-y-8">
-                {{-- Sinkronisasi Sosial (Pindah ke Sini) --}}
+                {{-- Sinkronisasi Sosial --}}
                 <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
                     <h2 class="text-lg font-bold text-gray-800 mb-4 flex items-center">
                         <i class="fas fa-sync-alt text-blue-500 mr-2"></i> Sinkronisasi Sosial
@@ -87,15 +91,15 @@
                         
                         <div class="space-y-2">
                             <div class="flex items-center p-2 bg-gray-50 rounded-lg">
-                                <i class="fas fa-rss text-orange-500 w-5"></i>
+                                <i class="fas fa-rss text-orange-500 w-5 text-center"></i>
                                 <span class="ml-2 font-bold">1. Trigger:</span> <span class="ml-1">Data baru di RSS</span>
                             </div>
                             <div class="flex items-center p-2 bg-gray-50 rounded-lg">
-                                <i class="fas fa-robot text-blue-500 w-5"></i>
+                                <i class="fas fa-robot text-blue-500 w-5 text-center"></i>
                                 <span class="ml-2 font-bold">2. Bridge:</span> <span class="ml-1">IFTTT/Zapier baca</span>
                             </div>
                             <div class="flex items-center p-2 bg-gray-50 rounded-lg">
-                                <i class="fab fa-facebook text-blue-700 w-5"></i>
+                                <i class="fab fa-facebook text-blue-700 w-5 text-center"></i>
                                 <span class="ml-2 font-bold">3. Action:</span> <span class="ml-1">Post otomatis terbit</span>
                             </div>
                         </div>
@@ -119,14 +123,14 @@
 
                 {{-- Social Sync Tools --}}
                 <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
-                    <h3 class="text-sm font-bold text-gray-800 mb-4 uppercase tracking-widest">Alat Autopost</h3>
+                    <h3 class="text-sm font-bold text-gray-800 mb-4 uppercase tracking-widest text-center border-b pb-2">Alat Autopost</h3>
                     <div class="space-y-3">
-                        <a href="https://ifttt.com" target="_blank" class="flex items-center p-3 bg-gray-50 rounded-xl hover:bg-black hover:text-white transition-all group border border-gray-100">
-                            <div class="w-8 h-8 bg-black text-white rounded flex items-center justify-center mr-3 font-black text-sm">IF</div>
+                        <a href="https://ifttt.com" target="_blank" class="flex items-center p-3 bg-gray-50 rounded-xl hover:bg-black hover:text-white transition-all group border border-gray-100 shadow-sm">
+                            <div class="w-8 h-8 bg-black text-white rounded flex items-center justify-center mr-3 font-black text-xs">IF</div>
                             <div class="text-[10px] font-bold">IFTTT (Mudah)</div>
                         </a>
-                        <a href="https://zapier.com" target="_blank" class="flex items-center p-3 bg-gray-50 rounded-xl hover:bg-orange-500 hover:text-white transition-all group border border-gray-100">
-                            <div class="w-8 h-8 bg-orange-500 text-white rounded flex items-center justify-center mr-3 font-black text-sm">Z</div>
+                        <a href="https://zapier.com" target="_blank" class="flex items-center p-3 bg-gray-50 rounded-xl hover:bg-orange-500 hover:text-white transition-all group border border-gray-100 shadow-sm">
+                            <div class="w-8 h-8 bg-orange-500 text-white rounded flex items-center justify-center mr-3 font-black text-xs">Z</div>
                             <div class="text-[10px] font-bold">Zapier (Lengkap)</div>
                         </a>
                     </div>
@@ -137,71 +141,79 @@
         {{-- FULL WIDTH CODE EXAMPLES SECTION --}}
         <div class="mt-12">
             <section class="bg-white rounded-[3rem] shadow-sm border border-gray-100 p-8 md:p-12 overflow-hidden">
-                <h2 class="text-2xl font-bold text-gray-800 mb-8 flex items-center">
-                    <span class="w-10 h-10 bg-purple-600 text-white rounded-xl flex items-center justify-center mr-4 shadow-lg shadow-purple-200">
+                <h2 class="text-3xl font-bold text-gray-800 mb-8 flex items-center">
+                    <span class="w-12 h-12 bg-purple-600 text-white rounded-2xl flex items-center justify-center mr-4 shadow-lg shadow-purple-200">
                         <i class="fas fa-code"></i>
                     </span>
-                    Contoh Kode Siap Pakai (Copy-Paste)
+                    Contoh Kode Siap Pakai (Full Width)
                 </h2>
 
                 <div x-data="{ tab: 'html' }">
                     <div class="flex space-x-2 mb-8 bg-gray-100 p-1 rounded-2xl w-fit">
-                        <button @click="tab = 'html'" :class="tab === 'html' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500'" class="py-3 px-8 rounded-xl text-sm font-bold transition-all">HTML & JAVASCRIPT</button>
-                        <button @click="tab = 'php'" :class="tab === 'php' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500'" class="py-3 px-8 rounded-xl text-sm font-bold transition-all">PHP NATIVE</button>
+                        <button @click="tab = 'html'" :class="tab === 'html' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500'" class="py-3 px-8 rounded-xl text-sm font-bold transition-all uppercase tracking-widest">HTML & JAVASCRIPT</button>
+                        <button @click="tab = 'php'" :class="tab === 'php' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500'" class="py-3 px-8 rounded-xl text-sm font-bold transition-all uppercase tracking-widest">PHP NATIVE</button>
                     </div>
 
-                    <div class="bg-gray-900 rounded-[2rem] p-8 md:p-10 font-mono text-sm leading-relaxed text-gray-300 relative">
+                    <div class="bg-gray-900 rounded-[2.5rem] p-8 md:p-12 font-mono text-sm leading-relaxed text-gray-300 shadow-2xl">
                         <template x-if="tab === 'html'">
-                            <pre class="whitespace-pre-wrap"><code>@verbatim&lt;!-- 1. Wadah untuk menampilkan daftar berita --&gt;
-&lt;div id="ppid-list" style="font-family: sans-serif; max-width: 100%;"&gt;
+                            <div class="space-y-4">
+                                <p class="text-blue-400 text-xs italic">// Copy kode ini ke file HTML Anda. Ganti parameter ?unit_id= jika perlu.</p>
+                                <pre class="whitespace-pre-wrap"><code>&lt;!-- 1. Wadah untuk menampilkan daftar berita --&gt;
+&lt;div id="ppid-list" style="font-family: sans-serif; max-width: 100%; border: 1px solid #eee; padding: 20px; border-radius: 15px;"&gt;
   Memuat data terbaru...
 &lt;/div&gt;
 
 &lt;script&gt;
-  // 2. Gunakan URL RSS kami langsung
-  const RSS_URL = '@endverbatim{{ route('extra.rss.generate') }}@verbatim';
+  // 2. Gunakan URL RSS kami langsung (Contoh dengan filter Unit ID)
+  const RSS_URL = '{{ route('extra.rss.generate') }}?unit_id=34';
 
   fetch(RSS_URL)
     .then(res => res.text())
     .then(xmlString => {
       const xml = new DOMParser().parseFromString(xmlString, "text/xml");
       const items = xml.querySelectorAll("item");
-      let html = '&lt;h3&gt;Update Terbaru&lt;/h3&gt;&lt;ul style="padding:0; margin:0; list-style:none;"&gt;';
+      let html = '&lt;h3 style="margin-top:0;"&gt;Update Informasi Terbaru&lt;/h3&gt;&lt;ul style="padding:0; margin:0; list-style:none;"&gt;';
       
       items.forEach(el => {
         const title = el.querySelector("title").textContent;
         const link = el.querySelector("link").textContent;
         const date = new Date(el.querySelector("pubDate").textContent).toLocaleDateString('id-ID');
         
-        html += `&lt;li style="margin-bottom:20px; padding:15px; background:#f9f9f9; border-radius:12px;"&gt;
-                   &lt;a href="${link}" target="_blank" style="text-decoration:none; color:#0052FF; font-weight:bold;"&gt;${title}&lt;/a&gt;
-                   &lt;div style="color:#888; font-size:12px; margin-top:5px;"&gt;Dipublikasikan: ${date}&lt;/div&gt;
+        html += `&lt;li style="margin-bottom:20px; padding:15px; background:#f9f9f9; border-radius:12px; border-left: 5px solid #0052FF;"&gt;
+                   &lt;a href="${link}" target="_blank" style="text-decoration:none; color:#0052FF; font-weight:bold; font-size:16px;"&gt;${title}&lt;/a&gt;
+                   &lt;div style="color:#888; font-size:12px; margin-top:5px;"&gt;📅 Dipublikasikan: ${date}&lt;/div&gt;
                  &lt;/li&gt;`;
       });
       
       document.getElementById("ppid-list").innerHTML = html + '&lt;/ul&gt;';
     });
-&lt;/script&gt;@endverbatim</code></pre>
+&lt;/script&gt;</code></pre>
+                            </div>
                         </template>
                         <template x-if="tab === 'php'">
-                            <pre class="whitespace-pre-wrap"><code>@verbatim&lt;?php
-// 1. Ambil file XML langsung dari URL RSS kami
-$url = "@endverbatim{{ route('extra.rss.generate') }}@verbatim";
+                            <div class="space-y-4">
+                                <p class="text-blue-400 text-xs italic">// Gunakan kode PHP ini di server Anda. Mendukung filter tahun & instansi.</p>
+                                <pre class="whitespace-pre-wrap"><code>&lt;?php
+// 1. URL RSS (Ganti unit_id atau year sesuai kebutuhan)
+$url = "{{ route('extra.rss.generate') }}?unit_id=34&year=2023";
+
+// 2. Ambil file XML
 $rss = simplexml_load_file($url);
 
-echo "&lt;h2&gt;Informasi PPID Sinjai&lt;/h2&gt;";
+echo "&lt;h2&gt;Update Informasi PPID Sinjai&lt;/h2&gt;";
 echo "&lt;ul style='list-style:none; padding:0;'&gt;";
 
-// 2. Loop melalui setiap item berita yang ditemukan
+// 3. Loop melalui setiap item berita yang ditemukan
 foreach ($rss->channel->item as $info) {
-    echo "&lt;li style='margin-bottom:15px; border-bottom:1px solid #eee; padding-bottom:10px;'&gt;";
+    echo "&lt;li style='margin-bottom:20px; padding:10px; border-bottom:1px solid #eee;'&gt;";
     echo "&lt;a href='{$info->link}' target='_blank' style='color:#0052FF; font-weight:bold; text-decoration:none;'&gt;{$info->title}&lt;/a&gt;&lt;br&gt;";
-    echo "&lt;small style='color:#666;'&gt;Kategori: {$info->category} | Tanggal: {$info->pubDate}&lt;/small&gt;";
+    echo "&lt;small style='color:#666;'&gt;📁 Kategori: {$info->category} | 📅 Tanggal: {$info->pubDate}&lt;/small&gt;";
     echo "&lt;/li&gt;";
 }
 
 echo "&lt;/ul&gt;";
-?&gt;@endverbatim</code></pre>
+?&gt;</code></pre>
+                            </div>
                         </template>
                     </div>
                 </div>
