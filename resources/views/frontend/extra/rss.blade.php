@@ -17,7 +17,6 @@
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
             {{-- Main Column --}}
             <div class="lg:col-span-2 space-y-8">
-                
                 {{-- Penjelasan Singkat RSS --}}
                 <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 text-gray-800">
                     <h2 class="text-2xl font-bold mb-4 flex items-center">
@@ -35,22 +34,22 @@
                         <span class="w-2 h-8 bg-green-500 rounded-full mr-3"></span>
                         Struktur Data RSS
                     </h2>
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm">
                         <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                            <span class="text-blue-600 font-bold text-xs font-mono">&lt;title&gt;</span>
-                            <p class="text-[11px] text-gray-500 mt-1">Judul resmi dokumen atau pengumuman.</p>
+                            <span class="text-blue-600 font-bold font-mono">&lt;title&gt;</span>
+                            <p class="text-xs text-gray-500 mt-1">Judul resmi dokumen atau pengumuman.</p>
                         </div>
                         <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                            <span class="text-blue-600 font-bold text-xs font-mono">&lt;link&gt;</span>
-                            <p class="text-[11px] text-gray-500 mt-1">URL langsung untuk detail atau download.</p>
+                            <span class="text-blue-600 font-bold font-mono">&lt;organization&gt;</span>
+                            <p class="text-xs text-gray-500 mt-1">Nama Dinas / Instansi pemilik data.</p>
                         </div>
                         <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                            <span class="text-blue-600 font-bold text-xs font-mono">&lt;description&gt;</span>
-                            <p class="text-[11px] text-gray-500 mt-1">Ringkasan singkat isi dokumen.</p>
+                            <span class="text-blue-600 font-bold font-mono">&lt;status&gt;</span>
+                            <p class="text-xs text-gray-500 mt-1">Kondisi dokumen (BERLAKU / ARSIP).</p>
                         </div>
                         <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100">
-                            <span class="text-blue-600 font-bold text-xs font-mono">&lt;category&gt;</span>
-                            <p class="text-[11px] text-gray-500 mt-1">Klasifikasi (Berkala, Setiap Saat, dll).</p>
+                            <span class="text-blue-600 font-bold font-mono">&lt;category&gt;</span>
+                            <p class="text-xs text-gray-500 mt-1">Klasifikasi (Berkala, Setiap Saat, dll).</p>
                         </div>
                     </div>
                 </section>
@@ -76,7 +75,7 @@
                             <code class="break-all">{{ route('extra.rss.generate') }}?limit=6</code>
                         </div>
                         <div class="pt-2 border-t border-white/10">
-                            <p class="text-orange-400 font-black mb-1 uppercase tracking-widest">// Contoh Gabungan 3 Filter Sekaligus:</p>
+                            <p class="text-orange-400 font-black mb-1 uppercase tracking-widest text-[10px]">// Contoh Gabungan 3 Filter Sekaligus:</p>
                             <code class="break-all text-white">{{ route('extra.rss.generate') }}?unit_id=730714&year=2023&limit=6</code>
                         </div>
                     </div>
@@ -142,7 +141,7 @@
 
                 {{-- Social Sync Tools --}}
                 <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6 text-gray-800">
-                    <h3 class="text-sm font-bold text-gray-800 mb-4 uppercase tracking-widest text-center border-b pb-2">Alat Autopost</h3>
+                    <h3 class="text-sm font-bold mb-4 uppercase tracking-widest text-center border-b pb-2">Alat Autopost</h3>
                     <div class="space-y-3">
                         <a href="https://ifttt.com" target="_blank" class="flex items-center p-3 bg-gray-50 rounded-xl hover:bg-black hover:text-white transition-all group border border-gray-100 shadow-sm">
                             <div class="w-8 h-8 bg-black text-white rounded flex items-center justify-center mr-3 font-black text-xs transition-colors">IF</div>
@@ -304,7 +303,8 @@
                         </template>
                         
                         <template x-if="codeTab === 'php'"><pre class="whitespace-pre-wrap"><code id="code-card-php">&lt;?php
-$rss = simplexml_load_file('{{ route('extra.rss.generate') }}?limit=6');
+$url = "{{ route('extra.rss.generate') }}?limit=6";
+$rss = simplexml_load_file($url);
 echo "&lt;div style='display:grid; grid-template-columns:repeat(3, 1fr); gap:20px;'&gt;";
 foreach ($rss->channel->item as $info) {
     echo "&lt;div style='background:#fff; padding:20px; border-radius:15px; border:1px solid #eee;'&gt;";
@@ -314,31 +314,33 @@ foreach ($rss->channel->item as $info) {
 }
 echo "&lt;/div&gt;";
 ?&gt;</code></pre></template>
-                        <template x-if="codeTab === 'laravel'"><pre class="whitespace-pre-wrap"><code id="code-card-laravel">@verbatim// Di Controller
-$rss = simplexml_load_file('{{ URL_RSS }}?limit=6');
+                        <template x-if="codeTab === 'laravel'"><pre class="whitespace-pre-wrap"><code id="code-card-laravel">// Di Controller
+$url = "{{ route('extra.rss.generate') }}?limit=6";
+$rss = simplexml_load_file($url);
 return view('view', ['feeds' => $rss->channel->item]);
 
 // Di Blade
-<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
-    @foreach($feeds as $item)
-        <div class="bg-white p-6 rounded-2xl shadow-sm border">
-            <h4 class="font-bold">{{ $item->title }}</h4>
-            <p class="text-xs text-gray-500">{{ $item->organization }}</p>
-        </div>
-    @endforeach
-</div> @endverbatim</code></pre></template>
-                        <template x-if="codeTab === 'ci'"><pre class="whitespace-pre-wrap"><code id="code-card-ci">@verbatim// Di Controller
-$data['feeds'] = simplexml_load_file('{{ URL_RSS }}?limit=6');
+&lt;div class="grid grid-cols-1 md:grid-cols-3 gap-6"&gt;
+    &commat;foreach($feeds as $item)
+        &lt;div class="bg-white p-6 rounded-2xl shadow-sm border"&gt;
+            &lt;h4 class="font-bold"&gt;@{{ $item->title }}&lt;/h4&gt;
+            &lt;p class="text-xs text-gray-500"&gt;@{{ $item->organization }}&lt;/p&gt;
+        &lt;/div&gt;
+    &commat;endforeach
+&lt;/div&gt;</code></pre></template>
+                        <template x-if="codeTab === 'ci'"><pre class="whitespace-pre-wrap"><code id="code-card-ci">// Di Controller
+$url = "{{ route('extra.rss.generate') }}?limit=6";
+$data['feeds'] = simplexml_load_file($url);
 $this->load->view('rss_view', $data);
 
 // Di View
-<div style="display:grid; grid-template-columns:repeat(3, 1fr);">
-    <?php foreach ($feeds->channel->item as $item): ?>
-        <div class="card">
-            <h5><?= $item->title ?></h5>
-        </div>
-    <?php endforeach; ?>
-</div> @endverbatim</code></pre></template>
+&lt;div style="display:grid; grid-template-columns:repeat(3, 1fr);"&gt;
+    &lt;?php foreach ($feeds->channel->item as $item): ?&gt;
+        &lt;div class="card"&gt;
+            &lt;h5&gt;&lt;?= $item->title ?&gt;&lt;/h5&gt;
+        &lt;/div&gt;
+    &lt;?php endforeach; ?&gt;
+&lt;/div&gt;</code></pre></template>
                     </div>
 
                     {{-- LIST VIEW TAB CONTENT --}}
@@ -380,22 +382,23 @@ $this->load->view('rss_view', $data);
                             </div>
                         </template>
                         <template x-if="codeTab === 'php'"><pre class="whitespace-pre-wrap"><code id="code-list-php">&lt;?php
-$rss = simplexml_load_file('{{ route('extra.rss.generate') }}?limit=10');
+$url = "{{ route('extra.rss.generate') }}?limit=10";
+$rss = simplexml_load_file($url);
 echo "&lt;ul&gt;";
 foreach ($rss->channel->item as $info) {
     echo "&lt;li&gt;&lt;a href='{$info->link}'&gt;{$info->title}&lt;/a&gt; ({$info->status})&lt;/li&gt;";
 }
 echo "&lt;/ul&gt;";
 ?&gt;</code></pre></template>
-                        <template x-if="codeTab === 'laravel'"><pre class="whitespace-pre-wrap"><code id="code-list-laravel">@verbatim@foreach($feeds as $item)
-    <div class="flex justify-between items-center py-2 border-b">
-        <span>{{ $item->title }}</span>
-        <span class="badge">{{ $item->status }}</span>
-    </div>
-@endforeach @endverbatim</code></pre></template>
-                        <template x-if="codeTab === 'ci'"><pre class="whitespace-pre-wrap"><code id="code-list-ci">@verbatim<?php foreach ($feeds->channel->item as $item): ?>
-    <p><?= $item->title ?> - <?= $item->status ?></p>
-<?php endforeach; ?> @endverbatim</code></pre></template>
+                        <template x-if="codeTab === 'laravel'"><pre class="whitespace-pre-wrap"><code id="code-list-laravel">&commat;foreach($feeds as $item)
+    &lt;div class="flex justify-between items-center py-2 border-b"&gt;
+        &lt;span&gt;@{{ $item->title }}&lt;/span&gt;
+        &lt;span class="badge"&gt;@{{ $item->status }}&lt;/span&gt;
+    &lt;/div&gt;
+&commat;endforeach</code></pre></template>
+                        <template x-if="codeTab === 'ci'"><pre class="whitespace-pre-wrap"><code id="code-list-ci">&lt;?php foreach ($feeds->channel->item as $item): ?&gt;
+    &lt;p&gt;&lt;?= $item->title ?&gt; - &lt;?= $item->status ?&gt;&lt;/p&gt;
+&lt;?php endforeach; ?&gt;</code></pre></template>
                     </div>
                 </div>
             </section>
