@@ -99,9 +99,7 @@
         // High-Performance Scroll Saving
         var scrollKey = 'scrollPos_' + btoa(window.location.href);
         var saveScroll = function() {
-            if (window.scrollY > 0) {
-                localStorage.setItem(scrollKey, window.scrollY);
-            }
+            localStorage.setItem(scrollKey, window.scrollY);
         };
         
         // Simpan posisi scroll secara berkala (debounced)
@@ -268,7 +266,7 @@
     </script>
 
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" data-turbo-track="reload">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" data-turbo-track="reload"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" data-turbo-track="reload">
     <link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet" data-turbo-track="reload">
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet" data-turbo-track="reload">
     <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" data-turbo-track="reload" />
