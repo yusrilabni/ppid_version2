@@ -81,7 +81,7 @@ Route::middleware('auth')->group(function () {
 
     // Manage Pimpinan via Frontend
     Route::get('/profil/pejabat-daerah/{official}/edit', [FrontendController::class, 'editPimpinanPublic'])->name('pimpinan.edit-public');
-    Route::post('/profil/pejabat-daerah/{official}/update', [FrontendController::class, 'updatePimpinanPublic'])->name('pimpinan.update-public');
+    Route::match(['post', 'put', 'patch'], '/profil/pejabat-daerah/{official}/update', [FrontendController::class, 'updatePimpinanPublic'])->name('pimpinan.update-public');
 });
 
 // Category & Detail Routes
