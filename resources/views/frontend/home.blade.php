@@ -7,12 +7,15 @@
                 class="relative w-full overflow-hidden slider-container">
                 <div class="grid grid-cols-1 grid-rows-1">
                     @foreach ($sliders as $index => $slider)
-                        <div class="col-start-1 row-start-1" x-show="currentSlide === {{ $index }}"
+                        <div class="col-start-1 row-start-1 {{ $index !== 0 ? 'hidden' : '' }}" x-show="currentSlide === {{ $index }}"
+                            :class="{ 'hidden': currentSlide !== {{ $index }} }"
                             x-transition:opacity.duration.1000ms>
                             <a href="{{ $slider->link ?: ($slider->informasi ? route('frontend.informasi.detail', $slider->informasi->slug) : '#') }}"
                                 class="block relative w-full h-full">
                                 <img src="{{ asset('storage/' . $slider->image) ?: '/placeholder.jpg' }}"
-                                    alt="{{ $slider->title }}" class="w-full h-auto md:h-[500px] md:object-cover" />
+                                    alt="{{ $slider->title }}" class="w-full h-auto md:h-[500px] md:object-cover" 
+                                    fetchpriority="{{ $index === 0 ? 'high' : 'auto' }}" 
+                                    loading="{{ $index === 0 ? 'eager' : 'lazy' }}" />
                                 <div
                                     class="absolute inset-0 @if ($slider->show_title || $slider->show_description) bg-black bg-opacity-40 @endif flex items-center justify-center overlay-content">
                                     <div class="text-center text-white max-w-4xl mx-auto px-4">
