@@ -68,9 +68,6 @@ class HybridLoginController extends Controller
             session(['show_pedoman_modal' => true]);
             
             $user = Auth::user();
-            if ($user->role === 'superadmin' || $user->role === 'admin') {
-                return redirect()->intended('/admin/dashboard');
-            }
             return redirect()->intended('/');
         }
 
@@ -136,9 +133,6 @@ class HybridLoginController extends Controller
             $request->session()->regenerate();
             session(['show_pedoman_modal' => true]);
             
-            if ($user->role === 'superadmin' || $user->role === 'admin') {
-                return redirect()->intended('/admin/dashboard');
-            }
             return redirect()->intended('/');
         }
 
