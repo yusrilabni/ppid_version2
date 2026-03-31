@@ -74,8 +74,8 @@
         // Service Worker Registration for Instant Loading (Shell Cache)
         if ('serviceWorker' in navigator) {
             window.addEventListener('load', () => {
-                navigator.serviceWorker.register('/sw.js').then(reg => {
-                    console.log('SW Registered');
+                navigator.serviceWorker.register('{{ asset("sw.js") }}').then(reg => {
+                    console.log('SW Registered for /v2/');
                 }).catch(err => console.log('SW Error:', err));
             });
         }
