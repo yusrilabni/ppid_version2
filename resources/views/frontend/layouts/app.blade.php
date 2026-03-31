@@ -67,9 +67,17 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
-        // Handle FOUC
-        document.addEventListener('DOMContentLoaded', () => {
+        // Handle FOUC and Turbo transitions
+        function revealPage() {
             document.body.classList.add('fouc-ready');
+        }
+        document.addEventListener('DOMContentLoaded', revealPage);
+        document.addEventListener('turbo:load', () => {
+            revealPage();
+            // Re-run Tailwind to pick up any new classes in the swapped body
+            if (window.tailwind) { window.tailwind.run(); }
+            // Re-run Lucide
+            if (window.lucide) { window.lucide.createIcons(); }
         });
         
         // Prevent scroll jump on refresh
