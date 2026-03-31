@@ -295,7 +295,7 @@
                     <div class="p-3 md:p-8 bg-purple-50 rounded-xl md:rounded-3xl">
                         <i class="fas fa-poll text-purple-600 text-lg md:text-4xl mb-1 md:mb-4"></i>
                         <h3 class="text-sm md:text-3xl font-bold text-gray-900 mb-0.5 md:mb-2">{{ number_format($frontendStats['survey_responses'], 0, ',', '.') }}</h3>
-                        <p class-[7px] md:text-xs text-gray-600 font-bold uppercase tracking-widest">Respon Survei</p>
+                        <p class="text-[7px] md:text-xs text-gray-600 font-bold uppercase tracking-widest">Respon Survei</p>
                     </div>
                 </div>
 
@@ -382,9 +382,9 @@
     <script>
         function initHomePlugins() {
             if (window.lucide) { window.lucide.createIcons(); }
-            new Swiper('.latest-info-carousel', { slidesPerView: 1.2, spaceBetween: 15, loop: true, autoplay: { delay: 4000, disableOnInteraction: false }, navigation: { nextEl: '.latest-info-next', prevEl: '.latest-info-prev' }, pagination: { el: '.latest-info-pagination', clickable: true }, breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 }, 1280: { slidesPerView: 4 } } });
-            new Swiper('.news-carousel', { slidesPerView: 1.1, spaceBetween: 15, loop: true, autoplay: { delay: 5000, disableOnInteraction: false }, pagination: { el: '.news-pagination', clickable: true }, navigation: { nextEl: '.news-button-next', prevEl: '.news-button-prev' }, breakpoints: { 640: { slidesPerView: 2, slidesPerGroup: 1 }, 768: { slidesPerView: 3, slidesPerGroup: 1 }, 1024: { slidesPerView: 4, slidesPerGroup: 1 } } });
-            new Swiper('.info-carousel', { slidesPerView: 1.1, spaceBetween: 15, loop: false, autoHeight: true, pagination: { el: '.info-pagination', clickable: true }, navigation: { nextEl: '.info-button-next', prevEl: '.info-button-prev' }, breakpoints: { 640: { slidesPerView: 1.5, spaceBetween: 20 }, 768: { slidesPerView: 2, spaceBetween: 30 }, 1024: { slidesPerView: 3, spaceBetween: 30 } } });
+            new Swiper('.latest-info-carousel', { slidesPerView: 1, spaceBetween: 15, loop: true, autoplay: { delay: 4000, disableOnInteraction: false }, navigation: { nextEl: '.latest-info-next', prevEl: '.latest-info-prev' }, pagination: { el: '.latest-info-pagination', clickable: true }, breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 }, 1280: { slidesPerView: 4 } } });
+            new Swiper('.news-carousel', { slidesPerView: 1, spaceBetween: 15, loop: true, autoplay: { delay: 5000, disableOnInteraction: false }, pagination: { el: '.news-pagination', clickable: true }, navigation: { nextEl: '.news-button-next', prevEl: '.news-button-prev' }, breakpoints: { 640: { slidesPerView: 2 }, 768: { slidesPerView: 3 }, 1024: { slidesPerView: 4 } } });
+            new Swiper('.info-carousel', { slidesPerView: 1, spaceBetween: 15, loop: false, autoHeight: true, pagination: { el: '.info-pagination', clickable: true }, navigation: { nextEl: '.info-button-next', prevEl: '.info-button-prev' }, breakpoints: { 640: { slidesPerView: 1 }, 768: { slidesPerView: 2 }, 1024: { slidesPerView: 3 } } });
             const contactForm = document.getElementById('contactForm');
             if (contactForm && !contactForm.dataset.initialized) {
                 contactForm.dataset.initialized = "true";

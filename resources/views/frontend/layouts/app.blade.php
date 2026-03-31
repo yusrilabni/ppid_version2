@@ -35,17 +35,29 @@
     <script src="https://unpkg.com/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js"></script>
     <style>
         [x-cloak] { display: none !important; }
-        /* Turbo Progress Bar Styling */
+        /* Sembunyikan Turbo Progress Bar */
         .turbo-progress-bar {
-            height: 3px;
-            background-color: #2563eb;
-            z-index: 100000;
+            display: none !important;
+            height: 0 !important;
+            opacity: 0 !important;
         }
         /* Swiper Pagination Instant-CSS */
         .swiper-pagination-bullet { opacity: 0.3 !important; background: gray !important; }
         .swiper-pagination-bullet-active { opacity: 1 !important; background: #2563eb !important; }
         .swiper-pagination { bottom: 0 !important; height: 30px; display: flex; justify-content: center; align-items: center; gap: 8px; }
-        /* Skeleton/Placeholder for Swiper to prevent layout shift */
+        
+        /* Navbar Sticky & Static Feel */
+        #main-navbar-container {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: white;
+        }
+        
+        /* Hapus semua animasi transisi global yang mengganggu navigasi */
+        .transition-all, .transition { transition: none !important; }
+        
+        /* Skeleton/Placeholder for Swiper */
         .swiper-container:not(.swiper-initialized) .swiper-wrapper {
             display: flex;
             overflow: hidden;
