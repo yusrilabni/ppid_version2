@@ -7,6 +7,7 @@ use App\Models\Informasi;
 use App\Models\Organization;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
+use Illuminate\Support\Facades\DB;
 
 class ExtraToolsController extends Controller
 {
@@ -16,10 +17,18 @@ class ExtraToolsController extends Controller
     public function rssIndex()
     {
         $organizations = Organization::orderBy('name', 'asc')->get();
+        
+        // Ambil daftar tahun unik dari data informasi yang tersedia
+        $years = Informasi::select(DB::raw('DISTINCT(tahun) as year'))
+            ->whereNotNull('tahun')
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+
         return view('frontend.extra.rss', [
             'pageTitle' => 'RSS Feed - PPID Kabupaten Sinjai',
             'rssUrl' => route('extra.rss.generate'),
-            'organizations' => $organizations
+            'organizations' => $organizations,
+            'years' => $years
         ]);
     }
 
@@ -29,14 +38,22 @@ class ExtraToolsController extends Controller
     public function widgetIndex()
     {
         $organizations = Organization::orderBy('name', 'asc')->get();
+        
+        // Ambil daftar tahun unik dari data informasi yang tersedia
+        $years = Informasi::select(DB::raw('DISTINCT(tahun) as year'))
+            ->whereNotNull('tahun')
+            ->orderBy('year', 'desc')
+            ->pluck('year');
+
         return view('frontend.extra.widget', [
             'pageTitle' => 'Widget Informasi - PPID Kabupaten Sinjai',
-            'organizations' => $organizations
+            'organizations' => $organizations,
+            'years' => $years
         ]);
     }
 
     /**
-     * Generator RSS XML (Dukungan Filter OPD)
+     * Generator RSS XML (Dukungan Filter OPD & Tahun)
      */
     public function rssGenerate(Request $request)
     {
@@ -45,6 +62,11 @@ class ExtraToolsController extends Controller
         // Filter per OPD
         if ($request->has('unit_id')) {
             $query->where('unit_id', $request->unit_id);
+        }
+
+        // Filter per Tahun
+        if ($request->has('year') && $request->year != '') {
+            $query->where('tahun', $request->year);
         }
 
         $informasis = $query->orderBy('tanggal_upload', 'desc')
@@ -60,7 +82,7 @@ class ExtraToolsController extends Controller
     }
 
     /**
-     * Widget khusus untuk iframe (Tampilan dipercantik + Dukungan Filter OPD)
+     * Widget khusus untuk iframe (Dukungan Filter OPD & Tahun)
      */
     public function widgetLatest(Request $request)
     {
@@ -68,6 +90,7 @@ class ExtraToolsController extends Controller
         $limit = $request->get('limit', 5);
         $category = $request->get('category');
         $unit_id = $request->get('unit_id');
+        $year = $request->get('year');
 
         $query = Informasi::where('status', '!=', 'arsip');
 
@@ -77,6 +100,10 @@ class ExtraToolsController extends Controller
 
         if ($unit_id) {
             $query->where('unit_id', $unit_id);
+        }
+
+        if ($year && $year != '') {
+            $query->where('tahun', $year);
         }
 
         if ($type === 'popular') {

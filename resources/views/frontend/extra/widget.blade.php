@@ -30,9 +30,11 @@
                     type: 'latest', 
                     limit: 5, 
                     unitId: '', 
+                    year: '',
                     get embedUrl() { 
                         let url = '{{ route('extra.widgets.embed') }}?type=' + this.type + '&limit=' + this.limit;
                         if (this.unitId) url += '&unit_id=' + this.unitId;
+                        if (this.year) url += '&year=' + this.year;
                         return url;
                     } 
                 }">
@@ -57,15 +59,25 @@
                                 </div>
                             </div>
 
-                            <div>
-                                <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Filter Per OPD (Instansi)</label>
-                                <select x-model="unitId" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 transition-all">
-                                    <option value="">Semua Instansi</option>
-                                    @foreach($organizations as $org)
-                                        <option value="{{ $org->unit_id }}">{{ $org->name }}</option>
-                                    @endforeach
-                                </select>
-                                <p class="text-[10px] text-gray-400 mt-2 italic">*Kosongkan jika ingin menampilkan data dari seluruh instansi.</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Filter Per OPD (Instansi)</label>
+                                    <select x-model="unitId" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 transition-all">
+                                        <option value="">Semua Instansi</option>
+                                        @foreach($organizations as $org)
+                                            <option value="{{ $org->unit_id }}">{{ $org->name }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Filter Tahun</label>
+                                    <select x-model="year" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 transition-all">
+                                        <option value="">Semua Tahun</option>
+                                        @foreach($years as $y)
+                                            <option value="{{ $y }}">{{ $y }}</option>
+                                        @endforeach
+                                    </select>
+                                </div>
                             </div>
 
                             <div class="pt-6">
