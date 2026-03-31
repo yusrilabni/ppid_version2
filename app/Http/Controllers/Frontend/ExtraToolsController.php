@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Frontend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Informasi;
+use App\Models\Organization;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 
@@ -14,9 +15,11 @@ class ExtraToolsController extends Controller
      */
     public function rssIndex()
     {
+        $organizations = Organization::orderBy('name', 'asc')->get();
         return view('frontend.extra.rss', [
             'pageTitle' => 'RSS Feed - PPID Kabupaten Sinjai',
-            'rssUrl' => route('extra.rss.generate')
+            'rssUrl' => route('extra.rss.generate'),
+            'organizations' => $organizations
         ]);
     }
 
@@ -25,18 +28,26 @@ class ExtraToolsController extends Controller
      */
     public function widgetIndex()
     {
+        $organizations = Organization::orderBy('name', 'asc')->get();
         return view('frontend.extra.widget', [
-            'pageTitle' => 'Widget Informasi - PPID Kabupaten Sinjai'
+            'pageTitle' => 'Widget Informasi - PPID Kabupaten Sinjai',
+            'organizations' => $organizations
         ]);
     }
 
     /**
-     * Generator RSS XML (Auto Update dari Database)
+     * Generator RSS XML (Dukungan Filter OPD)
      */
-    public function rssGenerate()
+    public function rssGenerate(Request $request)
     {
-        $informasis = Informasi::where('status', '!=', 'arsip')
-            ->orderBy('tanggal_upload', 'desc')
+        $query = Informasi::where('status', '!=', 'arsip');
+
+        // Filter per OPD
+        if ($request->has('unit_id')) {
+            $query->where('unit_id', $request->unit_id);
+        }
+
+        $informasis = $query->orderBy('tanggal_upload', 'desc')
             ->limit(50)
             ->get();
 
@@ -49,18 +60,23 @@ class ExtraToolsController extends Controller
     }
 
     /**
-     * Widget khusus untuk iframe (Tampilan bersih)
+     * Widget khusus untuk iframe (Tampilan dipercantik + Dukungan Filter OPD)
      */
     public function widgetLatest(Request $request)
     {
         $type = $request->get('type', 'latest');
         $limit = $request->get('limit', 5);
         $category = $request->get('category');
+        $unit_id = $request->get('unit_id');
 
         $query = Informasi::where('status', '!=', 'arsip');
 
         if ($category) {
             $query->where('category', $category);
+        }
+
+        if ($unit_id) {
+            $query->where('unit_id', $unit_id);
         }
 
         if ($type === 'popular') {
