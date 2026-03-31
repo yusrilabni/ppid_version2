@@ -41,6 +41,10 @@
             background-color: #2563eb;
             z-index: 100000;
         }
+        /* Swiper Pagination Instant-CSS */
+        .swiper-pagination-bullet { opacity: 0.3 !important; background: gray !important; }
+        .swiper-pagination-bullet-active { opacity: 1 !important; background: #2563eb !important; }
+        .swiper-pagination { bottom: 0 !important; height: 30px; display: flex; justify-content: center; align-items: center; gap: 8px; }
         /* Skeleton/Placeholder for Swiper to prevent layout shift */
         .swiper-container:not(.swiper-initialized) .swiper-wrapper {
             display: flex;

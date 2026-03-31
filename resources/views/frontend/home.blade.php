@@ -104,7 +104,7 @@
                                         <div class="mb-5 relative z-10">
                                             <div class="flex items-center gap-3 mb-2">
                                                 <div class="w-9 h-9 rounded-xl bg-{{ $catColor }}-50 flex items-center justify-center text-{{ $catColor }}-600 border border-{{ $catColor }}-100/50">
-                                                    <i data-lucide="building-2" class="w-4 h-4"></i>
+                                                    <i class="fas fa-building text-sm"></i>
                                                 </div>
                                                 <div class="flex flex-col min-w-0">
                                                     <span class="text-[11px] font-extrabold text-gray-800 uppercase tracking-tight line-clamp-1">{{ $unitName }}</span>
