@@ -394,7 +394,19 @@
             if (window.lucide) { window.lucide.createIcons(); }
             new Swiper('.latest-info-carousel', { slidesPerView: 1, spaceBetween: 20, loop: true, autoplay: { delay: 4000, disableOnInteraction: false }, navigation: { nextEl: '.latest-info-next', prevEl: '.latest-info-prev' }, pagination: { el: '.latest-info-pagination', clickable: true }, breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 }, 1280: { slidesPerView: 4 } } });
             new Swiper('.news-carousel', { slidesPerView: 1, spaceBetween: 20, loop: true, autoplay: { delay: 5000, disableOnInteraction: false }, pagination: { el: '.news-pagination', clickable: true }, navigation: { nextEl: '.news-button-next', prevEl: '.news-button-prev' }, breakpoints: { 640: { slidesPerView: 2, slidesPerGroup: 1 }, 768: { slidesPerView: 3, slidesPerGroup: 1 }, 1024: { slidesPerView: 4, slidesPerGroup: 1 } } });
-            new Swiper('.info-carousel', { slidesPerView: 1, spaceBetween: 30, loop: false, autoHeight: true, pagination: { el: '.info-pagination', clickable: true }, navigation: { nextEl: '.info-button-next', prevEl: '.info-button-prev' }, breakpoints: { 640: { slidesPerView: 1, spaceBetween: 20 }, 768: { slidesPerView: 2, spaceBetween: 30 }, 1024: { slidesPerView: 3, spaceBetween: 30 }, 1280: { slidesPerView: 4, spaceBetween: 30 } } });
+            new Swiper('.info-carousel', { 
+                slidesPerView: 1, 
+                spaceBetween: 30, 
+                loop: false, 
+                autoHeight: true, 
+                pagination: { el: '.info-pagination', clickable: true }, 
+                navigation: { nextEl: '.info-button-next', prevEl: '.info-button-prev' }, 
+                breakpoints: { 
+                    640: { slidesPerView: 1, spaceBetween: 20 }, 
+                    768: { slidesPerView: 2, spaceBetween: 30 }, 
+                    1024: { slidesPerView: 3, spaceBetween: 30 }
+                } 
+            });
             const contactForm = document.getElementById('contactForm');
             if (contactForm && !contactForm.dataset.initialized) {
                 contactForm.dataset.initialized = "true";
