@@ -99,12 +99,6 @@
 
         // Handle Turbo transitions
         document.addEventListener('turbo:load', () => {
-            // Instant Scroll Restoration
-            const pos = sessionStorage.getItem('scrollPos_' + window.location.pathname);
-            if (pos) {
-                window.scrollTo({ top: parseInt(pos), behavior: 'instant' });
-            }
-
             // Re-run Tailwind & Lucide
             if (window.tailwind) { window.tailwind.run(); }
             if (window.lucide) { window.lucide.createIcons(); }
@@ -113,13 +107,13 @@
         // Prefetch on hover for instant feel
         document.addEventListener('mouseover', (event) => {
             if (event.target.tagName === 'A' && event.target.href) {
-                // Turbo handles prefetch via turbo-track or link-hover (not built-in by default, but we help it here)
+                // Turbo handles prefetch
             }
         });
         
-        // Prevent default browser scroll restoration to use ours
+        // Let the browser handle scroll restoration natively (flicker-free)
         if ('scrollRestoration' in history) {
-            history.scrollRestoration = 'manual';
+            history.scrollRestoration = 'auto';
         }
 
         document.addEventListener('alpine:init', () => {
@@ -414,6 +408,13 @@
         'overflow-hidden': $store.accConfig.isOpen && window.innerWidth < 1024 
     } : {}"
     :style="{ fontSize: $store.accConfig ? $store.accConfig.getFontSize() + 'px' : '16px' }">
+    <script>
+        // Instant Scroll Restoration (Execute immediately before any rendering)
+        (function() {
+            var pos = sessionStorage.getItem('scrollPos_' + window.location.pathname);
+            if (pos) window.scrollTo(0, pos);
+        })();
+    </script>
 
     <div id="acc-main-wrapper" 
         :class="$store.accConfig ? { 
