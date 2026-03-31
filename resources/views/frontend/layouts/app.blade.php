@@ -12,11 +12,17 @@
     <meta name="description" content="Pejabat Pengelola Informasi dan Dokumentasi">
 
     <script>
-        // Visibility Lock: Mencegah flicker slider saat refresh di posisi scroll bawah
+        // Force manual restoration to prevent browser jumping
+        if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+        
         (function() {
             var pos = sessionStorage.getItem('scrollPos_' + window.location.pathname);
-            if (pos && parseInt(pos) > 100) {
-                document.documentElement.style.visibility = 'hidden';
+            if (pos && parseInt(pos) > 50) {
+                // Inject CSS Shield secepat mungkin sebelum render
+                var style = document.createElement('style');
+                style.id = 'scroll-shield';
+                style.innerHTML = 'html { opacity: 0 !important; pointer-events: none !important; }';
+                document.head.appendChild(style);
             }
         })();
     </script>
@@ -121,9 +127,9 @@
             }
         });
         
-        // Let the browser handle scroll restoration natively (flicker-free)
+        // Let the browser handle scroll restoration manually (zero-flicker)
         if ('scrollRestoration' in history) {
-            history.scrollRestoration = 'auto';
+            history.scrollRestoration = 'manual';
         }
 
         document.addEventListener('alpine:init', () => {
@@ -419,17 +425,20 @@
     } : {}"
     :style="{ fontSize: $store.accConfig ? $store.accConfig.getFontSize() + 'px' : '16px' }">
     <script>
-        // Instant Scroll & Unlock (Jauh lebih agresif daripada native browser)
+        // Micro-Task Scroll Restoration
         (function() {
             var pos = sessionStorage.getItem('scrollPos_' + window.location.pathname);
-            if (pos && parseInt(pos) > 100) {
+            if (pos && parseInt(pos) > 50) {
+                // Gunakan frame browser untuk meyakinkan scroll sudah pindah sebelum tampil
                 window.scrollTo(0, parseInt(pos));
-                // Beri browser waktu 1 frame (30-50ms) untuk menggambar posisi yang benar sebelum ditampilkan
-                setTimeout(function() {
-                    document.documentElement.style.visibility = 'visible';
-                }, 40);
+                requestAnimationFrame(function() {
+                    window.scrollTo(0, parseInt(pos));
+                    var shield = document.getElementById('scroll-shield');
+                    if (shield) shield.remove();
+                });
             } else {
-                document.documentElement.style.visibility = 'visible';
+                var shield = document.getElementById('scroll-shield');
+                if (shield) shield.remove();
             }
         })();
     </script>
