@@ -89,6 +89,13 @@
                 alignment: localStorage.getItem('acc_alignment') || 'default', 
                 saturation: localStorage.getItem('acc_saturation') || 'default', 
                 fontMap: { 'kecil': 12, 'normal': 16, 'sedang': 20, 'besar': 24 },
+                init() {
+                    // Terapkan ukuran font saat toko pertama kali diinisialisasi
+                    this.applyPersisted();
+                },
+                applyPersisted() {
+                    document.documentElement.style.fontSize = this.getFontSize() + 'px';
+                },
                 getFontSize() { return this.fontMap[this.fontLevel] || 16; },
                 setFontLevel(level) {
                     this.fontLevel = level;
@@ -198,7 +205,7 @@
     @stack('styles')
 </head>
 
-<body class="antialiased bg-gray-100 text-gray-800" data-turbo="true" x-data="{}"
+<body class="antialiased bg-gray-100 text-gray-800" data-turbo="true" x-data="{}" x-init="$store.accConfig.applyPersisted()"
     :class="{ 'acc-focus-mask': $store.accConfig.focus === 'mask', 'acc-focus-guide': $store.accConfig.focus === 'guide', 'acc-big-cursor': $store.accConfig.focus === 'cursor', 'acc-keyboard-nav': $store.accConfig.keyboard, 'overflow-hidden': $store.accConfig.isOpen && window.innerWidth < 1024 }">
 
     <div id="acc-main-wrapper" 
