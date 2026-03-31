@@ -31,7 +31,7 @@
                     </p>
                 </section>
 
-                {{-- 2. Struktur Data Detail (SEKARANG DI ATAS) --}}
+                {{-- 2. Struktur Data Detail --}}
                 <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 text-left">
                     <h2 class="text-2xl font-bold mb-6 flex items-center text-green-600">
                         <span class="w-2 h-8 bg-green-500 rounded-full mr-3"></span> Struktur Data Detail
@@ -56,7 +56,7 @@
                     </div>
                 </section>
 
-                {{-- 3. Kustomisasi URL Feed (Filter) (SEKARANG DI BAWAH) --}}
+                {{-- 3. Kustomisasi URL Feed (Filter) --}}
                 <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 text-left">
                     <h2 class="text-2xl font-bold mb-6 flex items-center text-orange-600">
                         <span class="w-2 h-8 bg-orange-500 rounded-full mr-3"></span> Kustomisasi URL Feed (Filter)
@@ -214,8 +214,9 @@
                             <button @click="copyCode()" class="bg-blue-600 hover:bg-blue-700 text-white px-5 h-10 rounded-xl text-[10px] font-black uppercase tracking-widest transition-all shadow-lg flex items-center">
                                 <i class="fas fa-copy mr-2"></i> SALIN
                             </button>
-                            <button @click="runPreview()" class="bg-orange-500 hover:bg-orange-600 text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all shadow-lg" title="Live Preview">
-                                <i class="fas text-sm" :class="loading ? 'fa-spinner fa-spin' : 'fa-eye'"></i>
+                            {{-- Logic Toggle: Jika pratinjau aktif, klik tombol akan menutupnya. Jika tidak, akan memuat pratinjau. --}}
+                            <button @click="showPreview ? showPreview = false : runPreview()" class="bg-orange-500 hover:bg-orange-600 text-white w-10 h-10 rounded-xl flex items-center justify-center transition-all shadow-lg" :title="showPreview ? 'Lihat Kode' : 'Live Preview'">
+                                <i class="fas text-sm" :class="loading ? 'fa-spinner fa-spin' : (showPreview ? 'fa-code' : 'fa-eye')"></i>
                             </button>
                         </div>
                     </div>
