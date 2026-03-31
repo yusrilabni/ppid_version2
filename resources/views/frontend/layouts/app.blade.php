@@ -156,10 +156,10 @@
         #acc-main-wrapper.acc-hide-images img { visibility: hidden !important; opacity: 0 !important; }
 
         /* Functional Accessibility Styles (Global on Body) */
-        /* SOROT TAUTAN - Sangat Agresif untuk menjangkau semua menu dan slider */
-        body.acc-highlight-links a:not(.acc-widget-container *):not(.acc-ignore),
-        body.acc-highlight-links a:not(.acc-widget-container *):not(.acc-ignore) *,
-        body.acc-highlight-links button:not(.acc-widget-container *):not(.acc-ignore) { 
+        /* SOROT TAUTAN - Sangat Agresif tetapi kecualikan slider dan widget */
+        body.acc-highlight-links a:not(.acc-widget-container *):not(.acc-ignore-links *):not(.acc-ignore),
+        body.acc-highlight-links a:not(.acc-widget-container *):not(.acc-ignore-links *):not(.acc-ignore) *,
+        body.acc-highlight-links button:not(.acc-widget-container *):not(.acc-ignore-links *):not(.acc-ignore) { 
             background-color: #ffff00 !important; 
             color: #000000 !important; 
             outline: 3px solid #ff00ff !important; 
@@ -192,14 +192,26 @@
         body.acc-focus-mask .acc-reading-mask { display: block !important; }
         body.acc-focus-guide .acc-reading-guide { display: block !important; }
         
-        /* NAVIGASI KEYBOARD - Pastikan tidak kena ke widget */
-        body.acc-keyboard-nav *:not(.acc-widget-container):not(.acc-widget-container *):focus { 
-            outline: 6px solid #0052FF !important; 
-            outline-offset: 4px !important; 
-            box-shadow: 0 0 0 15px rgba(0, 82, 255, 0.4) !important;
-            background-color: rgba(0, 82, 255, 0.1) !important;
-            z-index: 9999 !important;
+        /* NAVIGASI KEYBOARD - Perkuat agar benar-benar muncul di halaman */
+        body.acc-keyboard-nav a:focus,
+        body.acc-keyboard-nav button:focus,
+        body.acc-keyboard-nav input:focus,
+        body.acc-keyboard-nav select:focus,
+        body.acc-keyboard-nav textarea:focus,
+        body.acc-keyboard-nav [tabindex]:focus { 
+            outline: 8px solid #0052FF !important; 
+            outline-offset: 5px !important; 
+            box-shadow: 0 0 0 20px rgba(0, 82, 255, 0.5), 0 0 40px rgba(0, 82, 255, 0.3) !important;
+            background-color: rgba(0, 82, 255, 0.15) !important;
+            z-index: 99999 !important;
             position: relative !important;
+        }
+
+        /* Kecualikan widget dari navigasi keyboard */
+        body.acc-keyboard-nav .acc-widget-container *:focus { 
+            outline: none !important; 
+            box-shadow: none !important; 
+            background-color: transparent !important; 
         }
 
         body.acc-big-cursor * { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z'/%3E%3Cpath d='M13 13l6 6'/%3E%3C/svg%3E"), auto !important; }

@@ -4,7 +4,7 @@
         {{-- Hero Slider --}}
         @if ($sliders->count() > 0)
             <div x-data="{ currentSlide: 0, sliders: @js($sliders), transitionDuration: {{ $transitionDuration }} }" x-init="setInterval(() => { currentSlide = (currentSlide + 1) % sliders.length }, transitionDuration)"
-                class="relative w-full overflow-hidden slider-container">
+                class="relative w-full overflow-hidden slider-container acc-ignore-links">
                 <div class="grid grid-cols-1 grid-rows-1">
                     @foreach ($sliders as $index => $slider)
                         <div class="col-start-1 row-start-1" x-show="currentSlide === {{ $index }}"
