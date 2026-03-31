@@ -68,7 +68,7 @@ class HybridLoginController extends Controller
             session(['show_pedoman_modal' => true]);
             
             $user = Auth::user();
-            return redirect()->intended('/');
+            return redirect('/');
         }
 
         return back()->withErrors([
@@ -133,7 +133,7 @@ class HybridLoginController extends Controller
             $request->session()->regenerate();
             session(['show_pedoman_modal' => true]);
             
-            return redirect()->intended('/');
+            return redirect('/');
         }
 
         return back()->withErrors([

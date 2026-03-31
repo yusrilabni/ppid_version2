@@ -32,7 +32,7 @@ class ApiLoginController extends Controller
                 $request->session()->regenerate();
 
                 if (Auth::user()->role === 'superadmin') {
-                    return redirect()->intended('/admin/dashboard');
+                    return redirect('/');
                 }
                 return redirect('/');
             }
@@ -75,7 +75,7 @@ class ApiLoginController extends Controller
                 $request->session()->regenerate();
 
                 if ($user->role === 'superadmin') {
-                    return redirect()->intended('/admin/dashboard');
+                    return redirect('/');
                 }
                 return redirect('/');
             }
