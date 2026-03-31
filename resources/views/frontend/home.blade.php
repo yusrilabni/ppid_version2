@@ -71,7 +71,7 @@
                     <p class="text-gray-600 text-sm md:text-base max-w-2xl mx-auto">Dokumen dan pengumuman publik terkini dari PPID Kabupaten Sinjai.</p>
                 </div>
 
-                <div class="relative group px-4">
+                <div class="relative group px-2">
                     <div class="swiper-pagination latest-info-pagination !relative !top-0 !bottom-auto mb-4 mt-2"></div>
                     <div class="swiper-container latest-info-carousel overflow-hidden">
                         <div class="swiper-wrapper">
@@ -88,7 +88,7 @@
                                     };
                                 @endphp
                                 <div class="swiper-slide h-auto">
-                                    <div class="bg-white rounded-3xl border-l-4 border-{{ $catColor }}-500 shadow-sm hover:shadow-2xl transition-all duration-500 h-full flex flex-col group/card p-6 hover:-translate-y-2 relative overflow-hidden">
+                                    <div class="bg-white rounded-3xl border-l-4 border-{{ $catColor }}-500 shadow-sm hover:shadow-2xl transition-all duration-500 h-full flex flex-col group/card p-6 hover:-translate-y-2 relative overflow-hidden m-1">
                                         <div class="absolute -right-6 -top-6 text-{{ $catColor }}-50 group-hover/card:scale-110 transition-transform duration-700 opacity-50 pointer-events-none">
                                             <i class="fas fa-file-alt text-8xl"></i>
                                         </div>
@@ -149,9 +149,9 @@
                     <p class="text-gray-600 max-w-2xl mx-auto text-sm md:text-base">Dapatkan informasi terkini seputar kegiatan dan pengumuman dari Humas Sinjai.</p>
                 </div>
                 @if (!empty($rss_items))
-                    <div class="relative px-8">
+                    <div class="relative px-10">
                         <div class="swiper-pagination news-pagination !relative !top-0 !bottom-auto mb-1 mt-2"></div>
-                        <div class="swiper-container news-carousel relative overflow-visible pt-0">
+                        <div class="swiper-container news-carousel relative overflow-hidden pt-0">
                             <div class="swiper-wrapper">
                                 @foreach ($rss_items as $item)
                                     <div class="swiper-slide h-auto">
@@ -179,13 +179,13 @@
                                     </div>
                                 @endforeach
                             </div>
-                            <button class="news-button-prev absolute left-0 top-1/2 -translate-y-1/2 -translate-x-10 bg-white shadow-xl rounded-full p-3 z-10 text-gray-700 hover:bg-blue-600 hover:text-white transition-all border border-gray-100">
-                                <i class="fas fa-chevron-left"></i>
-                            </button>
-                            <button class="news-button-next absolute right-0 top-1/2 -translate-y-1/2 translate-x-10 bg-white shadow-xl rounded-full p-3 z-10 text-gray-700 hover:bg-blue-600 hover:text-white transition-all border border-gray-100">
-                                <i class="fas fa-chevron-right"></i>
-                            </button>
                         </div>
+                        <button class="news-button-prev absolute left-0 top-1/2 -translate-y-1/2 bg-white shadow-xl rounded-full p-3 z-10 text-gray-700 hover:bg-blue-600 hover:text-white transition-all border border-gray-100">
+                            <i class="fas fa-chevron-left"></i>
+                        </button>
+                        <button class="news-button-next absolute right-0 top-1/2 -translate-y-1/2 bg-white shadow-xl rounded-full p-3 z-10 text-gray-700 hover:bg-blue-600 hover:text-white transition-all border border-gray-100">
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
                     </div>
                 @endif
             </div>
@@ -210,38 +210,44 @@
                     ];
                 @endphp
 
-                <div class="swiper-container info-carousel relative !px-2 !py-4 -mx-2 overflow-visible">
+                <div class="relative px-10">
                     <div class="swiper-pagination info-pagination !relative !top-0 !bottom-auto mb-1 mt-2"></div>
-                    <div class="swiper-wrapper mt-4">
-                        @foreach ($informasiItems as $item)
-                            @php $data = $cardData[$item['title']] ?? ['color' => 'gray', 'icon' => 'info-circle', 'points' => []]; @endphp
-                            <div class="swiper-slide !flex !items-center !justify-center p-2">
-                                <div class="h-full w-full">
-                                    <div class="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 h-full flex flex-col group border border-gray-200 overflow-hidden min-h-[350px] md:min-h-[400px]">
-                                        <div class="h-2 bg-gradient-to-r from-{{ $data['color'] }}-500 to-{{ $data['color'] }}-600"></div>
-                                        <div class="p-5 md:p-8 flex-grow flex flex-col">
-                                            <div class="flex items-center mb-4 md:mb-6">
-                                                <div class="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-{{ $data['color'] }}-500 flex items-center justify-center mr-3 md:mr-4 flex-shrink-0">
-                                                    <i class="fas fa-{{ $data['icon'] }} text-white text-lg md:text-xl"></i>
+                    <div class="swiper-container info-carousel relative !py-4 overflow-hidden">
+                        <div class="swiper-wrapper mt-4">
+                            @foreach ($informasiItems as $item)
+                                @php $data = $cardData[$item['title']] ?? ['color' => 'gray', 'icon' => 'info-circle', 'points' => []]; @endphp
+                                <div class="swiper-slide !flex !items-center !justify-center p-2">
+                                    <div class="h-full w-full">
+                                        <div class="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 h-full flex flex-col group border border-gray-200 overflow-hidden min-h-[350px] md:min-h-[400px]">
+                                            <div class="h-2 bg-gradient-to-r from-{{ $data['color'] }}-500 to-{{ $data['color'] }}-600"></div>
+                                            <div class="p-5 md:p-8 flex-grow flex flex-col">
+                                                <div class="flex items-center mb-4 md:mb-6">
+                                                    <div class="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-{{ $data['color'] }}-500 flex items-center justify-center mr-3 md:mr-4 flex-shrink-0">
+                                                        <i class="fas fa-{{ $data['icon'] }} text-white text-lg md:text-xl"></i>
+                                                    </div>
+                                                    <h3 class="text-lg md:text-xl font-bold text-gray-800">{{ $item['title'] }}</h3>
                                                 </div>
-                                                <h3 class="text-lg md:text-xl font-bold text-gray-800">{{ $item['title'] }}</h3>
+                                                <ul class="space-y-2 md:space-y-3 text-sm md:text-base text-gray-600 flex-grow">
+                                                    @foreach ($data['points'] as $point)
+                                                        <li class="flex items-start"><i class="fas fa-check-circle text-{{ $data['color'] }}-500 mt-1 mr-2 text-xs md:text-sm"></i><span>{{ $point }}</span></li>
+                                                    @endforeach
+                                                </ul>
                                             </div>
-                                            <ul class="space-y-2 md:space-y-3 text-sm md:text-base text-gray-600 flex-grow">
-                                                @foreach ($data['points'] as $point)
-                                                    <li class="flex items-start"><i class="fas fa-check-circle text-{{ $data['color'] }}-500 mt-1 mr-2 text-xs md:text-sm"></i><span>{{ $point }}</span></li>
-                                                @endforeach
-                                            </ul>
-                                        </div>
-                                        <div class="mt-auto p-5 md:p-6 bg-gray-50">
-                                            <a href="{{ url($item['url']) }}" class="w-full py-2.5 md:py-3 px-4 rounded-lg bg-{{ $data['color'] }}-500 text-white font-semibold text-center block hover:opacity-90 transition-opacity text-sm md:text-base">Akses Informasi <i class="fas fa-arrow-right ml-2 text-xs md:text-sm"></i></a>
+                                            <div class="mt-auto p-5 md:p-6 bg-gray-50">
+                                                <a href="{{ url($item['url']) }}" class="w-full py-2.5 md:py-3 px-4 rounded-lg bg-{{ $data['color'] }}-500 text-white font-semibold text-center block hover:opacity-90 transition-opacity text-sm md:text-base">Akses Informasi <i class="fas fa-arrow-right ml-2 text-xs md:text-sm"></i></a>
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
-                            </div>
-                        @endforeach
+                            @endforeach
+                        </div>
                     </div>
-                    <div class="swiper-button-next info-button-next hidden md:flex"><i class="fas fa-chevron-right"></i></div>
-                    <div class="swiper-button-prev info-button-prev hidden md:flex"><i class="fas fa-chevron-left"></i></div>
+                    <button class="info-button-prev absolute left-0 top-1/2 -translate-y-1/2 bg-white shadow-xl rounded-full p-3 z-10 text-gray-700 hover:bg-blue-600 hover:text-white transition-all border border-gray-100">
+                        <i class="fas fa-chevron-left"></i>
+                    </button>
+                    <button class="info-button-next absolute right-0 top-1/2 -translate-y-1/2 bg-white shadow-xl rounded-full p-3 z-10 text-gray-700 hover:bg-blue-600 hover:text-white transition-all border border-gray-100">
+                        <i class="fas fa-chevron-right"></i>
+                    </button>
                 </div>
 
                 <div class="mt-10 text-center">
@@ -386,9 +392,9 @@
     <script>
         function initHomePlugins() {
             if (window.lucide) { window.lucide.createIcons(); }
-            new Swiper('.latest-info-carousel', { slidesPerView: 1, spaceBetween: 20, loop: true, autoplay: { delay: 4000, disableOnInteraction: false }, navigation: { nextEl: '.latest-info-next', prevEl: '.latest-info-prev' }, pagination: { el: '.latest-info-pagination', clickable: true }, breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 }, 1280: { slidesPerView: 4 } } });
-            new Swiper('.news-carousel', { slidesPerView: 1, spaceBetween: 20, loop: true, autoplay: { delay: 5000, disableOnInteraction: false }, pagination: { el: '.news-pagination', clickable: true }, navigation: { nextEl: '.news-button-next', prevEl: '.news-button-prev' }, breakpoints: { 640: { slidesPerView: 2, slidesPerGroup: 2 }, 768: { slidesPerView: 3, slidesPerGroup: 3 }, 1024: { slidesPerView: 4, slidesPerGroup: 4 } } });
-            new Swiper('.info-carousel', { slidesPerView: 1, spaceBetween: 30, loop: false, autoHeight: true, pagination: { el: '.info-pagination', clickable: true }, navigation: { nextEl: '.info-button-next', prevEl: '.info-button-prev' }, breakpoints: { 640: { slidesPerView: 1, spaceBetween: 20 }, 768: { slidesPerView: 2, spaceBetween: 30 }, 1024: { slidesPerView: 3, spaceBetween: 30 } } });
+            new Swiper('.latest-info-carousel', { slidesPerView: 1, spaceBetween: 20, loop: true, autoplay: { delay: 4000, disableOnInteraction: false }, navigation: { nextEl: '.latest-info-next', prevEl: '.latest-info-prev' }, pagination: { el: '.latest-info-pagination', clickable: true, dynamicBullets: true }, breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 }, 1280: { slidesPerView: 4 } } });
+            new Swiper('.news-carousel', { slidesPerView: 1, spaceBetween: 20, loop: true, autoplay: { delay: 5000, disableOnInteraction: false }, pagination: { el: '.news-pagination', clickable: true, dynamicBullets: true }, navigation: { nextEl: '.news-button-next', prevEl: '.news-button-prev' }, breakpoints: { 640: { slidesPerView: 2 }, 768: { slidesPerView: 3 }, 1024: { slidesPerView: 4 } } });
+            new Swiper('.info-carousel', { slidesPerView: 1, spaceBetween: 30, loop: false, autoHeight: true, pagination: { el: '.info-pagination', clickable: true, dynamicBullets: true }, navigation: { nextEl: '.info-button-next', prevEl: '.info-button-prev' }, breakpoints: { 640: { slidesPerView: 1, spaceBetween: 20 }, 768: { slidesPerView: 2, spaceBetween: 30 }, 1024: { slidesPerView: 4, spaceBetween: 30 } } });
             const contactForm = document.getElementById('contactForm');
             if (contactForm && !contactForm.dataset.initialized) {
                 contactForm.dataset.initialized = "true";
