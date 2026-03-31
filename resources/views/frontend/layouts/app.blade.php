@@ -156,23 +156,53 @@
         #acc-main-wrapper.acc-hide-images img { visibility: hidden !important; opacity: 0 !important; }
 
         /* Functional Accessibility Styles (Global on Body) */
-        body.acc-highlight-links a:not(.acc-widget-container a):not(.acc-ignore) { outline: 4px solid #ff00ff !important; outline-offset: 2px !important; background-color: #ffff00 !important; color: #000 !important; font-weight: bold !important; text-decoration: underline !important; z-index: 10 !important; position: relative !important; }
-        body.acc-highlight-headings h1, body.acc-highlight-headings h2, body.acc-highlight-headings h3 { background-color: #0000ff !important; color: #fff !important; padding: 8px !important; border-left: 12px solid #ffff00 !important; display: block !important; }
-        body.acc-text-spacing *:not(.acc-widget-container *):not(.acc-ignore) { letter-spacing: 2px !important; }
+        /* SOROT TAUTAN - Sangat Agresif untuk menjangkau semua menu dan slider */
+        body.acc-highlight-links a:not(.acc-widget-container *):not(.acc-ignore),
+        body.acc-highlight-links a:not(.acc-widget-container *):not(.acc-ignore) *,
+        body.acc-highlight-links button:not(.acc-widget-container *):not(.acc-ignore) { 
+            background-color: #ffff00 !important; 
+            color: #000000 !important; 
+            outline: 3px solid #ff00ff !important; 
+            outline-offset: 1px !important;
+            text-decoration: underline !important;
+            font-weight: 800 !important;
+        }
+
+        body.acc-highlight-headings h1, body.acc-highlight-headings h2, body.acc-highlight-headings h3, 
+        body.acc-highlight-headings h4, body.acc-highlight-headings h5, body.acc-highlight-headings h6 { 
+            background-color: #0000ff !important; 
+            color: #ffffff !important; 
+            padding: 10px !important; 
+            border-left: 15px solid #ffff00 !important; 
+            display: block !important; 
+        }
+
+        body.acc-text-spacing *:not(.acc-widget-container *):not(.acc-ignore) { letter-spacing: 3px !important; word-spacing: 5px !important; }
         body.acc-dyslexic-open *:not(.acc-widget-container *):not(.acc-ignore) { font-family: 'Open-Dyslexic', sans-serif !important; }
         body.acc-dyslexic-lexend *:not(.acc-widget-container *):not(.acc-ignore) { font-family: 'Lexend', sans-serif !important; }
-        body.acc-line-height *:not(.acc-widget-container *):not(.acc-ignore) { line-height: 2 !important; }
+        body.acc-line-height *:not(.acc-widget-container *):not(.acc-ignore) { line-height: 2.2 !important; }
         body.acc-align-left *:not(.acc-widget-container *):not(.acc-ignore) { text-align: left !important; }
         body.acc-align-center *:not(.acc-widget-container *):not(.acc-ignore) { text-align: center !important; }
         body.acc-align-right *:not(.acc-widget-container *):not(.acc-ignore) { text-align: right !important; }
         
         /* Fokus Baca & Navigasi Keyboard */
-        .acc-reading-mask { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999998; background: rgba(0,0,0,0.8); display: none; clip-path: polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%, 0% 0%, 0% 45%, 100% 45%, 100% 55%, 0% 55%, 0% 45%); }
-        .acc-reading-guide { position: fixed; left: 0; width: 100%; height: 50px; background: rgba(255,255,0,0.4); border-top: 3px solid yellow; border-bottom: 3px solid yellow; pointer-events: none; z-index: 999998; display: none; transform: translateY(-50%); }
+        .acc-reading-mask { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999998; background: rgba(0,0,0,0.85); display: none; }
+        .acc-reading-guide { position: fixed; left: 0; width: 100%; height: 60px; background: rgba(255,255,0,0.5); border-top: 4px solid #ffff00; border-bottom: 4px solid #ffff00; pointer-events: none; z-index: 999998; display: none; transform: translateY(-50%); box-shadow: 0 0 20px rgba(0,0,0,0.5); }
+        
         body.acc-focus-mask .acc-reading-mask { display: block !important; }
         body.acc-focus-guide .acc-reading-guide { display: block !important; }
+        
+        /* NAVIGASI KEYBOARD - Pastikan tidak kena ke widget */
+        body.acc-keyboard-nav *:not(.acc-widget-container):not(.acc-widget-container *):focus { 
+            outline: 6px solid #0052FF !important; 
+            outline-offset: 4px !important; 
+            box-shadow: 0 0 0 15px rgba(0, 82, 255, 0.4) !important;
+            background-color: rgba(0, 82, 255, 0.1) !important;
+            z-index: 9999 !important;
+            position: relative !important;
+        }
+
         body.acc-big-cursor * { cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='48' height='48' viewBox='0 0 24 24' fill='none' stroke='black' stroke-width='2' stroke-linecap='round' stroke-linejoin='round'%3E%3Cpath d='M3 3l7.07 16.97 2.51-7.39 7.39-2.51L3 3z'/%3E%3Cpath d='M13 13l6 6'/%3E%3C/svg%3E"), auto !important; }
-        body.acc-keyboard-nav *:not(.acc-widget-container *):not(.acc-widget-container):focus { outline: 5px solid #0052FF !important; outline-offset: 4px !important; box-shadow: 0 0 0 10px rgba(0, 82, 255, 0.3) !important; }
 
         /* Widget UI Styles */
         .acc-widget-container { font-family: 'Inter', sans-serif !important; font-size: 16px !important; box-sizing: border-box !important; }
