@@ -87,8 +87,8 @@
                                         default => 'gray'
                                     };
                                 @endphp
-                                <div class="swiper-slide h-auto">
-                                    <div class="bg-white rounded-3xl border-l-4 border-{{ $catColor }}-500 shadow-sm hover:shadow-2xl transition-all duration-500 h-full flex flex-col group/card p-6 hover:-translate-y-2 relative overflow-hidden m-1">
+                                <div class="swiper-slide h-auto p-1">
+                                    <div class="bg-white rounded-3xl border-l-4 border-{{ $catColor }}-500 shadow-sm hover:shadow-2xl transition-all duration-500 h-full flex flex-col group/card p-6 hover:-translate-y-2 relative overflow-hidden">
                                         <div class="absolute -right-6 -top-6 text-{{ $catColor }}-50 group-hover/card:scale-110 transition-transform duration-700 opacity-50 pointer-events-none">
                                             <i class="fas fa-file-alt text-8xl"></i>
                                         </div>
@@ -154,7 +154,7 @@
                         <div class="swiper-container news-carousel relative overflow-hidden pt-0">
                             <div class="swiper-wrapper">
                                 @foreach ($rss_items as $item)
-                                    <div class="swiper-slide h-auto">
+                                    <div class="swiper-slide h-auto p-1">
                                         <div class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 h-full flex flex-col border border-gray-100 m-1">
                                             <div class="aspect-w-16 aspect-h-9 overflow-hidden">
                                                 <img src="{{ $item['image'] ?: 'https://via.placeholder.com/400x225.png?text=No+Image' }}"
@@ -216,7 +216,7 @@
                         <div class="swiper-wrapper mt-4">
                             @foreach ($informasiItems as $item)
                                 @php $data = $cardData[$item['title']] ?? ['color' => 'gray', 'icon' => 'info-circle', 'points' => []]; @endphp
-                                <div class="swiper-slide !flex !items-center !justify-center p-2">
+                                <div class="swiper-slide h-auto p-2">
                                     <div class="h-full w-full">
                                         <div class="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 h-full flex flex-col group border border-gray-200 overflow-hidden min-h-[350px] md:min-h-[400px]">
                                             <div class="h-2 bg-gradient-to-r from-{{ $data['color'] }}-500 to-{{ $data['color'] }}-600"></div>
@@ -392,9 +392,9 @@
     <script>
         function initHomePlugins() {
             if (window.lucide) { window.lucide.createIcons(); }
-            new Swiper('.latest-info-carousel', { slidesPerView: 1, spaceBetween: 20, loop: true, autoplay: { delay: 4000, disableOnInteraction: false }, navigation: { nextEl: '.latest-info-next', prevEl: '.latest-info-prev' }, pagination: { el: '.latest-info-pagination', clickable: true, dynamicBullets: true }, breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 }, 1280: { slidesPerView: 4 } } });
-            new Swiper('.news-carousel', { slidesPerView: 1, spaceBetween: 20, loop: true, autoplay: { delay: 5000, disableOnInteraction: false }, pagination: { el: '.news-pagination', clickable: true, dynamicBullets: true }, navigation: { nextEl: '.news-button-next', prevEl: '.news-button-prev' }, breakpoints: { 640: { slidesPerView: 2 }, 768: { slidesPerView: 3 }, 1024: { slidesPerView: 4 } } });
-            new Swiper('.info-carousel', { slidesPerView: 1, spaceBetween: 30, loop: false, autoHeight: true, pagination: { el: '.info-pagination', clickable: true, dynamicBullets: true }, navigation: { nextEl: '.info-button-next', prevEl: '.info-button-prev' }, breakpoints: { 640: { slidesPerView: 1, spaceBetween: 20 }, 768: { slidesPerView: 2, spaceBetween: 30 }, 1024: { slidesPerView: 4, spaceBetween: 30 } } });
+            new Swiper('.latest-info-carousel', { slidesPerView: 1, spaceBetween: 20, loop: true, autoplay: { delay: 4000, disableOnInteraction: false }, navigation: { nextEl: '.latest-info-next', prevEl: '.latest-info-prev' }, pagination: { el: '.latest-info-pagination', clickable: true }, breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 }, 1280: { slidesPerView: 4 } } });
+            new Swiper('.news-carousel', { slidesPerView: 1, spaceBetween: 20, loop: true, autoplay: { delay: 5000, disableOnInteraction: false }, pagination: { el: '.news-pagination', clickable: true }, navigation: { nextEl: '.news-button-next', prevEl: '.news-button-prev' }, breakpoints: { 640: { slidesPerView: 2, slidesPerGroup: 1 }, 768: { slidesPerView: 3, slidesPerGroup: 1 }, 1024: { slidesPerView: 4, slidesPerGroup: 1 } } });
+            new Swiper('.info-carousel', { slidesPerView: 1, spaceBetween: 30, loop: false, autoHeight: true, pagination: { el: '.info-pagination', clickable: true }, navigation: { nextEl: '.info-button-next', prevEl: '.info-button-prev' }, breakpoints: { 640: { slidesPerView: 1, spaceBetween: 20 }, 768: { slidesPerView: 2, spaceBetween: 30 }, 1024: { slidesPerView: 3, spaceBetween: 30 }, 1280: { slidesPerView: 4, spaceBetween: 30 } } });
             const contactForm = document.getElementById('contactForm');
             if (contactForm && !contactForm.dataset.initialized) {
                 contactForm.dataset.initialized = "true";
