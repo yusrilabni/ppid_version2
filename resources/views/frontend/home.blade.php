@@ -185,6 +185,7 @@
             </div>
         </section>
 
+        {{-- Akses Informasi Publik --}}
         <section class="py-10 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-10">
@@ -196,10 +197,26 @@
                         $informasiMenu = collect(config('menu'))->firstWhere('title', 'Jenis Informasi');
                         $informasiItems = $informasiMenu['children'] ?? [];
                         $cardData = [
-                            'Informasi Berkala' => ['color' => 'blue', 'icon' => 'info-circle', 'points' => ['Profil badan publik','Profil pejabat','Ringkasan laporan']],
-                            'Informasi Tersedia Setiap Saat' => ['color' => 'green', 'icon' => 'clock', 'points' => ['Dokumen administratif','SOP, SK','Arsip dokumen']],
-                            'Informasi Serta Merta' => ['color' => 'yellow', 'icon' => 'exclamation-circle', 'points' => ['Bencana alam','Darurat','Gangguan luas']],
-                            'Informasi Dikecualikan' => ['color' => 'red', 'icon' => 'lock', 'points' => ['Data pribadi','Rahasia negara','Uji konsekuensi']],
+                            'Informasi Berkala' => [
+                                'color' => 'blue', 
+                                'icon' => 'info-circle', 
+                                'points' => ['Profil badan publik','Profil pejabat','Ringkasan laporan', 'Informasi layanan publik']
+                            ],
+                            'Informasi Tersedia Setiap Saat' => [
+                                'color' => 'green', 
+                                'icon' => 'clock', 
+                                'points' => ['Dokumen administratif','SOP, SK','Arsip dokumen', 'Kebijakan internal']
+                            ],
+                            'Informasi Serta Merta' => [
+                                'color' => 'yellow', 
+                                'icon' => 'exclamation-circle', 
+                                'points' => ['Bencana alam','Darurat','Gangguan luas', 'Ancaman keselamatan']
+                            ],
+                            'Informasi Dikecualikan' => [
+                                'color' => 'red', 
+                                'icon' => 'lock', 
+                                'points' => ['Data pribadi','Rahasia negara','Uji konsekuensi', 'Dokumen rahasia']
+                            ],
                         ];
                     @endphp
                     @foreach ($informasiItems as $item)
@@ -224,9 +241,13 @@
             </div>
         </section>
 
+        {{-- Galeri --}}
         <section class="py-10 bg-gray-50">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-10"><h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Galeri</h2><p class="text-gray-600 max-w-2xl mx-auto">Dokumentasi kegiatan dan momen penting PPID</p></div>
+                <div class="text-center mb-10">
+                    <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Galeri</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto">Dokumentasi kegiatan dan momen penting PPID</p>
+                </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                     @foreach ($galeri as $item)
                         <div class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-lg transition-all group">
@@ -239,10 +260,11 @@
             </div>
         </section>
 
+        {{-- Statistik --}}
         <section class="py-10 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center">
                 <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-10">Statistik PPID</h2>
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-12">
                     <div class="p-8 bg-blue-50 rounded-2xl">
                         <i class="fas fa-info-circle text-blue-600 text-4xl mb-4"></i>
                         <h3 class="text-3xl font-bold text-gray-900 mb-2">{{ number_format($frontendStats['informasi']['total'], 0, ',', '.') }}</h3>
@@ -259,6 +281,91 @@
                         <p class="text-gray-600 font-bold uppercase tracking-widest text-xs">Respon Survei</p>
                     </div>
                 </div>
+
+                <div class="bg-gray-50 rounded-3xl p-8 border border-gray-100">
+                    <h3 class="text-xl font-bold mb-8 text-gray-800">Laporan Kinerja Pelayanan</h3>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+                        <div>
+                            <div class="text-3xl font-black text-blue-600 mb-2">{{ $tingkatKepuasan }}%</div>
+                            <p class="text-xs font-bold text-gray-500 uppercase tracking-widest">Tingkat Kepuasan</p>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-black text-green-600 mb-2">{{ $rataRataWaktuRespon }} Hari</div>
+                            <p class="text-xs font-bold text-gray-500 uppercase tracking-widest">Rata-rata Respon</p>
+                        </div>
+                        <div>
+                            <div class="text-3xl font-black text-purple-600 mb-2">{{ $tingkatPenyelesaian }}%</div>
+                            <p class="text-xs font-bold text-gray-500 uppercase tracking-widest">Tingkat Penyelesaian</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        {{-- Kontak Kami --}}
+        <section id="kontak" class="py-10 bg-gray-50">
+            <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+                <div class="text-center mb-10">
+                    <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Kontak Kami</h2>
+                    <p class="text-gray-600 max-w-2xl mx-auto text-sm md:text-base">Hubungi kami untuk informasi lebih lanjut atau ajukan permohonan informasi publik</p>
+                </div>
+
+                <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
+                    <div>
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">Informasi Kontak</h3>
+                        <div class="space-y-6">
+                            <div class="flex items-start space-x-4">
+                                <div class="w-12 h-12 bg-blue-100 rounded-xl flex items-center justify-center flex-shrink-0 text-blue-600"><i class="fas fa-map-marker-alt text-xl"></i></div>
+                                <div><h4 class="font-bold text-gray-900">Alamat</h4><p class="text-sm text-gray-600 mt-1">{{ $contactInfo['address'] }}</p></div>
+                            </div>
+                            <div class="flex items-start space-x-4">
+                                <div class="w-12 h-12 bg-green-100 rounded-xl flex items-center justify-center flex-shrink-0 text-green-600"><i class="fas fa-phone-alt text-xl"></i></div>
+                                <div><h4 class="font-bold text-gray-900">Telepon</h4><p class="text-sm text-gray-600 mt-1">{{ $contactInfo['phone'] }}</p></div>
+                            </div>
+                            <div class="flex items-start space-x-4">
+                                <div class="w-12 h-12 bg-purple-100 rounded-xl flex items-center justify-center flex-shrink-0 text-purple-600"><i class="fas fa-envelope text-xl"></i></div>
+                                <div><h4 class="font-bold text-gray-900">Email</h4><p class="text-sm text-gray-600 mt-1">{{ $contactInfo['email'] }}</p></div>
+                            </div>
+                        </div>
+
+                        <div class="mt-10 p-6 bg-white rounded-2xl shadow-sm border border-gray-100">
+                            <h4 class="font-bold text-gray-900 mb-4">Jam Pelayanan</h4>
+                            <div class="space-y-3 text-sm">
+                                <p class="flex justify-between font-medium"><span class="text-gray-500">Senin - Kamis:</span><span class="text-gray-900">{{ $contactInfo['service_hours_weekday'] }}</span></p>
+                                <p class="flex justify-between font-medium"><span class="text-gray-500">Jumat:</span><span class="text-gray-900">{{ $contactInfo['service_hours_friday'] }}</span></p>
+                                <p class="flex justify-between font-medium"><span class="text-gray-500">Sabtu - Minggu:</span><span class="text-gray-900">{{ $contactInfo['service_hours_weekend'] }}</span></p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-white rounded-3xl shadow-xl p-8 border border-gray-100">
+                        <h3 class="text-xl font-bold text-gray-800 mb-6">Kirim Pesan</h3>
+                        <form id="contactForm" class="space-y-4">
+                            @csrf
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 uppercase mb-2">Nama Lengkap</label>
+                                    <input type="text" name="name" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm" placeholder="Nama Anda" />
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-bold text-gray-700 uppercase mb-2">Email</label>
+                                    <input type="email" name="email" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm" placeholder="email@contoh.com" />
+                                </div>
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase mb-2">Subjek</label>
+                                <input type="text" name="subject" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm" placeholder="Subjek pesan" />
+                            </div>
+                            <div>
+                                <label class="block text-xs font-bold text-gray-700 uppercase mb-2">Pesan</label>
+                                <textarea name="message" rows="4" required class="w-full px-4 py-3 rounded-xl border border-gray-200 focus:ring-2 focus:ring-blue-500 outline-none transition-all text-sm resize-none" placeholder="Tulis pesan Anda..."></textarea>
+                            </div>
+                            <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 rounded-xl shadow-lg shadow-blue-200 transition-all flex items-center justify-center gap-2">
+                                <i class="fas fa-paper-plane"></i> <span id="submitText">Kirim Pesan</span>
+                            </button>
+                        </form>
+                    </div>
+                </div>
             </div>
         </section>
 @endsection
@@ -269,6 +376,19 @@
             if (window.lucide) { window.lucide.createIcons(); }
             new Swiper('.latest-info-carousel', { slidesPerView: 1, spaceBetween: 20, loop: true, autoplay: { delay: 4000 }, navigation: { nextEl: '.latest-info-next', prevEl: '.latest-info-prev' }, breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 }, 1280: { slidesPerView: 4 } } });
             new Swiper('.news-carousel', { slidesPerView: 1, spaceBetween: 20, loop: true, autoplay: { delay: 5000 }, breakpoints: { 640: { slidesPerView: 2 }, 768: { slidesPerView: 3 }, 1024: { slidesPerView: 4 } } });
+            
+            const contactForm = document.getElementById('contactForm');
+            if (contactForm) {
+                contactForm.addEventListener('submit', function(e) {
+                    e.preventDefault();
+                    const formData = new FormData(this);
+                    const recipient = "ppidkabsinjai@gmail.com";
+                    const mailBody = `Nama: ${formData.get('name')}\nEmail: ${formData.get('email')}\n\nPesan: ${formData.get('message')}`;
+                    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${recipient}&su=${encodeURIComponent(formData.get('subject'))}&body=${encodeURIComponent(mailBody)}`;
+                    window.open(gmailUrl, '_blank');
+                    this.reset();
+                });
+            }
         }
         document.addEventListener('DOMContentLoaded', initHomePlugins);
     </script>

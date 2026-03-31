@@ -1,4 +1,4 @@
-<nav id="main-navbar" data-turbo-permanent x-data="{ open: false, searchOpen: false, activeSubMenu: null }" class="bg-white shadow-lg sticky top-0 z-50 border-b border-blue-100"
+<nav x-data="{ open: false, searchOpen: false, activeSubMenu: null }" class="bg-white shadow-lg sticky top-0 z-50 border-b border-blue-100"
     style="background: linear-gradient(135deg, #ffffff 0%, #f8fafc 100%);">
     <div class="w-full">
         <!-- Tinggi navbar tetap sama -->
@@ -22,7 +22,7 @@
                      :class="searchOpen ? 'w-full max-w-2xl shadow-inner bg-white border-blue-200' : 'w-auto max-w-full'">
                     
                     <!-- Menu List Container -->
-                    <div x-cloak class="flex items-center space-x-1 whitespace-nowrap transition-all duration-500 ease-in-out w-full justify-center"
+                    <div class="flex items-center space-x-1 whitespace-nowrap transition-all duration-500 ease-in-out w-full justify-center"
                          :class="searchOpen ? 'opacity-0 pointer-events-none scale-95 translate-y-[-10px]' : 'opacity-100 scale-100 translate-y-0'">
                         @foreach ($menus as $menu)
                             @php

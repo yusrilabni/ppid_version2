@@ -16,17 +16,65 @@
     <link rel="icon" type="image/webp" href="{{ asset('storage/logo/favicon_io/ppid.webp') }}">
 
     <!-- Scripts -->
+    <style>
+        [x-cloak] { display: none !important; }
+        .fouc-fix { opacity: 0; transition: opacity 0.2s ease-in; }
+        .fouc-ready { opacity: 1; }
+        /* Skeleton/Placeholder for Swiper to prevent layout shift */
+        .swiper-container:not(.swiper-initialized) .swiper-wrapper {
+            display: flex;
+            overflow: hidden;
+            gap: 20px;
+        }
+        .swiper-container:not(.swiper-initialized) .swiper-slide {
+            flex: 0 0 100%;
+        }
+        @media (min-width: 640px) {
+            .swiper-container:not(.swiper-initialized) .swiper-slide { flex: 0 0 calc(50% - 10px); }
+        }
+        @media (min-width: 1024px) {
+            .swiper-container:not(.swiper-initialized) .swiper-slide { flex: 0 0 calc(25% - 15px); }
+        }
+    </style>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://unpkg.com/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js"></script>
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'blue': {
+                            50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd', 400: '#60a5fa',
+                            500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a',
+                        },
+                        'green': {
+                            50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac', 400: '#4ade80',
+                            500: '#22c55e', 600: '#16a34a', 700: '#15803d', 800: '#166534', 900: '#14532d',
+                        },
+                        'yellow': {
+                            50: '#fefce8', 100: '#fef9c3', 200: '#fef08a', 300: '#fde047', 400: '#facc15',
+                            500: '#eab308', 600: '#ca8a04', 700: '#a16207', 800: '#854d0e', 900: '#713f12',
+                        },
+                        'red': {
+                            50: '#fef2f2', 100: '#fee2e2', 200: '#fecaca', 300: '#fca5a5', 400: '#f87171',
+                            500: '#ef4444', 600: '#dc2626', 700: '#b91c1c', 800: '#991b1b', 900: '#7f1d1d',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
-        // Re-initialize Lucide icons on Turbo load
-        document.addEventListener('turbo:load', () => {
-            if (window.lucide) {
-                window.lucide.createIcons();
-            }
+        // Handle FOUC
+        document.addEventListener('DOMContentLoaded', () => {
+            document.body.classList.add('fouc-ready');
         });
+        
+        // Prevent scroll jump on refresh
+        if ('scrollRestoration' in history) {
+            history.scrollRestoration = 'manual';
+        }
 
         document.addEventListener('alpine:init', () => {
             Alpine.store('pedomanModal', {
@@ -301,7 +349,7 @@
     @stack('styles')
 </head>
 
-<body class="antialiased bg-gray-100 text-gray-800" data-turbo="true" x-data="{}" 
+<body class="antialiased bg-gray-100 text-gray-800 fouc-fix" data-turbo="true" x-data="{}" 
     x-init="$store.accConfig.applyPersisted()"
     :class="$store.accConfig ? { 
         'acc-highlight-links': $store.accConfig.links, 
@@ -332,7 +380,9 @@
             'acc-hide-images': $store.accConfig.hideImages
         } : {}"
         style="min-height: 100vh;">
-        @include('frontend.layouts.navbar', ['id' => 'main-navbar', 'data-turbo-permanent' => ''])
+        <header style="min-height: 64px;">
+            @include('frontend.layouts.navbar')
+        </header>
         <main>@yield('content')</main>
         @include('frontend.layouts.footer')
     </div>
