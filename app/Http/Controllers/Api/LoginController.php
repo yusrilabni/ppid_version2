@@ -32,7 +32,7 @@ class LoginController extends Controller
                 $user = Auth::user();
                 $token = $user->createToken('api-token')->plainTextToken;
 
-                $redirectTo = $user->role === 'superadmin' ? '/admin/dashboard' : '/';
+                $redirectTo = '/';
 
                 return response()->json([
                     'message' => 'Login berhasil',
@@ -83,7 +83,7 @@ class LoginController extends Controller
 
                     $token = $user->createToken('api-token')->plainTextToken;
 
-                    $redirectTo = $user->role === 'superadmin' ? '/admin/dashboard' : '/';
+                    $redirectTo = '/';
 
                     return response()->json([
                         'message' => 'Login berhasil',
