@@ -5,15 +5,18 @@
         @if ($sliders->count() > 0)
             <div x-data="{ currentSlide: 0, sliders: @js($sliders), transitionDuration: {{ $transitionDuration }} }" x-init="setInterval(() => { currentSlide = (currentSlide + 1) % sliders.length }, transitionDuration)"
                 class="relative w-full overflow-hidden slider-container acc-ignore-links">
-                <div class="grid grid-cols-1 grid-rows-1">
+                <div class="grid grid-cols-1 grid-rows-1" x-cloak>
                     @foreach ($sliders as $index => $slider)
-                        <div class="col-start-1 row-start-1 {{ $index !== 0 ? 'hidden' : '' }}" x-show="currentSlide === {{ $index }}"
+                        <div class="col-start-1 row-start-1 {{ $index !== 0 ? 'hidden' : '' }}" 
+                            x-show="currentSlide === {{ $index }}"
                             :class="{ 'hidden': currentSlide !== {{ $index }} }"
                             x-transition:opacity.duration.1000ms>
                             <a href="{{ $slider->link ?: ($slider->informasi ? route('frontend.informasi.detail', $slider->informasi->slug) : '#') }}"
                                 class="block relative w-full h-full">
                                 <img src="{{ asset('storage/' . $slider->image) ?: '/placeholder.jpg' }}"
-                                    alt="{{ $slider->title }}" class="w-full h-auto md:h-[500px] md:object-cover" />
+                                    alt="{{ $slider->title }}" class="w-full h-auto md:h-[500px] md:object-cover" 
+                                    fetchpriority="{{ $index === 0 ? 'high' : 'auto' }}" 
+                                    loading="{{ $index === 0 ? 'eager' : 'lazy' }}" />
                                 <div
                                     class="absolute inset-0 @if ($slider->show_title || $slider->show_description) bg-black bg-opacity-40 @endif flex items-center justify-center overlay-content">
                                     <div class="text-center text-white max-w-4xl mx-auto px-4">
@@ -169,9 +172,7 @@
             <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-0">
                     <h2 class="text-xl md:text-3xl font-bold text-gray-900 mb-2 md:mb-4">Berita Terbaru</h2>
-                    <p class="text-gray-600 max-w-2xl mx-auto text-xs md:text-base mb-0">
-                        Dapatkan informasi terkini seputar kegiatan dan pengumuman dari Humas Sinjai.
-                    </p>
+                    <p class="text-gray-600 max-w-2xl mx-auto text-xs md:text-base mb-0">Dapatkan informasi terkini seputar kegiatan dan pengumuman dari Humas Sinjai.</p>
                 </div>
                 @if (!empty($rss_items))
                     <div class="relative px-1">
@@ -183,7 +184,7 @@
                                         <div class="bg-white rounded-xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 h-full flex flex-col border border-gray-100 m-1">
                                             <div class="aspect-w-16 aspect-h-9 overflow-hidden">
                                                 <img src="{{ $item['image'] ?: 'https://via.placeholder.com/400x225.png?text=No+Image' }}"
-                                                    alt="{{ $item['title'] }}" class="w-full h-48 object-cover transform hover:scale-105 transition-transform duration-500" />
+                                                    alt="{{ $item['title'] }}" class="w-full h-48 object-cover transform hover:scale-105 transition-transform duration-500" loading="lazy" />
                                             </div>
                                             <div class="p-5 flex flex-col flex-grow">
                                                 <div class="flex items-center text-xs text-gray-500 mb-3">
@@ -193,33 +194,21 @@
                                                 <h3 class="text-base font-bold text-gray-900 mb-2 line-clamp-2 leading-snug hover:text-blue-600 transition-colors">
                                                     {{ html_entity_decode(strip_tags($item['title'])) }}
                                                 </h3>
-                                                <p class="text-xs text-gray-600 line-clamp-3 mb-4 flex-grow">
-                                                    {{ html_entity_decode(strip_tags($item['description'])) }}
-                                                </p>
+                                                <p class="text-xs text-gray-600 line-clamp-3 mb-4 flex-grow">{{ html_entity_decode(strip_tags($item['description'])) }}</p>
                                                 <div class="mt-auto">
-                                                    <a href="{{ $item['link'] }}" target="_blank"
-                                                        class="inline-flex items-center justify-center px-4 py-2.5 border border-blue-100 text-sm font-semibold rounded-lg text-blue-600 bg-blue-50 hover:bg-blue-600 hover:text-white transition-all duration-300 w-full group">
-                                                        Baca Selengkapnya
-                                                        <i data-lucide="external-link" class="ml-2 h-3.5 w-3.5 transform group-hover:translate-x-1 transition-transform"></i>
-                                                    </a>
+                                                    <a href="{{ $item['link'] }}" target="_blank" class="inline-flex items-center justify-center px-4 py-2.5 border border-blue-100 text-sm font-semibold rounded-lg text-blue-600 bg-blue-50 hover:bg-blue-600 hover:text-white transition-all duration-300 w-full group">Baca Selengkapnya <i data-lucide="external-link" class="ml-2 h-3.5 w-3.5 transform group-hover:translate-x-1 transition-transform"></i></a>
                                                 </div>
                                             </div>
                                         </div>
                                     </div>
                                 @endforeach
                             </div>
-                            <div class="swiper-button-next news-button-next !hidden md:!flex">
-                                <i data-lucide="chevron-right"></i>
-                            </div>
-                            <div class="swiper-button-prev news-button-prev !hidden md:!flex">
-                                <i data-lucide="chevron-left"></i>
-                            </div>
+                            <div class="swiper-button-next news-button-next !hidden md:!flex"><i data-lucide="chevron-right"></i></div>
+                            <div class="swiper-button-prev news-button-prev !hidden md:!flex"><i data-lucide="chevron-left"></i></div>
                         </div>
                     </div>
                 @else
-                    <div class="text-center py-12">
-                        <p class="text-gray-500">Belum ada berita tersedia</p>
-                    </div>
+                    <div class="text-center py-12"><p class="text-gray-500">Belum ada berita tersedia</p></div>
                 @endif
             </div>
         </section>
@@ -295,7 +284,7 @@
                                 <div class="aspect-w-16 aspect-h-12 relative">
                                     @if ($item->type === 'foto')
                                         <a href="{{ $item->video ?: asset('storage/' . $item->image) }}" class="block">
-                                            <img src="{{ asset('storage/' . $item->image) ?: '/placeholder.jpg' }}" alt="{{ $item->title }}" class="w-full h-40 md:h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
+                                            <img src="{{ asset('storage/' . $item->image) ?: '/placeholder.jpg' }}" alt="{{ $item->title }}" class="w-full h-40 md:h-48 object-cover group-hover:scale-105 transition-transform duration-300" loading="lazy" />
                                             <div class="absolute top-2 right-2 bg-white bg-opacity-90 rounded-full p-2"><i data-lucide="camera" class="h-3 w-3 md:h-4 md:w-4 text-gray-700"></i></div>
                                         </a>
                                     @else
@@ -358,11 +347,34 @@
 @push('scripts')
     <script>
         function initHomePlugins() {
+            // Re-initialize Lucide
             if (window.lucide) { window.lucide.createIcons(); }
-            new Swiper('.latest-info-carousel', { slidesPerView: 1, spaceBetween: 20, loop: true, autoplay: { delay: 4000 }, navigation: { nextEl: '.latest-info-next', prevEl: '.latest-info-prev' }, breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 }, 1280: { slidesPerView: 4 } } });
-            new Swiper('.news-carousel', { slidesPerView: 1, spaceBetween: 20, loop: true, autoplay: { delay: 5000 }, pagination: { el: '.swiper-pagination', clickable: true }, navigation: { nextEl: '.news-button-next', prevEl: '.news-button-prev' }, breakpoints: { 640: { slidesPerView: 2 }, 768: { slidesPerView: 3 }, 1024: { slidesPerView: 4 } } });
-            new Swiper('.info-carousel', { slidesPerView: 1, spaceBetween: 30, loop: false, pagination: { el: '.swiper-pagination', clickable: true }, navigation: { nextEl: '.info-button-next', prevEl: '.info-button-prev' }, breakpoints: { 640: { slidesPerView: 1 }, 768: { slidesPerView: 2 }, 1024: { slidesPerView: 3 } } });
+
+            // Swiper Initializations
+            new Swiper('.latest-info-carousel', { 
+                slidesPerView: 1, spaceBetween: 20, loop: true, 
+                autoplay: { delay: 4000 }, 
+                navigation: { nextEl: '.latest-info-next', prevEl: '.latest-info-prev' }, 
+                breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 }, 1280: { slidesPerView: 4 } } 
+            });
+            new Swiper('.news-carousel', { 
+                slidesPerView: 1, spaceBetween: 20, loop: true, 
+                autoplay: { delay: 5000 }, 
+                pagination: { el: '.swiper-pagination', clickable: true }, 
+                navigation: { nextEl: '.news-button-next', prevEl: '.news-button-prev' }, 
+                breakpoints: { 640: { slidesPerView: 2 }, 768: { slidesPerView: 3 }, 1024: { slidesPerView: 4 } } 
+            });
+            new Swiper('.info-carousel', { 
+                slidesPerView: 1, spaceBetween: 30, loop: false, 
+                pagination: { el: '.swiper-pagination', clickable: true }, 
+                navigation: { nextEl: '.info-button-next', prevEl: '.info-button-prev' }, 
+                breakpoints: { 640: { slidesPerView: 1 }, 768: { slidesPerView: 2 }, 1024: { slidesPerView: 3 } } 
+            });
+
+            // Contact Form Logic (Optional: Re-add if needed)
         }
+
+        // Run on every load (Initial and Turbo)
         document.addEventListener('DOMContentLoaded', initHomePlugins);
         document.addEventListener('turbo:load', initHomePlugins);
     </script>
