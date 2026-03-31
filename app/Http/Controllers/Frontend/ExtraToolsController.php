@@ -55,7 +55,7 @@ class ExtraToolsController extends Controller
     }
 
     /**
-     * Generator RSS XML (Dukungan CORS untuk Integrasi Eksternal)
+     * Generator RSS XML
      */
     public function rssGenerate(Request $request)
     {
@@ -69,8 +69,11 @@ class ExtraToolsController extends Controller
             $query->where('tahun', $request->year);
         }
 
+        // Ambil parameter limit dari URL, default 50 jika tidak ada
+        $limit = $request->get('limit', 50);
+
         $informasis = $query->orderBy('tanggal_upload', 'desc')
-            ->limit(50)
+            ->limit($limit)
             ->get();
 
         $content = view('frontend.extra.widgets.rss-xml', compact('informasis'));
@@ -78,7 +81,7 @@ class ExtraToolsController extends Controller
         return Response::make($content, 200, [
             'Content-Type' => 'application/xml',
             'Charset' => 'UTF-8',
-            'Access-Control-Allow-Origin' => '*', // IZINKAN AKSES DARI WEBSITE LAIN
+            'Access-Control-Allow-Origin' => '*',
             'Access-Control-Allow-Methods' => 'GET',
             'Cache-Control' => 'public, max-age=300'
         ]);
@@ -113,6 +116,6 @@ class ExtraToolsController extends Controller
         $informasis = $query->take($limit)->get();
 
         return Response::view('frontend.extra.widgets.embed-latest', compact('informasis', 'type'))
-            ->header('Access-Control-Allow-Origin', '*'); // IZINKAN AKSES DARI WEBSITE LAIN
+            ->header('Access-Control-Allow-Origin', '*');
     }
 }
