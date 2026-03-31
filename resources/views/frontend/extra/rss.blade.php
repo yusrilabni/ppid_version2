@@ -52,6 +52,56 @@
                 <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
                     <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
                         <span class="w-2 h-8 bg-purple-500 rounded-full mr-3"></span>
+                        Panduan Kustomisasi URL Feed
+                    </h2>
+                    <p class="text-gray-600 mb-6 text-sm">Anda dapat memodifikasi URL RSS kami untuk mendapatkan data yang sangat spesifik menggunakan parameter berikut:</p>
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
+                        <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                            <code class="text-blue-600 font-bold">unit_id</code>
+                            <p class="text-[10px] text-gray-500 mt-1">Filter berdasarkan ID Instansi (lihat daftar di bawah).</p>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                            <code class="text-blue-600 font-bold">year</code>
+                            <p class="text-[10px] text-gray-500 mt-1">Filter berdasarkan tahun (Contoh: 2023, 2024).</p>
+                        </div>
+                        <div class="p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                            <code class="text-blue-600 font-bold">limit</code>
+                            <p class="text-[10px] text-gray-500 mt-1">Jumlah data yang ditampilkan (Default: 50).</p>
+                        </div>
+                    </div>
+
+                    <div class="space-y-4">
+                        <div class="p-5 bg-gray-900 rounded-2xl">
+                            <p class="text-[10px] text-gray-400 uppercase font-black mb-2 tracking-widest">Contoh URL Kombinasi (RSUD + 2023 + 10 Data):</p>
+                            <code class="text-green-400 break-all text-xs font-mono">
+                                {{ route('extra.rss.generate') }}?unit_id=34&year=2023&limit=10
+                            </code>
+                        </div>
+                    </div>
+
+                    <div x-data="{ open: false }" class="mt-6">
+                        <button @click="open = !open" class="text-blue-600 hover:text-blue-800 font-bold text-sm flex items-center">
+                            <i class="fas" :class="open ? 'fa-chevron-up' : 'fa-list-ul'"></i> 
+                            <span class="ml-2" x-text="open ? 'Sembunyikan Daftar ID OPD' : 'Lihat Daftar ID OPD untuk Filter RSS'"></span>
+                        </button>
+                        <div x-show="open" x-transition class="mt-4 border-t pt-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-[11px]">
+                                @foreach($organizations as $org)
+                                    <div class="flex justify-between p-2 bg-gray-50 rounded-lg hover:bg-blue-50 transition-colors">
+                                        <span class="text-gray-700 font-medium truncate pr-4">{{ $org->name }}</span>
+                                        <span class="text-blue-600 font-bold font-mono">ID: {{ $org->unit_id }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
+                </section>
+
+                {{-- Integrasi Kode dengan Penjelasan Baris --}}
+                <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                        <span class="w-2 h-8 bg-purple-500 rounded-full mr-3"></span>
                         Penjelasan Detail Kode Program
                     </h2>
                     <div x-data="{ tab: 'html' }">
