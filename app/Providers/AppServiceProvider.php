@@ -116,12 +116,7 @@ class AppServiceProvider extends ServiceProvider
                 if (!$exists) $popularLinks[] = $sLink;
             }
 
-            // Combine with 2 fixed links (RSS & Widget)
-            $navLinks = $popularLinks;
-            $navLinks[] = ['title' => 'RSS Feed', 'url' => route('extra.rss')];
-            $navLinks[] = ['title' => 'Widget Informasi', 'url' => route('extra.widget')];
-
-            $view->with('navLinks', $navLinks);
+            $view->with('navLinks', $popularLinks);
         });
     }
 
