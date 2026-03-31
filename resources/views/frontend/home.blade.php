@@ -42,21 +42,20 @@
                 @if ($sliders->count() > 1)
                     <button @click="currentSlide = (currentSlide - 1 + sliders.length) % sliders.length"
                         class="absolute left-2 md:left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-60 hover:bg-opacity-80 text-white p-2 md:p-3 rounded-full z-20 border-2 border-white border-opacity-50 shadow-lg">
-                        <i class="fas fa-arrow-left"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 md:w-5 md:h-5">
+                            <path d="m12 19-7-7 7-7" /><path d="M19 12H5" />
+                        </svg>
                     </button>
                     <button @click="currentSlide = (currentSlide + 1) % sliders.length"
                         class="absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-60 hover:bg-opacity-80 text-white p-2 md:p-3 rounded-full z-20 border-2 border-white border-opacity-50 shadow-lg">
-                        <i class="fas fa-arrow-right"></i>
+                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="w-4 h-4 md:w-5 md:h-5">
+                            <path d="M5 12h14" /><path d="m12 5 7 7-7 7" />
+                        </svg>
                     </button>
                     <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20">
                         @foreach ($sliders as $index => $slider)
                             <button @click="currentSlide = {{ $index }}"
-                                :class="{
-                                    'bg-white border-2 border-white': currentSlide ===
-                                        {{ $index }},
-                                    'bg-white bg-opacity-50 border border-white': currentSlide !==
-                                        {{ $index }}
-                                }"
+                                :class="{ 'bg-white border-2 border-white': currentSlide === {{ $index }}, 'bg-white bg-opacity-50 border border-white': currentSlide !== {{ $index }} }"
                                 class="w-3 h-3 rounded-full transition-all duration-300"></button>
                         @endforeach
                     </div>
@@ -144,14 +143,14 @@
 
         <section class="py-10 bg-gray-50">
             <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-10">
+                <div class="text-center mb-0">
                     <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Berita Terbaru</h2>
                     <p class="text-gray-600 max-w-2xl mx-auto text-sm md:text-base">Dapatkan informasi terkini seputar kegiatan dan pengumuman dari Humas Sinjai.</p>
                 </div>
                 @if (!empty($rss_items))
                     <div class="relative px-1">
                         <div class="swiper-container news-carousel relative overflow-hidden pt-0">
-                            <div class="swiper-pagination !relative !top-0 !bottom-auto mb-6"></div>
+                            <div class="swiper-pagination !relative !top-0 !bottom-auto mb-2 mt-4"></div> <!-- Reduced margin mb-6 to mb-2 -->
                             <div class="swiper-wrapper">
                                 @foreach ($rss_items as $item)
                                     <div class="swiper-slide h-auto">
@@ -192,69 +191,64 @@
                     <h2 class="text-xl md:text-3xl font-bold text-gray-900 mb-2 md:mb-4">Akses informasi publik sesuai dengan kategori yang ditetapkan</h2>
                     <p class="text-sm md:text-lg text-gray-600 max-w-2xl mx-auto">Kami menyediakan berbagai informasi publik yang dapat diakses oleh masyarakat secara transparan dan mudah</p>
                 </div>
-                <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
-                    @php
-                        $informasiMenu = collect(config('menu'))->firstWhere('title', 'Jenis Informasi');
-                        $informasiItems = $informasiMenu['children'] ?? [];
-                        $cardData = [
-                            'Informasi Berkala' => [
-                                'color' => 'blue',
-                                'points' => [
-                                    'Profil badan publik dan unit kerja',
-                                    'Profil pejabat dan tentang OPD',
-                                    'Program dan kegiatan yang diumumkan rutin',
-                                    'Ringkasan laporan kinerja dan keuangan',
-                                    'Informasi layanan publik dan jam pelayanan',
-                                ],
-                            ],
-                            'Informasi Tersedia Setiap Saat' => [
-                                'color' => 'green',
-                                'points' => [
-                                    'Dokumen administratif dan arsip resmi',
-                                    'SOP, SK, dan kebijakan internal',
-                                    'Dokumen pendukung pelaksanaan kegiatan',
-                                    'Data dan dokumen yang diberikan jika diminta',
-                                    'Arsip dokumen tahun berjalan dan sebelumnya',
-                                ],
-                            ],
-                            'Informasi Serta Merta' => [
-                                'color' => 'yellow',
-                                'points' => [
-                                    'Informasi bencana alam',
-                                    'Informasi keadaan darurat',
-                                    'Gangguan layanan publik berdampak luas',
-                                    'Ancaman terhadap keselamatan masyarakat',
-                                    'Kebijakan darurat yang harus segera diketahui',
-                                ],
-                            ],
-                            'Informasi Dikecualikan' => [
-                                'color' => 'red',
-                                'points' => [
-                                    'Informasi yang mengandung data pribadi',
-                                    'Informasi rahasia negara atau jabatan',
-                                    'Dokumen hukum yang masih berjalan',
-                                    'Informasi yang berpotensi merugikan pihak tertentu',
-                                    'Informasi yang ditetapkan melalui uji konsekuensi',
-                                ],
-                            ],
-                        ];
-                    @endphp
-                    @foreach ($informasiItems as $item)
-                        @php $data = $cardData[$item['title']] ?? ['color' => 'gray', 'points' => []]; @endphp
-                        <div class="bg-white rounded-2xl shadow-md hover:shadow-xl transition-all p-8 border border-gray-100 flex flex-col">
-                            <div class="w-12 h-12 rounded-xl bg-{{ $data['color'] }}-500 flex items-center justify-center mb-6">
-                                <i class="fas fa-info-circle text-white text-xl"></i>
+
+                @php
+                    $informasiMenu = collect(config('menu'))->firstWhere('title', 'Jenis Informasi');
+                    $informasiItems = $informasiMenu['children'] ?? [];
+                    $cardData = [
+                        'Informasi Berkala' => [
+                            'color' => 'blue', 'icon' => 'info-circle',
+                            'points' => ['Profil badan publik dan unit kerja','Profil pejabat dan tentang OPD','Program dan kegiatan yang diumumkan rutin','Ringkasan laporan kinerja dan keuangan','Informasi layanan publik dan jam pelayanan'],
+                        ],
+                        'Informasi Tersedia Setiap Saat' => [
+                            'color' => 'green', 'icon' => 'clock',
+                            'points' => ['Dokumen administratif dan arsip resmi','SOP, SK, dan kebijakan internal','Dokumen pendukung pelaksanaan kegiatan','Data dan dokumen yang diberikan jika diminta','Arsip dokumen tahun berjalan dan sebelumnya'],
+                        ],
+                        'Informasi Serta Merta' => [
+                            'color' => 'yellow', 'icon' => 'exclamation-circle',
+                            'points' => ['Informasi bencana alam','Informasi keadaan darurat','Gangguan layanan publik berdampak luas','Ancaman terhadap keselamatan masyarakat','Kebijakan darurat yang harus segera diketahui'],
+                        ],
+                        'Informasi Dikecualikan' => [
+                            'color' => 'red', 'icon' => 'lock',
+                            'points' => ['Informasi yang mengandung data pribadi','Informasi rahasia negara atau jabatan','Dokumen hukum yang masih berjalan','Informasi yang berpotensi merugikan pihak tertentu','Informasi yang ditetapkan melalui uji konsekuensi'],
+                        ],
+                    ];
+                @endphp
+
+                <div class="swiper-container info-carousel relative !px-2 !py-4 -mx-2 overflow-hidden">
+                    <div class="swiper-pagination !relative !top-0 !bottom-auto mb-4"></div>
+                    <div class="swiper-wrapper mt-4">
+                        @foreach ($informasiItems as $item)
+                            @php $data = $cardData[$item['title']] ?? ['color' => 'gray', 'icon' => 'info-circle', 'points' => []]; @endphp
+                            <div class="swiper-slide !flex !items-center !justify-center p-2">
+                                <div class="h-full w-full">
+                                    <div class="bg-white rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-300 h-full flex flex-col group border border-gray-200 overflow-hidden min-h-[350px] md:min-h-[400px]">
+                                        <div class="h-2 bg-gradient-to-r bg-{{ $data['color'] }}-500"></div>
+                                        <div class="p-5 md:p-8 flex-grow flex flex-col">
+                                            <div class="flex items-center mb-4 md:mb-6">
+                                                <div class="w-10 h-10 md:w-12 md:h-12 rounded-lg bg-{{ $data['color'] }}-500 flex items-center justify-center mr-3 md:mr-4 flex-shrink-0">
+                                                    <i class="fas fa-{{ $data['icon'] }} text-white text-lg md:text-xl"></i>
+                                                </div>
+                                                <h3 class="text-lg md:text-xl font-bold text-gray-800">{{ $item['title'] }}</h3>
+                                            </div>
+                                            <ul class="space-y-2 md:space-y-3 text-sm md:text-base text-gray-600 flex-grow">
+                                                @foreach ($data['points'] as $point)
+                                                    <li class="flex items-start"><i class="fas fa-check-circle text-{{ $data['color'] }}-500 mt-1 mr-2 text-xs md:text-sm"></i><span>{{ $point }}</span></li>
+                                                @endforeach
+                                            </ul>
+                                        </div>
+                                        <div class="mt-auto p-5 md:p-6 bg-gray-50">
+                                            <a href="{{ url($item['url']) }}" class="w-full py-2.5 md:py-3 px-4 rounded-lg bg-{{ $data['color'] }}-500 text-white font-semibold text-center block hover:opacity-90 transition-opacity text-sm md:text-base">Akses Informasi <i class="fas fa-arrow-right ml-2 text-xs md:text-sm"></i></a>
+                                        </div>
+                                    </div>
+                                </div>
                             </div>
-                            <h3 class="text-lg font-bold text-gray-800 mb-6">{{ $item['title'] }}</h3>
-                            <ul class="space-y-3 text-sm text-gray-600 mb-8 flex-grow">
-                                @foreach ($data['points'] as $point)
-                                    <li class="flex items-start"><i class="fas fa-check-circle text-{{ $data['color'] }}-500 mt-1 mr-2 text-xs"></i>{{ $point }}</li>
-                                @endforeach
-                            </ul>
-                            <a href="{{ url($item['url']) }}" class="w-full py-3 bg-{{ $data['color'] }}-500 text-white rounded-xl text-center font-bold text-sm hover:opacity-90 transition-opacity">Akses Informasi</a>
-                        </div>
-                    @endforeach
+                        @endforeach
+                    </div>
+                    <div class="swiper-button-next info-button-next hidden md:flex"><i class="fas fa-chevron-right"></i></div>
+                    <div class="swiper-button-prev info-button-prev hidden md:flex"><i class="fas fa-chevron-left"></i></div>
                 </div>
+
                 <div class="mt-10 text-center">
                     <a href="{{ route('laporan.permohonan.create') }}" class="inline-flex items-center justify-center px-8 py-4 bg-blue-600 text-white font-bold rounded-xl shadow-lg hover:bg-blue-700 transition-all">Ajukan Permohonan Informasi</a>
                 </div>
@@ -397,45 +391,16 @@
     <script>
         function initHomePlugins() {
             if (window.lucide) { window.lucide.createIcons(); }
-            
-            new Swiper('.latest-info-carousel', {
-                slidesPerView: 1,
-                spaceBetween: 20,
-                loop: true,
-                autoplay: { delay: 4000, disableOnInteraction: false },
-                navigation: { nextEl: '.latest-info-next', prevEl: '.latest-info-prev' },
-                breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 }, 1280: { slidesPerView: 4 } }
-            });
-
-            new Swiper('.news-carousel', {
-                slidesPerView: 1,
-                slidesPerGroup: 1,
-                spaceBetween: 20,
-                loop: true,
-                autoplay: { delay: 5000, disableOnInteraction: false },
-                pagination: { el: '.swiper-pagination', clickable: true },
-                breakpoints: { 640: { slidesPerView: 2, slidesPerGroup: 2 }, 768: { slidesPerView: 3, slidesPerGroup: 3 }, 1024: { slidesPerView: 4, slidesPerGroup: 4 } }
-            });
-
-            new Swiper('.info-carousel', {
-                slidesPerView: 1,
-                spaceBetween: 30,
-                loop: false,
-                autoHeight: true,
-                pagination: { el: '.swiper-pagination', clickable: true },
-                navigation: { nextEl: '.info-button-next', prevEl: '.info-button-prev' },
-                breakpoints: { 640: { slidesPerView: 1, spaceBetween: 20 }, 768: { slidesPerView: 2, spaceBetween: 30 }, 1024: { slidesPerView: 3, spaceBetween: 30 } }
-            });
-
+            new Swiper('.latest-info-carousel', { slidesPerView: 1, spaceBetween: 20, loop: true, autoplay: { delay: 4000, disableOnInteraction: false }, navigation: { nextEl: '.latest-info-next', prevEl: '.latest-info-prev' }, breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 }, 1280: { slidesPerView: 4 } } });
+            new Swiper('.news-carousel', { slidesPerView: 1, spaceBetween: 20, loop: true, autoplay: { delay: 5000, disableOnInteraction: false }, pagination: { el: '.swiper-pagination', clickable: true }, breakpoints: { 640: { slidesPerView: 2, slidesPerGroup: 2 }, 768: { slidesPerView: 3, slidesPerGroup: 3 }, 1024: { slidesPerView: 4, slidesPerGroup: 4 } } });
+            new Swiper('.info-carousel', { slidesPerView: 1, spaceBetween: 30, loop: false, autoHeight: true, pagination: { el: '.swiper-pagination', clickable: true }, navigation: { nextEl: '.info-button-next', prevEl: '.info-button-prev' }, breakpoints: { 640: { slidesPerView: 1, spaceBetween: 20 }, 768: { slidesPerView: 2, spaceBetween: 30 }, 1024: { slidesPerView: 3, spaceBetween: 30 } } });
             const contactForm = document.getElementById('contactForm');
             if (contactForm && !contactForm.dataset.initialized) {
                 contactForm.dataset.initialized = "true";
                 contactForm.addEventListener('submit', function(e) {
                     e.preventDefault();
                     const formData = new FormData(this);
-                    const recipient = "ppidkabsinjai@gmail.com";
-                    const mailBody = `Nama: ${formData.get('name')}\nEmail: ${formData.get('email')}\n\nPesan: ${formData.get('message')}`;
-                    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${recipient}&su=${encodeURIComponent(formData.get('subject'))}&body=${encodeURIComponent(mailBody)}`;
+                    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=ppidkabsinjai@gmail.com&su=${encodeURIComponent(formData.get('subject'))}&body=${encodeURIComponent('Nama: '+formData.get('name')+'\nEmail: '+formData.get('email')+'\n\nPesan: '+formData.get('message'))}`;
                     window.open(gmailUrl, '_blank');
                     this.reset();
                 });
