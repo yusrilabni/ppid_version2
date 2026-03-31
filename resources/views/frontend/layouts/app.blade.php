@@ -12,16 +12,16 @@
     <meta name="description" content="Pejabat Pengelola Informasi dan Dokumentasi">
 
     <script>
-        // Force manual restoration to prevent browser jumping
+        // Force manual restoration
         if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
         
         (function() {
-            var pos = sessionStorage.getItem('scrollPos_' + window.location.pathname);
+            var scrollKey = 'scrollPos_' + btoa(window.location.href);
+            var pos = localStorage.getItem(scrollKey);
             if (pos && parseInt(pos) > 50) {
-                // Inject CSS Shield secepat mungkin sebelum render
                 var style = document.createElement('style');
                 style.id = 'scroll-shield';
-                style.innerHTML = 'html { opacity: 0 !important; pointer-events: none !important; }';
+                style.innerHTML = 'html { opacity: 0 !important; }';
                 document.head.appendChild(style);
             }
         })();
@@ -96,25 +96,30 @@
             });
         }
 
-        // Scroll Persistence Logic
-        const saveScroll = () => {
-            sessionStorage.setItem('scrollPos_' + window.location.pathname, window.scrollY);
+        // High-Performance Scroll Saving
+        var scrollKey = 'scrollPos_' + btoa(window.location.href);
+        var saveScroll = function() {
+            if (window.scrollY > 0) {
+                localStorage.setItem(scrollKey, window.scrollY);
+            }
         };
+        
+        // Simpan posisi scroll secara berkala (debounced)
+        var scrollTimeout;
+        window.addEventListener('scroll', function() {
+            clearTimeout(scrollTimeout);
+            scrollTimeout = setTimeout(saveScroll, 100);
+        });
+
         window.addEventListener('beforeunload', saveScroll);
         window.addEventListener('turbo:before-visit', saveScroll);
 
         // Turbo Configuration
         Turbo.setProgressBarDelay(50);
         
-        // Prevent re-rendering if clicking the same link
-        document.addEventListener('turbo:click', (event) => {
-            if (event.detail.url === window.location.href.split('#')[0]) {
-                event.preventDefault();
-            }
-        });
-
         // Handle Turbo transitions
-        document.addEventListener('turbo:load', () => {
+        document.addEventListener('turbo:load', function() {
+            scrollKey = 'scrollPos_' + btoa(window.location.href);
             // Re-run Tailwind & Lucide
             if (window.tailwind) { window.tailwind.run(); }
             if (window.lucide) { window.lucide.createIcons(); }
@@ -425,17 +430,22 @@
     } : {}"
     :style="{ fontSize: $store.accConfig ? $store.accConfig.getFontSize() + 'px' : '16px' }">
     <script>
-        // Micro-Task Scroll Restoration
         (function() {
-            var pos = sessionStorage.getItem('scrollPos_' + window.location.pathname);
+            var scrollKey = 'scrollPos_' + btoa(window.location.href);
+            var pos = localStorage.getItem(scrollKey);
             if (pos && parseInt(pos) > 50) {
-                // Gunakan frame browser untuk meyakinkan scroll sudah pindah sebelum tampil
-                window.scrollTo(0, parseInt(pos));
-                requestAnimationFrame(function() {
-                    window.scrollTo(0, parseInt(pos));
-                    var shield = document.getElementById('scroll-shield');
-                    if (shield) shield.remove();
-                });
+                var target = parseInt(pos);
+                var attempts = 0;
+                var scrollInterval = setInterval(function() {
+                    window.scrollTo(0, target);
+                    attempts++;
+                    // Jika sudah mencapai posisi target atau menyerah setelah 1 detik
+                    if (Math.abs(window.scrollY - target) < 10 || attempts > 50) {
+                        clearInterval(scrollInterval);
+                        var shield = document.getElementById('scroll-shield');
+                        if (shield) shield.remove();
+                    }
+                }, 20); // Cek setiap 20ms
             } else {
                 var shield = document.getElementById('scroll-shield');
                 if (shield) shield.remove();
