@@ -36,7 +36,7 @@
                                 <span class="flex items-center justify-center w-10 h-10 text-sm font-bold text-white bg-blue-600 rounded-xl shadow-md shadow-blue-200">{{ $page }}</span>
                             </span>
                         @else
-                            <a href="{{ $url }}" class="flex items-center justify-center w-10 h-10 text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-300 transform hover:scale-110" aria-label="{{ __('Go to page :page', ['page' => $page]) }}">
+                            <a href="{{ $url }}" class="hidden md:flex items-center justify-center w-10 h-10 text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-300 transform hover:scale-110" aria-label="{{ __('Go to page :page', ['page' => $page]) }}">
                                 {{ $page }}
                             </a>
                         @endif

@@ -297,7 +297,7 @@
 
         <!-- Pagination -->
         <div class="mt-6 flex justify-center">
-            {{ $informasis->appends(request()->query())->links() }}
+            {{ $informasis->onEach(1)->appends(request()->query())->links() }}
         </div>
     </div>
 </div>
