@@ -18,10 +18,13 @@ class ExtraToolsController extends Controller
     {
         $organizations = Organization::orderBy('name', 'asc')->get();
         
-        $years = Informasi::select(DB::raw('DISTINCT(CASE WHEN tahun IS NOT NULL AND tahun != 0 THEN tahun ELSE YEAR(tanggal_upload) END) as year'))
-            ->whereNotNull('tanggal_upload')
-            ->orderBy('year', 'desc')
-            ->pluck('year');
+        // Ambil daftar tahun unik dari kolom 'tahun' yang diisi manual oleh user
+        $years = Informasi::select('tahun')
+            ->whereNotNull('tahun')
+            ->where('tahun', '!=', '')
+            ->distinct()
+            ->orderBy('tahun', 'desc')
+            ->pluck('tahun');
 
         return view('frontend.extra.rss', [
             'pageTitle' => 'RSS Feed - PPID Kabupaten Sinjai',
@@ -38,10 +41,13 @@ class ExtraToolsController extends Controller
     {
         $organizations = Organization::orderBy('name', 'asc')->get();
         
-        $years = Informasi::select(DB::raw('DISTINCT(CASE WHEN tahun IS NOT NULL AND tahun != 0 THEN tahun ELSE YEAR(tanggal_upload) END) as year'))
-            ->whereNotNull('tanggal_upload')
-            ->orderBy('year', 'desc')
-            ->pluck('year');
+        // Ambil daftar tahun unik dari kolom 'tahun' yang diisi manual oleh user
+        $years = Informasi::select('tahun')
+            ->whereNotNull('tahun')
+            ->where('tahun', '!=', '')
+            ->distinct()
+            ->orderBy('tahun', 'desc')
+            ->pluck('tahun');
 
         return view('frontend.extra.widget', [
             'pageTitle' => 'Widget Informasi - PPID Kabupaten Sinjai',
@@ -61,12 +67,9 @@ class ExtraToolsController extends Controller
             $query->where('unit_id', $request->unit_id);
         }
 
+        // Filter berdasarkan kolom 'tahun' (input manual)
         if ($request->filled('year')) {
-            $year = $request->year;
-            $query->where(function($q) use ($year) {
-                $q->where('tahun', $year)
-                  ->orWhereYear('tanggal_upload', $year);
-            });
+            $query->where('tahun', $request->year);
         }
 
         $informasis = $query->orderBy('tanggal_upload', 'desc')
@@ -82,7 +85,7 @@ class ExtraToolsController extends Controller
     }
 
     /**
-     * Widget khusus untuk iframe (Fixed Filtering Logic)
+     * Widget khusus untuk iframe (Manual Year Logic)
      */
     public function widgetLatest(Request $request)
     {
@@ -93,25 +96,18 @@ class ExtraToolsController extends Controller
 
         $query = Informasi::query()->where('status', '!=', 'arsip');
 
-        // Filter Instansi (OPD)
         if ($request->filled('unit_id')) {
             $query->where('unit_id', $unit_id);
         }
 
-        // Filter Tahun - Pastikan jika kosong maka mengambil semua tahun
+        // Filter berdasarkan kolom 'tahun' (input manual)
         if ($request->filled('year')) {
-            $query->where(function($q) use ($year) {
-                $q->where('tahun', $year)
-                  ->orWhereYear('tanggal_upload', $year);
-            });
+            $query->where('tahun', $year);
         }
 
-        // Pengurutan
         if ($type === 'popular') {
             $query->orderBy('views_count', 'desc');
         } else {
-            // Jika memilih semua tahun, kita urutkan berdasarkan yang terbaru di upload 
-            // agar data tahun-tahun lain tetap berpotensi muncul jika limit-nya mencukupi.
             $query->orderBy('tanggal_upload', 'desc');
         }
 
