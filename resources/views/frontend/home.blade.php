@@ -188,7 +188,7 @@
         <section class="py-10 bg-white">
             <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div class="text-center mb-10">
-                    <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Akses informasi publik sesuai dengan kategori yang ditetapkan</h2>
+                    <h2 class="text-xl md:text-3xl font-bold text-gray-900 mb-2 md:mb-4">Akses informasi publik sesuai dengan kategori yang ditetapkan</h2>
                     <p class="text-sm md:text-lg text-gray-600 max-w-2xl mx-auto">Kami menyediakan berbagai informasi publik yang dapat diakses oleh masyarakat secara transparan dan mudah</p>
                 </div>
                 <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
@@ -219,7 +219,7 @@
                     @endforeach
                 </div>
                 <div class="mt-10 text-center">
-                    <a href="{{ route('permohonan.create') }}" class="inline-flex items-center justify-center px-8 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 transition-all">Ajukan Permohonan Informasi</a>
+                    <a href="{{ route('laporan.permohonan.create') }}" class="inline-flex items-center justify-center px-8 py-3 bg-blue-600 text-white font-bold rounded-lg shadow-lg hover:bg-blue-700 transition-all">Ajukan Permohonan Informasi</a>
                 </div>
             </div>
         </section>
