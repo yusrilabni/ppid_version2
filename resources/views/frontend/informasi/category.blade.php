@@ -3,9 +3,11 @@
 @section('title', $pageTitle ?? 'Informasi')
 
 @section('content')
-<div class="container mx-auto py-8 px-4">
-    <div class="max-w-7xl mx-auto">
-        <x-breadcrumbs :breadcrumbs="$breadcrumbs" />
+<div class="container mx-auto py-8 px-4 overflow-x-hidden">
+    <div class="max-w-7xl mx-auto w-full">
+        <div class="overflow-x-auto mb-4">
+            <x-breadcrumbs :breadcrumbs="$breadcrumbs" />
+        </div>
         <div class="mb-8">
             @if (session('success'))
                 <div x-data="{ show: true }" x-init="setTimeout(() => show = false, 3000)" x-show="show" class="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded relative mb-4" role="alert">
@@ -245,8 +247,8 @@
                         </div>
                         
                         <a href="{{ route('frontend.informasi.detail', $informasi->slug) }}" class="block mb-2">
-                            <h3 class="text-sm font-bold text-gray-900 leading-tight mb-1">{{ $informasi->title }}</h3>
-                            <p class="text-xs text-gray-500 line-clamp-2 leading-relaxed">{{ $informasi->deskripsi }}</p>
+                            <h3 class="text-sm font-bold text-gray-900 leading-tight mb-1 break-words">{{ $informasi->title }}</h3>
+                            <p class="text-xs text-gray-500 line-clamp-2 leading-relaxed break-words">{{ $informasi->deskripsi }}</p>
                         </a>
 
                         <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-50">
