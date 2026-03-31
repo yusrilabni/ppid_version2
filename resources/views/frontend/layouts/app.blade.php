@@ -99,7 +99,27 @@
                     localStorage.setItem('acc_font_level', level);
                     document.documentElement.style.fontSize = this.getFontSize() + 'px';
                 },
-                update(key, val) { this[key] = val; localStorage.setItem('acc_' + key, val); },
+                update(key, val) { 
+                    this[key] = val; 
+                    localStorage.setItem('acc_' + key, val); 
+                    
+                    // Feedback visual instan untuk Navigasi Keyboard
+                    if (key === 'keyboard' && val === true) {
+                        setTimeout(() => {
+                            const firstFocusable = document.querySelector('a, button, input, select, textarea');
+                            if (firstFocusable) firstFocusable.focus();
+                        }, 300);
+                    }
+
+                    // Tampilkan toast feedback (kecuali saat loading awal)
+                    if (this.isOpen) {
+                        const toast = document.createElement('div');
+                        toast.className = 'fixed bottom-4 right-4 bg-blue-600 text-white px-4 py-2 rounded-lg shadow-lg z-[1000000] text-sm font-bold animate-bounce';
+                        toast.innerText = 'Fitur ' + (key === 'keyboard' ? 'Navigasi Keyboard' : key) + ' diperbarui';
+                        document.body.appendChild(toast);
+                        setTimeout(() => toast.remove(), 2000);
+                    }
+                },
                 toggleMenu() { this.isOpen = !this.isOpen; },
                 cycleContrast() {
                     const modes = ['default', 'light', 'invert', 'dark'];
