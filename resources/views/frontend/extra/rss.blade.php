@@ -76,6 +76,23 @@
                             <code class="break-all">{{ route('extra.rss.generate') }}?limit=5</code>
                         </div>
                     </div>
+
+                    <div x-data="{ open: false }" class="mt-6">
+                        <button @click="open = !open" class="text-blue-600 hover:text-blue-800 font-bold text-sm flex items-center">
+                            <i class="fas" :class="open ? 'fa-chevron-up' : 'fa-list-ul'"></i> 
+                            <span class="ml-2" x-text="open ? 'Sembunyikan Daftar ID OPD' : 'Lihat Daftar ID OPD Semua Instansi'"></span>
+                        </button>
+                        <div x-show="open" x-transition class="mt-4 border-t pt-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-[11px]">
+                                @foreach($organizations as $org)
+                                    <div class="flex justify-between p-2 bg-gray-50 rounded-lg hover:bg-blue-50 transition-colors">
+                                        <span class="text-gray-700 font-medium truncate pr-4">{{ $org->name }}</span>
+                                        <span class="text-blue-600 font-bold font-mono">ID: {{ $org->unit_id }}</span>
+                                    </div>
+                                @endforeach
+                            </div>
+                        </div>
+                    </div>
                 </section>
             </div>
 
