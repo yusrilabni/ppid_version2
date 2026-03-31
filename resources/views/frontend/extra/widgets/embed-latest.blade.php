@@ -25,10 +25,21 @@
                     <i class="fas fa-file-invoice text-lg"></i>
                 </div>
                 <div class="flex-grow min-w-0">
-                    <div class="flex items-center space-x-2 mb-1">
-                        <span class="text-[9px] font-black uppercase tracking-widest text-{{ $color }}-600 bg-{{ $color }}-50 px-2 py-0.5 rounded-md">
-                            {{ $info->category }}
-                        </span>
+                    <div class="flex items-center justify-between mb-1">
+                        <div class="flex items-center space-x-2">
+                            <span class="text-[9px] font-black uppercase tracking-widest text-{{ $color }}-600 bg-{{ $color }}-50 px-2 py-0.5 rounded-md">
+                                {{ $info->category }}
+                            </span>
+                            @if(strtoupper($info->status) === 'BERLAKU' || strtolower($info->status) === 'aktif')
+                                <span class="text-[9px] font-black uppercase tracking-widest text-green-600 bg-green-50 px-2 py-0.5 rounded-md border border-green-100">
+                                    <i class="fas fa-check-circle mr-1"></i> BERLAKU
+                                </span>
+                            @else
+                                <span class="text-[9px] font-black uppercase tracking-widest text-red-600 bg-red-50 px-2 py-0.5 rounded-md border border-red-100">
+                                    <i class="fas fa-archive mr-1"></i> ARSIP
+                                </span>
+                            @endif
+                        </div>
                     </div>
                     <a href="{{ route('frontend.informasi.detail', $info->slug) }}" target="_blank" class="text-sm font-bold text-gray-800 hover:text-blue-600 block truncate leading-tight">
                         {{ $info->title }}
