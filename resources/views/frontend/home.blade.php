@@ -174,8 +174,6 @@
                 </div>
             </div>
         </section>
-            </div>
-        </section>
 
         <section class="py-3 md:py-6 bg-gray-50">
             <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
