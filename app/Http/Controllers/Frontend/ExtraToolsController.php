@@ -18,9 +18,9 @@ class ExtraToolsController extends Controller
     {
         $organizations = Organization::orderBy('name', 'asc')->get();
         
-        // Ambil daftar tahun unik dari data informasi yang tersedia
-        $years = Informasi::select(DB::raw('DISTINCT(tahun) as year'))
-            ->whereNotNull('tahun')
+        // Ambil daftar tahun unik dari tahun inputan atau dari tanggal upload
+        $years = Informasi::select(DB::raw('DISTINCT(CASE WHEN tahun IS NOT NULL AND tahun != 0 THEN tahun ELSE YEAR(tanggal_upload) END) as year'))
+            ->whereNotNull('tanggal_upload')
             ->orderBy('year', 'desc')
             ->pluck('year');
 
@@ -39,9 +39,9 @@ class ExtraToolsController extends Controller
     {
         $organizations = Organization::orderBy('name', 'asc')->get();
         
-        // Ambil daftar tahun unik dari data informasi yang tersedia
-        $years = Informasi::select(DB::raw('DISTINCT(tahun) as year'))
-            ->whereNotNull('tahun')
+        // Ambil daftar tahun unik dari tahun inputan atau dari tanggal upload
+        $years = Informasi::select(DB::raw('DISTINCT(CASE WHEN tahun IS NOT NULL AND tahun != 0 THEN tahun ELSE YEAR(tanggal_upload) END) as year'))
+            ->whereNotNull('tanggal_upload')
             ->orderBy('year', 'desc')
             ->pluck('year');
 
@@ -60,13 +60,17 @@ class ExtraToolsController extends Controller
         $query = Informasi::where('status', '!=', 'arsip');
 
         // Filter per OPD
-        if ($request->has('unit_id')) {
+        if ($request->has('unit_id') && $request->unit_id != '') {
             $query->where('unit_id', $request->unit_id);
         }
 
-        // Filter per Tahun
+        // Filter per Tahun (Cek kolom tahun atau tahun dari tanggal_upload)
         if ($request->has('year') && $request->year != '') {
-            $query->where('tahun', $request->year);
+            $year = $request->year;
+            $query->where(function($q) use ($year) {
+                $q->where('tahun', $year)
+                  ->orWhereYear('tanggal_upload', $year);
+            });
         }
 
         $informasis = $query->orderBy('tanggal_upload', 'desc')
@@ -98,12 +102,15 @@ class ExtraToolsController extends Controller
             $query->where('category', $category);
         }
 
-        if ($unit_id) {
+        if ($unit_id && $unit_id != '') {
             $query->where('unit_id', $unit_id);
         }
 
         if ($year && $year != '') {
-            $query->where('tahun', $year);
+            $query->where(function($q) use ($year) {
+                $q->where('tahun', $year)
+                  ->orWhereYear('tanggal_upload', $year);
+            });
         }
 
         if ($type === 'popular') {
