@@ -23,8 +23,8 @@
             @foreach ($elements as $element)
                 {{-- "Three Dots" Separator --}}
                 @if (is_string($element))
-                    <span aria-disabled="true" class="flex">
-                        <span class="flex items-center justify-center w-10 h-10 text-gray-400">{{ $element }}</span>
+                    <span aria-disabled="true" class="flex items-center justify-center w-8 h-10 text-gray-400">
+                        {{ $element }}
                     </span>
                 @endif
 
@@ -32,11 +32,13 @@
                 @if (is_array($element))
                     @foreach ($element as $page => $url)
                         @php
-                            // Logika tampil di mobile: Halaman 1, Halaman 2, Halaman Aktif, atau Halaman Terakhir
-                            $isMobileVisible = ($page == 1 || $page == 2 || $page == $paginator->currentPage() || $page == $paginator->lastPage());
+                            $currentPage = $paginator->currentPage();
+                            $lastPage = $paginator->lastPage();
+                            // Logika Mobile: Tampilkan Halaman 1, Terakhir, Aktif, dan 1 halaman di sekitarnya
+                            $isMobileVisible = ($page == 1 || $page == $lastPage || abs($page - $currentPage) <= 1);
                         @endphp
-                        @if ($page == $paginator->currentPage())
-                            <span aria-current="page">
+                        @if ($page == $currentPage)
+                            <span aria-current="page" class="flex">
                                 <span class="flex items-center justify-center w-10 h-10 text-sm font-bold text-white bg-blue-600 rounded-xl shadow-md shadow-blue-200">{{ $page }}</span>
                             </span>
                         @else
