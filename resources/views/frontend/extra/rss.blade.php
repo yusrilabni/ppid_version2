@@ -114,16 +114,16 @@ echo "&lt;/ul&gt;";
 ?&gt;</code></pre>
                         </template>
                         <template x-if="tab === 'laravel'">
-                            <pre><code>// Di Controller
+                            <pre><code>@verbatim// Di Controller
 public function getFeed() {
     $xml = simplexml_load_file('{{ $rssUrl }}');
     return view('your-view', ['items' => $xml->channel->item]);
 }
 
 // Di Blade
-@@foreach($items as $item)
-    &lt;li&gt;&lt;a href="{!! $item->link !!}"&gt;{{ $item->title }}&lt;/a&gt;&lt;/li&gt;
-@@endforeach</code></pre>
+@foreach($items as $item)
+    <li><a href="{!! $item->link !!}">{{ $item->title }}</a></li>
+@endforeach @endverbatim</code></pre>
                         </template>
                     </div>
                 </div>
