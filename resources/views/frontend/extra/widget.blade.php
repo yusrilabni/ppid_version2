@@ -31,27 +31,32 @@
                     limit: 5, 
                     unitId: '', 
                     year: '',
+                    refreshKey: Date.now(),
                     get embedUrl() { 
                         let url = '{{ route('extra.widgets.embed') }}?type=' + this.type + '&limit=' + this.limit;
                         if (this.unitId) url += '&unit_id=' + this.unitId;
                         if (this.year) url += '&year=' + this.year;
+                        url += '&t=' + this.refreshKey; // Paksa refresh
                         return url;
-                    } 
-                }">
+                    },
+                    triggerRefresh() {
+                        this.refreshKey = Date.now();
+                    }
+                }" x-init="$watch('type', () => triggerRefresh()); $watch('limit', () => triggerRefresh()); $watch('unitId', () => triggerRefresh()); $watch('year', () => triggerRefresh());">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
                         {{-- Controls --}}
                         <div class="space-y-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Jenis Konten</label>
-                                    <select x-model="type" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 transition-all">
+                                    <select x-model="type" @change="triggerRefresh()" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 transition-all">
                                         <option value="latest">Informasi Terbaru</option>
                                         <option value="popular">Paling Banyak Dilihat</option>
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Jumlah Data</label>
-                                    <select x-model="limit" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 transition-all">
+                                    <select x-model="limit" @change="triggerRefresh()" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 transition-all">
                                         <option value="3">3 Item</option>
                                         <option value="5">5 Item</option>
                                         <option value="10">10 Item</option>
@@ -62,7 +67,7 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
                                     <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Filter Per OPD (Instansi)</label>
-                                    <select x-model="unitId" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 transition-all">
+                                    <select x-model="unitId" @change="triggerRefresh()" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 transition-all">
                                         <option value="">Semua Instansi</option>
                                         @foreach($organizations as $org)
                                             <option value="{{ $org->unit_id }}">{{ $org->name }}</option>
@@ -71,7 +76,7 @@
                                 </div>
                                 <div>
                                     <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Filter Tahun</label>
-                                    <select x-model="year" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 transition-all">
+                                    <select x-model="year" @change="triggerRefresh()" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 transition-all">
                                         <option value="">Semua Tahun</option>
                                         @foreach($years as $y)
                                             <option value="{{ $y }}">{{ $y }}</option>
