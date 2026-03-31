@@ -50,6 +50,9 @@
                     @foreach ($navLinks as $link)
                         <li><a href="{{ $link['url'] }}" class="hover:text-white">{{ $link['title'] }}</a></li>
                     @endforeach
+                    <li class="pt-2 border-t border-gray-800"></li>
+                    <li><a href="{{ route('extra.rss') }}" class="hover:text-white flex items-center"><i class="fas fa-rss text-orange-500 mr-2 text-[10px]"></i> RSS Feed</a></li>
+                    <li><a href="{{ route('extra.widget') }}" class="hover:text-white flex items-center"><i class="fas fa-plug text-blue-500 mr-2 text-[10px]"></i> Widget Informasi</a></li>
                 </ul>
             </div>
             <div>

@@ -252,3 +252,10 @@ Route::get('/standar-layanan/download/{subStandarLayanan}', [App\Http\Controller
 Route::get('/standar-layanan/visit-url/{subStandarLayanan}', [App\Http\Controllers\Frontend\StandarLayananController::class, 'visitUrl'])->name('frontend.standar-layanan.visit-url');
 
 Route::get('/standar-layanan/file/{subStandarLayanan:slug}', [App\Http\Controllers\Frontend\StandarLayananController::class, 'showFileDetail'])->name('frontend.standar-layanan.file-detail');
+
+// RSS Feed & Widget Routes
+use App\Http\Controllers\Frontend\ExtraToolsController;
+Route::get('/rss-feed', [ExtraToolsController::class, 'rssIndex'])->name('extra.rss');
+Route::get('/rss/generate', [ExtraToolsController::class, 'rssGenerate'])->name('extra.rss.generate');
+Route::get('/widget', [ExtraToolsController::class, 'widgetIndex'])->name('extra.widget');
+Route::get('/widgets/embed', [ExtraToolsController::class, 'widgetLatest'])->name('extra.widgets.embed');
