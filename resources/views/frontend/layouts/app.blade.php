@@ -416,22 +416,37 @@
                         this.isSoundEnabled = (userRole !== 'superadmin');
                     }
 
+                    // CEK MEMORI BROWSER (Persistensi Fitur Baca)
+                    const savedReaderState = localStorage.getItem('acc_reader_active');
+                    const savedHoverState = localStorage.getItem('acc_hover_active');
+                    
+                    if (savedReaderState !== null) {
+                        this.isReaderActive = (savedReaderState === 'true');
+                    }
+                    if (savedHoverState !== null) {
+                        this.isHoverActive = (savedHoverState === 'true');
+                    }
+
+                    // Jika belum ada memori, gunakan default berdasarkan role
+                    if (savedReaderState === null && savedHoverState === null) {
+                        this.activateDefaultTTS(userRole);
+                    }
+
                     window.addEventListener('trigger-greeting', () => {
                         if (!this.isSoundEnabled) { 
-                            this.activateDefaultTTS(userRole); 
                             return; 
                         }
                         const authStatus = @json(auth()->check());
                         const userId = @json(auth()->id() ?? 'guest');
                         const userName = @json(auth()->user()?->name ?? '');
                         const isHome = window.location.pathname === '/' || window.location.pathname === '/home';
-                        if (!isHome) { this.activateDefaultTTS(userRole); return; }
+                        if (!isHome) { return; }
                         window.speechSynthesis.cancel();
                         let text = "Selamat Datang di P P I D Kabupaten Sinjai";
                         let fullText = authStatus ? ("Halo " + userName + ", " + text) : text;
                         const utterance = new SpeechSynthesisUtterance(fullText);
                         utterance.lang = 'id-ID';
-                        utterance.onend = () => { if (this.isSoundEnabled) this.activateDefaultTTS(userRole); };
+                        utterance.onend = () => { if (this.isSoundEnabled) { /* do nothing */ } };
                         window.speechSynthesis.speak(utterance);
                     });
                     setInterval(() => { this.isCurrentlySpeaking = window.speechSynthesis.speaking; }, 200);
@@ -450,16 +465,14 @@
                     localStorage.setItem('acc_sound_enabled', this.isSoundEnabled); // SIMPAN KE MEMORI
                     if (!this.isSoundEnabled) {
                         window.speechSynthesis.cancel();
-                        this.isReaderActive = false;
-                        this.isHoverActive = false;
-                    } else {
-                        const userRole = @json(auth()->user()?->role ?? 'guest');
-                        this.activateDefaultTTS(userRole);
+                        // Jangan matikan fiturnya, cukup mute saja suaranya agar saat un-mute fitur tetap aktif sesuai pilihan terakhir
                     }
                 },
                 activateDefaultTTS(role) {
                     this.isHoverActive = (role === 'guest' || role === 'user');
                     this.isReaderActive = (role === 'admin');
+                    localStorage.setItem('acc_reader_active', this.isReaderActive);
+                    localStorage.setItem('acc_hover_active', this.isHoverActive);
                 },
                 handleElementSource(target, isHover = false) {
                     let text = '';
@@ -474,8 +487,26 @@
                     text = text.trim();
                     if (text && text.length > 1) { this.speak(text); }
                 },
-                toggleReader() { if (!this.isSoundEnabled) this.isSoundEnabled = true; this.isReaderActive = !this.isReaderActive; this.isHoverActive = false; },
-                toggleHoverReader() { if (!this.isSoundEnabled) this.isSoundEnabled = true; this.isHoverActive = !this.isHoverActive; this.isReaderActive = false; },
+                toggleReader() { 
+                    if (!this.isSoundEnabled) {
+                        this.isSoundEnabled = true;
+                        localStorage.setItem('acc_sound_enabled', 'true');
+                    }
+                    this.isReaderActive = !this.isReaderActive; 
+                    this.isHoverActive = false;
+                    localStorage.setItem('acc_reader_active', this.isReaderActive);
+                    localStorage.setItem('acc_hover_active', 'false');
+                },
+                toggleHoverReader() { 
+                    if (!this.isSoundEnabled) {
+                        this.isSoundEnabled = true;
+                        localStorage.setItem('acc_sound_enabled', 'true');
+                    }
+                    this.isHoverActive = !this.isHoverActive; 
+                    this.isReaderActive = false; 
+                    localStorage.setItem('acc_hover_active', this.isHoverActive);
+                    localStorage.setItem('acc_reader_active', 'false');
+                },
                 cycleFont() { Alpine.store('accConfig').setFontLevel(['kecil', 'normal', 'sedang', 'besar'][(['kecil', 'normal', 'sedang', 'besar'].indexOf(Alpine.store('accConfig').fontLevel) + 1) % 4]); },
                 resetAcc() { localStorage.clear(); sessionStorage.clear(); location.reload(); },
                 speak(text) { if (!this.isSoundEnabled) return; window.speechSynthesis.cancel(); const utterance = new SpeechSynthesisUtterance(text); utterance.lang = 'id-ID'; window.speechSynthesis.speak(utterance); }

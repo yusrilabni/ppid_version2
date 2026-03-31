@@ -231,5 +231,17 @@
         });
     </script>
     @stack('scripts')
+    <script>
+        // Skrip untuk memberikan peringatan saat merubah data di lingkungan lokal
+        document.addEventListener('submit', function(e) {
+            // Cek jika berjalan di localhost atau 127.0.0.1
+            if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+                // Tampilkan konfirmasi alert
+                if (!confirm('Peringatan: Anda sedang merubah data atau konfigurasi di lingkungan LOKAL. Apakah Anda yakin ingin melanjutkan perubahan ini?')) {
+                    e.preventDefault();
+                }
+            }
+        });
+    </script>
 </body>
 </html>
