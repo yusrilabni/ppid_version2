@@ -80,25 +80,33 @@
             });
         }
 
-        // Scroll Persistence Logic (Save scroll position before unload, restore on load)
-        window.addEventListener('beforeunload', () => {
+        // Scroll Persistence Logic
+        const saveScroll = () => {
             sessionStorage.setItem('scrollPos_' + window.location.pathname, window.scrollY);
-        });
+        };
+        window.addEventListener('beforeunload', saveScroll);
+        window.addEventListener('turbo:before-visit', saveScroll);
 
         // Turbo Configuration
-        Turbo.setProgressBarDelay(50); // Show progress bar faster (50ms)
+        Turbo.setProgressBarDelay(50);
         
+        // Prevent re-rendering if clicking the same link
+        document.addEventListener('turbo:click', (event) => {
+            if (event.detail.url === window.location.href.split('#')[0]) {
+                event.preventDefault();
+            }
+        });
+
         // Handle Turbo transitions
         document.addEventListener('turbo:load', () => {
-            // Restore scroll position for the current page
+            // Instant Scroll Restoration
             const pos = sessionStorage.getItem('scrollPos_' + window.location.pathname);
             if (pos) {
-                window.scrollTo(0, parseInt(pos));
+                window.scrollTo({ top: parseInt(pos), behavior: 'instant' });
             }
 
-            // Re-run Tailwind to pick up any new classes in the swapped main content
+            // Re-run Tailwind & Lucide
             if (window.tailwind) { window.tailwind.run(); }
-            // Re-run Lucide
             if (window.lucide) { window.lucide.createIcons(); }
         });
 
