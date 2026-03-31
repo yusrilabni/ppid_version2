@@ -144,15 +144,7 @@
                             <div class="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">1</div>
                             <div>
                                 <h4 class="font-bold text-gray-800">Gunakan Block "Custom HTML"</h4>
-                                <p class="text-sm text-gray-600 mt-1">Buka editor postingan atau halaman Anda. Klik tombol <strong>(+) Tambah Blok</strong>, cari dan pilih blok bernama <strong>"Custom HTML"</strong> (atau HTML Khusus).</p>
-                            </div>
-                        </div>
-
-                        <div class="flex items-start">
-                            <div class="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">2</div>
-                            <div>
-                                <h4 class="font-bold text-gray-800">Tempelkan Kode Iframe</h4>
-                                <p class="text-sm text-gray-600 mt-1">Salin kode dari generator di atas, lalu tempelkan ke dalam kotak input HTML yang muncul di WordPress.</p>
+                                <p class="text-sm text-gray-600 mt-1">Buka editor postingan atau halaman Anda. Klik tombol <strong>(+) Tambah Blok</strong>, cari dan pilih blok bernama <strong>"Custom HTML"</strong>.</p>
                             </div>
                         </div>
 
@@ -162,23 +154,37 @@
                                     <i class="fas fa-arrows-alt-v mr-2"></i> Mengatur Lebar & Tinggi (PENTING)
                                 </h4>
                                 <div class="mt-3 space-y-3 text-sm text-blue-900/80">
-                                    <p><strong>Lebar (Width):</strong> Selalu biarkan <code>width="100%"</code> agar widget otomatis mengikuti lebar area sidebar atau konten Anda (Responsive).</p>
-                                    <p><strong>Tinggi (Height):</strong> Atur nilai <code>height="..."</code> sesuai dengan jumlah item yang Anda pilih agar tidak muncul scrollbar ganda:</p>
-                                    <ul class="list-disc ml-5 space-y-1">
-                                        <li>3 Item: Gunakan <code>height="300"</code></li>
-                                        <li>5 Item: Gunakan <code>height="450"</code></li>
-                                        <li>10 Item: Gunakan <code>height="800"</code></li>
-                                    </ul>
+                                    <p><strong>Lebar (Width):</strong> Selalu gunakan <code>width="100%"</code> agar widget otomatis mengikuti lebar sidebar atau konten Anda (Responsive).</p>
+                                    <p><strong>Tinggi (Height):</strong> Atur nilai <code>height</code> (misal: 450) agar tidak muncul scrollbar ganda.</p>
                                 </div>
                             </div>
                         </div>
+                    </div>
+                </section>
 
+                {{-- BLOGSPOT GUIDE --}}
+                <section class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 p-8 md:p-10">
+                    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
+                        <i class="fab fa-google text-orange-500 mr-3 text-3xl"></i>
+                        Langkah Pemasangan di Blogspot (Blogger)
+                    </h2>
+                    
+                    <div class="space-y-6">
                         <div class="flex items-start">
-                            <div class="bg-blue-100 text-blue-600 w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">3</div>
-                            <div>
-                                <h4 class="font-bold text-gray-800">Pratinjau & Simpan</h4>
-                                <p class="text-sm text-gray-600 mt-1">Klik tombol <strong>Preview</strong> di atas blok untuk melihat hasilnya. Jika sudah pas, klik <strong>Publish/Update</strong>.</p>
-                            </div>
+                            <div class="bg-orange-100 text-orange-600 w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">1</div>
+                            <p class="text-sm text-gray-600">Buka Dashboard <strong>Blogger.com</strong> dan pilih menu <strong>Tata Letak (Layout)</strong>.</p>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-orange-100 text-orange-600 w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">2</div>
+                            <p class="text-sm text-gray-600">Klik <strong>Tambahkan Gadget</strong> di bagian Sidebar atau Footer.</p>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-orange-100 text-orange-600 w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">3</div>
+                            <p class="text-sm text-gray-600">Pilih jenis gadget <strong>"HTML/JavaScript"</strong>.</p>
+                        </div>
+                        <div class="flex items-start">
+                            <div class="bg-orange-100 text-orange-600 w-8 h-8 rounded-full flex items-center justify-center font-bold mr-4 flex-shrink-0">4</div>
+                            <p class="text-sm text-gray-600">Beri judul (misal: Info PPID) dan tempelkan <strong>Kode Embed</strong> yang sudah Anda salin di atas.</p>
                         </div>
                     </div>
                 </section>

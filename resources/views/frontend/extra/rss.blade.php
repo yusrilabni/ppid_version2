@@ -5,119 +5,96 @@
 @section('content')
 <div class="bg-gray-50 py-12">
     <div class="container mx-auto px-4 max-w-6xl">
-        {{-- Header Section --}}
+        {{-- Header --}}
         <div class="text-center mb-12">
             <div class="inline-block p-3 bg-orange-100 rounded-2xl mb-4">
                 <i class="fas fa-rss text-orange-600 text-3xl"></i>
             </div>
-            <h1 class="text-4xl font-extrabold text-gray-900 mb-4">RSS Feed Informasi Publik</h1>
-            <p class="text-lg text-gray-600 max-w-3xl mx-auto">Sinkronisasikan seluruh informasi publik Kabupaten Sinjai ke platform Anda secara otomatis menggunakan teknologi RSS standar industri.</p>
+            <h1 class="text-4xl font-extrabold text-gray-900 mb-4">RSS Feed & Autopost</h1>
+            <p class="text-lg text-gray-600 max-w-3xl mx-auto">Gunakan feed data XML untuk integrasi website atau publikasi otomatis ke Media Sosial.</p>
         </div>
 
         <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
-            {{-- Main Content --}}
             <div class="lg:col-span-2 space-y-8">
-                {{-- A. Apa itu RSS --}}
-                <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8 relative overflow-hidden">
-                    <div class="absolute top-0 right-0 p-4 opacity-10">
-                        <i class="fas fa-rss text-8xl text-orange-600"></i>
-                    </div>
-                    <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
-                        <span class="w-2 h-8 bg-orange-500 rounded-full mr-3"></span>
-                        Apa itu RSS Feed?
-                    </h2>
-                    <div class="prose prose-blue text-gray-600 max-w-none space-y-4">
-                        <p>RSS (Really Simple Syndication) adalah format data standar XML yang digunakan untuk mengirimkan informasi yang sering diperbarui. Dengan RSS, website lain atau aplikasi pembaca berita (RSS Reader) dapat mengambil data terbaru kami tanpa perlu melakukan pemantauan manual.</p>
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-4 mt-6">
-                            <div class="bg-blue-50 p-4 rounded-2xl border border-blue-100">
-                                <h4 class="font-bold text-blue-800 mb-1">Manfaat Website</h4>
-                                <p class="text-xs">Meningkatkan otoritas konten dan mempermudah sindikasi data ke portal berita nasional.</p>
-                            </div>
-                            <div class="bg-green-50 p-4 rounded-2xl border border-green-100">
-                                <h4 class="font-bold text-green-800 mb-1">Manfaat Pengguna</h4>
-                                <p class="text-xs">Mendapatkan update langsung tanpa harus membuka browser dan mencari satu per satu.</p>
-                            </div>
-                        </div>
-                    </div>
-                </section>
-
-                {{-- B. Filter Per OPD (Fitur Baru) --}}
+                
+                {{-- Penjelasan Sinkronisasi Sosial --}}
                 <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
                     <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
                         <span class="w-2 h-8 bg-blue-500 rounded-full mr-3"></span>
-                        Filter Berdasarkan OPD
+                        Apa itu Sinkronisasi Sosial?
                     </h2>
-                    <p class="text-gray-600 mb-6 text-sm">Anda dapat mengambil informasi khusus dari OPD tertentu saja (misal: RSUD atau Perikanan). Cukup tambahkan parameter <code>?unit_id=ID_OPD</code> pada URL RSS kami.</p>
-                    
-                    <div class="bg-gray-900 rounded-2xl p-6 mb-6">
-                        <p class="text-xs text-gray-400 mb-2 uppercase tracking-widest font-bold">Contoh URL RSS RSUD Sinjai:</p>
-                        <code class="text-blue-400 break-all text-sm font-mono">
-                            {{ route('extra.rss.generate') }}?unit_id=34
-                        </code>
-                    </div>
-
-                    <div x-data="{ open: false }">
-                        <button @click="open = !open" class="text-blue-600 hover:text-blue-800 font-bold text-sm flex items-center">
-                            <i class="fas" :class="open ? 'fa-chevron-up' : 'fa-list-ul'"></i> 
-                            <span class="ml-2" x-text="open ? 'Sembunyikan Daftar ID OPD' : 'Lihat Daftar ID OPD Semua Instansi'"></span>
-                        </button>
-                        <div x-show="open" x-transition class="mt-4 border-t pt-4">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 text-[11px]">
-                                @foreach($organizations as $org)
-                                    <div class="flex justify-between p-2 bg-gray-50 rounded-lg hover:bg-blue-50 transition-colors">
-                                        <span class="text-gray-700 font-medium truncate pr-4">{{ $org->name }}</span>
-                                        <span class="text-blue-600 font-bold font-mono">ID: {{ $org->unit_id }}</span>
-                                    </div>
-                                @endforeach
+                    <div class="prose prose-blue text-gray-600 max-w-none space-y-4">
+                        <p>Sinkronisasi Sosial adalah proses membagikan update informasi secara otomatis dari website kami ke akun Media Sosial Anda (Facebook, Twitter/X, Telegram) tanpa perlu mengetik ulang. Sistem ini bekerja dengan metode <strong>Trigger & Action</strong>:</p>
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-4 text-center">
+                            <div class="p-4 bg-gray-50 rounded-2xl">
+                                <i class="fas fa-rss text-orange-500 mb-2"></i>
+                                <p class="text-xs font-bold uppercase">1. Trigger</p>
+                                <p class="text-[10px]">Data baru muncul di RSS kami</p>
+                            </div>
+                            <div class="p-4 bg-gray-50 rounded-2xl">
+                                <i class="fas fa-robot text-blue-500 mb-2"></i>
+                                <p class="text-xs font-bold uppercase">2. Bridge</p>
+                                <p class="text-[10px]">Layanan IFTTT/Zapier membaca data</p>
+                            </div>
+                            <div class="p-4 bg-gray-50 rounded-2xl">
+                                <i class="fab fa-facebook text-blue-700 mb-2"></i>
+                                <p class="text-xs font-bold uppercase">3. Action</p>
+                                <p class="text-[10px]">Post otomatis terbit di Sosmed Anda</p>
                             </div>
                         </div>
+                        <p class="text-sm font-medium text-blue-600 bg-blue-50 p-4 rounded-xl italic">
+                            "Artinya, setiap kali admin PPID Sinjai mengupload informasi, akun Facebook portal berita Anda akan otomatis membuat postingan yang berisi judul dan link informasi tersebut."
+                        </p>
                     </div>
                 </section>
 
-                {{-- C. Integrasi Kode --}}
+                {{-- Integrasi Kode dengan Penjelasan Baris --}}
                 <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-8">
                     <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
                         <span class="w-2 h-8 bg-purple-500 rounded-full mr-3"></span>
-                        Integrasi Kode Program
+                        Penjelasan Detail Kode Program
                     </h2>
                     <div x-data="{ tab: 'html' }">
                         <div class="flex space-x-2 mb-6 bg-gray-100 p-1 rounded-xl w-fit">
-                            <button @click="tab = 'html'" :class="tab === 'html' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500'" class="py-2 px-4 rounded-lg text-xs font-bold transition-all">HTML/JS</button>
-                            <button @click="tab = 'php'" :class="tab === 'php' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500'" class="py-2 px-4 rounded-lg text-xs font-bold transition-all">PHP Native</button>
-                            <button @click="tab = 'laravel'" :class="tab === 'laravel' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500'" class="py-2 px-4 rounded-lg text-xs font-bold transition-all">Laravel Blade</button>
+                            <button @click="tab = 'html'" :class="tab === 'html' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500'" class="py-2 px-4 rounded-lg text-xs font-bold transition-all">HTML/JS (Universal)</button>
+                            <button @click="tab = 'php'" :class="tab === 'php' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500'" class="py-2 px-4 rounded-lg text-xs font-bold transition-all">PHP (Server-Side)</button>
                         </div>
 
-                        <div class="bg-gray-900 rounded-2xl p-6 font-mono text-sm leading-relaxed overflow-x-auto">
+                        <div class="bg-gray-900 rounded-2xl p-6 font-mono text-[11px] md:text-sm leading-relaxed overflow-x-auto text-gray-300">
                             <template x-if="tab === 'html'">
-                                <pre class="text-green-400"><code>&lt;script&gt;
-// Fetch data dari RSS kami
-fetch('{{ route('extra.rss.generate') }}')
-  .then(res => res.text())
-  .then(xml => {
-    let data = new DOMParser().parseFromString(xml, "text/xml");
-    console.log(data.querySelectorAll("item"));
-  });
-&lt;/script&gt;</code></pre>
+                                <pre><code>@verbatim// 1. Ambil data dari URL RSS kami
+fetch('URL_RSS_KAMI')
+  .then(response => response.text()) // Ubah response menjadi teks mentah
+  .then(xmlString => {
+    // 2. Ubah teks XML menjadi objek DOM yang bisa dibaca JS
+    const parser = new DOMParser();
+    const xml = parser.parseFromString(xmlString, "text/xml");
+    
+    // 3. Cari semua tag <item> (daftar berita)
+    const items = xml.querySelectorAll("item");
+    
+    // 4. Lakukan pengulangan (loop) untuk setiap berita
+    items.forEach(el => {
+      const title = el.querySelector("title").textContent; // Ambil Judul
+      const link = el.querySelector("link").textContent;   // Ambil Link
+      
+      console.log("Judul: " + title);
+      console.log("Link: " + link);
+    });
+  });@endverbatim</code></pre>
                             </template>
                             <template x-if="tab === 'php'">
-                                <pre class="text-blue-300"><code>&lt;?php
-$xml = simplexml_load_file('{{ route('extra.rss.generate') }}');
-foreach ($xml->channel->item as $info) {
-    echo $info->title . "&lt;br&gt;";
-}
-?&gt;</code></pre>
-                            </template>
-                            <template x-if="tab === 'laravel'">
-                                <pre class="text-orange-300"><code>@verbatim// Di Controller
-public function getPpidFeed() {
-    $rss = simplexml_load_file('URL_RSS_KAMI');
-    return view('page', ['items' => $rss->channel->item]);
-}
+                                <pre><code>@verbatim// 1. Load file XML langsung dari server kami
+$rss = simplexml_load_file('URL_RSS_KAMI');
 
-// Di Blade
-@foreach($items as $item)
-    <li>{{ $item->title }}</li>
-@endforeach @endverbatim</code></pre>
+// 2. Ambil data berita di dalam channel -> item
+foreach ($rss->channel->item as $info) {
+    // 3. Tampilkan judul sebagai link
+    echo "<a href='{$info->link}'>{$info->title}</a><br>";
+    
+    // 4. Tampilkan deskripsi singkat (jika perlu)
+    echo "<p>{$info->description}</p>";
+} @endverbatim</code></pre>
                             </template>
                         </div>
                     </div>
@@ -126,61 +103,38 @@ public function getPpidFeed() {
 
             {{-- Sidebar --}}
             <div class="space-y-8">
-                {{-- WordPress Guide --}}
-                <section class="bg-blue-600 rounded-3xl shadow-lg p-8 text-white relative overflow-hidden">
-                    <i class="fab fa-wordpress absolute -bottom-4 -right-4 text-8xl opacity-20"></i>
-                    <h3 class="text-xl font-bold mb-4">Langkah Detail WordPress</h3>
+                {{-- Blogger Guide --}}
+                <section class="bg-orange-600 rounded-3xl shadow-lg p-8 text-white relative overflow-hidden">
+                    <i class="fab fa-google absolute -bottom-4 -right-4 text-8xl opacity-20"></i>
+                    <h3 class="text-xl font-bold mb-4">Panduan Blogspot (Blogger)</h3>
                     <div class="space-y-6 text-sm">
                         <div class="flex items-start">
-                            <span class="bg-white text-blue-600 w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 font-black">1</span>
-                            <p>Gunakan block <strong>"RSS"</strong> di Gutenberg Editor.</p>
+                            <span class="bg-white text-orange-600 w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 font-black">1</span>
+                            <p>Masuk ke Dashboard <strong>Blogger</strong>, pilih menu <strong>Tata Letak (Layout)</strong>.</p>
                         </div>
                         <div class="flex items-start">
-                            <span class="bg-white text-blue-600 w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 font-black">2</span>
-                            <p>Tempel URL Feed kami dan klik <strong>Gunakan URL</strong>.</p>
-                        </div>
-                        <div class="flex items-start bg-blue-700/50 p-4 rounded-2xl border border-blue-400/30">
-                            <div>
-                                <p class="font-bold mb-2 underline decoration-yellow-400 underline-offset-4 text-xs uppercase tracking-widest">Pengaturan Wajib:</p>
-                                <ul class="space-y-2 text-[11px] opacity-90 italic">
-                                    <li>- Ceklis "Tampilkan Ringkasan"</li>
-                                    <li>- Ceklis "Tampilkan Penulis"</li>
-                                    <li>- Ceklis "Tampilkan Tanggal"</li>
-                                    <li>- Set Maksimum Item ke 10</li>
-                                </ul>
-                            </div>
+                            <span class="bg-white text-orange-600 w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 font-black">2</span>
+                            <p>Klik <strong>Tambahkan Gadget</strong> dan cari gadget bernama <strong>"Feed"</strong>.</p>
                         </div>
                         <div class="flex items-start">
-                            <span class="bg-white text-blue-600 w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 font-black">3</span>
-                            <p>Simpan dan Widget akan terupdate otomatis selamanya.</p>
+                            <span class="bg-white text-orange-600 w-6 h-6 rounded-full flex items-center justify-center mr-3 flex-shrink-0 font-black">3</span>
+                            <p>Tempel URL Feed kami, lalu atur berapa banyak informasi yang tampil.</p>
                         </div>
                     </div>
                 </section>
 
-                {{-- FAQ Section --}}
+                {{-- Social Sync Tools --}}
                 <section class="bg-white rounded-3xl shadow-sm border border-gray-100 p-6">
-                    <h3 class="text-lg font-bold text-gray-800 mb-4">Tanya Jawab</h3>
+                    <h3 class="text-lg font-bold text-gray-800 mb-4">Alat Autopost Sosmed</h3>
                     <div class="space-y-4">
-                        <div>
-                            <h4 class="text-sm font-bold text-gray-700 mb-1">Seberapa sering update?</h4>
-                            <p class="text-xs text-gray-500">Real-time. Begitu admin mengupload informasi, RSS Feed akan otomatis memperbarui datanya.</p>
-                        </div>
-                        <hr class="border-gray-100">
-                        <div>
-                            <h4 class="text-sm font-bold text-gray-700 mb-1">Apakah berbayar?</h4>
-                            <p class="text-xs text-gray-500">Gratis. Layanan RSS ini disediakan untuk mendukung keterbukaan informasi publik.</p>
-                        </div>
-                    </div>
-                </section>
-
-                {{-- Social Sync --}}
-                <section class="bg-gradient-to-br from-gray-800 to-gray-900 rounded-3xl p-8 text-white">
-                    <h3 class="text-lg font-bold mb-2">Sinkronisasi Sosial</h3>
-                    <p class="text-xs opacity-70 mb-4">Anda bisa menggunakan layanan seperti IFTTT atau Zapier untuk memposting otomatis update kami ke Facebook atau Twitter Anda via RSS.</p>
-                    <div class="flex space-x-2">
-                        <i class="fab fa-facebook-square text-xl"></i>
-                        <i class="fab fa-twitter-square text-xl"></i>
-                        <i class="fab fa-telegram text-xl"></i>
+                        <a href="https://ifttt.com" target="_blank" class="flex items-center p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                            <div class="w-8 h-8 bg-black text-white rounded flex items-center justify-center mr-3">IF</div>
+                            <div class="text-xs font-bold text-gray-700">IFTTT (Gratis & Mudah)</div>
+                        </a>
+                        <a href="https://zapier.com" target="_blank" class="flex items-center p-3 bg-gray-50 rounded-xl hover:bg-gray-100 transition-colors">
+                            <div class="w-8 h-8 bg-orange-500 text-white rounded flex items-center justify-center mr-3">Z</div>
+                            <div class="text-xs font-bold text-gray-700">Zapier (Sangat Powerfull)</div>
+                        </a>
                     </div>
                 </section>
             </div>
