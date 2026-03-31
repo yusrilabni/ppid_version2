@@ -55,7 +55,7 @@ class ExtraToolsController extends Controller
     }
 
     /**
-     * Generator RSS XML (Tanpa Filter Status agar riwayat muncul)
+     * Generator RSS XML (Dukungan CORS untuk Integrasi Eksternal)
      */
     public function rssGenerate(Request $request)
     {
@@ -77,12 +77,15 @@ class ExtraToolsController extends Controller
 
         return Response::make($content, 200, [
             'Content-Type' => 'application/xml',
-            'Charset' => 'UTF-8'
+            'Charset' => 'UTF-8',
+            'Access-Control-Allow-Origin' => '*', // IZINKAN AKSES DARI WEBSITE LAIN
+            'Access-Control-Allow-Methods' => 'GET',
+            'Cache-Control' => 'public, max-age=300'
         ]);
     }
 
     /**
-     * Widget khusus untuk iframe (Tanpa Filter Status agar riwayat muncul)
+     * Widget khusus untuk iframe
      */
     public function widgetLatest(Request $request)
     {
@@ -93,17 +96,14 @@ class ExtraToolsController extends Controller
 
         $query = Informasi::query();
 
-        // Filter Instansi (OPD)
         if ($request->filled('unit_id')) {
             $query->where('unit_id', $unit_id);
         }
 
-        // Filter Tahun
         if ($request->filled('year')) {
             $query->where('tahun', $year);
         }
 
-        // Pengurutan
         if ($type === 'popular') {
             $query->orderBy('views_count', 'desc');
         } else {
@@ -112,6 +112,7 @@ class ExtraToolsController extends Controller
 
         $informasis = $query->take($limit)->get();
 
-        return view('frontend.extra.widgets.embed-latest', compact('informasis', 'type'));
+        return Response::view('frontend.extra.widgets.embed-latest', compact('informasis', 'type'))
+            ->header('Access-Control-Allow-Origin', '*'); // IZINKAN AKSES DARI WEBSITE LAIN
     }
 }

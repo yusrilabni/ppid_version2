@@ -167,25 +167,39 @@
   const RSS_URL = '{{ route('extra.rss.generate') }}';
 
   fetch(RSS_URL)
-    .then(res => res.text())
+    .then(res => {
+      if (!res.ok) throw new Error('Gagal mengambil data dari server');
+      return res.text();
+    })
     .then(xmlString => {
       const xml = new DOMParser().parseFromString(xmlString, "text/xml");
       const items = xml.querySelectorAll("item");
-      let html = '&lt;ul style="padding:0; margin:0; list-style:none;"&gt;';
-      
+
+      if (items.length === 0) {
+        document.getElementById("ppid-list").innerHTML = "Tidak ada informasi ditemukan.";
+        return;
+      }
+
+      let html = '&lt;h3 style="margin-top:0;"&gt;Update Informasi Terbaru&lt;/h3&gt;&lt;ul style="padding:0; margin:0; list-style:none;"&gt;';
+
       items.forEach(el => {
         const title = el.querySelector("title").textContent;
         const link = el.querySelector("link").textContent;
-        const date = new Date(el.querySelector("pubDate").textContent).toLocaleDateString('id-ID');
-        
+        const dateRaw = el.querySelector("pubDate").textContent;
+        const date = new Date(dateRaw).toLocaleDateString('id-ID');
+
         html += `&lt;li style="margin-bottom:20px; padding:15px; background:#f9f9f9; border-radius:12px; border-left: 5px solid #0052FF;"&gt;
-                   &lt;a href="${link}" target="_blank" style="text-decoration:none; color:#0052FF; font-weight:bold;"&gt;${title}&lt;/a&gt;
+                   &lt;a href="${link}" target="_blank" style="text-decoration:none; color:#0052FF; font-weight:bold; font-size:16px;"&gt;${title}&lt;/a&gt;
                    &lt;div style="color:#888; font-size:12px; margin-top:5px;"&gt;📅 Dipublikasikan: ${date}&lt;/div&gt;
                  &lt;/li&gt;`;
       });
       document.getElementById("ppid-list").innerHTML = html + '&lt;/ul&gt;';
+    })
+    .catch(err => {
+      console.error(err);
+      document.getElementById("ppid-list").innerHTML = "&lt;p style='color:red'&gt;Gagal memuat data. Pastikan koneksi internet stabil.&lt;/p&gt;";
     });
-&lt;/script&gt;</code></pre>
+&lt;/script&gt;
                             </div>
                         </template>
                         
