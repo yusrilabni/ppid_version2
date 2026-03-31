@@ -18,7 +18,6 @@ class ExtraToolsController extends Controller
     {
         $organizations = Organization::orderBy('name', 'asc')->get();
         
-        // Ambil daftar tahun unik dari kolom 'tahun' yang diisi manual oleh user
         $years = Informasi::select('tahun')
             ->whereNotNull('tahun')
             ->where('tahun', '!=', '')
@@ -41,7 +40,6 @@ class ExtraToolsController extends Controller
     {
         $organizations = Organization::orderBy('name', 'asc')->get();
         
-        // Ambil daftar tahun unik dari kolom 'tahun' yang diisi manual oleh user
         $years = Informasi::select('tahun')
             ->whereNotNull('tahun')
             ->where('tahun', '!=', '')
@@ -57,17 +55,16 @@ class ExtraToolsController extends Controller
     }
 
     /**
-     * Generator RSS XML
+     * Generator RSS XML (Tanpa Filter Status agar riwayat muncul)
      */
     public function rssGenerate(Request $request)
     {
-        $query = Informasi::where('status', '!=', 'arsip');
+        $query = Informasi::query();
 
         if ($request->filled('unit_id')) {
             $query->where('unit_id', $request->unit_id);
         }
 
-        // Filter berdasarkan kolom 'tahun' (input manual)
         if ($request->filled('year')) {
             $query->where('tahun', $request->year);
         }
@@ -85,7 +82,7 @@ class ExtraToolsController extends Controller
     }
 
     /**
-     * Widget khusus untuk iframe (Manual Year Logic)
+     * Widget khusus untuk iframe (Tanpa Filter Status agar riwayat muncul)
      */
     public function widgetLatest(Request $request)
     {
@@ -94,17 +91,19 @@ class ExtraToolsController extends Controller
         $unit_id = $request->get('unit_id');
         $year = $request->get('year');
 
-        $query = Informasi::query()->where('status', '!=', 'arsip');
+        $query = Informasi::query();
 
+        // Filter Instansi (OPD)
         if ($request->filled('unit_id')) {
             $query->where('unit_id', $unit_id);
         }
 
-        // Filter berdasarkan kolom 'tahun' (input manual)
+        // Filter Tahun
         if ($request->filled('year')) {
             $query->where('tahun', $year);
         }
 
+        // Pengurutan
         if ($type === 'popular') {
             $query->orderBy('views_count', 'desc');
         } else {
