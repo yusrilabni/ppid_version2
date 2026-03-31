@@ -64,8 +64,8 @@
                     <p class="text-gray-600 mb-6 text-sm">Gunakan parameter berikut untuk filter data yang spesifik:</p>
                     <div class="bg-gray-900 rounded-2xl p-6 text-xs font-mono text-gray-300 space-y-4 border-l-4 border-orange-500">
                         <div>
-                            <p class="text-blue-400 font-bold mb-1">// Filter per Instansi (Contoh: RSUD Sinjai)</p>
-                            <code class="break-all">{{ route('extra.rss.generate') }}?unit_id=34</code>
+                            <p class="text-blue-400 font-bold mb-1">// Filter per Instansi (Contoh: Diskominfo Sinjai)</p>
+                            <code class="break-all">{{ route('extra.rss.generate') }}?unit_id=730714</code>
                         </div>
                         <div>
                             <p class="text-blue-400 font-bold mb-1">// Filter per Tahun (Contoh: 2023)</p>
@@ -76,8 +76,8 @@
                             <code class="break-all">{{ route('extra.rss.generate') }}?limit=5</code>
                         </div>
                         <div class="pt-2 border-t border-white/10">
-                            <p class="text-orange-400 font-black mb-1 uppercase tracking-widest">// Contoh Gabungan 3 Filter Sekaligus:</p>
-                            <code class="break-all text-white">{{ route('extra.rss.generate') }}?unit_id=34&year=2023&limit=5</code>
+                            <p class="text-orange-400 font-black mb-1 uppercase tracking-widest">// Contoh Gabungan 3 Filter Sekaligus (Diskominfo + 2023 + 5 Data):</p>
+                            <code class="break-all text-white">{{ route('extra.rss.generate') }}?unit_id=730714&year=2023&limit=5</code>
                         </div>
                     </div>
 
@@ -177,7 +177,7 @@
                         <button @click="tab = 'ci'" :class="tab === 'ci' ? 'bg-white shadow-sm text-blue-600' : 'text-gray-500'" class="py-3 px-6 rounded-xl text-xs font-bold transition-all uppercase tracking-widest">CodeIgniter</button>
                     </div>
 
-                    <div class="bg-gray-900 rounded-[2.5rem] p-8 md:p-12 font-mono text-sm leading-relaxed text-gray-300 shadow-2xl overflow-x-hidden relative group">
+                    <div class="bg-gray-900 rounded-[2.5rem] p-8 md:p-12 font-mono text-sm leading-relaxed text-gray-300 shadow-2xl overflow-x-hidden relative group text-left">
                         {{-- Tombol Salin --}}
                         <button @click="
                             let codeText = '';
@@ -195,42 +195,33 @@
 
                         <template x-if="tab === 'html'">
                             <div class="space-y-4">
-                                <p class="text-blue-400 text-xs italic">// Copy kode ini ke file HTML Anda. Jumlah data dikontrol melalui URL (?limit=5).</p>
+                                <p class="text-blue-400 text-xs italic">// Copy kode ini ke file HTML Anda. Data dikontrol via URL.</p>
                                 <pre class="whitespace-pre-wrap"><code id="code-html">&lt;!-- Wadah daftar berita --&gt;
 &lt;div id="ppid-list" style="font-family: sans-serif; max-width: 100%; border: 1px solid #eee; padding: 20px; border-radius: 15px;"&gt;
   Memuat data terbaru...
 &lt;/div&gt;
 
 &lt;script&gt;
-  // Ganti limit=5 untuk mengubah jumlah item yang tampil
-  const RSS_URL = '{{ route('extra.rss.generate') }}?unit_id=34&year=2023&limit=5';
+  // Gunakan filter ?unit_id=730714 (Diskominfo) & limit=5
+  const RSS_URL = '{{ route('extra.rss.generate') }}?unit_id=730714&limit=5';
 
   fetch(RSS_URL)
     .then(res => res.text())
     .then(xmlString => {
       const xml = new DOMParser().parseFromString(xmlString, "text/xml");
-      const items = xml.querySelectorAll("item"); // Menampilkan semua item yang dikirim server
-      let html = '&lt;h3 style="margin-top:0;"&gt;Informasi Terbaru&lt;/h3&gt;&lt;ul style="padding:0; margin:0; list-style:none;"&gt;';
+      const items = xml.querySelectorAll("item");
+      let html = '&lt;h3 style="margin-top:0;"&gt;Update Informasi Diskominfo&lt;/h3&gt;&lt;ul style="padding:0; margin:0; list-style:none;"&gt;';
       
       items.forEach(el => {
         const title = el.querySelector("title").textContent;
         const link = el.querySelector("link").textContent;
-        const uploader = el.querySelector("creator").textContent;
         const date = new Date(el.querySelector("pubDate").textContent).toLocaleDateString('id-ID');
-        const status = el.querySelector("status").textContent;
         const organization = el.querySelector("organization").textContent;
         
-        const statusColor = (status === 'BERLAKU' || status === 'AKTIF') ? '#10b981' : '#ef4444';
-
-        html += `&lt;li style="margin-bottom:20px; padding:15px; background:#fff; border:1px solid #eee; border-radius:12px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);"&gt;
-                   &lt;div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"&gt;
-                     &lt;span style="font-size:10px; font-weight:bold; color:#666;"&gt;🏛️ ${organization}&lt;/span&gt;
-                     &lt;span style="font-size:9px; font-weight:bold; padding:2px 8px; border-radius:5px; background:${statusColor}20; color:${statusColor}; border:1px solid ${statusColor}40;"&gt;${status}&lt;/span&gt;
-                   &lt;/div&gt;
-                   &lt;a href="${link}" target="_blank" style="text-decoration:none; color:#0052FF; font-weight:bold; font-size:15px; line-height:1.4; display:block; margin-bottom:8px;"&gt;${title}&lt;/a&gt;
-                   &lt;div style="font-size:11px; color:#888;"&gt;
-                     📅 ${date} | 👤 Pengunggah: ${uploader}
-                   &lt;/div&gt;
+        html += `&lt;li style="margin-bottom:20px; padding:15px; background:#f9f9f9; border-radius:12px; border-left: 5px solid #0052FF;"&gt;
+                   &lt;span style="font-size:10px; font-weight:bold; color:#666;"&gt;🏛️ ${organization}&lt;/span&gt;&lt;br&gt;
+                   &lt;a href="${link}" target="_blank" style="text-decoration:none; color:#0052FF; font-weight:bold; font-size:15px;"&gt;${title}&lt;/a&gt;
+                   &lt;div style="color:#888; font-size:12px; margin-top:5px;"&gt;📅 Dipublikasikan: ${date}&lt;/div&gt;
                  &lt;/li&gt;`;
       });
       document.getElementById("ppid-list").innerHTML = html + '&lt;/ul&gt;';
@@ -246,18 +237,18 @@
                             <div class="space-y-4">
                                 <p class="text-blue-400 text-xs italic">// Gunakan kode PHP ini di server Anda. Mendukung filter gabungan.</p>
                                 <pre class="whitespace-pre-wrap"><code id="code-php">&lt;?php
-// Contoh URL dengan gabungan filter Unit, Tahun, dan Limit
-$url = "{{ route('extra.rss.generate') }}?unit_id=34&year=2023&limit=5";
+// Contoh URL: Diskominfo (730714) + Tahun 2023 + 5 Data
+$url = "{{ route('extra.rss.generate') }}?unit_id=730714&year=2023&limit=5";
 $rss = simplexml_load_file($url);
 
-echo "&lt;h2&gt;Update Informasi PPID Sinjai&lt;/h2&gt;";
+echo "&lt;h2&gt;Update Informasi Diskominfo&lt;/h2&gt;";
 echo "&lt;ul style='list-style:none; padding:0;'&gt;";
 
 foreach ($rss->channel->item as $info) {
     echo "&lt;li style='margin-bottom:20px; padding:10px; border-bottom:1px solid #eee;'&gt;";
     echo "&lt;a href='{$info->link}' target='_blank' style='color:#0052FF; font-weight:bold; text-decoration:none;'&gt;{$info->title}&lt;/a&gt;&lt;br&gt;";
     echo "&lt;small style='color:#666;'&gt;🏛️ {$info->organization} | ✅ {$info->status}&lt;/small&gt;&lt;br&gt;";
-    echo "&lt;small style='color:#888;'&gt;📅 {$info->pubDate}&lt;/small&gt;";
+    echo "&lt;/small&gt;";
     echo "&lt;/li&gt;";
 }
 
@@ -271,7 +262,8 @@ echo "&lt;/ul&gt;";
                                 <p class="text-blue-400 text-xs italic">// Implementasi di Laravel (Blade + Controller).</p>
                                 <pre class="whitespace-pre-wrap"><code id="code-laravel">// 1. Di Controller Anda
 public function showFeed() {
-    $url = "{{ route('extra.rss.generate') }}?limit=10";
+    // Ambil 10 data terbaru dari Diskominfo (730714)
+    $url = "{{ route('extra.rss.generate') }}?unit_id=730714&limit=10";
     $xml = simplexml_load_file($url);
     return view('your_view', ['feeds' => $xml->channel->item]);
 }
@@ -281,7 +273,7 @@ public function showFeed() {
     @@foreach($feeds as $item)
         &lt;li&gt;
             &lt;a href="@{{ $item->link }}"&gt;@{{ $item->title }}&lt;/a&gt;
-            &lt;p&gt;Status: @{{ $item->status }}&lt;/p&gt;
+            &lt;p&gt;Dinas: @{{ $item->organization }}&lt;/p&gt;
         &lt;/li&gt;
     @@endforeach
 &lt;/ul&gt;</code></pre>
@@ -293,7 +285,8 @@ public function showFeed() {
                                 <p class="text-blue-400 text-xs italic">// Implementasi di CodeIgniter (Controller + View).</p>
                                 <pre class="whitespace-pre-wrap"><code id="code-ci">// 1. Di Controller
 public function index() {
-    $url = "{{ route('extra.rss.generate') }}?unit_id=34&limit=5";
+    // Ambil 5 data terbaru dari Diskominfo (730714)
+    $url = "{{ route('extra.rss.generate') }}?unit_id=730714&limit=5";
     $data['feeds'] = simplexml_load_file($url);
     $this->load->view('rss_view', $data);
 }
