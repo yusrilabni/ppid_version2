@@ -30,10 +30,19 @@ class StorageController extends Controller
             $fullPath = rtrim($basePath, '/') . '/' . ltrim($path, '/');
 
             if (File::exists($fullPath) && File::isFile($fullPath)) {
-                // Return file with browser caching headers
+                $lastModified = File::lastModified($fullPath);
+                $etag = md5($fullPath . $lastModified);
+
+                // Check if browser already has the file
+                if (request()->header('If-None-Match') == $etag) {
+                    return response()->make('', 304);
+                }
+
                 return response()->file($fullPath, [
-                    'Cache-Control' => 'public, max-age=31536000',
+                    'Cache-Control' => 'public, max-age=31536000, immutable',
                     'Expires' => gmdate('D, d M Y H:i:s \G\M\T', time() + 31536000),
+                    'ETag' => $etag,
+                    'Last-Modified' => gmdate('D, d M Y H:i:s \G\M\T', $lastModified),
                     'Pragma' => 'cache',
                 ]);
             }
