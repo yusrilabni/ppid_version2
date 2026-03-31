@@ -14,9 +14,11 @@
         <item>
             <title>{{ $info->title }}</title>
             <link>{{ route('frontend.informasi.detail', $info->slug) }}</link>
-            <dc:creator><![CDATA[PPID Sinjai]]></dc:creator>
+            <dc:creator><![CDATA[{{ $info->user->name ?? 'Admin PPID' }}]]></dc:creator>
             <pubDate>{{ \Carbon\Carbon::parse($info->tanggal_upload)->toRssString() }}</pubDate>
             <category><![CDATA[{{ $info->category }}]]></category>
+            <status><![CDATA[{{ strtoupper($info->status) }}]]></status>
+            <organization><![CDATA[{{ $info->organization->name ?? '-' }}]]></organization>
             <guid isPermaLink="false">{{ url('/') }}/informasi/{{ $info->id }}</guid>
             <description><![CDATA[{{ Str::limit(strip_tags($info->deskripsi), 250) }}]]></description>
             <content:encoded><![CDATA[{{ $info->deskripsi }}]]></content:encoded>

@@ -184,23 +184,32 @@
   const RSS_URL = '{{ route('extra.rss.generate') }}';
 
   fetch(RSS_URL)
-    .then(res => {
-      if (!res.ok) throw new Error('Gagal mengambil data');
-      return res.text();
-    })
+    .then(res => res.text())
     .then(xmlString => {
       const xml = new DOMParser().parseFromString(xmlString, "text/xml");
-      const items = xml.querySelectorAll("item");
-      let html = '&lt;ul style="padding:0; margin:0; list-style:none;"&gt;';
+      const items = Array.from(xml.querySelectorAll("item")).slice(0, 5); // Tampilkan Hanya 5 Item
+      
+      let html = '&lt;h3 style="margin-top:0; color:#333;"&gt;5 Update Informasi Terbaru&lt;/h3&gt;&lt;ul style="padding:0; margin:0; list-style:none;"&gt;';
       
       items.forEach(el => {
         const title = el.querySelector("title").textContent;
         const link = el.querySelector("link").textContent;
+        const uploader = el.querySelector("creator").textContent;
         const date = new Date(el.querySelector("pubDate").textContent).toLocaleDateString('id-ID');
+        const status = el.querySelector("status").textContent;
+        const organization = el.querySelector("organization").textContent;
         
-        html += `&lt;li style="margin-bottom:20px; padding:15px; background:#f9f9f9; border-radius:12px; border-left: 5px solid #0052FF;"&gt;
-                   &lt;a href="${link}" target="_blank" style="text-decoration:none; color:#0052FF; font-weight:bold; font-size:16px;"&gt;${title}&lt;/a&gt;
-                   &lt;div style="color:#888; font-size:12px; margin-top:5px;"&gt;📅 Dipublikasikan: ${date}&lt;/div&gt;
+        const statusColor = (status === 'BERLAKU' || status === 'AKTIF') ? '#10b981' : '#ef4444';
+
+        html += `&lt;li style="margin-bottom:20px; padding:15px; background:#fff; border:1px solid #eee; border-radius:15px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);"&gt;
+                   &lt;div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;"&gt;
+                     &lt;span style="font-size:10px; font-weight:bold; color:#666;"&gt;🏛️ ${organization}&lt;/span&gt;
+                     &lt;span style="font-size:9px; font-weight:bold; padding:2px 8px; border-radius:5px; background:${statusColor}20; color:${statusColor};"&gt;${status}&lt;/span&gt;
+                   &lt;/div&gt;
+                   &lt;a href="${link}" target="_blank" style="text-decoration:none; color:#0052FF; font-weight:bold; font-size:15px;"&gt;${title}&lt;/a&gt;
+                   &lt;div style="font-size:11px; color:#888; margin-top:8px;"&gt;
+                     📅 ${date} | 👤 Pengupload: ${uploader}
+                   &lt;/div&gt;
                  &lt;/li&gt;`;
       });
       document.getElementById("ppid-list").innerHTML = html + '&lt;/ul&gt;';
