@@ -132,10 +132,8 @@ class OfficialProfileController extends Controller
 
         $user = \Illuminate\Support\Facades\Auth::user();
         if (!$user || ($user && !$user->isAdmin())) { 
-            // Untuk publik/user biasa: Hanya tampilkan yang berstatus aktif DAN biodatanya tidak kosong
-            $query->where('status', 'active')
-                  ->whereNotNull('biography')
-                  ->where('biography', '!=', '');
+            // Untuk publik/user biasa: Hanya tampilkan yang berstatus aktif
+            $query->where('status', 'active');
         }
         
         $kepalaOpdsRaw = $query->orderBy('full_name')->get();
