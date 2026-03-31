@@ -11,7 +11,7 @@ return [
     |
     */
 
-    'enabled' => env('LOGIN_PROTECTION_ENABLED', true),
+    'enabled' => env('LOGIN_PROTECTION_ENABLED', false),
 
     'protection_password' => env('LOGIN_PROTECTION_PASSWORD', 'default_protection_password'),
 

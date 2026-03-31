@@ -66,7 +66,12 @@ class HybridLoginController extends Controller
         if (Auth::attempt(['email' => $email, 'password' => $password], $remember)) {
             $request->session()->regenerate();
             session(['show_pedoman_modal' => true]);
-            return redirect('/');
+            
+            $user = Auth::user();
+            if ($user->role === 'superadmin' || $user->role === 'admin') {
+                return redirect()->intended('/admin/dashboard');
+            }
+            return redirect()->intended('/');
         }
 
         return back()->withErrors([
@@ -91,7 +96,11 @@ class HybridLoginController extends Controller
                 Auth::login($user, $remember);
                 $request->session()->regenerate();
                 session(['show_pedoman_modal' => true]);
-                return redirect('/');
+                
+                if ($user->role === 'superadmin' || $user->role === 'admin') {
+                    return redirect()->intended('/admin/dashboard');
+                }
+                return redirect()->intended('/');
             }
         }
 
@@ -105,7 +114,11 @@ class HybridLoginController extends Controller
                     Auth::login($user, $remember);
                     $request->session()->regenerate();
                     session(['show_pedoman_modal' => true]);
-                    return redirect('/');
+                    
+                    if ($user->role === 'superadmin' || $user->role === 'admin') {
+                        return redirect()->intended('/admin/dashboard');
+                    }
+                    return redirect()->intended('/');
                 }
             }
         }
@@ -122,7 +135,11 @@ class HybridLoginController extends Controller
             Auth::login($user, $remember);
             $request->session()->regenerate();
             session(['show_pedoman_modal' => true]);
-            return redirect('/');
+            
+            if ($user->role === 'superadmin' || $user->role === 'admin') {
+                return redirect()->intended('/admin/dashboard');
+            }
+            return redirect()->intended('/');
         }
 
         return back()->withErrors([

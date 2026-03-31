@@ -18,10 +18,10 @@ Route::middleware('guest')->group(function () {
 
     Route::post('register', [RegisteredUserController::class, 'store']);
 
-    Route::get('login', [ApiLoginController::class, 'create'])
+    /* Route::get('login', [ApiLoginController::class, 'create'])
         ->name('login');
 
-    Route::post('login', [ApiLoginController::class, 'store']);
+    Route::post('login', [ApiLoginController::class, 'store']); */
 
     Route::get('forgot-password', [PasswordResetLinkController::class, 'create'])
         ->name('password.request');
