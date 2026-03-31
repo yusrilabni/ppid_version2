@@ -11,111 +11,58 @@ use Illuminate\Support\Facades\DB;
 
 class ExtraToolsController extends Controller
 {
-    /**
-     * Halaman panduan RSS Feed
-     */
     public function rssIndex()
     {
         $organizations = Organization::orderBy('name', 'asc')->get();
-        
-        $years = Informasi::select('tahun')
-            ->whereNotNull('tahun')
-            ->where('tahun', '!=', '')
-            ->distinct()
-            ->orderBy('tahun', 'desc')
-            ->pluck('tahun');
-
+        $years = Informasi::select('tahun')->whereNotNull('tahun')->where('tahun', '!=', '')->distinct()->orderBy('tahun', 'desc')->pluck('tahun');
         return view('frontend.extra.rss', [
-            'pageTitle' => 'RSS Feed - PPID Kabupaten Sinjai',
-            'rssUrl' => route('extra.rss.generate'),
-            'organizations' => $organizations,
+            'pageTitle' => 'RSS Feed - PPID Sinjai', 
+            'rssUrl' => route('extra.rss.generate'), 
+            'organizations' => $organizations, 
             'years' => $years
         ]);
     }
 
-    /**
-     * Halaman panduan Widget
-     */
     public function widgetIndex()
     {
         $organizations = Organization::orderBy('name', 'asc')->get();
-        
-        $years = Informasi::select('tahun')
-            ->whereNotNull('tahun')
-            ->where('tahun', '!=', '')
-            ->distinct()
-            ->orderBy('tahun', 'desc')
-            ->pluck('tahun');
-
+        $years = Informasi::select('tahun')->whereNotNull('tahun')->where('tahun', '!=', '')->distinct()->orderBy('tahun', 'desc')->pluck('tahun');
         return view('frontend.extra.widget', [
-            'pageTitle' => 'Widget Informasi - PPID Kabupaten Sinjai',
-            'organizations' => $organizations,
+            'pageTitle' => 'Widget - PPID Sinjai', 
+            'organizations' => $organizations, 
             'years' => $years
         ]);
     }
 
-    /**
-     * Generator RSS XML
-     */
     public function rssGenerate(Request $request)
     {
         $query = Informasi::query();
+        if ($request->filled('unit_id')) { $query->where('unit_id', $request->unit_id); }
+        if ($request->filled('year')) { $query->where('tahun', $request->year); }
 
-        if ($request->filled('unit_id')) {
-            $query->where('unit_id', $request->unit_id);
-        }
+        // PAKSA LIMIT MENJADI INTEGER (PENTING!)
+        $limit = (int) $request->get('limit', 50);
 
-        if ($request->filled('year')) {
-            $query->where('tahun', $request->year);
-        }
-
-        // Ambil parameter limit dari URL, default 50 jika tidak ada
-        $limit = $request->get('limit', 50);
-
-        $informasis = $query->orderBy('tanggal_upload', 'desc')
-            ->limit($limit)
-            ->get();
+        $informasis = $query->orderBy('tanggal_upload', 'desc')->limit($limit)->get();
 
         $content = view('frontend.extra.widgets.rss-xml', compact('informasis'));
-
         return Response::make($content, 200, [
             'Content-Type' => 'application/xml',
             'Charset' => 'UTF-8',
             'Access-Control-Allow-Origin' => '*',
-            'Access-Control-Allow-Methods' => 'GET',
-            'Cache-Control' => 'public, max-age=300'
+            'Access-Control-Allow-Methods' => 'GET'
         ]);
     }
 
-    /**
-     * Widget khusus untuk iframe
-     */
     public function widgetLatest(Request $request)
     {
         $type = $request->get('type', 'latest');
         $limit = (int) $request->get('limit', 5);
-        $unit_id = $request->get('unit_id');
-        $year = $request->get('year');
-
         $query = Informasi::query();
-
-        if ($request->filled('unit_id')) {
-            $query->where('unit_id', $unit_id);
-        }
-
-        if ($request->filled('year')) {
-            $query->where('tahun', $year);
-        }
-
-        if ($type === 'popular') {
-            $query->orderBy('views_count', 'desc');
-        } else {
-            $query->orderBy('tanggal_upload', 'desc');
-        }
-
+        if ($request->filled('unit_id')) { $query->where('unit_id', $request->unit_id); }
+        if ($request->filled('year')) { $query->where('tahun', $request->year); }
+        if ($type === 'popular') { $query->orderBy('views_count', 'desc'); } else { $query->orderBy('tanggal_upload', 'desc'); }
         $informasis = $query->take($limit)->get();
-
-        return Response::view('frontend.extra.widgets.embed-latest', compact('informasis', 'type'))
-            ->header('Access-Control-Allow-Origin', '*');
+        return Response::view('frontend.extra.widgets.embed-latest', compact('informasis', 'type'))->header('Access-Control-Allow-Origin', '*');
     }
 }
