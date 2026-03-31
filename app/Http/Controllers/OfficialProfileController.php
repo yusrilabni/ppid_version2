@@ -117,7 +117,7 @@ class OfficialProfileController extends Controller
                          ->with(['position', 'organization']);
 
         $user = \Illuminate\Support\Facades\Auth::user();
-        if (!$user || ($user && !$user->isSuperAdmin())) { // If not logged in OR logged in but not SuperAdmin
+        if (!$user || ($user && !$user->isAdmin())) { // If not logged in OR logged in but not an Admin/SuperAdmin
             $query->where('status', '!=', 'draft');
         }
         
