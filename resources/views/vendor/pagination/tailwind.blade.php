@@ -23,7 +23,7 @@
             @foreach ($elements as $element)
                 {{-- "Three Dots" Separator --}}
                 @if (is_string($element))
-                    <span aria-disabled="true">
+                    <span aria-disabled="true" class="hidden md:inline">
                         <span class="flex items-center justify-center w-10 h-10 text-gray-400">{{ $element }}</span>
                     </span>
                 @endif
@@ -31,12 +31,18 @@
                 {{-- Array Of Links --}}
                 @if (is_array($element))
                     @foreach ($element as $page => $url)
+                        @php
+                            // Logika tampil di mobile: Halaman 1, Halaman 2, Halaman Aktif, atau Halaman Terakhir
+                            $isMobileVisible = ($page == 1 || $page == 2 || $page == $paginator->currentPage() || $page == $paginator->lastPage());
+                        @endphp
                         @if ($page == $paginator->currentPage())
                             <span aria-current="page">
                                 <span class="flex items-center justify-center w-10 h-10 text-sm font-bold text-white bg-blue-600 rounded-xl shadow-md shadow-blue-200">{{ $page }}</span>
                             </span>
                         @else
-                            <a href="{{ $url }}" class="hidden md:flex items-center justify-center w-10 h-10 text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-300 transform hover:scale-110" aria-label="{{ __('Go to page :page', ['page' => $page]) }}">
+                            <a href="{{ $url }}" 
+                               class="{{ $isMobileVisible ? 'flex' : 'hidden md:flex' }} items-center justify-center w-10 h-10 text-sm font-medium text-gray-600 hover:text-blue-600 hover:bg-blue-50 rounded-xl transition-all duration-300 transform hover:scale-110" 
+                               aria-label="{{ __('Go to page :page', ['page' => $page]) }}">
                                 {{ $page }}
                             </a>
                         @endif
