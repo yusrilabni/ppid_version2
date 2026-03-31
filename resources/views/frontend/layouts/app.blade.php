@@ -1,24 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ str_replace('_', '-', app()->getLocale()) }}" 
-      :class="$store.accConfig ? { 
-          'acc-contrast-light': $store.accConfig.contrast === 'light', 
-          'acc-contrast-invert': $store.accConfig.contrast === 'invert', 
-          'acc-contrast-dark': $store.accConfig.contrast === 'dark', 
-          'acc-sat-low': $store.accConfig.saturation === 'low', 
-          'acc-sat-high': $store.accConfig.saturation === 'high', 
-          'acc-sat-mono': $store.accConfig.saturation === 'mono', 
-          'acc-highlight-links': $store.accConfig.links, 
-          'acc-highlight-headings': $store.accConfig.headings, 
-          'acc-text-spacing': $store.accConfig.textSpacing, 
-          'acc-hide-images': $store.accConfig.hideImages, 
-          'acc-dyslexic-open': $store.accConfig.dyslexic === 'open', 
-          'acc-dyslexic-lexend': $store.accConfig.dyslexic === 'lexend', 
-          'acc-line-height': $store.accConfig.lineHeight, 
-          'acc-align-left': $store.accConfig.alignment === 'left', 
-          'acc-align-center': $store.accConfig.alignment === 'center', 
-          'acc-align-right': $store.accConfig.alignment === 'right' 
-      } : {}"
-      :style="{ fontSize: $store.accConfig ? $store.accConfig.getFontSize() + 'px' : '16px' }">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
@@ -164,24 +145,24 @@
         body { font-size: 1rem; }
 
         /* Accessibility Styles */
-        html.acc-contrast-light { background-color: #fff !important; color: #000 !important; filter: contrast(1.5) !important; }
-        html.acc-contrast-invert { filter: invert(1) hue-rotate(180deg) !important; background-color: #000 !important; }
-        html.acc-contrast-invert img { filter: invert(1) hue-rotate(180deg) !important; }
-        html.acc-contrast-dark { background-color: #000 !important; color: #fff !important; }
-        html.acc-contrast-dark *:not(.acc-ignore):not(.acc-ignore *) { background-color: #000 !important; color: #ffff00 !important; border-color: #fff !important; }
-        html.acc-sat-low { filter: saturate(0.5) !important; }
-        html.acc-sat-high { filter: saturate(2) !important; }
-        html.acc-sat-mono { filter: grayscale(1) !important; }
-        html.acc-highlight-links a:not(.acc-ignore) { outline: 4px solid #ff00ff !important; outline-offset: 2px !important; background-color: #ffff00 !important; color: #000 !important; font-weight: bold !important; }
-        html.acc-highlight-headings h1, html.acc-highlight-headings h2, html.acc-highlight-headings h3 { background-color: #0000ff !important; color: #fff !important; padding: 8px !important; border-left: 12px solid #ffff00 !important; display: block !important; }
-        html.acc-text-spacing *:not(.acc-ignore) { letter-spacing: 2px !important; }
-        html.acc-hide-images img { visibility: hidden !important; opacity: 0 !important; }
-        html.acc-dyslexic-open *:not(.acc-ignore) { font-family: 'Open-Dyslexic', sans-serif !important; }
-        html.acc-dyslexic-lexend *:not(.acc-ignore) { font-family: 'Lexend', sans-serif !important; }
-        html.acc-line-height *:not(.acc-ignore) { line-height: 2 !important; }
-        html.acc-align-left *:not(.acc-ignore) { text-align: left !important; }
-        html.acc-align-center *:not(.acc-ignore) { text-align: center !important; }
-        html.acc-align-right *:not(.acc-ignore) { text-align: right !important; }
+        body.acc-contrast-light { background-color: #fff !important; color: #000 !important; filter: contrast(1.5) !important; }
+        body.acc-contrast-invert { filter: invert(1) hue-rotate(180deg) !important; background-color: #000 !important; }
+        body.acc-contrast-invert img { filter: invert(1) hue-rotate(180deg) !important; }
+        body.acc-contrast-dark { background-color: #000 !important; color: #fff !important; }
+        body.acc-contrast-dark *:not(.acc-ignore):not(.acc-ignore *) { background-color: #000 !important; color: #ffff00 !important; border-color: #fff !important; }
+        body.acc-sat-low { filter: saturate(0.5) !important; }
+        body.acc-sat-high { filter: saturate(2) !important; }
+        body.acc-sat-mono { filter: grayscale(1) !important; }
+        body.acc-highlight-links a:not(.acc-ignore) { outline: 4px solid #ff00ff !important; outline-offset: 2px !important; background-color: #ffff00 !important; color: #000 !important; font-weight: bold !important; }
+        body.acc-highlight-headings h1, body.acc-highlight-headings h2, body.acc-highlight-headings h3 { background-color: #0000ff !important; color: #fff !important; padding: 8px !important; border-left: 12px solid #ffff00 !important; display: block !important; }
+        body.acc-text-spacing *:not(.acc-ignore) { letter-spacing: 2px !important; }
+        body.acc-hide-images img { visibility: hidden !important; opacity: 0 !important; }
+        body.acc-dyslexic-open *:not(.acc-ignore) { font-family: 'Open-Dyslexic', sans-serif !important; }
+        body.acc-dyslexic-lexend *:not(.acc-ignore) { font-family: 'Lexend', sans-serif !important; }
+        body.acc-line-height *:not(.acc-ignore) { line-height: 2 !important; }
+        body.acc-align-left *:not(.acc-ignore) { text-align: left !important; }
+        body.acc-align-center *:not(.acc-ignore) { text-align: center !important; }
+        body.acc-align-right *:not(.acc-ignore) { text-align: right !important; }
 
         /* Widget UI Styles */
         .acc-widget-container { font-family: 'Inter', sans-serif !important; font-size: 16px !important; box-sizing: border-box !important; }
@@ -221,12 +202,38 @@
     @stack('styles')
 </head>
 
-<body class="antialiased bg-gray-100 text-gray-800" data-turbo="true" x-data="{}" x-init="$store.accConfig.applyPersisted()"
-    :class="{ 'acc-focus-mask': $store.accConfig.focus === 'mask', 'acc-focus-guide': $store.accConfig.focus === 'guide', 'acc-big-cursor': $store.accConfig.focus === 'cursor', 'acc-keyboard-nav': $store.accConfig.keyboard, 'overflow-hidden': $store.accConfig.isOpen && window.innerWidth < 1024 }">
+<body class="antialiased bg-gray-100 text-gray-800" data-turbo="true" x-data="{}" 
+    x-init="$store.accConfig.applyPersisted()"
+    :class="$store.accConfig ? { 
+        'acc-contrast-light': $store.accConfig.contrast === 'light', 
+        'acc-contrast-invert': $store.accConfig.contrast === 'invert', 
+        'acc-contrast-dark': $store.accConfig.contrast === 'dark', 
+        'acc-sat-low': $store.accConfig.saturation === 'low', 
+        'acc-sat-high': $store.accConfig.saturation === 'high', 
+        'acc-sat-mono': $store.accConfig.saturation === 'mono', 
+        'acc-highlight-links': $store.accConfig.links, 
+        'acc-highlight-headings': $store.accConfig.headings, 
+        'acc-text-spacing': $store.accConfig.textSpacing, 
+        'acc-hide-images': $store.accConfig.hideImages, 
+        'acc-dyslexic-open': $store.accConfig.dyslexic === 'open', 
+        'acc-dyslexic-lexend': $store.accConfig.dyslexic === 'lexend', 
+        'acc-line-height': $store.accConfig.lineHeight, 
+        'acc-align-left': $store.accConfig.alignment === 'left', 
+        'acc-align-center': $store.accConfig.alignment === 'center', 
+        'acc-align-right': $store.accConfig.alignment === 'right',
+        'acc-focus-mask': $store.accConfig.focus === 'mask', 
+        'acc-focus-guide': $store.accConfig.focus === 'guide', 
+        'acc-big-cursor': $store.accConfig.focus === 'cursor', 
+        'acc-keyboard-nav': $store.accConfig.keyboard, 
+        'overflow-hidden': $store.accConfig.isOpen && window.innerWidth < 1024 
+    } : {}"
+    :style="{ fontSize: $store.accConfig ? $store.accConfig.getFontSize() + 'px' : '16px' }">
 
-    @include('frontend.layouts.navbar')
-    <main>@yield('content')</main>
-    @include('frontend.layouts.footer')
+    <div id="acc-main-wrapper" style="min-height: 100vh;">
+        @include('frontend.layouts.navbar')
+        <main>@yield('content')</main>
+        @include('frontend.layouts.footer')
+    </div>
 
     <div class="acc-reading-mask" id="reading-mask"></div>
     <div class="acc-reading-guide" id="reading-guide"></div>
