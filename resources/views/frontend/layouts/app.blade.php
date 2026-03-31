@@ -16,6 +16,7 @@
     <link rel="icon" type="image/webp" href="{{ asset('storage/logo/favicon_io/ppid.webp') }}">
 
     <!-- Scripts -->
+    <script src="https://unpkg.com/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js"></script>
     <style>
         [x-cloak] { display: none !important; }
         .fouc-fix { opacity: 0; transition: opacity 0.2s ease-in; }
@@ -206,12 +207,12 @@
         })
     </script>
 
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
-    <link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
-    <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" data-turbo-track="reload">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js" data-turbo-track="reload"></script>
+    <link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet" data-turbo-track="reload">
+    <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet" data-turbo-track="reload">
+    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" data-turbo-track="reload" />
+    <link rel="stylesheet" href="{{ asset('css/custom.css') }}" data-turbo-track="reload">
     <style>
         .news-carousel, .info-carousel { width: 100%; overflow: hidden; }
         .info-carousel .swiper-slide { height: auto; }
