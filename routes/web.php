@@ -118,7 +118,8 @@ Route::prefix('admin')->name('admin.')->group(function () {
         Route::post('slider-settings', [App\Http\Controllers\Admin\AdminSettingController::class, 'updateSliderSettings'])->name('slider-settings.update');
         Route::get('lhkpn', [\App\Http\Controllers\Admin\LhkpnController::class, 'index'])->name('lhkpn.index');
         
-        // ... (remaining specific admin routes)
+        // Load all other routes from admin.php
+        require __DIR__ . '/admin.php';
     });
 });
 
