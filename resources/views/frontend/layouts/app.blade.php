@@ -143,19 +143,29 @@
         })
     </script>
 
+    <!-- Fonts & Icons: Load CSS version for Zero Flicker -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/js/all.min.js"></script>
     <link href="https://fonts.cdnfonts.com/css/open-dyslexic" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    
     <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" />
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}">
     <style>
-        .news-carousel, .info-carousel { width: 100%; overflow: hidden; }
-        .info-carousel .swiper-slide { height: auto; }
-        .swiper-container.loading { visibility: hidden; }
         [x-cloak] { display: none !important; }
-        html { transition: font-size 0.2s ease; font-size: 16px; }
-        body { font-size: 1rem; }
+        html { transition: font-size 0.2s ease; font-size: 16px; scroll-behavior: smooth; }
+        body { font-size: 1rem; min-height: 100vh; display: flex; flex-direction: column; }
+        
+        /* Layout Locking: Prevent Footer Jumps */
+        #acc-main-wrapper { 
+            display: flex; 
+            flex-direction: column; 
+            min-height: 100vh; 
+            background-color: #f3f4f6; 
+        }
+        main { flex: 1 0 auto; min-height: 80vh; }
+        header { flex-shrink: 0; }
+        footer { flex-shrink: 0; }
 
         /* Accessibility Styles */
         #acc-main-wrapper.acc-contrast-light { background-color: #fff !important; color: #000 !important; filter: contrast(1.5) !important; }
