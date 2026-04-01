@@ -75,9 +75,13 @@
                             <p class="text-blue-400 font-bold mb-1">// Filter per Jumlah Data (Contoh: Limit 15 Data)</p>
                             <code class="break-all text-white">{{ route('extra.rss.generate') }}?limit=15</code>
                         </div>
+                        <div>
+                            <p class="text-blue-400 font-bold mb-1">// Filter per Kategori (Contoh: Informasi Berkala)</p>
+                            <code class="break-all text-white">{{ route('extra.rss.generate') }}?category=Informasi Berkala</code>
+                        </div>
                         <div class="pt-2 border-t border-white/10">
-                            <p class="text-orange-400 font-black mb-1 uppercase tracking-widest text-[10px]">// Gabungan Filter (Contoh: Dinas Kesehatan, Tahun 2024, Limit 5):</p>
-                            <code class="break-all text-white">{{ route('extra.rss.generate') }}?unit_id=730701&year=2024&limit=5</code>
+                            <p class="text-orange-400 font-black mb-1 uppercase tracking-widest text-[10px]">// Gabungan 4 Filter (Contoh: Dinkes, Tahun 2024, Limit 5, Kategori Setiap Saat):</p>
+                            <code class="break-all text-white">{{ route('extra.rss.generate') }}?unit_id=730701&year=2024&limit=5&category=Informasi Setiap Saat</code>
                         </div>
                     </div>
 
