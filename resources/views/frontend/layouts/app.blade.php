@@ -134,8 +134,8 @@
                     if (shouldShow) {
                         setTimeout(() => {
                             this.open = true;
-                            // Auto close after 5 seconds
-                            setTimeout(() => { if (this.open) { this.close(); } }, 5000);
+                            // Auto close after 8 seconds
+                            setTimeout(() => { if (this.open) { this.close(); } }, 8000);
                         }, 1000);
                     }
                 },
