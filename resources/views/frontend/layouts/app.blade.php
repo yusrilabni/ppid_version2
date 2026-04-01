@@ -15,22 +15,28 @@
     <!-- Version: 2.1.0 - Stability Fix -->
     <meta name="description" content="Pejabat Pengelola Informasi dan Dokumentasi">
 
-    <!-- Robust Scroll Restoration -->
+    <!-- Zero-Flicker Scroll Restoration -->
     <script>
         (function() {
             if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
             var scrollKey = 'sp_' + btoa(window.location.origin + window.location.pathname);
             var pos = sessionStorage.getItem(scrollKey);
-            if (pos) {
+            if (pos && parseInt(pos) > 50) {
+                // Hide page content to prevent seeing the top
+                document.documentElement.style.visibility = 'hidden';
                 var target = parseInt(pos);
-                // 1. Immediate try
+                
+                // Immediate scroll attempt
                 window.scrollTo(0, target);
-                // 2. Try when DOM is ready
-                document.addEventListener('DOMContentLoaded', function() { window.scrollTo(0, target); });
-                // 3. Final try when images/sliders are loaded
-                window.addEventListener('load', function() { 
-                    setTimeout(function() { window.scrollTo(0, target); }, 10);
+                
+                // Final restoration once images/layout are ready
+                window.addEventListener('load', function() {
+                    window.scrollTo(0, target);
+                    document.documentElement.style.visibility = '';
                 });
+                
+                // Safety timeout (in case load event is slow)
+                setTimeout(function() { document.documentElement.style.visibility = ''; }, 500);
             }
         })();
 

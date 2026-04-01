@@ -5,7 +5,27 @@
         /* Slider Stability: Only first slide allowed initially */
         .slider-container .grid > div { display: none; }
         .slider-container .grid > div:first-child { display: block !important; opacity: 1 !important; }
-        /* When Alpine is ready, let it control visibility */
+        
+        /* Carousel Skeleton Fix: Force side-by-side layout before JS loads */
+        .latest-info-carousel:not(.swiper-initialized) .swiper-wrapper,
+        .news-carousel:not(.swiper-initialized) .swiper-wrapper {
+            display: flex !important;
+            gap: 20px !important;
+            overflow: hidden !important;
+        }
+        .latest-info-carousel:not(.swiper-initialized) .swiper-slide,
+        .news-carousel:not(.swiper-initialized) .swiper-slide {
+            flex: 0 0 100% !important;
+        }
+        @media (min-width: 640px) {
+            .latest-info-carousel:not(.swiper-initialized) .swiper-slide,
+            .news-carousel:not(.swiper-initialized) .swiper-slide { flex: 0 0 calc(50% - 10px) !important; }
+        }
+        @media (min-width: 1024px) {
+            .latest-info-carousel:not(.swiper-initialized) .swiper-slide,
+            .news-carousel:not(.swiper-initialized) .swiper-slide { flex: 0 0 calc(25% - 15px) !important; }
+        }
+
         [x-cloak] { display: none !important; }
     </style>
         {{-- Hero Slider --}}
