@@ -247,7 +247,10 @@
 &lt;/style&gt;
 &lt;div id="ppid-grid" class="ppid-grid"&gt;Memuat data...&lt;/div&gt;
 &lt;script&gt;
-  const RSS_URL = '{{ route('extra.rss.generate') }}?limit=6';
+  // TIPS: Ganti nilai 'category' untuk filter spesifik: 
+  // 'Informasi Berkala', 'Informasi Setiap Saat', 'Informasi Serta Merta', 'Informasi Dikecualikan'
+  const RSS_URL = '{{ route('extra.rss.generate') }}?limit=6&category=Informasi Berkala';
+  
   fetch(RSS_URL).then(res => res.text()).then(xmlString => {
     const xml = new DOMParser().parseFromString(xmlString, "text/xml");
     const items = xml.querySelectorAll("item");
@@ -267,12 +270,15 @@
 &lt;/script&gt;</code></pre>
                                 </template>
                                 <template x-if="codeTab === 'php'"><pre class="whitespace-pre-wrap"><code id="code-card-php">&lt;?php
-$url = "{{ route('extra.rss.generate') }}?unit_id=730714&limit=6";
+// Ganti 'category' untuk filter: 'Informasi Berkala', 'Informasi Setiap Saat', dll.
+$url = "{{ route('extra.rss.generate') }}?unit_id=730714&limit=6&category=Informasi Berkala";
 $rss = simplexml_load_file($url);
 echo "&lt;div style='display:grid; grid-template-columns:repeat(3, 1fr); gap:20px;'&gt;";
 foreach ($rss->channel->item as $info) {
     echo "&lt;div style='background:#fff; padding:20px; border-radius:15px; border:1px solid #eee;'&gt;
-            &lt;strong&gt;{$info->title}&lt;/strong&gt;
+            &lt;div style='color:#0052FF; font-weight:bold; font-size:10px;'&gt;🏛️ {$info->organization}&lt;/div&gt;
+            &lt;div style='background:#eee; padding:2px 8px; border-radius:5px; display:inline-block; font-size:10px;'&gt;📂 {$info->category}&lt;/div&gt;
+            &lt;div style='margin:10px 0;'&gt;&lt;strong&gt;{$info->title}&lt;/strong&gt;&lt;/div&gt;
           &lt;/div&gt;";
 }
 echo "&lt;/div&gt;";
