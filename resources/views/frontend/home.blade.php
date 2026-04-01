@@ -2,10 +2,6 @@
 
 @section('content')
     <style>
-        /* Slider Stability: Only first slide allowed initially */
-        .slider-container .grid > div { display: none; }
-        .slider-container .grid > div:first-child { display: block; opacity: 1; }
-        
         /* Carousel Skeleton Fix: Force side-by-side layout before JS loads */
         .latest-info-carousel:not(.swiper-initialized) .swiper-wrapper,
         .news-carousel:not(.swiper-initialized) .swiper-wrapper {
@@ -35,6 +31,7 @@
                 <div class="grid grid-cols-1 grid-rows-1">
                     @foreach ($sliders as $index => $slider)
                         <div class="col-start-1 row-start-1" x-show="currentSlide === {{ $index }}"
+                            x-cloak
                             x-transition:opacity.duration.1000ms>
                             <a href="{{ $slider->link ?: ($slider->informasi ? route('frontend.informasi.detail', $slider->informasi->slug) : '#') }}"
                                 class="block relative w-full h-full">
