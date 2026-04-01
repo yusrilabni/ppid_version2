@@ -24,40 +24,26 @@
     <script src="https://unpkg.com/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js" data-turbo-track="reload"></script>
     <style>
         [x-cloak] { display: none !important; }
-        /* Progress Bar Turbo */
+        
+        /* Sembunyikan Turbo Progress Bar agar loading hanya di tab browser */
         .turbo-progress-bar {
-            height: 3px !important;
-            background-color: #2563eb !important;
+            display: none !important;
+            height: 0 !important;
+            opacity: 0 !important;
         }
-        
-        /* Swiper Pagination Instant-CSS */
-        .swiper-pagination-bullet { opacity: 0.3 !important; background: gray !important; }
-        .swiper-pagination-bullet-active { opacity: 1 !important; background: #2563eb !important; }
-        .swiper-pagination { bottom: 0 !important; height: 30px; display: flex; justify-content: center; align-items: center; gap: 8px; }
-        
-        /* Navbar Sticky & Static Feel */
+
+        /* Navbar Sticky */
         #main-navbar-container {
             position: sticky;
             top: 0;
             z-index: 100;
             background: white;
         }
-        
-        /* Skeleton/Placeholder for Swiper - Mencegah Layout Bergeser */
-        .swiper-container:not(.swiper-initialized) .swiper-wrapper {
-            display: flex;
-            overflow: hidden;
-            gap: 20px;
-        }
-        .swiper-container:not(.swiper-initialized) .swiper-slide {
-            flex: 0 0 100%;
-        }
-        @media (min-width: 640px) {
-            .swiper-container:not(.swiper-initialized) .swiper-slide { flex: 0 0 calc(50% - 10px); }
-        }
-        @media (min-width: 1024px) {
-            .swiper-container:not(.swiper-initialized) .swiper-slide { flex: 0 0 calc(25% - 15px); }
-        }
+
+        /* Swiper Pagination */
+        .swiper-pagination-bullet { opacity: 0.3 !important; background: gray !important; }
+        .swiper-pagination-bullet-active { opacity: 1 !important; background: #2563eb !important; }
+        .swiper-pagination { bottom: 0 !important; height: 30px; display: flex; justify-content: center; align-items: center; gap: 8px; }
     </style>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -89,7 +75,6 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
-        // High-Performance Scroll Saving
         var saveScroll = function() {
             var scrollKey = 'scrollPos_' + btoa(window.location.href);
             localStorage.setItem(scrollKey, window.scrollY);
@@ -101,12 +86,8 @@
         });
 
         window.addEventListener('turbo:before-visit', saveScroll);
-
-        // Turbo Configuration
-        Turbo.setProgressBarDelay(50);
         
         document.addEventListener('turbo:load', function() {
-            var scrollKey = 'scrollPos_' + btoa(window.location.href);
             if (window.tailwind) { window.tailwind.run(); }
             if (window.lucide) { window.lucide.createIcons(); }
         });
