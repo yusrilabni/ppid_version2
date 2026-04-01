@@ -21,16 +21,8 @@
     <link rel="icon" type="image/webp" href="{{ asset('storage/logo/favicon_io/ppid.webp') }}">
 
     <!-- Scripts -->
-    <script src="https://unpkg.com/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js" data-turbo-track="reload"></script>
     <style>
         [x-cloak] { display: none !important; }
-
-        /* Sembunyikan Turbo Progress Bar agar loading hanya di tab browser */
-        .turbo-progress-bar {
-            display: none !important;
-            height: 0 !important;
-            opacity: 0 !important;
-        }
 
         /* Navbar Sticky */
         #main-navbar-container {
@@ -147,7 +139,7 @@
     @stack('styles')
 </head>
 
-<body class="antialiased bg-gray-100 text-gray-800" data-turbo="true" x-data="{}"
+<body class="antialiased bg-gray-100 text-gray-800" x-data="{}"
     :class="$store.accConfig ? {
         'acc-highlight-links': $store.accConfig.links,
         'acc-highlight-headings': $store.accConfig.headings,
@@ -177,7 +169,7 @@
         } : {}"
         style="min-height: 100vh;">
 
-        <header id="main-navbar-container" data-turbo-permanent>
+        <header id="main-navbar-container">
             @include('frontend.layouts.navbar')
         </header>
 
