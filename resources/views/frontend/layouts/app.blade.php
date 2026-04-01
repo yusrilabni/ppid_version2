@@ -14,6 +14,26 @@
     </title>
     <meta name="description" content="Pejabat Pengelola Informasi dan Dokumentasi">
 
+    <!-- Critical CSS: Prevent Header Flicker -->
+    <style>
+        [x-cloak] { display: none !important; }
+        #main-navbar-container {
+            position: sticky !important;
+            top: 0 !important;
+            z-index: 100 !important;
+            background-color: white !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
+            transition: none !important;
+            animation: none !important;
+        }
+        /* Remove any ghosting/shadow transitions on load */
+        * { -webkit-font-smoothing: antialiased; -moz-osx-font-smoothing: grayscale; }
+        .transition-all, .transition, .duration-300 { transition: none !important; }
+        body.loaded .transition-all, body.loaded .transition, body.loaded .duration-300 { transition: all 0.3s ease !important; }
+    </style>
+
     <!-- Favicons -->
     <link rel="shortcut icon" href="{{ asset('storage/logo/favicon_io/favicon.ico') }}" type="image/x-icon">
     <link rel="icon" type="image/webp" href="{{ asset('storage/logo/favicon_io/ppid.webp') }}">
@@ -408,6 +428,9 @@
 
     <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
     <script>
+        // Re-enable transitions after load to prevent initial ghosting
+        window.addEventListener('load', () => { document.body.classList.add('loaded'); });
+        
         lucide.createIcons();
         function accessibilityWidget() {
             return {
