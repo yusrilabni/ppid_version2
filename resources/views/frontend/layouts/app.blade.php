@@ -15,27 +15,28 @@
     <!-- Version: 2.1.0 - Stability Fix -->
     <meta name="description" content="Pejabat Pengelola Informasi dan Dokumentasi">
 
-    <!-- Instant Scroll Restoration (No Jump) -->
+    <!-- Robust Scroll Restoration -->
     <script>
         (function() {
             if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
-            var key = 'sp_' + btoa(window.location.href);
-            var p = sessionStorage.getItem(key);
-            if (p && parseInt(p) > 50) {
-                // Force a temporary height so the browser can scroll immediately
-                document.documentElement.style.height = (parseInt(p) + 2000) + 'px';
-                window.scrollTo(0, parseInt(p));
-                
-                // Reset height as soon as the page starts rendering
-                requestAnimationFrame(function() {
-                    window.scrollTo(0, parseInt(p));
-                    document.documentElement.style.height = '';
+            var scrollKey = 'sp_' + btoa(window.location.origin + window.location.pathname);
+            var pos = sessionStorage.getItem(scrollKey);
+            if (pos) {
+                var target = parseInt(pos);
+                // 1. Immediate try
+                window.scrollTo(0, target);
+                // 2. Try when DOM is ready
+                document.addEventListener('DOMContentLoaded', function() { window.scrollTo(0, target); });
+                // 3. Final try when images/sliders are loaded
+                window.addEventListener('load', function() { 
+                    setTimeout(function() { window.scrollTo(0, target); }, 10);
                 });
             }
         })();
 
         window.addEventListener('scroll', function() {
-            sessionStorage.setItem('sp_' + btoa(window.location.href), window.scrollY);
+            var scrollKey = 'sp_' + btoa(window.location.origin + window.location.pathname);
+            sessionStorage.setItem(scrollKey, window.scrollY);
         }, { passive: true });
     </script>
 
