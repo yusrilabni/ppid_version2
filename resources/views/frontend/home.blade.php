@@ -640,12 +640,27 @@
                     </div>
 
                     {{-- Contact Form --}}
-                    <div>
+                    <div x-data="{ contactMethod: 'email' }">
                         <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+                            {{-- Tab Header --}}
+                            <div class="flex border-b border-gray-100 bg-gray-50/50">
+                                <button @click="contactMethod = 'email'" 
+                                    :class="contactMethod === 'email' ? 'bg-white border-b-2 border-blue-600 text-blue-600' : 'text-gray-500 hover:bg-gray-100'"
+                                    class="flex-1 py-4 px-6 text-sm font-bold transition-all flex items-center justify-center gap-2">
+                                    <i class="fas fa-envelope"></i> Kirim via Email
+                                </button>
+                                <button @click="contactMethod = 'whatsapp'" 
+                                    :class="contactMethod === 'whatsapp' ? 'bg-white border-b-2 border-green-600 text-green-600' : 'text-gray-500 hover:bg-gray-100'"
+                                    class="flex-1 py-4 px-6 text-sm font-bold transition-all flex items-center justify-center gap-2">
+                                    <i class="fab fa-whatsapp text-lg"></i> Kirim via WhatsApp
+                                </button>
+                            </div>
+
                             <div class="p-5 md:p-8">
-                                <h3 class="text-lg md:text-xl font-semibold text-gray-800 mb-4 md:mb-6">Kirim Pesan</h3>
+                                <h3 class="text-lg md:text-xl font-semibold text-gray-800 mb-4 md:mb-6" x-text="contactMethod === 'email' ? 'Kirim Pesan Email' : 'Kirim Pesan WhatsApp'">Kirim Pesan</h3>
                                 <form id="contactForm" class="space-y-4 md:space-y-6">
                                     @csrf
+                                    <input type="hidden" name="method" :value="contactMethod">
                                     <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6">
                                         <div>
                                             <label for="name" class="block text-xs md:text-sm font-medium text-gray-700 mb-1 md:mb-2">
@@ -689,13 +704,10 @@
                                     </div>
 
                                     <button type="submit" id="submitBtn"
-                                        class="w-full inline-flex items-center justify-center px-6 py-3 md:py-3.5 border border-transparent text-sm md:text-base font-medium rounded-lg text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 transition duration-200 shadow-md">
-                                        <svg class="w-4 h-4 md:w-5 md:h-5 mr-2" fill="none" viewBox="0 0 24 24"
-                                            stroke="currentColor">
-                                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
-                                                d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
-                                        </svg>
-                                        <span id="submitText">Kirim Pesan</span>
+                                        :class="contactMethod === 'email' ? 'bg-blue-600 hover:bg-blue-700 focus:ring-blue-500' : 'bg-green-600 hover:bg-green-700 focus:ring-green-500'"
+                                        class="w-full inline-flex items-center justify-center px-6 py-3 md:py-3.5 border border-transparent text-sm md:text-base font-bold rounded-lg text-white focus:outline-none focus:ring-2 focus:ring-offset-2 transition duration-200 shadow-md">
+                                        <i :class="contactMethod === 'email' ? 'fas fa-paper-plane' : 'fab fa-whatsapp text-lg'" class="mr-2"></i>
+                                        <span id="submitText" x-text="contactMethod === 'email' ? 'Kirim Pesan Email' : 'Kirim Pesan WhatsApp'">Kirim Pesan</span>
                                         <span id="loadingSpinner" class="hidden ml-2">
                                             <svg class="animate-spin h-4 w-4 md:h-5 md:w-5 text-white"
                                                 xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24">
@@ -880,6 +892,7 @@
 
                 // Get form data
                 const formData = new FormData(this);
+                const method = formData.get('method') || 'email';
 
                 // Basic validation
                 let isValid = true;
@@ -914,25 +927,29 @@
                 loadingSpinner.classList.remove('hidden');
 
                 try {
-                    const recipient = "ppidkabsinjai@gmail.com";
                     const name = formData.get('name');
                     const email = formData.get('email');
                     const subject = formData.get('subject');
                     const message = formData.get('message');
                     
-                    const mailBody = `Saya ${name}, dengan email ${email}, ingin menyampaikan: ${message}`;
-                    
-                    // Attempt to open Gmail web compose first
-                    const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${recipient}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(mailBody)}`;
-                    
-                    // Fallback to mailto link if needed, but here we open Gmail in a new tab
-                    window.open(gmailUrl, '_blank');
+                    if (method === 'email') {
+                        const recipient = "ppidkabsinjai@gmail.com";
+                        const mailBody = `Saya ${name}, dengan email ${email}, ingin menyampaikan: ${message}`;
+                        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=${recipient}&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(mailBody)}`;
+                        window.open(gmailUrl, '_blank');
+                        showMessage('Membuka Gmail... Pesan Anda telah disiapkan.', true);
+                    } else {
+                        const waNumber = "6285156878911";
+                        const waMessage = `*Pesan Baru dari Website PPID*\n\n*Nama:* ${name}\n*Email:* ${email}\n*Subjek:* ${subject}\n\n*Pesan:*\n${message}`;
+                        const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(waMessage)}`;
+                        window.open(waUrl, '_blank');
+                        showMessage('Membuka WhatsApp... Pesan Anda telah disiapkan.', true);
+                    }
 
-                    showMessage('Membuka Gmail... Pesan Anda telah disiapkan.', true);
                     contactForm.reset();
                 } catch (error) {
                     console.error('Error:', error);
-                    showMessage('Terjadi kesalahan saat menyiapkan email.', false);
+                    showMessage('Terjadi kesalahan saat menyiapkan pesan.', false);
                 } finally {
                     // Re-enable submit button
                     submitBtn.disabled = false;
