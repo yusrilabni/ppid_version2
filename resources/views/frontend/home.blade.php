@@ -699,6 +699,7 @@
         document.addEventListener('DOMContentLoaded', function() {
             var latestInfoSwiper = new Swiper('.latest-info-carousel', {
                 slidesPerView: 1,
+                slidesPerGroup: 1,
                 spaceBetween: 20,
                 loop: true,
                 autoplay: {
@@ -714,9 +715,18 @@
                     prevEl: '.latest-info-prev',
                 },
                 breakpoints: {
-                    640: { slidesPerView: 2 },
-                    1024: { slidesPerView: 3 },
-                    1280: { slidesPerView: 4 },
+                    640: { 
+                        slidesPerView: 2,
+                        slidesPerGroup: 2,
+                    },
+                    1024: { 
+                        slidesPerView: 3,
+                        slidesPerGroup: 3,
+                    },
+                    1280: { 
+                        slidesPerView: 4,
+                        slidesPerGroup: 4,
+                    },
                 },
                 on: {
                     init: function() {
