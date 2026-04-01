@@ -103,7 +103,10 @@
             Alpine.store('surveyModal', {
                 open: false,
                 init() {
-                    const isHome = window.location.pathname === '/' || window.location.pathname === '/home';
+                    // Improved Home Detection: Check if it's root or /home (supporting /v2/ prefix)
+                    const path = window.location.pathname.replace(/\/$/, ""); // remove trailing slash
+                    const isHome = path === "" || path === "/home" || path.endsWith("/v2") || path.endsWith("/v2/home");
+                    
                     if (!isHome) return;
                     
                     const authStatus = @json(auth()->check());
@@ -272,6 +275,31 @@
     </div>
 
     <div class="acc-reading-mask" id="reading-mask"></div>
+
+    <!-- SURVEY MODAL -->
+    <div x-show="$store.surveyModal.open" class="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md" x-cloak x-transition>
+        <div class="bg-white rounded-[2rem] shadow-2xl max-w-lg w-full overflow-hidden transform transition-all border border-white/20">
+            <div class="relative bg-gradient-to-br from-blue-600 to-indigo-800 p-10 text-center text-white">
+                <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+                    <svg width="100%" height="100%"><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M 40 0 L 0 0 0 40" fill="none" stroke="white" stroke-width="1"/></pattern><rect width="100%" height="100%" fill="url(#grid)" /></svg>
+                </div>
+                <div class="bg-white/20 w-24 h-24 rounded-3xl flex items-center justify-center mx-auto mb-6 backdrop-blur-sm border border-white/30 rotate-12 shadow-xl">
+                    <i class="fas fa-poll-h text-5xl"></i>
+                </div>
+                <h3 class="text-3xl font-extrabold tracking-tight">Survei Kepuasan</h3>
+                <p class="text-blue-100 mt-3 text-lg opacity-90">Bantu kami meningkatkan kualitas layanan publik</p>
+            </div>
+            <div class="p-10 text-center bg-gray-50/50">
+                <p class="text-gray-600 mb-10 leading-relaxed text-lg font-medium">Suara Anda sangat berarti bagi kami. Luangkan waktu sejenak untuk mengisi survei singkat pelayanan PPID Kabupaten Sinjai.</p>
+                <div class="flex flex-col gap-4">
+                    <a href="{{ url('/laporan/survei') }}" @click="$store.surveyModal.close()" class="group bg-blue-600 hover:bg-blue-700 text-white font-bold py-5 px-8 rounded-2xl transition-all shadow-xl shadow-blue-200 flex items-center justify-center gap-3">
+                        <i class="fas fa-edit text-xl"></i><span>Isi Survei Sekarang</span>
+                    </a>
+                    <button @click="$store.surveyModal.close()" class="text-gray-400 hover:text-red-500 font-bold py-2 uppercase text-xs tracking-wider">Nanti Saja</button>
+                </div>
+            </div>
+        </div>
+    </div>
 
     <!-- Accessibility Widget -->
     <div x-data="accessibilityWidget()" class="fixed z-[99999] acc-widget-container flex flex-col items-center" style="bottom: 24px; left: 24px;" x-cloak>
