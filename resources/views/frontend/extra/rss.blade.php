@@ -254,7 +254,10 @@
     let html = '';
     items.forEach(el => {
       html += `&lt;div class="ppid-card"&gt;
-                 &lt;small style="color:#0052FF; font-weight:bold;"&gt;🏛️ ${el.querySelector("organization").textContent}&lt;/small&gt;
+                 &lt;div style="display:flex; justify-content:space-between;"&gt;
+                   &lt;small style="color:#0052FF; font-weight:bold;"&gt;🏛️ ${el.querySelector("organization").textContent}&lt;/small&gt;
+                   &lt;small style="color:#666; background:#eee; padding:2px 8px; border-radius:5px;"&gt;${el.querySelector("category").textContent}&lt;/small&gt;
+                 &lt;/div&gt;
                  &lt;a href="${el.querySelector("link").textContent}" target="_blank" class="ppid-title"&gt;${el.querySelector("title").textContent}&lt;/a&gt;
                  &lt;small style="color:#999"&gt;📅 ${new Date(el.querySelector("pubDate").textContent).toLocaleDateString('id-ID')}&lt;/small&gt;
                &lt;/div&gt;`;
@@ -352,6 +355,7 @@ $this->load->view('rss_view', $data);
                         html = '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px; font-family:sans-serif;">';
                         items.forEach(el => {
                             const status = el.querySelector('status').textContent;
+                            const category = el.querySelector('category').textContent;
                             const color = (status === 'BERLAKU' || status === 'AKTIF') ? '#10b981' : '#ef4444';
                             html += `<div style="background:#fff; border-radius:20px; padding:25px; border:1px solid #eee; box-shadow:0 10px 15px rgba(0,0,0,0.05); display:flex; flex-direction:column;">
                                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
@@ -359,6 +363,9 @@ $this->load->view('rss_view', $data);
                                     <span style="font-size:9px; font-weight:900; padding:4px 12px; border-radius:8px; background:${color}10; color:${color}; border:1.5px solid ${color}20;">${status}</span>
                                 </div>
                                 <h4 style="font-weight:800; color:#111827; margin:0 0 10px 0; line-height:1.4; font-size:16px;">${el.querySelector('title').textContent}</h4>
+                                <div style="margin-bottom:15px;">
+                                    <span style="font-size:9px; font-weight:bold; color:#6b7280; background:#f3f4f6; padding:3px 10px; border-radius:6px; border:1px solid #e5e7eb;">📂 ${category}</span>
+                                </div>
                                 <div style="margin-top:auto; font-size:11px; color:#9ca3af; font-weight:600;">📅 ${new Date(el.querySelector('pubDate').textContent).toLocaleDateString('id-ID')}</div>
                             </div>`;
                         });
