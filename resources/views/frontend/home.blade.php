@@ -309,7 +309,7 @@
                         </div>
                         <div>
                             <div class="text-sm md:text-4xl font-black text-green-600 mb-0.5 md:mb-2">{{ $rataRataWaktuRespon }} Hari</div>
-                            <p class="text-[7px] md:text-xs font-bold text-gray-500 uppercase tracking-widest">Rata-rata Waktu Respon</p>
+                            <p class="text-[7px] md:text-xs font-bold text-gray-500 uppercase tracking-widest">Respon</p>
                         </div>
                         <div>
                             <div class="text-sm md:text-4xl font-black text-purple-600 mb-0.5 md:mb-2">{{ $tingkatPenyelesaian }}%</div>
