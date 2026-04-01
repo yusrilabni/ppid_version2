@@ -164,7 +164,20 @@
         #acc-main-wrapper.acc-contrast-invert { filter: invert(1) hue-rotate(180deg) !important; background-color: #000 !important; }
         #acc-main-wrapper.acc-contrast-dark { background-color: #000 !important; color: #fff !important; }
         #acc-main-wrapper.acc-contrast-dark *:not(.acc-ignore):not(.acc-ignore *) { background-color: #000 !important; color: #ffff00 !important; border-color: #fff !important; }
-        
+        #acc-main-wrapper.acc-sat-low { filter: saturate(0.5) !important; }
+        #acc-main-wrapper.acc-sat-high { filter: saturate(2) !important; }
+        #acc-main-wrapper.acc-sat-mono { filter: grayscale(1) !important; }
+        #acc-main-wrapper.acc-highlight-links a:not(.acc-ignore) { outline: 4px solid #ff00ff !important; outline-offset: 2px !important; background-color: #ffff00 !important; color: #000 !important; font-weight: bold !important; }
+        #acc-main-wrapper.acc-highlight-headings h1, #acc-main-wrapper.acc-highlight-headings h2, #acc-main-wrapper.acc-highlight-headings h3 { background-color: #0000ff !important; color: #fff !important; padding: 8px !important; border-left: 12px solid #ffff00 !important; display: block !important; }
+        #acc-main-wrapper.acc-text-spacing *:not(.acc-ignore) { letter-spacing: 2px !important; }
+        #acc-main-wrapper.acc-hide-images img { visibility: hidden !important; opacity: 0 !important; }
+        #acc-main-wrapper.acc-dyslexic-open *:not(.acc-ignore) { font-family: 'Open-Dyslexic', sans-serif !important; }
+        #acc-main-wrapper.acc-dyslexic-lexend *:not(.acc-ignore) { font-family: 'Lexend', sans-serif !important; }
+        #acc-main-wrapper.acc-line-height *:not(.acc-ignore) { line-height: 2 !important; }
+        #acc-main-wrapper.acc-align-left *:not(.acc-ignore) { text-align: left !important; }
+        #acc-main-wrapper.acc-align-center *:not(.acc-ignore) { text-align: center !important; }
+        #acc-main-wrapper.acc-align-right *:not(.acc-ignore) { text-align: right !important; }
+
         /* Widget Styles */
         .acc-widget-container { font-family: 'Inter', sans-serif !important; }
         .acc-grid-btn { background: white !important; color: #374151 !important; border: 1px solid #E5E7EB !important; border-radius: 16px !important; padding: 16px 10px !important; cursor: pointer !important; display: flex !important; flex-direction: column !important; align-items: center !important; text-align: center !important; min-height: 140px !important; width: 100% !important; position: relative !important; transition: all 0.2s !important; }
