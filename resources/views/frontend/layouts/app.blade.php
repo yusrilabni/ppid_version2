@@ -441,17 +441,49 @@
                 isSoundEnabled: true, isReaderActive: false, isHoverActive: false, isCurrentlySpeaking: false, hoverTimeout: null,
                 init() {
                     const userRole = @json(auth()->user()?->role ?? 'guest');
-                    
+                    const userName = @json(auth()->user()?->name ?? '');
+                    const authStatus = @json(auth()->check());
+
+                    // Improved Home Detection
+                    const path = window.location.pathname.replace(/\/$/, "");
+                    const isHome = path === "" || path === "/home" || path.endsWith("/v2") || path.endsWith("/v2/home");
+
                     // Restore Master Sound state
                     const savedSoundState = localStorage.getItem('acc_sound_enabled');
                     if (savedSoundState !== null) this.isSoundEnabled = (savedSoundState === 'true');
                     else this.isSoundEnabled = (userRole !== 'superadmin');
 
+                    // GREETING LOGIC: Runs once per identity change
+                    const currentIdentity = authStatus ? 'user_' + @json(auth()->id()) : 'guest';
+                    const lastGreetingId = sessionStorage.getItem('acc_last_greeting_id');
+
+                    if (isHome && lastGreetingId !== currentIdentity) {
+                        sessionStorage.setItem('acc_last_greeting_id', currentIdentity);
+
+                        // Small delay to ensure sound system is ready
+                        setTimeout(() => {
+                            if (!this.isSoundEnabled) return;
+                            window.speechSynthesis.cancel();
+
+                            let message = "";
+                            if (authStatus && (userRole === 'admin' || userRole === 'superadmin')) {
+                                // Formatting name: take first two words
+                                const nameParts = userName.split(' ');
+                                const simpleName = nameParts.slice(0, 2).join(' ');
+                                message = `Halo ${simpleName}. Selamat datang di website P P I D Kabupaten Sinjai.`;
+                            } else {
+                                message = "Selamat datang di website P P I D Kabupaten Sinjai.";
+                            }
+
+                            this.speak(message);
+                        }, 1500);
+                    }
+
                     // Restore Reader states
                     this.isReaderActive = localStorage.getItem('acc_reader_active') === 'true';
                     this.isHoverActive = localStorage.getItem('acc_hover_active') === 'true';
 
-                    window.addEventListener('trigger-greeting', () => {
+                    document.addEventListener('mousemove', (e) => {
                         if (!this.isSoundEnabled) { this.activateDefaultTTS(userRole); return; }
                         const authStatus = @json(auth()->check());
                         const userId = @json(auth()->id() ?? 'guest');
