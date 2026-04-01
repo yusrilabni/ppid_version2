@@ -8,7 +8,7 @@
                 <a href="{{ route('home') }}" class="flex-shrink-0 flex items-center group relative">
                     <!-- Logo diperbesar dengan transform scale -->
                     <div
-                        class="transform origin-left scale-[1.4] md:scale-150 transition-transform duration-300 group-hover:scale-[1.5] md:group-hover:scale-[1.6]">
+                        class="transform origin-left scale-[1.4] md:scale-150 group-hover:scale-[1.5] md:group-hover:scale-[1.6] transition-transform duration-300">
                         <img class="w-auto h-16 md:h-20" src="{{ asset('storage/logo/ppid.webp') }}"
                             alt="PPID" onerror="this.onerror=null; this.src='{{ asset('storage/logo/ppid.png') }}'">
                     </div>
