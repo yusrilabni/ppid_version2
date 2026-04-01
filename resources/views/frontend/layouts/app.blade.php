@@ -105,28 +105,41 @@
                 init() {
                     const isHome = window.location.pathname === '/' || window.location.pathname === '/home';
                     if (!isHome) return;
+                    
                     const authStatus = @json(auth()->check());
                     const userRole = @json(auth()->user()?->role ?? 'guest');
                     const userId = @json(auth()->id() ?? 'guest');
                     
                     let shouldShow = false;
+                    
+                    // Logic: Show once per session per state (Guest or User)
                     if (!authStatus) {
-                        shouldShow = true;
-                    } else if (userRole === 'user' || userRole === 'admin') {
+                        if (!sessionStorage.getItem('survey_seen_guest')) {
+                            shouldShow = true;
+                        }
+                    } else {
                         if (!sessionStorage.getItem('survey_seen_' + userId)) {
                             shouldShow = true;
                         }
                     }
 
                     if (shouldShow) {
-                        this.open = true;
-                        setTimeout(() => { if (this.open) { this.close(); } }, 5000);
+                        // Small delay for better UX
+                        setTimeout(() => {
+                            this.open = true;
+                            // Auto close after 5 seconds if not manually closed
+                            setTimeout(() => {
+                                if (this.open) { this.close(); }
+                            }, 5000);
+                        }, 1000);
                     }
                 },
                 close() {
                     const userId = @json(auth()->id() ?? 'guest');
+                    const storageKey = @json(auth()->check()) ? 'survey_seen_' + userId : 'survey_seen_guest';
+                    
                     this.open = false;
-                    sessionStorage.setItem('survey_seen_' + userId, 'true');
+                    sessionStorage.setItem(storageKey, 'true');
                     window.dispatchEvent(new CustomEvent('trigger-greeting'));
                 }
             });
