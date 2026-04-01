@@ -15,16 +15,26 @@
     <!-- Version: 2.1.0 - Stability Fix -->
     <meta name="description" content="Pejabat Pengelola Informasi dan Dokumentasi">
 
-    <!-- Simple Scroll Restoration -->
+    <!-- Robust Scroll Restoration -->
     <script>
+        if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+        
         (function() {
-            var key = 'sp_' + btoa(window.location.pathname);
+            var key = 'sp_' + btoa(window.location.href);
             var p = sessionStorage.getItem(key);
-            if (p) window.scrollTo(0, parseInt(p));
+            if (p) {
+                window.addEventListener('load', function() {
+                    setTimeout(function() {
+                        window.scrollTo({ top: parseInt(p), behavior: 'instant' });
+                    }, 10);
+                });
+            }
         })();
+
         window.addEventListener('scroll', function() {
-            sessionStorage.setItem('sp_' + btoa(window.location.pathname), window.scrollY);
-        });
+            var key = 'sp_' + btoa(window.location.href);
+            sessionStorage.setItem(key, window.scrollY);
+        }, { passive: true });
     </script>
 
     <!-- Anti-Flicker & Critical Layout -->
