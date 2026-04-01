@@ -11,61 +11,198 @@
     </title>
     <meta name="description" content="Pejabat Pengelola Informasi dan Dokumentasi">
 
-    <!-- Turbo & Asset Trackers -->
-    <script src="https://unpkg.com/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js" data-turbo-track="reload"></script>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" data-turbo-track="reload">
-    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" data-turbo-track="reload" />
-    <link rel="stylesheet" href="{{ asset('css/custom.css') }}" data-turbo-track="reload">
+    <script>
+        // Force manual restoration
+        if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+    </script>
 
+    <!-- Favicons -->
+    <link rel="shortcut icon" href="{{ asset('storage/logo/favicon_io/favicon.ico') }}" type="image/x-icon">
+    <link rel="icon" type="image/webp" href="{{ asset('storage/logo/favicon_io/ppid.webp') }}">
+
+    <!-- Scripts -->
+    <script src="https://unpkg.com/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js" data-turbo-track="reload"></script>
     <style>
         [x-cloak] { display: none !important; }
-        /* Instant Navigation Feel */
-        .turbo-progress-bar {
-            height: 2px !important;
-            background-color: #2563eb !important;
-        }
         
+        /* Progress Bar Turbo - Agar navigasi terlihat "hidup" */
+        .turbo-progress-bar {
+            height: 4px !important;
+            background-color: #2563eb !important;
+            box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
+        }
+
         /* Navbar Sticky & Static Feel - NO FLICKER */
         #main-navbar-container {
             position: sticky;
             top: 0;
             z-index: 100;
             background: white;
-            transition: none !important;
+        }
+
+        /* Cegah Konten Berkedip Putih */
+        main {
+            min-height: 80vh;
+            background-color: #f3f4f6; /* Samakan dengan warna background body */
         }
         
-        /* Smooth Fade In for Main Content */
-        main {
-            animation: fadeIn 0.3s ease-in-out;
-        }
-        @keyframes fadeIn {
-            from { opacity: 0; transform: translateY(5px); }
-            to { opacity: 1; transform: translateY(0); }
-        }
+        /* Swiper Pagination Instant-CSS */
+        .swiper-pagination-bullet { opacity: 0.3 !important; background: gray !important; }
+        .swiper-pagination-bullet-active { opacity: 1 !important; background: #2563eb !important; }
+        .swiper-pagination { bottom: 0 !important; height: 30px; display: flex; justify-content: center; align-items: center; gap: 8px; }
     </style>
     <script src="https://cdn.tailwindcss.com"></script>
-    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
-    
     <script>
-        // High-Performance Turbo Configuration
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        'blue': {
+                            50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd', 400: '#60a5fa',
+                            500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a',
+                        },
+                    }
+                }
+            }
+        }
+    </script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    <script>
+        // High-Performance Scroll Saving
+        var saveScroll = function() {
+            var scrollKey = 'scrollPos_' + btoa(window.location.href);
+            localStorage.setItem(scrollKey, window.scrollY);
+        };
+        
+        window.addEventListener('scroll', _.debounce(saveScroll, 100));
+        window.addEventListener('turbo:before-visit', saveScroll);
+
+        // Turbo Configuration
+        Turbo.setProgressBarDelay(50);
+        
         document.addEventListener('turbo:load', function() {
             if (window.tailwind) { window.tailwind.run(); }
             if (window.lucide) { window.lucide.createIcons(); }
-        });
-        
-        // Instant Hover Prefetch for Turbo
-        document.addEventListener('mouseover', (event) => {
-            if (event.target.tagName === 'A' && event.target.href && !event.target.hasAttribute('data-turbo-prefetch')) {
-                event.target.setAttribute('data-turbo-prefetch', 'true');
+            
+            // Auto scroll to top if not a restoration visit
+            if (!event.detail.restorationIdentifier) {
+                window.scrollTo(0, 0);
             }
         });
+
+        document.addEventListener('alpine:init', () => {
+            Alpine.store('accConfig', {
+                isOpen: false,
+                fontLevel: localStorage.getItem('acc_font_level') || 'normal',
+                contrast: localStorage.getItem('acc_contrast') || 'default', 
+                links: localStorage.getItem('acc_links') === 'true',
+                headings: localStorage.getItem('acc_headings') === 'true',
+                focus: localStorage.getItem('acc_focus') || 'default', 
+                keyboard: localStorage.getItem('acc_keyboard') === 'true',
+                textSpacing: localStorage.getItem('acc_text_spacing') === 'true',
+                hideImages: localStorage.getItem('acc_hide_images') === 'true',
+                dyslexic: localStorage.getItem('acc_dyslexic') || 'default', 
+                lineHeight: localStorage.getItem('acc_line_height') === 'true',
+                alignment: localStorage.getItem('acc_alignment') || 'default', 
+                saturation: localStorage.getItem('acc_saturation') || 'default', 
+                fontMap: { 'kecil': 12, 'normal': 16, 'sedang': 20, 'besar': 24 },
+                init() { this.applyPersisted(); },
+                applyPersisted() { document.documentElement.style.fontSize = this.getFontSize() + 'px'; },
+                getFontSize() { return this.fontMap[this.fontLevel] || 16; },
+                setFontLevel(level) {
+                    this.fontLevel = level;
+                    localStorage.setItem('acc_font_level', level);
+                    document.documentElement.style.fontSize = this.getFontSize() + 'px';
+                },
+                update(key, val) { 
+                    this[key] = val; 
+                    localStorage.setItem('acc_' + key, val); 
+                },
+                toggleMenu() { this.isOpen = !this.isOpen; },
+                cycleContrast() {
+                    const modes = ['default', 'light', 'invert', 'dark'];
+                    this.contrast = modes[(modes.indexOf(this.contrast) + 1) % modes.length];
+                    localStorage.setItem('acc_contrast', this.contrast);
+                },
+                cycleFocus() {
+                    const modes = ['default', 'cursor', 'mask', 'guide'];
+                    this.focus = modes[(modes.indexOf(this.focus) + 1) % modes.length];
+                    localStorage.setItem('acc_focus', this.focus);
+                },
+                cycleDyslexic() {
+                    const modes = ['default', 'open', 'lexend'];
+                    this.dyslexic = modes[(modes.indexOf(this.dyslexic) + 1) % modes.length];
+                    localStorage.setItem('acc_dyslexic', this.dyslexic);
+                },
+                cycleAlignment() {
+                    const modes = ['default', 'left', 'center', 'right'];
+                    this.alignment = modes[(modes.indexOf(this.alignment) + 1) % modes.length];
+                    localStorage.setItem('acc_alignment', this.alignment);
+                },
+                cycleSaturation() {
+                    const modes = ['default', 'low', 'high', 'mono'];
+                    this.saturation = modes[(modes.indexOf(this.saturation) + 1) % modes.length];
+                    localStorage.setItem('acc_saturation', this.saturation);
+                }
+            });
+
+            Alpine.store('surveyModal', {
+                open: false,
+                init() {
+                    const isHome = window.location.pathname === '/' || window.location.pathname === '/home';
+                    if (!isHome) return;
+                    setTimeout(() => { this.open = true; }, 3000);
+                },
+                close() { this.open = false; }
+            });
+        })
     </script>
+
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" data-turbo-track="reload">
+    <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" data-turbo-track="reload" />
+    <link rel="stylesheet" href="{{ asset('css/custom.css') }}" data-turbo-track="reload">
+    <style>
+        /* Accessibility Styles */
+        #acc-main-wrapper.acc-contrast-light, #acc-main-wrapper.acc-contrast-light *:not(.acc-ignore) { background-color: #fff !important; color: #000 !important; }
+        #acc-main-wrapper.acc-contrast-dark, #acc-main-wrapper.acc-contrast-dark *:not(.acc-ignore) { background-color: #000 !important; color: #ff0 !important; }
+        .acc-reading-mask { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999998; background: rgba(0,0,0,0.85); display: none; }
+        body.acc-focus-mask .acc-reading-mask { display: block !important; }
+    </style>
     @stack('styles')
 </head>
 
-<body class="antialiased bg-gray-100 text-gray-800" data-turbo="true">
-    <div id="acc-main-wrapper" style="min-height: 100vh;">
-        <!-- NAVBAR - TURBO PERMANENT (TIDAK AKAN DI-RENDER ULANG) -->
+<body class="antialiased bg-gray-100 text-gray-800" data-turbo="true"
+    :class="$store.accConfig ? { 
+        'acc-highlight-links': $store.accConfig.links, 
+        'acc-highlight-headings': $store.accConfig.headings, 
+        'acc-text-spacing': $store.accConfig.textSpacing, 
+        'acc-dyslexic-open': $store.accConfig.dyslexic === 'open', 
+        'acc-dyslexic-lexend': $store.accConfig.dyslexic === 'lexend', 
+        'acc-line-height': $store.accConfig.lineHeight, 
+        'acc-align-left': $store.accConfig.alignment === 'left', 
+        'acc-align-center': $store.accConfig.alignment === 'center', 
+        'acc-align-right': $store.accConfig.alignment === 'right',
+        'acc-focus-mask': $store.accConfig.focus === 'mask', 
+        'acc-focus-guide': $store.accConfig.focus === 'guide', 
+        'acc-big-cursor': $store.accConfig.focus === 'cursor', 
+        'acc-keyboard-nav': $store.accConfig.keyboard
+    } : {}"
+    :style="{ fontSize: $store.accConfig ? $store.accConfig.getFontSize() + 'px' : '16px' }">
+
+    <div id="acc-main-wrapper" 
+        :class="$store.accConfig ? { 
+            'acc-contrast-light': $store.accConfig.contrast === 'light', 
+            'acc-contrast-invert': $store.accConfig.contrast === 'invert', 
+            'acc-contrast-dark': $store.accConfig.contrast === 'dark', 
+            'acc-sat-low': $store.accConfig.saturation === 'low', 
+            'acc-sat-high': $store.accConfig.saturation === 'high', 
+            'acc-sat-mono': $store.accConfig.saturation === 'mono', 
+            'acc-hide-images': $store.accConfig.hideImages
+        } : {}"
+        style="min-height: 100vh;">
+        
+        <!-- HEADER PERMANEN - TIDAK REFRESH -->
         <header id="main-navbar-container" data-turbo-permanent>
             @include('frontend.layouts.navbar')
         </header>
@@ -78,6 +215,29 @@
             @include('frontend.layouts.footer')
         </footer>
     </div>
+
+    <div class="acc-reading-mask" id="reading-mask"></div>
+
+    <!-- SURVEY MODAL -->
+    <div x-show="$store.surveyModal.open" class="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md" x-cloak x-transition>
+        <div class="bg-white rounded-[2rem] shadow-2xl max-w-lg w-full overflow-hidden p-10 text-center">
+            <h3 class="text-2xl font-bold mb-4">Survei Kepuasan</h3>
+            <p class="mb-6">Bantu kami meningkatkan kualitas layanan publik dengan mengisi survei singkat.</p>
+            <div class="flex flex-col gap-3">
+                <a href="{{ url('/laporan/survei') }}" class="bg-blue-600 text-white py-3 rounded-xl font-bold">Isi Survei</a>
+                <button @click="$store.surveyModal.close()" class="text-gray-400">Nanti Saja</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- Accessibility Widget -->
+    <div x-data="{ isOpen: false }" class="fixed z-[99999]" style="bottom: 24px; left: 24px;">
+        <button @click="$store.accConfig.toggleMenu()" class="bg-blue-600 text-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center">
+            <i class="fas fa-universal-access text-3xl"></i>
+        </button>
+    </div>
+
+    <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
     @stack('scripts')
 </body>
 </html>
