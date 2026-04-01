@@ -444,68 +444,54 @@
                     const userName = @json(auth()->user()?->name ?? '');
                     const authStatus = @json(auth()->check());
 
-                    // Improved Home Detection
+                    // 1. Home Detection
                     const path = window.location.pathname.replace(/\/$/, "");
                     const isHome = path === "" || path === "/home" || path.endsWith("/v2") || path.endsWith("/v2/home");
 
-                    // Restore Master Sound state
-                    const savedSoundState = localStorage.getItem('acc_sound_enabled');
-                    if (savedSoundState !== null) this.isSoundEnabled = (savedSoundState === 'true');
-                    else this.isSoundEnabled = (userRole !== 'superadmin');
+                    // 2. Restore Master Sound (Default: ON except superadmin)
+                    const savedSound = localStorage.getItem('acc_sound_enabled');
+                    this.isSoundEnabled = (savedSound !== null) ? (savedSound === 'true') : (userRole !== 'superadmin');
 
-                    // GREETING LOGIC: Runs once per identity change
-                    const currentIdentity = authStatus ? 'user_' + @json(auth()->id()) : 'guest';
-                    const lastGreetingId = sessionStorage.getItem('acc_last_greeting_id');
+                    // 3. Restore Reader States or Set Defaults
+                    const sReader = localStorage.getItem('acc_reader_active');
+                    const sHover = localStorage.getItem('acc_hover_active');
+                    if (sReader !== null || sHover !== null) {
+                        this.isReaderActive = (sReader === 'true');
+                        this.isHoverActive = (sHover === 'true');
+                    } else {
+                        // Role defaults
+                        if (userRole === 'admin' || userRole === 'superadmin') {
+                            this.isReaderActive = true; this.isHoverActive = false;
+                        } else {
+                            this.isReaderActive = false; this.isHoverActive = true;
+                        }
+                    }
 
-                    if (isHome && lastGreetingId !== currentIdentity) {
-                        sessionStorage.setItem('acc_last_greeting_id', currentIdentity);
-
-                        // Small delay to ensure sound system is ready
+                    // 4. Greeting Logic
+                    const curId = authStatus ? 'u_' + @json(auth()->id()) : 'guest';
+                    if (isHome && sessionStorage.getItem('acc_greeted') !== curId) {
+                        sessionStorage.setItem('acc_greeted', curId);
                         setTimeout(() => {
                             if (!this.isSoundEnabled) return;
-                            window.speechSynthesis.cancel();
-
-                            let message = "";
-                            if (authStatus && (userRole === 'admin' || userRole === 'superadmin')) {
-                                // Formatting name: take first two words
-                                const nameParts = userName.split(' ');
-                                const simpleName = nameParts.slice(0, 2).join(' ');
-                                message = `Halo ${simpleName}. Selamat datang di website P P I D Kabupaten Sinjai.`;
-                            } else {
-                                message = "Selamat datang di website P P I D Kabupaten Sinjai.";
-                            }
-
-                            this.speak(message);
+                            let msg = authStatus ? `Halo ${userName.split(' ')[0]}. Selamat datang di website P P I D Kabupaten Sinjai.` : "Selamat datang di website P P I D Kabupaten Sinjai.";
+                            this.speak(msg);
                         }, 1500);
                     }
 
-                    // Restore Reader states
-                    this.isReaderActive = localStorage.getItem('acc_reader_active') === 'true';
-                    this.isHoverActive = localStorage.getItem('acc_hover_active') === 'true';
-
-                    document.addEventListener('mousemove', (e) => {
-                        if (!this.isSoundEnabled) { this.activateDefaultTTS(userRole); return; }
-                        const authStatus = @json(auth()->check());
-                        const userId = @json(auth()->id() ?? 'guest');
-                        const userName = @json(auth()->user()?->name ?? '');
-                        const isHome = window.location.pathname === '/' || window.location.pathname === '/home';
-                        if (!isHome) { this.activateDefaultTTS(userRole); return; }
-                        window.speechSynthesis.cancel();
-                        let text = "Selamat Datang di P P I D Kabupaten Sinjai";
-                        let fullText = authStatus ? ("Halo " + userName + ", " + text) : text;
-                        const utterance = new SpeechSynthesisUtterance(fullText);
-                        utterance.lang = 'id-ID';
-                        utterance.onend = () => { if (this.isSoundEnabled) this.activateDefaultTTS(userRole); };
-                        window.speechSynthesis.speak(utterance);
-                    });
-                    
+                    // 5. Event Listeners
                     setInterval(() => { this.isCurrentlySpeaking = window.speechSynthesis.speaking; }, 200);
-                    document.addEventListener('click', (e) => { if (this.isSoundEnabled && this.isReaderActive && !e.target.closest('.acc-widget-container')) this.handleElementSource(e.target); });
+
+                    document.addEventListener('click', (e) => {
+                        if (!this.isSoundEnabled || !this.isReaderActive || e.target.closest('.acc-widget-container')) return;
+                        this.handleElementSource(e.target);
+                    });
+
                     document.addEventListener('mouseover', (e) => {
                         if (!this.isSoundEnabled || !this.isHoverActive || e.target.closest('.acc-widget-container')) return;
                         clearTimeout(this.hoverTimeout);
-                        this.hoverTimeout = setTimeout(() => { this.handleElementSource(e.target, true); }, 600);
+                        this.hoverTimeout = setTimeout(() => { this.handleElementSource(e.target); }, 600);
                     });
+
                     document.addEventListener('mousemove', (e) => {
                         const mask = document.getElementById('reading-mask');
                         if (mask && Alpine.store('accConfig').focus === 'mask') {
@@ -517,33 +503,29 @@
                 toggleMasterSound() {
                     this.isSoundEnabled = !this.isSoundEnabled;
                     localStorage.setItem('acc_sound_enabled', this.isSoundEnabled);
-                    if (!this.isSoundEnabled) { window.speechSynthesis.cancel(); this.isReaderActive = false; this.isHoverActive = false; }
-                    else { const userRole = @json(auth()->user()?->role ?? 'guest'); this.activateDefaultTTS(userRole); }
+                    if (!this.isSoundEnabled) window.speechSynthesis.cancel();
                 },
-                activateDefaultTTS(role) { this.isHoverActive = (role === 'guest' || role === 'user'); this.isReaderActive = (role === 'admin'); },
-                handleElementSource(target, isHover = false) {
-                    let text = '';
+                toggleReader() {
+                    this.isReaderActive = !this.isReaderActive;
+                    this.isHoverActive = false;
+                    this.saveStates();
+                    if (this.isReaderActive && !this.isSoundEnabled) this.toggleMasterSound();
+                },
+                toggleHoverReader() {
+                    this.isHoverActive = !this.isHoverActive;
+                    this.isReaderActive = false;
+                    this.saveStates();
+                    if (this.isHoverActive && !this.isSoundEnabled) this.toggleMasterSound();
+                },
+                saveStates() {
+                    localStorage.setItem('acc_reader_active', this.isReaderActive);
+                    localStorage.setItem('acc_hover_active', this.isHoverActive);
+                },
+                handleElementSource(target) {
                     const el = target.closest('a, button, h1, h2, h3, h4, h5, h6, p, li, span, img, td, th, label, input');
                     if (!el) return;
-                    if (el.tagName.toLowerCase() === 'img') text = el.getAttribute('alt') || 'Gambar';
-                    else if (el.tagName.toLowerCase() === 'input') text = el.getAttribute('placeholder') || 'Kotak isian';
-                    else { text = el.innerText || el.getAttribute('aria-label') || ''; if (el.tagName.toLowerCase() === 'a' && el.href && el.href.toLowerCase().endsWith('.pdf')) text = "Dokumen P D F, " + text; }
-                    text = text.trim();
-                    if (text && text.length > 1) { this.speak(text); }
-                },
-                toggleReader() { 
-                    if (!this.isSoundEnabled) this.toggleMasterSound(); 
-                    this.isReaderActive = !this.isReaderActive; 
-                    this.isHoverActive = false;
-                    localStorage.setItem('acc_reader_active', this.isReaderActive);
-                    localStorage.setItem('acc_hover_active', 'false');
-                },
-                toggleHoverReader() { 
-                    if (!this.isSoundEnabled) this.toggleMasterSound(); 
-                    this.isHoverActive = !this.isHoverActive; 
-                    this.isReaderActive = false;
-                    localStorage.setItem('acc_hover_active', this.isHoverActive);
-                    localStorage.setItem('acc_reader_active', 'false');
+                    let text = el.tagName.toLowerCase() === 'img' ? (el.alt || 'Gambar') : (el.innerText || el.getAttribute('aria-label') || '');
+                    if (text.trim().length > 1) this.speak(text.trim());
                 },
                 cycleFont() { const levels = ['kecil', 'normal', 'sedang', 'besar']; Alpine.store('accConfig').setFontLevel(levels[(levels.indexOf(Alpine.store('accConfig').fontLevel) + 1) % 4]); },
                 resetAcc() { localStorage.clear(); sessionStorage.clear(); location.reload(); },
@@ -555,7 +537,13 @@
                     processedText = processedText.replace(/\bNo\.\b/gi, 'Nomor').replace(/\bKab\.\b/gi, 'Kabupaten').replace(/\bKec\.\b/gi, 'Kecamatan').replace(/\bTtd\b/gi, 'Tertanda');
                     return processedText;
                 },
-                speak(text) { if (!this.isSoundEnabled) return; window.speechSynthesis.cancel(); const utterance = new SpeechSynthesisUtterance(this.formatTextForTTS(text)); utterance.lang = 'id-ID'; window.speechSynthesis.speak(utterance); }
+                speak(text) {
+                    if (!this.isSoundEnabled) return;
+                    window.speechSynthesis.cancel();
+                    const utterance = new SpeechSynthesisUtterance(this.formatTextForTTS(text));
+                    utterance.lang = 'id-ID';
+                    window.speechSynthesis.speak(utterance);
+                }
             }
         }
     </script>
