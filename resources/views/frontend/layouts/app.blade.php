@@ -214,26 +214,89 @@
              @click.away="$store.accConfig.isOpen = false"
              x-transition
              class="absolute bg-white overflow-hidden acc-menu-panel"
-             style="bottom: 110px; left: 0; width: 320px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid #E5E7EB;">
+             style="bottom: 110px; left: 0; width: 360px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid #E5E7EB;">
             <div class="bg-[#0052FF] text-white p-6">
                 <h3 class="font-bold text-lg">Menu Aksesibilitas</h3>
                 <p class="text-xs opacity-90">Optimalkan tampilan sesuai kebutuhan Anda</p>
             </div>
-            <div class="p-4 overflow-y-auto" style="max-height: 400px; background: #F9FAFB;">
+            <div class="p-4 overflow-y-auto" style="max-height: 500px; background: #F9FAFB;">
+                
+                <div style="margin-bottom: 20px; background: #fff; padding: 16px; border-radius: 16px; border: 1px solid #E5E7EB;">
+                    <p style="font-size: 12px !important; font-weight: 700 !important; color: #6B7280 !important; margin: 0 0 12px 0 !important; text-transform: uppercase !important;">Kontrol Suara (TTS)</p>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+                        <button @click="toggleReader()" :class="isReaderActive ? 'border-[#0052FF] border-2' : 'border-[#E5E7EB] border'" class="bg-white text-[#374151] flex items-center justify-center" style="padding: 12px; border-radius: 12px; cursor: pointer; font-size: 12px !important; font-weight: 700; border-style: solid;">
+                            <i class="fas fa-volume-up" style="margin-right: 8px !important; font-size: 16px !important;"></i> Klik Baca
+                        </button>
+                        <button @click="toggleHoverReader()" :class="isHoverActive ? 'border-[#0052FF] border-2' : 'border-[#E5E7EB] border'" class="bg-white text-[#374151] flex items-center justify-center" style="padding: 12px; border-radius: 12px; cursor: pointer; font-size: 12px !important; font-weight: 700; border-style: solid;">
+                            <i class="fas fa-mouse-pointer" style="margin-right: 8px !important; font-size: 16px !important;"></i> Sorot Baca
+                        </button>
+                    </div>
+                </div>
+
                 <div class="grid grid-cols-2 gap-3">
-                    <!-- Contoh 1: Kontras -->
+                    <!-- 1. Contrast -->
                     <button @click="$store.accConfig.cycleContrast()" class="acc-grid-btn" :class="{'active': $store.accConfig.contrast !== 'default'}">
                         <div class="acc-icon-wrapper"><i class="fas fa-adjust"></i></div>
-                        <div class="acc-text-wrapper"><span>Kontras</span></div>
+                        <div class="acc-text-wrapper"><span>Kontras Tinggi</span></div>
                     </button>
-                    <!-- Contoh 2: Ukuran Teks -->
+                    <!-- 2. Text Size -->
                     <button @click="cycleFont()" class="acc-grid-btn" :class="{'active': $store.accConfig.fontLevel !== 'normal'}">
                         <div class="acc-icon-wrapper"><i class="fas fa-font"></i></div>
                         <div class="acc-text-wrapper"><span>Ukuran Teks</span></div>
                     </button>
+                    <!-- 3. Highlight Links -->
+                    <button @click="$store.accConfig.update('links', !$store.accConfig.links)" class="acc-grid-btn" :class="{'active': $store.accConfig.links}">
+                        <div class="acc-icon-wrapper"><i class="fas fa-link"></i></div>
+                        <div class="acc-text-wrapper"><span>Sorot Tautan</span></div>
+                    </button>
+                    <!-- 4. Text Spacing -->
+                    <button @click="$store.accConfig.update('textSpacing', !$store.accConfig.textSpacing)" class="acc-grid-btn" :class="{'active': $store.accConfig.textSpacing}">
+                        <div class="acc-icon-wrapper"><i class="fas fa-arrows-alt-h"></i></div>
+                        <div class="acc-text-wrapper"><span>Spasi Teks</span></div>
+                    </button>
+                    <!-- 5. Hide Images -->
+                    <button @click="$store.accConfig.update('hideImages', !$store.accConfig.hideImages)" class="acc-grid-btn" :class="{'active': $store.accConfig.hideImages}">
+                        <div class="acc-icon-wrapper"><i class="fas fa-image"></i></div>
+                        <div class="acc-text-wrapper"><span>Sembunyi Gbr</span></div>
+                    </button>
+                    <!-- 6. Dyslexia -->
+                    <button @click="$store.accConfig.cycleDyslexic()" class="acc-grid-btn" :class="{'active': $store.accConfig.dyslexic !== 'default'}">
+                        <div class="acc-icon-wrapper"><i class="fas fa-spell-check"></i></div>
+                        <div class="acc-text-wrapper"><span>Ramah Disleksia</span></div>
+                    </button>
+                    <!-- 7. Focus -->
+                    <button @click="$store.accConfig.cycleFocus()" class="acc-grid-btn" :class="{'active': $store.accConfig.focus !== 'default'}">
+                        <div class="acc-icon-wrapper"><i class="fas fa-low-vision"></i></div>
+                        <div class="acc-text-wrapper"><span>Fokus Membaca</span></div>
+                    </button>
+                    <!-- 8. Keyboard Nav -->
+                    <button @click="$store.accConfig.update('keyboard', !$store.accConfig.keyboard)" class="acc-grid-btn" :class="{'active': $store.accConfig.keyboard}">
+                        <div class="acc-icon-wrapper"><i class="fas fa-keyboard"></i></div>
+                        <div class="acc-text-wrapper"><span>Navigasi Key</span></div>
+                    </button>
+                    <!-- 9. Alignment -->
+                    <button @click="$store.accConfig.cycleAlignment()" class="acc-grid-btn" :class="{'active': $store.accConfig.alignment !== 'default'}">
+                        <div class="acc-icon-wrapper"><i class="fas fa-align-left"></i></div>
+                        <div class="acc-text-wrapper"><span>Perataan</span></div>
+                    </button>
+                    <!-- 10. Saturation -->
+                    <button @click="$store.accConfig.cycleSaturation()" class="acc-grid-btn" :class="{'active': $store.accConfig.saturation !== 'default'}">
+                        <div class="acc-icon-wrapper"><i class="fas fa-palette"></i></div>
+                        <div class="acc-text-wrapper"><span>Warna</span></div>
+                    </button>
+                    <!-- 11. Headings -->
+                    <button @click="$store.accConfig.update('headings', !$store.accConfig.headings)" class="acc-grid-btn" :class="{'active': $store.accConfig.headings}">
+                        <div class="acc-icon-wrapper"><i class="fas fa-heading"></i></div>
+                        <div class="acc-text-wrapper"><span>Sorot Judul</span></div>
+                    </button>
+                    <!-- 12. Line Height -->
+                    <button @click="$store.accConfig.update('lineHeight', !$store.accConfig.lineHeight)" class="acc-grid-btn" :class="{'active': $store.accConfig.lineHeight}">
+                        <div class="acc-icon-wrapper"><i class="fas fa-arrows-alt-v"></i></div>
+                        <div class="acc-text-wrapper"><span>Tinggi Baris</span></div>
+                    </button>
                 </div>
                 <div class="mt-4 text-center border-t pt-4">
-                    <button @click="localStorage.clear(); location.reload();" class="text-xs text-gray-500 font-bold uppercase tracking-wider">Reset Semua</button>
+                    <button @click="resetAcc()" class="text-xs text-gray-500 font-bold uppercase tracking-wider">Reset Semua</button>
                 </div>
             </div>
         </div>
@@ -244,6 +307,8 @@
         function accessibilityWidget() {
             return {
                 isSoundEnabled: true,
+                isReaderActive: false,
+                isHoverActive: false,
                 init() {
                     const savedSound = localStorage.getItem('acc_sound_enabled');
                     if (savedSound !== null) this.isSoundEnabled = (savedSound === 'true');
@@ -261,6 +326,8 @@
                     localStorage.setItem('acc_sound_enabled', this.isSoundEnabled);
                     if (!this.isSoundEnabled) window.speechSynthesis.cancel();
                 },
+                toggleReader() { if (!this.isSoundEnabled) this.isSoundEnabled = true; this.isReaderActive = !this.isReaderActive; this.isHoverActive = false; },
+                toggleHoverReader() { if (!this.isSoundEnabled) this.isSoundEnabled = true; this.isHoverActive = !this.isHoverActive; this.isReaderActive = false; },
                 cycleFont() {
                     const levels = ['kecil', 'normal', 'sedang', 'besar'];
                     const current = Alpine.store('accConfig').fontLevel;
@@ -270,29 +337,21 @@
                 resetAcc() { localStorage.clear(); sessionStorage.clear(); location.reload(); },
                 formatTextForTTS(text) {
                     if (!text) return '';
-
-                    // Daftar singkatan yang harus dieja
                     const abbreviations = ['SOP', 'DIP', 'PPID', 'IPM', 'TPAK', 'RKPD', 'RPJMD', 'LKPJ', 'SPBU', 'ASN', 'OPD', 'TTS'];
                     let processedText = text;
-
-                    // Ganti singkatan agar dieja (tambah spasi antar huruf)
                     abbreviations.forEach(abbr => {
                         const regex = new RegExp('\\b' + abbr + '\\b', 'gi');
                         processedText = processedText.replace(regex, abbr.split('').join(' '));
                     });
-
-                    // Penanganan khusus untuk tanda baca dan kata umum
                     processedText = processedText.replace(/\bNo\.\b/gi, 'Nomor');
                     processedText = processedText.replace(/\bKab\.\b/gi, 'Kabupaten');
                     processedText = processedText.replace(/\bKec\.\b/gi, 'Kecamatan');
                     processedText = processedText.replace(/\bTtd\b/gi, 'Tertanda');
-
                     return processedText;
                 },
                 speak(text) {
                     if (!this.isSoundEnabled) return;
                     window.speechSynthesis.cancel();
-
                     const processedText = this.formatTextForTTS(text);
                     const utterance = new SpeechSynthesisUtterance(processedText);
                     utterance.lang = 'id-ID';
