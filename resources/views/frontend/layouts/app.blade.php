@@ -107,36 +107,39 @@
                     if (!isHome) return;
                     
                     const authStatus = @json(auth()->check());
-                    const userRole = @json(auth()->user()?->role ?? 'guest');
                     const userId = @json(auth()->id() ?? 'guest');
+                    const currentIdentity = authStatus ? 'user_' + userId : 'guest';
                     
+                    // RESET LOGIC: If identity changed (login/logout happened), clear session flags
+                    const lastIdentity = sessionStorage.getItem('survey_last_identity');
+                    if (lastIdentity && lastIdentity !== currentIdentity) {
+                        sessionStorage.removeItem('survey_seen_guest');
+                        sessionStorage.removeItem('survey_seen_user'); // cleanup old keys
+                        if (lastIdentity.startsWith('user_')) {
+                            sessionStorage.removeItem('survey_seen_' + lastIdentity.split('_')[1]);
+                        }
+                    }
+                    sessionStorage.setItem('survey_last_identity', currentIdentity);
+
                     let shouldShow = false;
+                    const storageKey = authStatus ? 'survey_seen_' + userId : 'survey_seen_guest';
                     
-                    // Logic: Show once per session per state (Guest or User)
-                    if (!authStatus) {
-                        if (!sessionStorage.getItem('survey_seen_guest')) {
-                            shouldShow = true;
-                        }
-                    } else {
-                        if (!sessionStorage.getItem('survey_seen_' + userId)) {
-                            shouldShow = true;
-                        }
+                    if (!sessionStorage.getItem(storageKey)) {
+                        shouldShow = true;
                     }
 
                     if (shouldShow) {
-                        // Small delay for better UX
                         setTimeout(() => {
                             this.open = true;
-                            // Auto close after 5 seconds if not manually closed
-                            setTimeout(() => {
-                                if (this.open) { this.close(); }
-                            }, 5000);
+                            // Auto close after 5 seconds
+                            setTimeout(() => { if (this.open) { this.close(); } }, 5000);
                         }, 1000);
                     }
                 },
                 close() {
+                    const authStatus = @json(auth()->check());
                     const userId = @json(auth()->id() ?? 'guest');
-                    const storageKey = @json(auth()->check()) ? 'survey_seen_' + userId : 'survey_seen_guest';
+                    const storageKey = authStatus ? 'survey_seen_' + userId : 'survey_seen_guest';
                     
                     this.open = false;
                     sessionStorage.setItem(storageKey, 'true');
