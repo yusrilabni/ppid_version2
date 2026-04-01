@@ -80,6 +80,9 @@
                 </div>
 
                 <div class="relative group">
+                    <!-- Add Pagination -->
+                    <div class="swiper-pagination latest-info-pagination !relative !top-0 !bottom-auto mb-6 mt-1"></div>
+                    
                     <div class="swiper-container latest-info-carousel loading overflow-hidden px-1">
                         <div class="swiper-wrapper">
                             @foreach ($latestInformasis as $info)
@@ -701,6 +704,10 @@
                 autoplay: {
                     delay: 4000,
                     disableOnInteraction: false,
+                },
+                pagination: {
+                    el: '.latest-info-pagination',
+                    clickable: true,
                 },
                 navigation: {
                     nextEl: '.latest-info-next',
