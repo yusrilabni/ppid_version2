@@ -286,26 +286,26 @@
                     <div class="p-3 md:p-8 bg-blue-50 rounded-xl md:rounded-3xl">
                         <i class="fas fa-info-circle text-blue-600 text-lg md:text-4xl mb-1 md:mb-4"></i>
                         <h3 class="text-sm md:text-3xl font-bold text-gray-900 mb-0.5 md:mb-2">{{ number_format($frontendStats['informasi']['total'], 0, ',', '.') }}</h3>
-                        <p class="text-[7px] md:text-xs text-gray-600 font-bold uppercase tracking-widest">Informasi Publik</p>
+                        <p class="text-[7px] md:text-xs text-gray-600 font-bold uppercase tracking-widest">Info Publik</p>
                     </div>
                     <div class="p-3 md:p-8 bg-green-50 rounded-xl md:rounded-3xl">
                         <i class="fas fa-file-alt text-green-600 text-lg md:text-4xl mb-1 md:mb-4"></i>
                         <h3 class="text-sm md:text-3xl font-bold text-gray-900 mb-0.5 md:mb-2">{{ number_format($frontendStats['permohonan'], 0, ',', '.') }}</h3>
-                        <p class="text-[7px] md:text-xs text-gray-600 font-bold uppercase tracking-widest">Jumlah Permohonan</p>
+                        <p class="text-[7px] md:text-xs text-gray-600 font-bold uppercase tracking-widest">Permohonan</p>
                     </div>
                     <div class="p-3 md:p-8 bg-purple-50 rounded-xl md:rounded-3xl">
                         <i class="fas fa-poll text-purple-600 text-lg md:text-4xl mb-1 md:mb-4"></i>
                         <h3 class="text-sm md:text-3xl font-bold text-gray-900 mb-0.5 md:mb-2">{{ number_format($frontendStats['survey_responses'], 0, ',', '.') }}</h3>
-                        <p class="text-[7px] md:text-xs text-gray-600 font-bold uppercase tracking-widest">Jumlah Respon Survei</p>
+                        <p class="text-[7px] md:text-xs text-gray-600 font-bold uppercase tracking-widest">Respon Survei</p>
                     </div>
                 </div>
 
                 <div class="bg-gray-50 rounded-2xl md:rounded-3xl p-5 md:p-12 border border-gray-100">
-                    <h3 class="text-sm md:text-xl font-bold mb-6 md:mb-10 text-gray-800">Laporan Kinerja</h3>
+                    <h3 class="text-sm md:text-xl font-bold mb-6 md:mb-10 text-gray-800">Laporan Kinerja Pelayanan</h3>
                     <div class="grid grid-cols-3 md:grid-cols-3 gap-2 md:gap-8">
                         <div>
                             <div class="text-sm md:text-4xl font-black text-blue-600 mb-0.5 md:mb-2">{{ $tingkatKepuasan }}%</div>
-                            <p class="text-[7px] md:text-xs font-bold text-gray-500 uppercase tracking-widest">Tingkat Kepuasan Layanan</p>
+                            <p class="text-[7px] md:text-xs font-bold text-gray-500 uppercase tracking-widest">Kepuasan</p>
                         </div>
                         <div>
                             <div class="text-sm md:text-4xl font-black text-green-600 mb-0.5 md:mb-2">{{ $rataRataWaktuRespon }} Hari</div>
@@ -313,7 +313,7 @@
                         </div>
                         <div>
                             <div class="text-sm md:text-4xl font-black text-purple-600 mb-0.5 md:mb-2">{{ $tingkatPenyelesaian }}%</div>
-                            <p class="text-[7px] md:text-xs font-bold text-gray-500 uppercase tracking-widest">Tingkat Penyelesaian Permohonan</p>
+                            <p class="text-[7px] md:text-xs font-bold text-gray-500 uppercase tracking-widest">Selesai</p>
                         </div>
                     </div>
                 </div>
@@ -365,23 +365,23 @@
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-5">
                                 <div>
                                     <label class="block text-[10px] md:text-xs font-bold text-gray-700 uppercase tracking-widest mb-1.5 ml-1">Nama Lengkap *</label>
-                                    <input type="text" name="name" required class="w-full px-4 py-3 md:px-5 md:py-4 rounded-xl md:rounded-2xl border border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-xs md:text-sm" placeholder="Masukkan nama lengkap" />
+                                    <input type="text" name="name" required class="w-full px-4 py-3 md:px-5 md:py-4 rounded-xl md:rounded-2xl border border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-xs md:text-sm" placeholder="Nama Anda" />
                                 </div>
                                 <div>
                                     <label class="block text-[10px] md:text-xs font-bold text-gray-700 uppercase tracking-widest mb-1.5 ml-1">Email *</label>
-                                    <input type="email" name="email" required class="w-full px-4 py-3 md:px-5 md:py-4 rounded-xl md:rounded-2xl border border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-xs md:text-sm" placeholder="email @contoh.com" />
+                                    <input type="email" name="email" required class="w-full px-4 py-3 md:px-5 md:py-4 rounded-xl md:rounded-2xl border border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-xs md:text-sm" placeholder="email@contoh.com" />
                                 </div>
                             </div>
                             <div>
                                 <label class="block text-[10px] md:text-xs font-bold text-gray-700 uppercase tracking-widest mb-1.5 ml-1">Subjek *</label>
-                                <input type="text" name="subject" required class="w-full px-4 py-3 md:px-5 md:py-4 rounded-xl md:rounded-2xl border border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-xs md:text-sm" placeholder="Subjek pesan" />
+                                <input type="text" name="subject" required class="w-full px-4 py-3 md:px-5 md:py-4 rounded-xl md:rounded-2xl border border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-xs md:text-sm" placeholder="Apa yang ingin ditanyakan?" />
                             </div>
                             <div>
                                 <label class="block text-[10px] md:text-xs font-bold text-gray-700 uppercase tracking-widest mb-1.5 ml-1">Pesan *</label>
                                 <textarea name="message" rows="4" required class="w-full px-4 py-3 md:px-5 md:py-4 rounded-xl md:rounded-2xl border border-gray-100 bg-gray-50/50 focus:bg-white focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all text-xs md:text-sm resize-none" placeholder="Tulis pesan Anda di sini..."></textarea>
                             </div>
                             <button type="submit" id="submitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-4 md:py-5 rounded-xl md:rounded-2xl shadow-xl shadow-blue-200 transition-all flex items-center justify-center gap-2 md:gap-3 group text-xs md:text-base">
-                                <i class="fas fa-paper-plane group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i> <span id="submitText">Kirim Pesan</span>
+                                <i class="fas fa-paper-plane group-hover:translate-x-1 group-hover:-translate-y-1 transition-transform"></i> <span id="submitText">Kirim Pesan Sekarang</span>
                             </button>
                         </form>
                     </div>
