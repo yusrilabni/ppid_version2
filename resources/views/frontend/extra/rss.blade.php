@@ -360,9 +360,11 @@ $this->load->view('rss_view', $data);
                     if(this.motherTab === 'card') {
                         html = '<div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(280px, 1fr)); gap:20px; font-family:sans-serif;">';
                         items.forEach(el => {
-                            const status = el.querySelector('status').textContent;
+                            let status = el.querySelector('status').textContent;
+                            if (status === 'AKTIF') status = 'BERLAKU'; // Map AKTIF to BERLAKU
+                            
                             const category = el.querySelector('category').textContent;
-                            const color = (status === 'BERLAKU' || status === 'AKTIF') ? '#10b981' : '#ef4444';
+                            const color = (status === 'BERLAKU') ? '#10b981' : '#ef4444';
                             html += `<div style="background:#fff; border-radius:20px; padding:25px; border:1px solid #eee; box-shadow:0 10px 15px rgba(0,0,0,0.05); display:flex; flex-direction:column;">
                                 <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:15px;">
                                     <span style="font-size:10px; font-weight:900; color:#0052FF; text-transform:uppercase; letter-spacing:1px;">🏛️ ${el.querySelector('organization').textContent}</span>
@@ -379,8 +381,10 @@ $this->load->view('rss_view', $data);
                     } else {
                         html = '<div style="background:#fff; border-radius:15px; border:1px solid #eee; overflow:hidden; font-family:sans-serif;">';
                         items.forEach((el, index) => {
-                            const status = el.querySelector('status').textContent;
-                            const color = (status === 'BERLAKU' || status === 'AKTIF') ? '#10b981' : '#ef4444';
+                            let status = el.querySelector('status').textContent;
+                            if (status === 'AKTIF') status = 'BERLAKU'; // Map AKTIF to BERLAKU
+
+                            const color = (status === 'BERLAKU') ? '#10b981' : '#ef4444';
                             html += `<div style="padding:20px 30px; border-bottom:${index === items.length-1 ? 'none' : '1px solid #f5f5f5'}; display:flex; align-items:center; justify-content:space-between;">
                                 <div style="max-width:75%;">
                                     <div style="font-size:10px; font-weight:900; color:#9ca3af; text-transform:uppercase; margin-bottom:6px;">🏛️ ${el.querySelector('organization').textContent}</div>
