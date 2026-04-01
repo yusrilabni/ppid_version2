@@ -12,6 +12,7 @@
             - @yield('title')
         @endif
     </title>
+    <!-- Version: 2.1.0 - Stability Fix -->
     <meta name="description" content="Pejabat Pengelola Informasi dan Dokumentasi">
 
     <!-- Simple Scroll Restoration -->
