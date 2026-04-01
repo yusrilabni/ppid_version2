@@ -14,6 +14,18 @@
     </title>
     <meta name="description" content="Pejabat Pengelola Informasi dan Dokumentasi">
 
+    <!-- Simple Scroll Restoration -->
+    <script>
+        (function() {
+            var key = 'sp_' + btoa(window.location.pathname);
+            var p = sessionStorage.getItem(key);
+            if (p) window.scrollTo(0, parseInt(p));
+        })();
+        window.addEventListener('scroll', function() {
+            sessionStorage.setItem('sp_' + btoa(window.location.pathname), window.scrollY);
+        });
+    </script>
+
     <!-- Anti-Flicker & Critical Layout -->
     <style>
         [x-cloak] { display: none !important; }
@@ -24,8 +36,6 @@
             background: #ffffff !important;
             min-height: 64px !important;
         }
-        /* Lock menu states during load */
-        .opacity-100 { opacity: 1 !important; }
     </style>
 
     <!-- Favicons -->
@@ -144,28 +154,45 @@
     <style>
         .news-carousel, .info-carousel { width: 100%; overflow: hidden; }
         .info-carousel .swiper-slide { height: auto; }
+        [x-cloak] { display: none !important; }
         html { transition: font-size 0.2s ease; font-size: 16px; scroll-behavior: smooth; }
         body { font-size: 1rem; min-height: 100vh; display: flex; flex-direction: column; }
         #acc-main-wrapper { flex: 1 0 auto; display: flex; flex-direction: column; width: 100%; }
         main { flex: 1 0 auto; }
 
         /* Accessibility Styles */
-        #acc-main-wrapper.acc-contrast-light { background-color: #fff !important; color: #000 !important; filter: contrast(1.2) !important; }
+        #acc-main-wrapper.acc-contrast-light { background-color: #fff !important; color: #000 !important; filter: contrast(1.5) !important; }
         #acc-main-wrapper.acc-contrast-invert { filter: invert(1) hue-rotate(180deg) !important; background-color: #000 !important; }
         #acc-main-wrapper.acc-contrast-dark { background-color: #000 !important; color: #fff !important; }
         #acc-main-wrapper.acc-contrast-dark *:not(.acc-ignore):not(.acc-ignore *) { background-color: #000 !important; color: #ffff00 !important; border-color: #fff !important; }
-        
-        #acc-main-wrapper.acc-highlight-links a:not(.acc-ignore), 
-        #acc-main-wrapper.acc-highlight-links button:not(.acc-ignore) { outline: 4px solid #ff00ff !important; outline-offset: 2px !important; background-color: #ffff00 !important; color: #000 !important; font-weight: bold !important; }
-        
-        /* Widget Styles */
-        .acc-widget-container { font-family: 'Inter', sans-serif !important; }
-        .acc-grid-btn { background: white !important; color: #374151 !important; border: 1px solid #E5E7EB !important; border-radius: 16px !important; padding: 16px 10px !important; cursor: pointer !important; display: flex !important; flex-direction: column !important; align-items: center !important; text-align: center !important; min-height: 140px !important; width: 100% !important; position: relative !important; transition: all 0.2s !important; }
+        #acc-main-wrapper.acc-sat-low { filter: saturate(0.5) !important; }
+        #acc-main-wrapper.acc-sat-high { filter: saturate(2) !important; }
+        #acc-main-wrapper.acc-sat-mono { filter: grayscale(1) !important; }
+        #acc-main-wrapper.acc-highlight-links a:not(.acc-ignore) { outline: 4px solid #ff00ff !important; outline-offset: 2px !important; background-color: #ffff00 !important; color: #000 !important; font-weight: bold !important; }
+        #acc-main-wrapper.acc-highlight-headings h1, #acc-main-wrapper.acc-highlight-headings h2, #acc-main-wrapper.acc-highlight-headings h3 { background-color: #0000ff !important; color: #fff !important; padding: 8px !important; border-left: 12px solid #ffff00 !important; display: block !important; }
+        #acc-main-wrapper.acc-text-spacing *:not(.acc-ignore) { letter-spacing: 2px !important; }
+        #acc-main-wrapper.acc-hide-images img { visibility: hidden !important; opacity: 0 !important; }
+        #acc-main-wrapper.acc-dyslexic-open *:not(.acc-ignore) { font-family: 'Open-Dyslexic', sans-serif !important; }
+        #acc-main-wrapper.acc-dyslexic-lexend *:not(.acc-ignore) { font-family: 'Lexend', sans-serif !important; }
+        #acc-main-wrapper.acc-line-height *:not(.acc-ignore) { line-height: 2 !important; }
+        #acc-main-wrapper.acc-align-left *:not(.acc-ignore) { text-align: left !important; }
+        #acc-main-wrapper.acc-align-center *:not(.acc-ignore) { text-align: center !important; }
+        #acc-main-wrapper.acc-align-right *:not(.acc-ignore) { text-align: right !important; }
+
+        /* Widget UI Styles */
+        .acc-widget-container { font-family: 'Inter', sans-serif !important; font-size: 16px !important; box-sizing: border-box !important; }
+        .acc-menu-panel { display: flex; flex-direction: column; }
+        .acc-grid-btn { background: white !important; color: #374151 !important; border: 1px solid #E5E7EB !important; border-radius: 16px !important; padding: 16px 10px !important; cursor: pointer !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: flex-start !important; text-align: center !important; min-height: 145px !important; width: 100% !important; position: relative !important; transition: all 0.2s !important; }
         .acc-grid-btn:hover { background: #F3F4F6 !important; }
         .acc-grid-btn.active { border: 2px solid #0052FF !important; }
-        .acc-icon-wrapper { height: 50px !important; display: flex !important; align-items: center !important; justify-content: center !important; margin-bottom: 12px !important; width: 100% !important; }
-        .acc-icon-wrapper i { font-size: 32px !important; color: #374151 !important; }
-        .acc-text-wrapper span { font-size: 13px !important; font-weight: 700 !important; color: #374151 !important; }
+        .acc-check-icon { position: absolute !important; top: 10px !important; right: 10px !important; color: #0052FF !important; font-size: 14px !important; margin: 0 !important; }
+        .acc-icon-wrapper { height: 50px !important; display: flex !important; align-items: center !important; justify-content: center !important; margin-bottom: 12px !important; width: 100% !important; margin-top: 5px !important; }
+        .acc-icon-wrapper i, .acc-icon-wrapper svg { font-size: 32px !important; width: 32px !important; height: 32px !important; line-height: 1 !important; color: #374151 !important; fill: #374151 !important; }
+        .acc-text-wrapper { display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: center !important; flex-grow: 1 !important; width: 100% !important; }
+        .acc-text-wrapper span { font-size: 13px !important; font-weight: 700 !important; line-height: 1.2 !important; color: #374151 !important; margin-bottom: 4px !important; }
+        .acc-text-wrapper small { font-size: 11px !important; font-weight: 500 !important; opacity: 0.7 !important; color: #6B7280 !important; margin: 0 !important; line-height: 1.2 !important; }
+        .acc-dot-container { display: flex !important; gap: 4px !important; height: 4px !important; justify-content: center !important; align-items: center !important; width: 100% !important; margin-top: 10px !important; }
+        .acc-dot { height: 4px !important; border-radius: 2px !important; display: block !important; }
 
         @media (max-width: 1023px) {
             .acc-menu-panel { position: fixed !important; top: 0 !important; left: 0 !important; bottom: 0 !important; width: 300px !important; max-width: 85vw !important; height: 100vh !important; border-radius: 0 !important; box-shadow: 10px 0 25px rgba(0,0,0,0.2) !important; z-index: 100002 !important; }
@@ -193,8 +220,9 @@
     <div class="acc-reading-mask" id="reading-mask"></div>
 
     <!-- Accessibility Widget -->
-    <div x-data="accessibilityWidget()" class="fixed z-[99999] acc-widget-container flex flex-col items-center" style="bottom: 24px; left: 24px;">
+    <div x-data="accessibilityWidget()" class="fixed z-[99999] acc-widget-container flex flex-col items-center" style="bottom: 24px; left: 24px;" x-cloak>
         
+        <!-- MASTER SOUND TOGGLE -->
         <button @click.stop="toggleMasterSound()" 
                 class="flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg text-white mb-2" 
                 :class="isSoundEnabled ? 'bg-green-500' : 'bg-red-500'"
@@ -209,35 +237,115 @@
         </button>
 
         <div x-show="$store.accConfig.isOpen" @click.away="$store.accConfig.isOpen = false" x-transition x-cloak
-             class="absolute bg-white overflow-hidden acc-menu-panel" style="display: none; bottom: 110px; left: 0; width: 340px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid #E5E7EB;">
-            <div class="bg-[#0052FF] text-white p-6">
-                <h3 class="font-bold text-lg">Menu Aksesibilitas</h3>
-                <p class="text-xs opacity-90">Optimalkan tampilan sesuai kebutuhan Anda</p>
+             class="absolute bg-white overflow-hidden acc-menu-panel" style="display: none; bottom: 110px; left: 0; width: 360px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid #E5E7EB;">
+            <div class="bg-[#0052FF] text-white shrink-0 relative" style="padding: 24px 20px;">
+                <h3 style="font-size: 18px; font-weight: 700;">Menu Aksesibilitas</h3>
+                <p style="font-size: 12px; opacity: 0.9;">Optimalkan tampilan sesuai kebutuhan Anda</p>
             </div>
-            <div class="p-4 overflow-y-auto" style="max-height: 450px; background: #F9FAFB;">
-                <div style="margin-bottom: 15px; background: #fff; padding: 12px; border-radius: 12px; border: 1px solid #E5E7EB;">
-                    <p style="font-size: 11px; font-weight: 700; color: #6B7280; margin-bottom: 8px; text-transform: uppercase;">Kontrol Suara (TTS)</p>
-                    <div class="grid grid-cols-2 gap-2">
-                        <button @click="toggleReader()" :class="isReaderActive ? 'border-[#0052FF] border-2' : 'border-[#E5E7EB] border'" class="bg-white p-2 rounded-lg text-xs font-bold">Klik Baca</button>
-                        <button @click="toggleHoverReader()" :class="isHoverActive ? 'border-[#0052FF] border-2' : 'border-[#E5E7EB] border'" class="bg-white p-2 rounded-lg text-xs font-bold">Sorot Baca</button>
+
+            <div class="overflow-y-auto" style="padding: 20px; max-height: 540px; background: #F9FAFB;">
+                <div style="margin-bottom: 20px; background: #fff; padding: 16px; border-radius: 16px; border: 1px solid #E5E7EB;">
+                    <p style="font-size: 12px; font-weight: 700; color: #6B7280; margin-bottom: 12px; text-transform: uppercase;">Kontrol Suara (TTS)</p>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+                        <button @click="toggleReader()" :class="isReaderActive ? 'border-[#0052FF] border-2' : 'border-[#E5E7EB] border'" class="bg-white text-[#374151] flex items-center justify-center" style="padding: 12px; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 700; border-style: solid;">
+                            <i class="fas fa-volume-up" style="margin-right: 8px;"></i> Klik Baca
+                        </button>
+                        <button @click="toggleHoverReader()" :class="isHoverActive ? 'border-[#0052FF] border-2' : 'border-[#E5E7EB] border'" class="bg-white text-[#374151] flex items-center justify-center" style="padding: 12px; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 700; border-style: solid;">
+                            <i class="fas fa-mouse-pointer" style="margin-right: 8px;"></i> Sorot Baca
+                        </button>
                     </div>
                 </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <button @click="$store.accConfig.cycleContrast()" class="acc-grid-btn" :class="{'active': $store.accConfig.contrast !== 'default'}"><div class="acc-icon-wrapper"><i class="fas fa-adjust"></i></div><div class="acc-text-wrapper"><span>Kontras</span></div></button>
-                    <button @click="cycleFont()" class="acc-grid-btn" :class="{'active': $store.accConfig.fontLevel !== 'normal'}"><div class="acc-icon-wrapper"><i class="fas fa-font"></i></div><div class="acc-text-wrapper"><span>Ukuran Teks</span></div></button>
-                    <button @click="$store.accConfig.update('links', !$store.accConfig.links)" class="acc-grid-btn" :class="{'active': $store.accConfig.links}"><div class="acc-icon-wrapper"><i class="fas fa-link"></i></div><div class="acc-text-wrapper"><span>Sorot Tautan</span></div></button>
-                    <button @click="$store.accConfig.update('textSpacing', !$store.accConfig.textSpacing)" class="acc-grid-btn" :class="{'active': $store.accConfig.textSpacing}"><div class="acc-icon-wrapper"><i class="fas fa-arrows-alt-h"></i></div><div class="acc-text-wrapper"><span>Spasi Teks</span></div></button>
-                    <button @click="$store.accConfig.update('hideImages', !$store.accConfig.hideImages)" class="acc-grid-btn" :class="{'active': $store.accConfig.hideImages}"><div class="acc-icon-wrapper"><i class="fas fa-image"></i></div><div class="acc-text-wrapper"><span>Sembunyi Gbr</span></div></button>
-                    <button @click="$store.accConfig.cycleDyslexic()" class="acc-grid-btn" :class="{'active': $store.accConfig.dyslexic !== 'default'}"><div class="acc-icon-wrapper"><i class="fas fa-spell-check"></i></div><div class="acc-text-wrapper"><span>Ramah Disleksia</span></div></button>
-                    <button @click="$store.accConfig.cycleFocus()" class="acc-grid-btn" :class="{'active': $store.accConfig.focus !== 'default'}"><div class="acc-icon-wrapper"><i class="fas fa-low-vision"></i></div><div class="acc-text-wrapper"><span>Fokus Baca</span></div></button>
-                    <button @click="$store.accConfig.update('keyboard', !$store.accConfig.keyboard)" class="acc-grid-btn" :class="{'active': $store.accConfig.keyboard}"><div class="acc-icon-wrapper"><i class="fas fa-keyboard"></i></div><div class="acc-text-wrapper"><span>Navigasi Key</span></div></button>
-                    <button @click="$store.accConfig.cycleAlignment()" class="acc-grid-btn" :class="{'active': $store.accConfig.alignment !== 'default'}"><div class="acc-icon-wrapper"><i class="fas fa-align-left"></i></div><div class="acc-text-wrapper"><span>Perataan</span></div></button>
-                    <button @click="$store.accConfig.cycleSaturation()" class="acc-grid-btn" :class="{'active': $store.accConfig.saturation !== 'default'}"><div class="acc-icon-wrapper"><i class="fas fa-palette"></i></div><div class="acc-text-wrapper"><span>Warna</span></div></button>
-                    <button @click="$store.accConfig.update('headings', !$store.accConfig.headings)" class="acc-grid-btn" :class="{'active': $store.accConfig.headings}"><div class="acc-icon-wrapper"><i class="fas fa-heading"></i></div><div class="acc-text-wrapper"><span>Sorot Judul</span></div></button>
-                    <button @click="$store.accConfig.update('lineHeight', !$store.accConfig.lineHeight)" class="acc-grid-btn" :class="{'active': $store.accConfig.lineHeight}"><div class="acc-icon-wrapper"><i class="fas fa-arrows-alt-v"></i></div><div class="acc-text-wrapper"><span>Tinggi Baris</span></div></button>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                    <!-- 1. Contrast -->
+                    <button @click="$store.accConfig.cycleContrast()" class="acc-grid-btn acc-ignore" :class="{'active': $store.accConfig.contrast !== 'default'}">
+                        <i x-show="$store.accConfig.contrast !== 'default'" class="fas fa-check-circle acc-check-icon"></i>
+                        <div class="acc-icon-wrapper"><i :class="{'fas fa-adjust': $store.accConfig.contrast === 'default', 'fas fa-sun': $store.accConfig.contrast === 'light', 'fas fa-eye-slash': $store.accConfig.contrast === 'invert', 'fas fa-moon': $store.accConfig.contrast === 'dark'}"></i></div>
+                        <div class="acc-text-wrapper"><span>Kontras Tinggi</span><small x-text="$store.accConfig.contrast" class="capitalize"></small></div>
+                        <div class="acc-dot-container"><template x-for="m in ['default', 'light', 'invert', 'dark']"><div :style="{ width: $store.accConfig.contrast === m ? '12px' : '6px', backgroundColor: $store.accConfig.contrast === m ? '#0052FF' : '#D1D5DB' }" class="acc-dot"></div></template></div>
+                    </button>
+                    <!-- 2. Text Size -->
+                    <button @click="cycleFont()" class="acc-grid-btn acc-ignore" :class="{'active': $store.accConfig.fontLevel !== 'normal'}">
+                        <i x-show="$store.accConfig.fontLevel !== 'normal'" class="fas fa-check-circle acc-check-icon"></i>
+                        <div class="acc-icon-wrapper" style="height: 50px !important;"><div style="display: flex; align-items: baseline; justify-content: center; gap: 4px;"><span :style="'font-size: ' + ($store.accConfig.fontLevel === 'kecil' ? '12' : ($store.accConfig.fontLevel === 'normal' ? '16' : ($store.accConfig.fontLevel === 'sedang' ? '20' : '24'))) + 'px !important'" style="font-weight: bold; color: #374151 !important; line-height: 1 !important; margin: 0 !important;">T</span><span :style="'font-size: ' + ($store.accConfig.fontLevel === 'kecil' ? '24' : ($store.accConfig.fontLevel === 'normal' ? '32' : ($store.accConfig.fontLevel === 'sedang' ? '40' : '48'))) + 'px !important'" style="font-weight: bold; color: #374151 !important; line-height: 1 !important; margin: 0 !important;">T</span></div></div>
+                        <div class="acc-text-wrapper"><span>Ukuran Teks</span><small x-text="$store.accConfig.fontLevel" class="capitalize"></small></div>
+                        <div class="acc-dot-container"><template x-for="l in ['kecil', 'normal', 'sedang', 'besar']"><div :style="{ width: $store.accConfig.fontLevel === l ? '12px' : '6px', backgroundColor: $store.accConfig.fontLevel === l ? '#0052FF' : '#D1D5DB' }" class="acc-dot"></div></template></div>
+                    </button>
+                    <!-- 3. Highlight Links -->
+                    <button @click="$store.accConfig.update('links', !$store.accConfig.links)" class="acc-grid-btn acc-ignore" :class="{'active': $store.accConfig.links}">
+                        <i x-show="$store.accConfig.links" class="fas fa-check-circle acc-check-icon"></i>
+                        <div class="acc-icon-wrapper"><i class="fas fa-link"></i></div>
+                        <div class="acc-text-wrapper"><span>Sorot Tautan</span><small x-text="$store.accConfig.links ? 'Aktif' : 'Default'"></small></div>
+                        <div class="acc-dot-container"><div :style="{ width: $store.accConfig.links ? '24px' : '12px', backgroundColor: $store.accConfig.links ? '#0052FF' : '#D1D5DB' }" class="acc-dot"></div></div>
+                    </button>
+                    <!-- 4. Text Spacing -->
+                    <button @click="$store.accConfig.update('textSpacing', !$store.accConfig.textSpacing)" class="acc-grid-btn acc-ignore" :class="{'active': $store.accConfig.textSpacing}">
+                        <i x-show="$store.accConfig.textSpacing" class="fas fa-check-circle acc-check-icon"></i>
+                        <div class="acc-icon-wrapper"><i class="fas fa-arrows-alt-h"></i></div>
+                        <div class="acc-text-wrapper"><span>Spasi Teks</span><small x-text="$store.accConfig.textSpacing ? 'Aktif' : 'Default'"></small></div>
+                        <div class="acc-dot-container"><div :style="{ width: $store.accConfig.textSpacing ? '24px' : '12px', backgroundColor: $store.accConfig.textSpacing ? '#0052FF' : '#D1D5DB' }" class="acc-dot"></div></div>
+                    </button>
+                    <!-- 5. Hide Images -->
+                    <button @click="$store.accConfig.update('hideImages', !$store.accConfig.hideImages)" class="acc-grid-btn acc-ignore" :class="{'active': $store.accConfig.hideImages}">
+                        <i x-show="$store.accConfig.hideImages" class="fas fa-check-circle acc-check-icon"></i>
+                        <div class="acc-icon-wrapper"><i class="fas fa-image"></i></div>
+                        <div class="acc-text-wrapper"><span>Sembunyi Gbr</span><small x-text="$store.accConfig.hideImages ? 'Aktif' : 'Default'"></small></div>
+                        <div class="acc-dot-container"><div :style="{ width: $store.accConfig.hideImages ? '24px' : '12px', backgroundColor: $store.accConfig.hideImages ? '#0052FF' : '#D1D5DB' }" class="acc-dot"></div></div>
+                    </button>
+                    <!-- 6. Dyslexia -->
+                    <button @click="$store.accConfig.cycleDyslexic()" class="acc-grid-btn acc-ignore" :class="{'active': $store.accConfig.dyslexic !== 'default'}">
+                        <i x-show="$store.accConfig.dyslexic !== 'default'" class="fas fa-check-circle acc-check-icon"></i>
+                        <div class="acc-icon-wrapper"><i :class="{'fas fa-font': $store.accConfig.dyslexic === 'default', 'fas fa-universal-access': $store.accConfig.dyslexic === 'open', 'fas fa-spell-check': $store.accConfig.dyslexic === 'lexend'}"></i></div>
+                        <div class="acc-text-wrapper"><span>Ramah Disleksia</span><small x-text="$store.accConfig.dyslexic" class="capitalize"></small></div>
+                        <div class="acc-dot-container"><template x-for="m in ['default', 'open', 'lexend']"><div :style="{ width: $store.accConfig.dyslexic === m ? '12px' : '6px', backgroundColor: $store.accConfig.dyslexic === m ? '#0052FF' : '#D1D5DB' }" class="acc-dot"></div></template></div>
+                    </button>
+                    <!-- 7. Focus -->
+                    <button @click="$store.accConfig.cycleFocus()" class="acc-grid-btn acc-ignore" :class="{'active': $store.accConfig.focus !== 'default'}">
+                        <i x-show="$store.accConfig.focus !== 'default'" class="fas fa-check-circle acc-check-icon"></i>
+                        <div class="acc-icon-wrapper"><i :class="{'fas fa-eye': $store.accConfig.focus === 'default', 'fas fa-mouse-pointer': $store.accConfig.focus === 'cursor', 'fas fa-low-vision': $store.accConfig.focus === 'mask', 'fas fa-grip-lines-vertical': $store.accConfig.focus === 'guide'}"></i></div>
+                        <div class="acc-text-wrapper"><span>Fokus Membaca</span><small x-text="$store.accConfig.focus" class="capitalize"></small></div>
+                        <div class="acc-dot-container"><template x-for="m in ['default', 'cursor', 'mask', 'guide']"><div :style="{ width: $store.accConfig.focus === m ? '12px' : '6px', backgroundColor: $store.accConfig.focus === m ? '#0052FF' : '#D1D5DB' }" class="acc-dot"></div></template></div>
+                    </button>
+                    <!-- 8. Keyboard Nav -->
+                    <button @click="$store.accConfig.update('keyboard', !$store.accConfig.keyboard)" class="acc-grid-btn acc-ignore" :class="{'active': $store.accConfig.keyboard}">
+                        <i x-show="$store.accConfig.keyboard" class="fas fa-check-circle acc-check-icon"></i>
+                        <div class="acc-icon-wrapper"><i class="fas fa-keyboard"></i></div>
+                        <div class="acc-text-wrapper"><span>Navigasi Key</span><small x-text="$store.accConfig.keyboard ? 'Aktif' : 'Default'"></small></div>
+                        <div class="acc-dot-container"><div :style="{ width: $store.accConfig.keyboard ? '24px' : '12px', backgroundColor: $store.accConfig.keyboard ? '#0052FF' : '#D1D5DB' }" class="acc-dot"></div></div>
+                    </button>
+                    <!-- 9. Alignment -->
+                    <button @click="$store.accConfig.cycleAlignment()" class="acc-grid-btn acc-ignore" :class="{'active': $store.accConfig.alignment !== 'default'}">
+                        <i x-show="$store.accConfig.alignment !== 'default'" class="fas fa-check-circle acc-check-icon"></i>
+                        <div class="acc-icon-wrapper"><i :class="{'fas fa-bars': $store.accConfig.alignment === 'default', 'fas fa-align-left': $store.accConfig.alignment === 'left', 'fas fa-align-center': $store.accConfig.alignment === 'center', 'fas fa-align-right': $store.accConfig.alignment === 'right'}"></i></div>
+                        <div class="acc-text-wrapper"><span>Perataan</span><small x-text="$store.accConfig.alignment" class="capitalize"></small></div>
+                        <div class="acc-dot-container"><template x-for="m in ['default', 'left', 'center', 'right']"><div :style="{ width: $store.accConfig.alignment === m ? '12px' : '6px', backgroundColor: $store.accConfig.alignment === m ? '#0052FF' : '#D1D5DB' }" class="acc-dot"></div></template></div>
+                    </button>
+                    <!-- 10. Saturation -->
+                    <button @click="$store.accConfig.cycleSaturation()" class="acc-grid-btn acc-ignore" :class="{'active': $store.accConfig.saturation !== 'default'}">
+                        <i x-show="$store.accConfig.saturation !== 'default'" class="fas fa-check-circle acc-check-icon"></i>
+                        <div class="acc-icon-wrapper"><i :class="{'fas fa-palette': $store.accConfig.saturation === 'default', 'fas fa-brush': $store.accConfig.saturation === 'low', 'fas fa-fill-drip': $store.accConfig.saturation === 'high', 'fas fa-tint-slash': $store.accConfig.saturation === 'mono'}"></i></div>
+                        <div class="acc-text-wrapper"><span>Warna</span><small x-text="$store.accConfig.saturation" class="capitalize"></small></div>
+                        <div class="acc-dot-container"><template x-for="s in ['default', 'low', 'high', 'mono']"><div :style="{ width: $store.accConfig.saturation === s ? '12px' : '6px', backgroundColor: $store.accConfig.saturation === s ? '#0052FF' : '#D1D5DB' }" class="acc-dot"></div></template></div>
+                    </button>
+                    <!-- 11. Headings -->
+                    <button @click="$store.accConfig.update('headings', !$store.accConfig.headings)" class="acc-grid-btn acc-ignore" :class="{'active': $store.accConfig.headings}">
+                        <i x-show="$store.accConfig.headings" class="fas fa-check-circle acc-check-icon"></i>
+                        <div class="acc-icon-wrapper"><i class="fas fa-heading"></i></div>
+                        <div class="acc-text-wrapper"><span>Sorot Judul</span><small x-text="$store.accConfig.headings ? 'Aktif' : 'Default'"></small></div>
+                        <div class="acc-dot-container"><div :style="{ width: $store.accConfig.headings ? '24px' : '12px', backgroundColor: $store.accConfig.headings ? '#0052FF' : '#D1D5DB' }" class="acc-dot"></div></div>
+                    </button>
+                    <!-- 12. Line Height -->
+                    <button @click="$store.accConfig.update('lineHeight', !$store.accConfig.lineHeight)" class="acc-grid-btn acc-ignore" :class="{'active': $store.accConfig.lineHeight}">
+                        <i x-show="$store.accConfig.lineHeight" class="fas fa-check-circle acc-check-icon"></i>
+                        <div class="acc-icon-wrapper"><i class="fas fa-arrows-alt-v"></i></div>
+                        <div class="acc-text-wrapper"><span>Tinggi Baris</span><small x-text="$store.accConfig.lineHeight ? 'Aktif' : 'Default'"></small></div>
+                        <div class="acc-dot-container"><div :style="{ width: $store.accConfig.lineHeight ? '24px' : '12px', backgroundColor: $store.accConfig.lineHeight ? '#0052FF' : '#D1D5DB' }" class="acc-dot"></div></div>
+                    </button>
                 </div>
-                <div class="mt-4 text-center border-t pt-4">
-                    <button @click="resetAcc()" class="text-xs text-gray-500 font-bold uppercase tracking-wider">Reset Semua</button>
+
+                <div style="margin-top: 24px; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 20px;">
+                    <button @click="resetAcc()" class="bg-gray-800 text-white hover:bg-black w-full flex items-center justify-center acc-ignore" style="padding: 14px; border-radius: 12px; border: none; cursor: pointer; font-size: 13px !important; font-weight: 700; margin-bottom: 12px;"><i class="fas fa-undo" style="margin-right: 8px !important; font-size: 14px !important;"></i> Reset Semua</button>
+                    <p style="font-size: 11px !important; color: #9CA3AF !important; margin: 0 !important; font-weight: 600 !important;">&copy; 2026 PPID KABUPATEN SINJAI</p>
                 </div>
             </div>
         </div>
@@ -248,10 +356,36 @@
         lucide.createIcons();
         function accessibilityWidget() {
             return {
-                isSoundEnabled: true, isReaderActive: false, isHoverActive: false,
+                isSoundEnabled: true, isReaderActive: false, isHoverActive: false, isCurrentlySpeaking: false, hoverTimeout: null,
                 init() {
-                    const savedSound = localStorage.getItem('acc_sound_enabled');
-                    if (savedSound !== null) this.isSoundEnabled = (savedSound === 'true');
+                    const userRole = @json(auth()->user()?->role ?? 'guest');
+                    const savedSoundState = localStorage.getItem('acc_sound_enabled');
+                    if (savedSoundState !== null) this.isSoundEnabled = (savedSoundState === 'true');
+                    else this.isSoundEnabled = (userRole !== 'superadmin');
+
+                    window.addEventListener('trigger-greeting', () => {
+                        if (!this.isSoundEnabled) { this.activateDefaultTTS(userRole); return; }
+                        const authStatus = @json(auth()->check());
+                        const userId = @json(auth()->id() ?? 'guest');
+                        const userName = @json(auth()->user()?->name ?? '');
+                        const isHome = window.location.pathname === '/' || window.location.pathname === '/home';
+                        if (!isHome) { this.activateDefaultTTS(userRole); return; }
+                        window.speechSynthesis.cancel();
+                        let text = "Selamat Datang di P P I D Kabupaten Sinjai";
+                        let fullText = authStatus ? ("Halo " + userName + ", " + text) : text;
+                        const utterance = new SpeechSynthesisUtterance(fullText);
+                        utterance.lang = 'id-ID';
+                        utterance.onend = () => { if (this.isSoundEnabled) this.activateDefaultTTS(userRole); };
+                        window.speechSynthesis.speak(utterance);
+                    });
+                    
+                    setInterval(() => { this.isCurrentlySpeaking = window.speechSynthesis.speaking; }, 200);
+                    document.addEventListener('click', (e) => { if (this.isSoundEnabled && this.isReaderActive && !e.target.closest('.acc-widget-container')) this.handleElementSource(e.target); });
+                    document.addEventListener('mouseover', (e) => {
+                        if (!this.isSoundEnabled || !this.isHoverActive || e.target.closest('.acc-widget-container')) return;
+                        clearTimeout(this.hoverTimeout);
+                        this.hoverTimeout = setTimeout(() => { this.handleElementSource(e.target, true); }, 600);
+                    });
                     document.addEventListener('mousemove', (e) => {
                         const mask = document.getElementById('reading-mask');
                         if (mask && Alpine.store('accConfig').focus === 'mask') {
@@ -259,22 +393,37 @@
                             mask.style.clipPath = `polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%, 0% 0%, 0% ${y - 50}px, 100% ${y - 50}px, 100% ${y + 50}px, 0% ${y + 50}px, 0% ${y - 50}px)`;
                         }
                     });
-                    document.addEventListener('click', (e) => { if (this.isSoundEnabled && this.isReaderActive && !e.target.closest('.acc-widget-container')) this.speak(e.target.innerText || ''); });
                 },
-                toggleMasterSound() { this.isSoundEnabled = !this.isSoundEnabled; localStorage.setItem('acc_sound_enabled', this.isSoundEnabled); if (!this.isSoundEnabled) window.speechSynthesis.cancel(); },
-                toggleReader() { if (!this.isSoundEnabled) this.toggleMasterSound(); this.isReaderActive = !this.isReaderActive; this.isHoverActive = false; },
-                toggleHoverReader() { if (!this.isSoundEnabled) this.toggleMasterSound(); this.isHoverActive = !this.isHoverActive; this.isReaderActive = false; },
+                toggleMasterSound() {
+                    this.isSoundEnabled = !this.isSoundEnabled;
+                    localStorage.setItem('acc_sound_enabled', this.isSoundEnabled);
+                    if (!this.isSoundEnabled) { window.speechSynthesis.cancel(); this.isReaderActive = false; this.isHoverActive = false; }
+                    else { const userRole = @json(auth()->user()?->role ?? 'guest'); this.activateDefaultTTS(userRole); }
+                },
+                activateDefaultTTS(role) { this.isHoverActive = (role === 'guest' || role === 'user'); this.isReaderActive = (role === 'admin'); },
+                handleElementSource(target, isHover = false) {
+                    let text = '';
+                    const el = target.closest('a, button, h1, h2, h3, h4, h5, h6, p, li, span, img, td, th, label, input');
+                    if (!el) return;
+                    if (el.tagName.toLowerCase() === 'img') text = el.getAttribute('alt') || 'Gambar';
+                    else if (el.tagName.toLowerCase() === 'input') text = el.getAttribute('placeholder') || 'Kotak isian';
+                    else { text = el.innerText || el.getAttribute('aria-label') || ''; if (el.tagName.toLowerCase() === 'a' && el.href && el.href.toLowerCase().endsWith('.pdf')) text = "Dokumen P D F, " + text; }
+                    text = text.trim();
+                    if (text && text.length > 1) { this.speak(text); }
+                },
+                toggleReader() { if (!this.isSoundEnabled) this.isSoundEnabled = true; this.isReaderActive = !this.isReaderActive; this.isHoverActive = false; },
+                toggleHoverReader() { if (!this.isSoundEnabled) this.isSoundEnabled = true; this.isHoverActive = !this.isHoverActive; this.isReaderActive = false; },
                 cycleFont() { const levels = ['kecil', 'normal', 'sedang', 'besar']; Alpine.store('accConfig').setFontLevel(levels[(levels.indexOf(Alpine.store('accConfig').fontLevel) + 1) % 4]); },
-                resetAcc() { localStorage.clear(); location.reload(); },
+                resetAcc() { localStorage.clear(); sessionStorage.clear(); location.reload(); },
                 formatTextForTTS(text) {
                     if (!text) return '';
                     const abbreviations = ['SOP', 'DIP', 'PPID', 'IPM', 'TPAK', 'RKPD', 'RPJMD', 'LKPJ', 'SPBU', 'ASN', 'OPD', 'TTS'];
                     let processedText = text;
                     abbreviations.forEach(abbr => { const regex = new RegExp('\\b' + abbr + '\\b', 'gi'); processedText = processedText.replace(regex, abbr.split('').join(' ')); });
-                    processedText = processedText.replace(/\bNo\.\b/gi, 'Nomor').replace(/\bKab\.\b/gi, 'Kabupaten').replace(/\bKec\.\b/gi, 'Kecamatan');
+                    processedText = processedText.replace(/\bNo\.\b/gi, 'Nomor').replace(/\bKab\.\b/gi, 'Kabupaten').replace(/\bKec\.\b/gi, 'Kecamatan').replace(/\bTtd\b/gi, 'Tertanda');
                     return processedText;
                 },
-                speak(text) { window.speechSynthesis.cancel(); const utterance = new SpeechSynthesisUtterance(this.formatTextForTTS(text)); utterance.lang = 'id-ID'; window.speechSynthesis.speak(utterance); }
+                speak(text) { if (!this.isSoundEnabled) return; window.speechSynthesis.cancel(); const utterance = new SpeechSynthesisUtterance(this.formatTextForTTS(text)); utterance.lang = 'id-ID'; window.speechSynthesis.speak(utterance); }
             }
         }
     </script>
