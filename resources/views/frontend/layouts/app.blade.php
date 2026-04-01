@@ -14,30 +14,7 @@
     </title>
     <meta name="description" content="Pejabat Pengelola Informasi dan Dokumentasi">
 
-    <script>
-        // Smooth Scroll Restoration
-        (function() {
-            if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
-            var scrollKey = 'scrollPos_' + btoa(window.location.pathname);
-            var pos = sessionStorage.getItem(scrollKey);
-            if (pos && parseInt(pos) > 100) {
-                document.documentElement.style.opacity = '0';
-                window.addEventListener('load', function() {
-                    setTimeout(function() {
-                        window.scrollTo(0, parseInt(pos));
-                        document.documentElement.style.opacity = '1';
-                    }, 50);
-                });
-            }
-        })();
-        
-        window.addEventListener('scroll', function() {
-            var scrollKey = 'scrollPos_' + btoa(window.location.pathname);
-            sessionStorage.setItem(scrollKey, window.scrollY);
-        });
-    </script>
-
-    <!-- Critical CSS: Lock Header Position & Color -->
+    <!-- Critical CSS: Lock Header to prevent empty flicker -->
     <style>
         [x-cloak] { display: none !important; }
         #main-navbar-container {
@@ -46,12 +23,7 @@
             z-index: 100 !important;
             background: #ffffff !important;
             height: 64px !important;
-            overflow: visible !important;
-            display: block !important;
         }
-        /* Disable all transitions on initial load to prevent ghosting/shadows */
-        .transition-all, .transition, .duration-300, .transform { transition: none !important; }
-        body.loaded .transition-all, body.loaded .transition, body.loaded .duration-300 { transition: all 0.3s ease !important; }
     </style>
 
     <!-- Favicons -->

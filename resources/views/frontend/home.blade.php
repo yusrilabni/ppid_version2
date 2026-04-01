@@ -2,9 +2,10 @@
 
 @section('content')
     <style>
-        /* Slider Anti-Flicker */
-        .slider-container .grid > div:not(:first-child) { display: none !important; }
-        .slider-container .grid > div:first-child { display: block !important; opacity: 1 !important; }
+        /* Lightweight Slider Stabilization */
+        .slider-container { min-height: 250px; background: #f3f4f6; }
+        @media (min-width: 768px) { .slider-container { min-height: 500px; } }
+        .slider-container .grid > div:not(:first-child) { display: none; }
     </style>
         {{-- Hero Slider --}}
         @if ($sliders->count() > 0)
