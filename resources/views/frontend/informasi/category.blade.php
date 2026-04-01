@@ -146,7 +146,13 @@
                             <tr class="hover:bg-gray-50 transition duration-150 {{ $informasi->status == 'ARSIP' ? 'bg-gray-50 opacity-70' : '' }}">
                                 <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $informasis->firstItem() + $index }}</td>
                                 <td class="px-6 py-4">
-                                    <a href="{{ route('frontend.informasi.detail', $informasi->slug) }}" class="text-sm font-semibold text-gray-900 hover:text-blue-700">
+                                    @php
+                                        $primaryLink = route('frontend.informasi.detail', $informasi->slug);
+                                        if (!$informasi->file && $informasi->url) {
+                                            $primaryLink = route('frontend.informasi.visit-url', $informasi->id);
+                                        }
+                                    @endphp
+                                    <a href="{{ $primaryLink }}" class="text-sm font-semibold text-gray-900 hover:text-blue-700">
                                         {{ $informasi->title }}
                                     </a>
                                     <div class="mt-1">
@@ -188,15 +194,17 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex items-center gap-2">
-                                        <a href="{{ route('frontend.informasi.detail', $informasi->slug) }}" class="text-blue-600 bg-blue-50 hover:bg-blue-100 p-2 rounded transition-colors" title="Lihat">
+                                        {{-- Always show View Detail button --}}
+                                        <a href="{{ route('frontend.informasi.detail', $informasi->slug) }}" class="text-blue-600 bg-blue-50 hover:bg-blue-100 p-2 rounded transition-colors" title="Lihat Detail">
                                             <i class="fas fa-eye"></i>
                                         </a>
+
                                         @if($informasi->url)
-                                            <a href="{{ route('frontend.informasi.visit-url', $informasi->id) }}" target="_blank" class="text-green-600 bg-green-50 hover:bg-green-100 p-2 rounded transition-colors" title="Buka URL">
+                                            <a href="{{ route('frontend.informasi.visit-url', $informasi->id) }}" target="_blank" class="text-green-600 bg-green-50 hover:bg-green-100 p-2 rounded transition-colors" title="Buka Tautan Luar">
                                                 <i class="fas fa-external-link-alt"></i>
                                             </a>
                                         @elseif($informasi->file)
-                                            <a href="{{ route('frontend.informasi.download', $informasi->id) }}" target="_blank" class="text-green-600 bg-green-50 hover:bg-green-100 p-2 rounded transition-colors" title="Unduh">
+                                            <a href="{{ route('frontend.informasi.download', $informasi->id) }}" target="_blank" class="text-green-600 bg-green-50 hover:bg-green-100 p-2 rounded transition-colors" title="Unduh File">
                                                 <i class="fas fa-download"></i>
                                             </a>
                                         @endif
@@ -259,15 +267,15 @@
                             </div>
                             
                             <div class="flex items-center gap-1.5">
-                                <a href="{{ route('frontend.informasi.detail', $informasi->slug) }}" class="p-2 text-blue-600 bg-blue-50 rounded-md">
+                                <a href="{{ route('frontend.informasi.detail', $informasi->slug) }}" class="p-2 text-blue-600 bg-blue-50 rounded-md" title="Lihat Detail">
                                     <i class="fas fa-eye text-sm"></i>
                                 </a>
                                 @if($informasi->url)
-                                    <a href="{{ route('frontend.informasi.visit-url', $informasi->id) }}" target="_blank" class="p-2 text-green-600 bg-green-50 rounded-md">
+                                    <a href="{{ route('frontend.informasi.visit-url', $informasi->id) }}" target="_blank" class="p-2 text-green-600 bg-green-50 rounded-md" title="Buka Tautan">
                                         <i class="fas fa-external-link-alt text-sm"></i>
                                     </a>
                                 @elseif($informasi->file)
-                                    <a href="{{ route('frontend.informasi.download', $informasi->id) }}" target="_blank" class="p-2 text-green-600 bg-green-50 rounded-md">
+                                    <a href="{{ route('frontend.informasi.download', $informasi->id) }}" target="_blank" class="p-2 text-green-600 bg-green-50 rounded-md" title="Unduh File">
                                         <i class="fas fa-download text-sm"></i>
                                     </a>
                                 @endif

@@ -860,19 +860,15 @@ class FrontendController extends Controller
 
             // Update corresponding Informasi record
             $informasi = Informasi::firstOrNew(['official_id' => $official->id]);
+            
+            $organizationName = $official->organization->name ?? '';
             $positionName = $official->position ? $official->position->name : 'Pimpinan';
 
-            $titlePrefix = 'Profil Pimpinan ';
-            $organizationName = $official->organization->name ?? ''; // Get organization name
+            $dynamicTitle = 'Profil Pimpinan ' . $positionName . ' ' . $organizationName;
+            
+            // Clean up title (remove double spaces or redundant "Kepala" if necessary)
+            $dynamicTitle = preg_replace('/\s+/', ' ', $dynamicTitle);
 
-            $dynamicTitle = '';
-            if (Str::contains(Str::lower($organizationName), 'dinas')) {
-                $dynamicTitle = $titlePrefix . 'kepala dinas ' . $organizationName;
-            } elseif (Str::contains(Str::lower($organizationName), 'kecamatan')) {
-                $dynamicTitle = $titlePrefix . 'camat ' . $organizationName;
-            } else {
-                $dynamicTitle = $titlePrefix . $positionName;
-            }
             $informasi->title = $dynamicTitle;
             $informasi->deskripsi = 'Dokumen ini berisi data dari profil pimpinan.';
             $informasi->content = json_encode($official->load([
