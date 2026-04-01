@@ -45,10 +45,18 @@
                                 @php
                                     $canManage = false;
                                     $user = Auth::user();
-                                    if (isset($api_unit_id) && (string)$api_unit_id === (string)$organization->remote_id) {
+                                    
+                                    // Superadmin can manage everything
+                                    if ($user->role === 'superadmin') {
                                         $canManage = true;
-                                    } elseif ($user && ($user->role === 'superadmin' || $user->role === 'admin' && (string)$user->unit_id === (string)$organization->remote_id)) {
-                                        $canManage = true;
+                                    } else {
+                                        // Admin only manages their matching unit
+                                        // Check against api_unit_id (from remote API) OR direct unit_id mapping
+                                        if (isset($api_unit_id) && (string)$api_unit_id === (string)$organization->remote_id) {
+                                            $canManage = true;
+                                        } elseif ((string)$user->unit_id === (string)$organization->remote_id) {
+                                            $canManage = true;
+                                        }
                                     }
                                 @endphp
 
