@@ -15,28 +15,37 @@
     <!-- Version: 2.1.0 - Stability Fix -->
     <meta name="description" content="Pejabat Pengelola Informasi dan Dokumentasi">
 
-    <!-- Zero-Flicker Scroll Restoration -->
+    <!-- Smart Scroll Restoration (Reload Only) -->
     <script>
         (function() {
+            // Detect if this is a RELOAD
+            var isReload = false;
+            try {
+                if (window.performance && window.performance.navigation) {
+                    if (window.performance.navigation.type === 1) { isReload = true; }
+                } else if (window.performance && window.performance.getEntriesByType) {
+                    var nav = window.performance.getEntriesByType('navigation')[0];
+                    if (nav && nav.type === 'reload') { isReload = true; }
+                }
+            } catch (e) { isReload = false; }
+
             if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
             var scrollKey = 'sp_' + btoa(window.location.origin + window.location.pathname);
             var pos = sessionStorage.getItem(scrollKey);
-            if (pos && parseInt(pos) > 50) {
-                // Hide page content to prevent seeing the top
+
+            if (isReload && pos && parseInt(pos) > 50) {
                 document.documentElement.style.visibility = 'hidden';
                 var target = parseInt(pos);
-                
-                // Immediate scroll attempt
                 window.scrollTo(0, target);
-                
-                // Final restoration once images/layout are ready
                 window.addEventListener('load', function() {
                     window.scrollTo(0, target);
                     document.documentElement.style.visibility = '';
                 });
-                
-                // Safety timeout (in case load event is slow)
                 setTimeout(function() { document.documentElement.style.visibility = ''; }, 500);
+            } else {
+                // Not a reload or no pos: Clear visibility and start at top
+                document.documentElement.style.visibility = '';
+                window.scrollTo(0, 0);
             }
         })();
 
