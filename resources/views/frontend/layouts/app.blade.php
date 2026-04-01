@@ -215,8 +215,8 @@
             <i class="fas fa-times" style="font-size: 28px;" x-show="$store.accConfig.isOpen"></i>
         </button>
 
-        <div x-show="$store.accConfig.isOpen" @click.away="$store.accConfig.isOpen = false" x-transition
-             class="absolute bg-white overflow-hidden acc-menu-panel" style="bottom: 110px; left: 0; width: 340px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid #E5E7EB;">
+        <div x-show="$store.accConfig.isOpen" @click.away="$store.accConfig.isOpen = false" x-transition x-cloak
+             class="absolute bg-white overflow-hidden acc-menu-panel" style="display: none; bottom: 110px; left: 0; width: 340px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid #E5E7EB;">
             <div class="bg-[#0052FF] text-white p-6">
                 <h3 class="font-bold text-lg">Menu Aksesibilitas</h3>
                 <p class="text-xs opacity-90">Optimalkan tampilan sesuai kebutuhan Anda</p>

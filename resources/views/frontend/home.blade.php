@@ -2,9 +2,11 @@
 
 @section('content')
     <style>
-        /* Lightweight Slider Stabilization */
-        .slider-container { min-height: 250px; background: #f3f4f6; }
-        @media (min-width: 768px) { .slider-container { min-height: 500px; } }
+        /* Slider Stability: Only first slide allowed initially */
+        .slider-container .grid > div { display: none; }
+        .slider-container .grid > div:first-child { display: block !important; opacity: 1 !important; }
+        /* When Alpine is ready, let it control visibility */
+        [x-cloak] { display: none !important; }
     </style>
         {{-- Hero Slider --}}
         @if ($sliders->count() > 0)
