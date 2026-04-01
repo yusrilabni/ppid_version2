@@ -359,9 +359,15 @@
                 isSoundEnabled: true, isReaderActive: false, isHoverActive: false, isCurrentlySpeaking: false, hoverTimeout: null,
                 init() {
                     const userRole = @json(auth()->user()?->role ?? 'guest');
+                    
+                    // Restore Master Sound state
                     const savedSoundState = localStorage.getItem('acc_sound_enabled');
                     if (savedSoundState !== null) this.isSoundEnabled = (savedSoundState === 'true');
                     else this.isSoundEnabled = (userRole !== 'superadmin');
+
+                    // Restore Reader states
+                    this.isReaderActive = localStorage.getItem('acc_reader_active') === 'true';
+                    this.isHoverActive = localStorage.getItem('acc_hover_active') === 'true';
 
                     window.addEventListener('trigger-greeting', () => {
                         if (!this.isSoundEnabled) { this.activateDefaultTTS(userRole); return; }
@@ -411,8 +417,20 @@
                     text = text.trim();
                     if (text && text.length > 1) { this.speak(text); }
                 },
-                toggleReader() { if (!this.isSoundEnabled) this.isSoundEnabled = true; this.isReaderActive = !this.isReaderActive; this.isHoverActive = false; },
-                toggleHoverReader() { if (!this.isSoundEnabled) this.isSoundEnabled = true; this.isHoverActive = !this.isHoverActive; this.isReaderActive = false; },
+                toggleReader() { 
+                    if (!this.isSoundEnabled) this.toggleMasterSound(); 
+                    this.isReaderActive = !this.isReaderActive; 
+                    this.isHoverActive = false;
+                    localStorage.setItem('acc_reader_active', this.isReaderActive);
+                    localStorage.setItem('acc_hover_active', 'false');
+                },
+                toggleHoverReader() { 
+                    if (!this.isSoundEnabled) this.toggleMasterSound(); 
+                    this.isHoverActive = !this.isHoverActive; 
+                    this.isReaderActive = false;
+                    localStorage.setItem('acc_hover_active', this.isHoverActive);
+                    localStorage.setItem('acc_reader_active', 'false');
+                },
                 cycleFont() { const levels = ['kecil', 'normal', 'sedang', 'besar']; Alpine.store('accConfig').setFontLevel(levels[(levels.indexOf(Alpine.store('accConfig').fontLevel) + 1) % 4]); },
                 resetAcc() { localStorage.clear(); sessionStorage.clear(); location.reload(); },
                 formatTextForTTS(text) {
