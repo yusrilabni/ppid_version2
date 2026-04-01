@@ -149,8 +149,19 @@
         #acc-main-wrapper.acc-sat-low { filter: saturate(0.5) !important; }
         #acc-main-wrapper.acc-sat-high { filter: saturate(2) !important; }
         #acc-main-wrapper.acc-sat-mono { filter: grayscale(1) !important; }
-        #acc-main-wrapper.acc-highlight-links a:not(.acc-ignore) { outline: 4px solid #ff00ff !important; outline-offset: 2px !important; background-color: #ffff00 !important; color: #000 !important; font-weight: bold !important; }
+        #acc-main-wrapper.acc-highlight-links a:not(.acc-ignore), 
+        #acc-main-wrapper.acc-highlight-links button:not(.acc-ignore) { outline: 4px solid #ff00ff !important; outline-offset: 2px !important; background-color: #ffff00 !important; color: #000 !important; font-weight: bold !important; }
+        
         #acc-main-wrapper.acc-highlight-headings h1, #acc-main-wrapper.acc-highlight-headings h2, #acc-main-wrapper.acc-highlight-headings h3 { background-color: #0000ff !important; color: #fff !important; padding: 8px !important; border-left: 12px solid #ffff00 !important; display: block !important; }
+
+        /* High Contrast Overrides for Sections */
+        #acc-main-wrapper.acc-contrast-dark section,
+        #acc-main-wrapper.acc-contrast-dark div[class*="bg-"],
+        #acc-main-wrapper.acc-contrast-dark .bg-white,
+        #acc-main-wrapper.acc-contrast-dark .bg-gray-50 { background-color: #000 !important; color: #ffff00 !important; }
+        
+        #acc-main-wrapper.acc-contrast-light section,
+        #acc-main-wrapper.acc-contrast-light div[class*="bg-"] { background-color: #fff !important; color: #000 !important; }
         #acc-main-wrapper.acc-text-spacing *:not(.acc-ignore) { letter-spacing: 2px !important; }
         #acc-main-wrapper.acc-hide-images img { visibility: hidden !important; opacity: 0 !important; }
         #acc-main-wrapper.acc-dyslexic-open *:not(.acc-ignore) { font-family: 'Open-Dyslexic', sans-serif !important; }
