@@ -14,7 +14,7 @@
     </title>
     <meta name="description" content="Pejabat Pengelola Informasi dan Dokumentasi">
 
-    <!-- Critical CSS: Lock Header to prevent empty flicker -->
+    <!-- Anti-Flicker & Critical Layout -->
     <style>
         [x-cloak] { display: none !important; }
         #main-navbar-container {
@@ -23,7 +23,14 @@
             z-index: 100 !important;
             background: #ffffff !important;
             height: 64px !important;
+            display: block !important;
+            visibility: visible !important;
+            opacity: 1 !important;
         }
+        /* Lock menu items to prevent Alpine flicker */
+        .flex.opacity-100 { opacity: 1 !important; transform: none !important; }
+        /* Disable initial animations */
+        * { transition: none !important; animation: none !important; }
     </style>
 
     <!-- Favicons -->
