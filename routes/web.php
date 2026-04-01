@@ -141,6 +141,7 @@ Route::get('/profil/{slug}', [\App\Http\Controllers\OfficialProfileController::c
 // PBJ & Standar Layanan
 Route::get('/pbj', [PbjController::class, 'index'])->name('pbj.index');
 Route::get('/pbj/{year}', [PbjController::class, 'show'])->name('pbj.show');
+Route::post('/pbj/{year}', [PbjController::class, 'store'])->name('pbj.store');
 Route::get('/standar-layanan/{slug}', [App\Http\Controllers\Frontend\StandarLayananController::class, 'showBySlug'])->name('frontend.standar-layanan.showBySlug');
 Route::get('/standar-layanan/file/{subStandarLayanan:slug}', [App\Http\Controllers\Frontend\StandarLayananController::class, 'showFileDetail'])->name('frontend.standar-layanan.file-detail');
 Route::get('/standar-layanan/download/{subStandarLayanan}', [App\Http\Controllers\Frontend\StandarLayananController::class, 'download'])->name('frontend.standar-layanan.download');
