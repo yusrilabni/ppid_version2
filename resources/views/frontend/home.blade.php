@@ -1,6 +1,11 @@
 @extends('frontend.layouts.app')
 
 @section('content')
+    <style>
+        /* Slider Anti-Flicker */
+        .slider-container .grid > div:not(:first-child) { display: none !important; }
+        .slider-container .grid > div:first-child { display: block !important; opacity: 1 !important; }
+    </style>
         {{-- Hero Slider --}}
         @if ($sliders->count() > 0)
             <div x-data="{ currentSlide: 0, sliders: @js($sliders), transitionDuration: {{ $transitionDuration }} }" x-init="setInterval(() => { currentSlide = (currentSlide + 1) % sliders.length }, transitionDuration)"

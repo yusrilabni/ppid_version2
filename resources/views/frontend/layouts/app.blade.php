@@ -15,25 +15,25 @@
     <meta name="description" content="Pejabat Pengelola Informasi dan Dokumentasi">
 
     <script>
-        // Prevent Scroll Jump: Lock position before browser paints
+        // Smooth Scroll Restoration
         (function() {
             if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
-            var scrollKey = 'scrollPos_' + btoa(window.location.href);
-            var pos = localStorage.getItem(scrollKey);
+            var scrollKey = 'scrollPos_' + btoa(window.location.pathname);
+            var pos = sessionStorage.getItem(scrollKey);
             if (pos && parseInt(pos) > 100) {
-                // Hidden until scrolled to prevent the "jump up" visual
                 document.documentElement.style.opacity = '0';
-                window.scrollTo(0, parseInt(pos));
-                setTimeout(function() { 
-                    window.scrollTo(0, parseInt(pos));
-                    document.documentElement.style.opacity = '1';
-                }, 50);
+                window.addEventListener('load', function() {
+                    setTimeout(function() {
+                        window.scrollTo(0, parseInt(pos));
+                        document.documentElement.style.opacity = '1';
+                    }, 50);
+                });
             }
         })();
         
         window.addEventListener('scroll', function() {
-            var scrollKey = 'scrollPos_' + btoa(window.location.href);
-            localStorage.setItem(scrollKey, window.scrollY);
+            var scrollKey = 'scrollPos_' + btoa(window.location.pathname);
+            sessionStorage.setItem(scrollKey, window.scrollY);
         });
     </script>
 
