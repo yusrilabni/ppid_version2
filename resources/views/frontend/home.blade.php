@@ -71,10 +71,9 @@
             </div>
         @endif
 
-        {{-- Informasi Terbaru Section --}}
         <section class="py-10 bg-white">
             <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-10">
+                <div class="text-center mb-4">
                     <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Informasi Terbaru</h2>
                     <p class="text-gray-600 text-sm md:text-base max-w-2xl mx-auto">Dokumen dan pengumuman publik terkini dari PPID Kabupaten Sinjai.</p>
                 </div>
@@ -180,7 +179,7 @@
 
         <section class="py-3 md:py-6 bg-gray-50">
             <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-                <div class="text-center mb-0">
+                <div class="text-center mb-4">
                     <h2 class="text-xl md:text-3xl font-bold text-gray-900 mb-2 md:mb-4">Berita Terbaru</h2>
                     <p class="text-gray-600 max-w-2xl mx-auto text-xs md:text-base mb-0">
                         Dapatkan informasi terkini seputar kegiatan dan pengumuman dari Humas Sinjai.
