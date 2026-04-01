@@ -121,9 +121,10 @@
                                                 @auth
                                                     @php
                                                         $canManage = false;
+                                                        // Strictly match unit even for Superadmins
                                                         if (isset($api_unit_id) && isset($official->organization) && (string)$api_unit_id === (string)$official->organization->remote_id) {
                                                             $canManage = true;
-                                                        } elseif ($user && $user->isSuperAdmin()) {
+                                                        } elseif (isset($official->organization) && (string)$user->unit_id === (string)$official->organization->remote_id) {
                                                             $canManage = true;
                                                         }
                                                     @endphp
