@@ -1,18 +1,18 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'DIP Per OPD')
+@section('title', 'Tentang OPD')
 
 @section('content')
 <div class="container mx-auto py-8 px-4">
     <div class="max-w-7xl mx-auto">
         <x-breadcrumbs :breadcrumbs="[
             ['title' => 'Beranda', 'url' => route('home'), 'icon' => 'fas fa-house'],
-            ['title' => 'DIP OPD', 'url' => '', 'icon' => 'fas fa-building']
+            ['title' => 'Tentang OPD', 'url' => '', 'icon' => 'fas fa-building']
         ]" />
 
         <div class="mb-10 text-center">
-            <h1 class="text-3xl font-extrabold text-gray-900 md:text-4xl mb-4">Daftar Informasi Publik (DIP) Per OPD</h1>
-            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Pilih Organisasi Perangkat Daerah (OPD) untuk melihat Daftar Informasi Publik yang telah mereka sediakan.</p>
+            <h1 class="text-3xl font-extrabold text-gray-900 md:text-4xl mb-4">Tentang Organisasi Perangkat Daerah (OPD)</h1>
+            <p class="text-lg text-gray-600 max-w-2xl mx-auto">Informasi profil, struktur organisasi, dan tautan resmi dari setiap Organisasi Perangkat Daerah Kabupaten Sinjai.</p>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
@@ -31,8 +31,8 @@
                         </div>
                         
                         <div class="mt-auto space-y-3">
-                            <a href="{{ route('opd.dip.show', $organization->slug) }}" class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 w-full shadow-lg shadow-blue-100 hover:shadow-blue-200">
-                                <i class="fas fa-book-open mr-2"></i> Lihat DIP OPD
+                            <a href="{{ route('opd.detail', $organization->id) }}" class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 w-full shadow-lg shadow-blue-100 hover:shadow-blue-200">
+                                <i class="fas fa-sitemap mr-2"></i> Lihat Struktur Organisasi
                             </a>
                             
                             @if($organization->website_url)
@@ -40,6 +40,26 @@
                                     <i class="fas fa-globe mr-2 text-blue-500"></i> Website Resmi
                                 </a>
                             @endif
+
+                            @auth
+                                @php
+                                    $canManage = false;
+                                    $user = Auth::user();
+                                    if (isset($api_unit_id) && (string)$api_unit_id === (string)$organization->remote_id) {
+                                        $canManage = true;
+                                    } elseif ($user && ($user->role === 'superadmin' || $user->role === 'admin' && (string)$user->unit_id === (string)$organization->remote_id)) {
+                                        $canManage = true;
+                                    }
+                                @endphp
+
+                                @if ($canManage)
+                                    <div class="pt-2">
+                                        <a href="{{ route('opd.manage-public', $organization->id) }}" class="inline-flex items-center justify-center bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-6 rounded-xl transition-all duration-300 w-full shadow-lg shadow-amber-100 hover:shadow-amber-200">
+                                            <i class="fas fa-edit mr-2"></i> Kelola Struktur & Web
+                                        </a>
+                                    </div>
+                                @endif
+                            @endauth
                         </div>
                     </div>
                 </div>
@@ -49,8 +69,8 @@
                         <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mb-4">
                             <i class="fas fa-search text-gray-300 text-4xl"></i>
                         </div>
-                        <h3 class="text-xl font-bold text-gray-900 mb-2">Belum ada OPD yang berpartisipasi</h3>
-                        <p class="text-gray-500">Saat ini belum ada data organisasi yang mengunggah informasi publik.</p>
+                        <h3 class="text-xl font-bold text-gray-900 mb-2">Belum ada data OPD</h3>
+                        <p class="text-gray-500">Saat ini belum ada data organisasi perangkat daerah yang tersedia.</p>
                     </div>
                 </div>
             @endforelse
