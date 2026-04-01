@@ -44,6 +44,18 @@
         .swiper-pagination-bullet { opacity: 0.3 !important; background: gray !important; }
         .swiper-pagination-bullet-active { opacity: 1 !important; background: #2563eb !important; }
         .swiper-pagination { bottom: 0 !important; height: 30px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        
+        /* Accessibility Widget Styles */
+        .acc-widget-container { font-family: 'Inter', sans-serif !important; }
+        .acc-menu-panel { display: flex; flex-direction: column; }
+        .acc-grid-btn { background: white !important; color: #374151 !important; border: 1px solid #E5E7EB !important; border-radius: 16px !important; padding: 16px 10px !important; cursor: pointer !important; display: flex !important; flex-direction: column !important; align-items: center !important; justify-content: flex-start !important; text-align: center !important; min-height: 145px !important; width: 100% !important; position: relative !important; transition: all 0.2s !important; }
+        .acc-grid-btn:hover { background: #F3F4F6 !important; }
+        .acc-grid-btn.active { border: 2px solid #0052FF !important; }
+        .acc-check-icon { position: absolute !important; top: 10px !important; right: 10px !important; color: #0052FF !important; font-size: 14px !important; }
+        .acc-icon-wrapper { height: 50px !important; display: flex !important; align-items: center !important; justify-content: center !important; margin-bottom: 12px !important; width: 100% !important; }
+        .acc-text-wrapper span { font-size: 13px !important; font-weight: 700 !important; line-height: 1.2 !important; color: #374151 !important; }
+        .acc-dot-container { display: flex !important; gap: 4px !important; height: 4px !important; justify-content: center !important; margin-top: 10px !important; }
+        .acc-dot { height: 4px !important; border-radius: 2px !important; }
     </style>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -51,22 +63,7 @@
             theme: {
                 extend: {
                     colors: {
-                        'blue': {
-                            50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd', 400: '#60a5fa',
-                            500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a',
-                        },
-                        'green': {
-                            50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac', 400: '#4ade80',
-                            500: '#22c55e', 600: '#16a34a', 700: '#15803d', 800: '#166534', 900: '#14532d',
-                        },
-                        'yellow': {
-                            50: '#fefce8', 100: '#fef9c3', 200: '#fef08a', 300: '#fde047', 400: '#facc15',
-                            500: '#eab308', 600: '#ca8a04', 700: '#a16207', 800: '#854d0e', 900: '#713f12',
-                        },
-                        'red': {
-                            50: '#fef2f2', 100: '#fee2e2', 200: '#fecaca', 300: '#fca5a5', 400: '#f87171',
-                            500: '#ef4444', 600: '#dc2626', 700: '#b91c1c', 800: '#991b1b', 900: '#7f1d1d',
-                        },
+                        'blue': { 50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd', 400: '#60a5fa', 500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a' },
                     }
                 }
             }
@@ -75,18 +72,6 @@
     <script src="https://unpkg.com/lucide@latest"></script>
     <script defer src="https://unpkg.com/alpinejs@3.x.x/dist/cdn.min.js"></script>
     <script>
-        var saveScroll = function() {
-            var scrollKey = 'scrollPos_' + btoa(window.location.href);
-            localStorage.setItem(scrollKey, window.scrollY);
-        };
-        
-        window.addEventListener('scroll', function() {
-            clearTimeout(window.scrollTimeout);
-            window.scrollTimeout = setTimeout(saveScroll, 100);
-        });
-
-        window.addEventListener('turbo:before-visit', saveScroll);
-        
         document.addEventListener('turbo:load', function() {
             if (window.tailwind) { window.tailwind.run(); }
             if (window.lucide) { window.lucide.createIcons(); }
@@ -147,17 +132,7 @@
                     localStorage.setItem('acc_saturation', this.saturation);
                 }
             });
-
-            Alpine.store('surveyModal', {
-                open: false,
-                init() {
-                    const isHome = window.location.pathname === '/' || window.location.pathname === '/home';
-                    if (!isHome) return;
-                    setTimeout(() => { this.open = true; }, 4000);
-                },
-                close() { this.open = false; }
-            });
-        })
+        });
     </script>
 
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css" data-turbo-track="reload">
@@ -166,10 +141,6 @@
     <style>
         .news-carousel, .info-carousel { width: 100%; overflow: hidden; }
         .info-carousel .swiper-slide { height: auto; }
-        
-        /* Accessibility Styles */
-        #acc-main-wrapper.acc-contrast-light, #acc-main-wrapper.acc-contrast-light *:not(.acc-ignore) { background-color: #fff !important; color: #000 !important; }
-        #acc-main-wrapper.acc-contrast-dark, #acc-main-wrapper.acc-contrast-dark *:not(.acc-ignore) { background-color: #000 !important; color: #ff0 !important; }
         .acc-reading-mask { position: fixed; top: 0; left: 0; width: 100%; height: 100%; pointer-events: none; z-index: 999998; background: rgba(0,0,0,0.85); display: none; }
         body.acc-focus-mask .acc-reading-mask { display: block !important; }
     </style>
@@ -222,17 +193,61 @@
     <div class="acc-reading-mask" id="reading-mask"></div>
 
     <!-- Accessibility Widget -->
-    <div x-data="accessibilityWidget()" class="fixed z-[99999]" style="bottom: 24px; left: 24px;">
-        <button @click="$store.accConfig.toggleMenu()" class="bg-blue-600 text-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center">
-            <i class="fas fa-universal-access text-3xl"></i>
+    <div x-data="accessibilityWidget()" class="fixed z-[99999] acc-widget-container flex flex-col items-center" style="bottom: 24px; left: 24px;">
+        
+        <!-- Tombol Mute/Unmute Suara -->
+        <button @click.stop="toggleMasterSound()" 
+                class="flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg text-white mb-2" 
+                :class="isSoundEnabled ? 'bg-green-500' : 'bg-red-500'"
+                style="width: 32px; height: 32px; border-radius: 50%; border: none; cursor: pointer;">
+            <i x-show="isSoundEnabled" class="fas fa-volume-up" style="font-size: 14px;"></i>
+            <i x-show="!isSoundEnabled" class="fas fa-volume-mute" style="font-size: 14px;"></i>
         </button>
+
+        <button @click="$store.accConfig.toggleMenu()" class="bg-[#0052FF] hover:bg-[#0041CC] text-white flex items-center justify-center transition-all duration-300 hover:scale-105 shadow-lg" style="width: 64px; height: 64px; border-radius: 50%; border: none; cursor: pointer;">
+            <i class="fas fa-universal-access" style="font-size: 30px;" x-show="!$store.accConfig.isOpen"></i>
+            <i class="fas fa-times" style="font-size: 28px;" x-show="$store.accConfig.isOpen"></i>
+        </button>
+
+        <!-- Menu Panel -->
+        <div x-show="$store.accConfig.isOpen" 
+             @click.away="$store.accConfig.isOpen = false"
+             x-transition
+             class="absolute bg-white overflow-hidden acc-menu-panel" 
+             style="bottom: 110px; left: 0; width: 320px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid #E5E7EB;">
+            <div class="bg-[#0052FF] text-white p-6">
+                <h3 class="font-bold text-lg">Menu Aksesibilitas</h3>
+                <p class="text-xs opacity-90">Optimalkan tampilan sesuai kebutuhan Anda</p>
+            </div>
+            <div class="p-4 overflow-y-auto" style="max-height: 400px; background: #F9FAFB;">
+                <div class="grid grid-cols-2 gap-3">
+                    <!-- Contoh 1: Kontras -->
+                    <button @click="$store.accConfig.cycleContrast()" class="acc-grid-btn" :class="{'active': $store.accConfig.contrast !== 'default'}">
+                        <div class="acc-icon-wrapper"><i class="fas fa-adjust"></i></div>
+                        <div class="acc-text-wrapper"><span>Kontras</span></div>
+                    </button>
+                    <!-- Contoh 2: Ukuran Teks -->
+                    <button @click="cycleFont()" class="acc-grid-btn" :class="{'active': $store.accConfig.fontLevel !== 'normal'}">
+                        <div class="acc-icon-wrapper"><i class="fas fa-font"></i></div>
+                        <div class="acc-text-wrapper"><span>Ukuran Teks</span></div>
+                    </button>
+                </div>
+                <div class="mt-4 text-center border-t pt-4">
+                    <button @click="localStorage.clear(); location.reload();" class="text-xs text-gray-500 font-bold uppercase tracking-wider">Reset Semua</button>
+                </div>
+            </div>
+        </div>
     </div>
 
     <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
     <script>
         function accessibilityWidget() {
             return {
+                isSoundEnabled: true,
                 init() {
+                    const savedSound = localStorage.getItem('acc_sound_enabled');
+                    if (savedSound !== null) this.isSoundEnabled = (savedSound === 'true');
+                    
                     document.addEventListener('mousemove', (e) => {
                         const mask = document.getElementById('reading-mask');
                         if (mask && Alpine.store('accConfig').focus === 'mask') {
@@ -240,6 +255,17 @@
                             mask.style.clipPath = `polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%, 0% 0%, 0% ${y - 50}px, 100% ${y - 50}px, 100% ${y + 50}px, 0% ${y + 50}px, 0% ${y - 50}px)`;
                         }
                     });
+                },
+                toggleMasterSound() {
+                    this.isSoundEnabled = !this.isSoundEnabled;
+                    localStorage.setItem('acc_sound_enabled', this.isSoundEnabled);
+                    if (!this.isSoundEnabled) window.speechSynthesis.cancel();
+                },
+                cycleFont() { 
+                    const levels = ['kecil', 'normal', 'sedang', 'besar'];
+                    const current = Alpine.store('accConfig').fontLevel;
+                    const next = levels[(levels.indexOf(current) + 1) % 4];
+                    Alpine.store('accConfig').setFontLevel(next);
                 }
             }
         }
