@@ -81,7 +81,7 @@
 
                 <div class="relative group">
                     <!-- Add Pagination -->
-                    <div class="swiper-pagination latest-info-pagination !relative !top-0 !bottom-auto mb-6 mt-1"></div>
+                    <div class="swiper-pagination latest-info-pagination !relative !top-0 !bottom-auto mb-1 mt-1"></div>
                     
                     <div class="swiper-container latest-info-carousel loading overflow-hidden px-1">
                         <div class="swiper-wrapper">
