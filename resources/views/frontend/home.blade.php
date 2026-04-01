@@ -4,7 +4,7 @@
     <style>
         /* Slider Stability: Only first slide allowed initially */
         .slider-container .grid > div { display: none; }
-        .slider-container .grid > div:first-child { display: block !important; opacity: 1 !important; }
+        .slider-container .grid > div:first-child { display: block; opacity: 1; }
         
         /* Carousel Skeleton Fix: Force side-by-side layout before JS loads */
         .latest-info-carousel:not(.swiper-initialized) .swiper-wrapper,
