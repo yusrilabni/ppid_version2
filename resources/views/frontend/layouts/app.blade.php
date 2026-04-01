@@ -14,6 +14,17 @@
     <script>
         // Force manual restoration
         if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
+        
+        (function() {
+            var scrollKey = 'scrollPos_' + btoa(window.location.href);
+            var pos = localStorage.getItem(scrollKey);
+            if (pos && parseInt(pos) > 50) {
+                var style = document.createElement('style');
+                style.id = 'scroll-shield';
+                style.innerHTML = 'html { opacity: 0 !important; }';
+                document.head.appendChild(style);
+            }
+        })();
     </script>
 
     <!-- Favicons -->
@@ -24,32 +35,40 @@
     <script src="https://unpkg.com/@hotwired/turbo@7.3.0/dist/turbo.es2017-umd.js" data-turbo-track="reload"></script>
     <style>
         [x-cloak] { display: none !important; }
-        
-        /* Progress Bar Turbo - Agar navigasi terlihat "hidup" */
+        /* Progress Bar Turbo */
         .turbo-progress-bar {
-            height: 4px !important;
+            height: 3px !important;
             background-color: #2563eb !important;
-            box-shadow: 0 0 10px rgba(37, 99, 235, 0.5);
-        }
-
-        /* Navbar Sticky & Static Feel - NO FLICKER */
-        #main-navbar-container {
-            position: sticky;
-            top: 0;
-            z-index: 100;
-            background: white;
-        }
-
-        /* Cegah Konten Berkedip Putih */
-        main {
-            min-height: 80vh;
-            background-color: #f3f4f6; /* Samakan dengan warna background body */
         }
         
         /* Swiper Pagination Instant-CSS */
         .swiper-pagination-bullet { opacity: 0.3 !important; background: gray !important; }
         .swiper-pagination-bullet-active { opacity: 1 !important; background: #2563eb !important; }
         .swiper-pagination { bottom: 0 !important; height: 30px; display: flex; justify-content: center; align-items: center; gap: 8px; }
+        
+        /* Navbar Sticky & Static Feel */
+        #main-navbar-container {
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            background: white;
+        }
+        
+        /* Skeleton/Placeholder for Swiper - Mencegah Layout Bergeser */
+        .swiper-container:not(.swiper-initialized) .swiper-wrapper {
+            display: flex;
+            overflow: hidden;
+            gap: 20px;
+        }
+        .swiper-container:not(.swiper-initialized) .swiper-slide {
+            flex: 0 0 100%;
+        }
+        @media (min-width: 640px) {
+            .swiper-container:not(.swiper-initialized) .swiper-slide { flex: 0 0 calc(50% - 10px); }
+        }
+        @media (min-width: 1024px) {
+            .swiper-container:not(.swiper-initialized) .swiper-slide { flex: 0 0 calc(25% - 15px); }
+        }
     </style>
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -60,6 +79,18 @@
                         'blue': {
                             50: '#eff6ff', 100: '#dbeafe', 200: '#bfdbfe', 300: '#93c5fd', 400: '#60a5fa',
                             500: '#3b82f6', 600: '#2563eb', 700: '#1d4ed8', 800: '#1e40af', 900: '#1e3a8a',
+                        },
+                        'green': {
+                            50: '#f0fdf4', 100: '#dcfce7', 200: '#bbf7d0', 300: '#86efac', 400: '#4ade80',
+                            500: '#22c55e', 600: '#16a34a', 700: '#15803d', 800: '#166534', 900: '#14532d',
+                        },
+                        'yellow': {
+                            50: '#fefce8', 100: '#fef9c3', 200: '#fef08a', 300: '#fde047', 400: '#facc15',
+                            500: '#eab308', 600: '#ca8a04', 700: '#a16207', 800: '#854d0e', 900: '#713f12',
+                        },
+                        'red': {
+                            50: '#fef2f2', 100: '#fee2e2', 200: '#fecaca', 300: '#fca5a5', 400: '#f87171',
+                            500: '#ef4444', 600: '#dc2626', 700: '#b91c1c', 800: '#991b1b', 900: '#7f1d1d',
                         },
                     }
                 }
@@ -75,20 +106,20 @@
             localStorage.setItem(scrollKey, window.scrollY);
         };
         
-        window.addEventListener('scroll', _.debounce(saveScroll, 100));
+        window.addEventListener('scroll', function() {
+            clearTimeout(window.scrollTimeout);
+            window.scrollTimeout = setTimeout(saveScroll, 100);
+        });
+
         window.addEventListener('turbo:before-visit', saveScroll);
 
         // Turbo Configuration
         Turbo.setProgressBarDelay(50);
         
         document.addEventListener('turbo:load', function() {
+            var scrollKey = 'scrollPos_' + btoa(window.location.href);
             if (window.tailwind) { window.tailwind.run(); }
             if (window.lucide) { window.lucide.createIcons(); }
-            
-            // Auto scroll to top if not a restoration visit
-            if (!event.detail.restorationIdentifier) {
-                window.scrollTo(0, 0);
-            }
         });
 
         document.addEventListener('alpine:init', () => {
@@ -152,7 +183,7 @@
                 init() {
                     const isHome = window.location.pathname === '/' || window.location.pathname === '/home';
                     if (!isHome) return;
-                    setTimeout(() => { this.open = true; }, 3000);
+                    setTimeout(() => { this.open = true; }, 4000);
                 },
                 close() { this.open = false; }
             });
@@ -163,6 +194,9 @@
     <link rel="stylesheet" href="https://unpkg.com/swiper@8/swiper-bundle.min.css" data-turbo-track="reload" />
     <link rel="stylesheet" href="{{ asset('css/custom.css') }}" data-turbo-track="reload">
     <style>
+        .news-carousel, .info-carousel { width: 100%; overflow: hidden; }
+        .info-carousel .swiper-slide { height: auto; }
+        
         /* Accessibility Styles */
         #acc-main-wrapper.acc-contrast-light, #acc-main-wrapper.acc-contrast-light *:not(.acc-ignore) { background-color: #fff !important; color: #000 !important; }
         #acc-main-wrapper.acc-contrast-dark, #acc-main-wrapper.acc-contrast-dark *:not(.acc-ignore) { background-color: #000 !important; color: #ff0 !important; }
@@ -172,7 +206,7 @@
     @stack('styles')
 </head>
 
-<body class="antialiased bg-gray-100 text-gray-800" data-turbo="true"
+<body class="antialiased bg-gray-100 text-gray-800" data-turbo="true" x-data="{}"
     :class="$store.accConfig ? { 
         'acc-highlight-links': $store.accConfig.links, 
         'acc-highlight-headings': $store.accConfig.headings, 
@@ -202,7 +236,6 @@
         } : {}"
         style="min-height: 100vh;">
         
-        <!-- HEADER PERMANEN - TIDAK REFRESH -->
         <header id="main-navbar-container" data-turbo-permanent>
             @include('frontend.layouts.navbar')
         </header>
@@ -218,26 +251,29 @@
 
     <div class="acc-reading-mask" id="reading-mask"></div>
 
-    <!-- SURVEY MODAL -->
-    <div x-show="$store.surveyModal.open" class="fixed inset-0 z-[10000] flex items-center justify-center p-4 bg-black/70 backdrop-blur-md" x-cloak x-transition>
-        <div class="bg-white rounded-[2rem] shadow-2xl max-w-lg w-full overflow-hidden p-10 text-center">
-            <h3 class="text-2xl font-bold mb-4">Survei Kepuasan</h3>
-            <p class="mb-6">Bantu kami meningkatkan kualitas layanan publik dengan mengisi survei singkat.</p>
-            <div class="flex flex-col gap-3">
-                <a href="{{ url('/laporan/survei') }}" class="bg-blue-600 text-white py-3 rounded-xl font-bold">Isi Survei</a>
-                <button @click="$store.surveyModal.close()" class="text-gray-400">Nanti Saja</button>
-            </div>
-        </div>
-    </div>
-
     <!-- Accessibility Widget -->
-    <div x-data="{ isOpen: false }" class="fixed z-[99999]" style="bottom: 24px; left: 24px;">
+    <div x-data="accessibilityWidget()" class="fixed z-[99999]" style="bottom: 24px; left: 24px;">
         <button @click="$store.accConfig.toggleMenu()" class="bg-blue-600 text-white w-16 h-16 rounded-full shadow-lg flex items-center justify-center">
             <i class="fas fa-universal-access text-3xl"></i>
         </button>
     </div>
 
     <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>
+    <script>
+        function accessibilityWidget() {
+            return {
+                init() {
+                    document.addEventListener('mousemove', (e) => {
+                        const mask = document.getElementById('reading-mask');
+                        if (mask && Alpine.store('accConfig').focus === 'mask') {
+                            const y = e.clientY;
+                            mask.style.clipPath = `polygon(0% 0%, 0% 100%, 100% 100%, 100% 0%, 0% 0%, 0% ${y - 50}px, 100% ${y - 50}px, 100% ${y + 50}px, 0% ${y + 50}px, 0% ${y - 50}px)`;
+                        }
+                    });
+                }
+            }
+        }
+    </script>
     @stack('scripts')
 </body>
 </html>
