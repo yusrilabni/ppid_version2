@@ -99,6 +99,13 @@
     <div class="min-h-screen flex items-center justify-center px-4 py-12">
         <div class="w-full max-w-md">
 
+            <!-- BACK TO HOME -->
+            <div class="mb-6 text-center">
+                <a href="{{ route('home') }}" class="inline-flex items-center text-sm font-bold text-blue-600 hover:text-blue-800 transition-all bg-white/50 backdrop-blur-sm px-5 py-2.5 rounded-full shadow-sm hover:shadow-md border border-white/50">
+                    <i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i> Kembali ke Beranda
+                </a>
+            </div>
+
             <div class="login-card">
 
                 <!-- HEADER -->
