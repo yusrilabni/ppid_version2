@@ -329,10 +329,10 @@
                 <div style="margin-bottom: 20px; background: #fff; padding: 16px; border-radius: 16px; border: 1px solid #E5E7EB;">
                     <p style="font-size: 12px; font-weight: 700; color: #6B7280; margin-bottom: 12px; text-transform: uppercase;">Kontrol Suara (TTS)</p>
                     <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
-                        <button @click="toggleReader()" :class="isReaderActive ? 'border-[#0052FF] border-2' : 'border-[#E5E7EB] border'" class="bg-white text-[#374151] flex items-center justify-center" style="padding: 12px; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 700; border-style: solid;">
+                        <button @click="toggleReader()" :class="(isReaderActive && isSoundEnabled) ? 'border-[#0052FF] border-2' : 'border-[#E5E7EB] border'" class="bg-white text-[#374151] flex items-center justify-center" style="padding: 12px; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 700; border-style: solid;">
                             <i class="fas fa-volume-up" style="margin-right: 8px;"></i> Klik Baca
                         </button>
-                        <button @click="toggleHoverReader()" :class="isHoverActive ? 'border-[#0052FF] border-2' : 'border-[#E5E7EB] border'" class="bg-white text-[#374151] flex items-center justify-center" style="padding: 12px; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 700; border-style: solid;">
+                        <button @click="toggleHoverReader()" :class="(isHoverActive && isSoundEnabled) ? 'border-[#0052FF] border-2' : 'border-[#E5E7EB] border'" class="bg-white text-[#374151] flex items-center justify-center" style="padding: 12px; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 700; border-style: solid;">
                             <i class="fas fa-mouse-pointer" style="margin-right: 8px;"></i> Sorot Baca
                         </button>
                     </div>
