@@ -21,7 +21,7 @@
                      :class="searchOpen ? 'w-full max-w-2xl shadow-inner bg-white border-blue-200' : 'w-auto max-w-full'">
                     
                     <!-- Menu List Container -->
-                    <div class="flex items-center space-x-1 whitespace-nowrap transition-all duration-500 ease-in-out w-full justify-center"
+                    <div class="flex items-center space-x-1 whitespace-nowrap w-full justify-center opacity-100 scale-100 translate-y-0"
                          :class="searchOpen ? 'opacity-0 pointer-events-none scale-95 translate-y-[-10px]' : 'opacity-100 scale-100 translate-y-0'">
                         @foreach ($menus as $menu)
                             @php
