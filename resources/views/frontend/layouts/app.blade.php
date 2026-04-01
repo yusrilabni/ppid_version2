@@ -14,17 +14,6 @@
     <script>
         // Force manual restoration
         if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
-        
-        (function() {
-            var scrollKey = 'scrollPos_' + btoa(window.location.href);
-            var pos = localStorage.getItem(scrollKey);
-            if (pos && parseInt(pos) > 50) {
-                var style = document.createElement('style');
-                style.id = 'scroll-shield';
-                style.innerHTML = 'html { opacity: 0 !important; }';
-                document.head.appendChild(style);
-            }
-        })();
     </script>
 
     <!-- Favicons -->
