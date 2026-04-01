@@ -15,25 +15,27 @@
     <!-- Version: 2.1.0 - Stability Fix -->
     <meta name="description" content="Pejabat Pengelola Informasi dan Dokumentasi">
 
-    <!-- Robust Scroll Restoration -->
+    <!-- Instant Scroll Restoration (No Jump) -->
     <script>
-        if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
-        
         (function() {
+            if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
             var key = 'sp_' + btoa(window.location.href);
             var p = sessionStorage.getItem(key);
-            if (p) {
-                window.addEventListener('load', function() {
-                    setTimeout(function() {
-                        window.scrollTo({ top: parseInt(p), behavior: 'instant' });
-                    }, 10);
+            if (p && parseInt(p) > 50) {
+                // Force a temporary height so the browser can scroll immediately
+                document.documentElement.style.height = (parseInt(p) + 2000) + 'px';
+                window.scrollTo(0, parseInt(p));
+                
+                // Reset height as soon as the page starts rendering
+                requestAnimationFrame(function() {
+                    window.scrollTo(0, parseInt(p));
+                    document.documentElement.style.height = '';
                 });
             }
         })();
 
         window.addEventListener('scroll', function() {
-            var key = 'sp_' + btoa(window.location.href);
-            sessionStorage.setItem(key, window.scrollY);
+            sessionStorage.setItem('sp_' + btoa(window.location.href), window.scrollY);
         }, { passive: true });
     </script>
 
