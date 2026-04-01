@@ -95,12 +95,12 @@
                         </div>
 
                         <!-- Action Buttons -->
-                        <div class="grid grid-cols-2 gap-2 mt-2 lg:mt-0">
-                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2 px-4 rounded-md transition flex items-center justify-center">
-                                <i class="fas fa-search mr-2"></i> CARI
+                        <div class="flex flex-row gap-2 mt-4 lg:mt-0 lg:flex-shrink-0">
+                            <button type="submit" class="flex-1 lg:flex-none bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold py-2.5 px-5 rounded-lg transition-all shadow-md flex items-center justify-center min-w-[100px]">
+                                <i class="fas fa-search mr-2 text-[10px]"></i> CARI
                             </button>
-                            <button type="button" onclick="clearFilters()" class="bg-gray-600 hover:bg-gray-700 text-white text-xs font-bold py-2 px-4 rounded-md transition flex items-center justify-center">
-                                <i class="fas fa-eraser mr-2"></i> RESET
+                            <button type="button" onclick="clearFilters()" class="flex-1 lg:flex-none bg-gray-600 hover:bg-gray-700 text-white text-[11px] font-bold py-2.5 px-5 rounded-lg transition-all shadow-md flex items-center justify-center min-w-[100px]">
+                                <i class="fas fa-eraser mr-2 text-[10px]"></i> RESET
                             </button>
                         </div>
                     </div>
