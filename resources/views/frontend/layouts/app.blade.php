@@ -15,37 +15,46 @@
     <!-- Version: 2.1.0 - Stability Fix -->
     <meta name="description" content="Pejabat Pengelola Informasi dan Dokumentasi">
 
-    <!-- Smart Scroll Restoration (Reload Only) -->
+    <!-- Stationary Scroll Restoration (No Jump) -->
     <script>
         (function() {
-            // Detect if this is a RELOAD
             var isReload = false;
             try {
-                if (window.performance && window.performance.navigation) {
-                    if (window.performance.navigation.type === 1) { isReload = true; }
-                } else if (window.performance && window.performance.getEntriesByType) {
-                    var nav = window.performance.getEntriesByType('navigation')[0];
-                    if (nav && nav.type === 'reload') { isReload = true; }
-                }
-            } catch (e) { isReload = false; }
+                isReload = (window.performance && window.performance.navigation && window.performance.navigation.type === 1) || 
+                           (window.performance && window.performance.getEntriesByType && window.performance.getEntriesByType('navigation')[0].type === 'reload');
+            } catch (e) {}
 
-            if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
             var scrollKey = 'sp_' + btoa(window.location.origin + window.location.pathname);
             var pos = sessionStorage.getItem(scrollKey);
 
             if (isReload && pos && parseInt(pos) > 50) {
-                document.documentElement.style.visibility = 'hidden';
+                if ('scrollRestoration' in history) { history.scrollRestoration = 'manual'; }
                 var target = parseInt(pos);
+                
+                // Hide and force height to allow instant scroll
+                document.documentElement.style.opacity = '0';
+                document.documentElement.style.height = (target + window.innerHeight + 2000) + 'px';
                 window.scrollTo(0, target);
+
+                // Multiple re-scrolls to fight browser rendering
+                var scrollFix = function() { window.scrollTo(0, target); };
+                requestAnimationFrame(scrollFix);
+                
                 window.addEventListener('load', function() {
-                    window.scrollTo(0, target);
-                    document.documentElement.style.visibility = '';
+                    scrollFix();
+                    document.documentElement.style.opacity = '1';
+                    document.documentElement.style.height = '';
+                    setTimeout(scrollFix, 10);
                 });
-                setTimeout(function() { document.documentElement.style.visibility = ''; }, 500);
+                
+                // Safety release
+                setTimeout(function() { 
+                    document.documentElement.style.opacity = '1';
+                    document.documentElement.style.height = '';
+                }, 400);
             } else {
-                // Not a reload or no pos: Clear visibility and start at top
-                document.documentElement.style.visibility = '';
-                window.scrollTo(0, 0);
+                if ('scrollRestoration' in history) { history.scrollRestoration = 'auto'; }
+                sessionStorage.removeItem(scrollKey);
             }
         })();
 
