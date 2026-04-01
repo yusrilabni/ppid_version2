@@ -266,6 +266,37 @@
                     const current = Alpine.store('accConfig').fontLevel;
                     const next = levels[(levels.indexOf(current) + 1) % 4];
                     Alpine.store('accConfig').setFontLevel(next);
+                },
+                resetAcc() { localStorage.clear(); sessionStorage.clear(); location.reload(); },
+                formatTextForTTS(text) {
+                    if (!text) return '';
+
+                    // Daftar singkatan yang harus dieja
+                    const abbreviations = ['SOP', 'DIP', 'PPID', 'IPM', 'TPAK', 'RKPD', 'RPJMD', 'LKPJ', 'SPBU', 'ASN', 'OPD', 'TTS'];
+                    let processedText = text;
+
+                    // Ganti singkatan agar dieja (tambah spasi antar huruf)
+                    abbreviations.forEach(abbr => {
+                        const regex = new RegExp('\\b' + abbr + '\\b', 'gi');
+                        processedText = processedText.replace(regex, abbr.split('').join(' '));
+                    });
+
+                    // Penanganan khusus untuk tanda baca dan kata umum
+                    processedText = processedText.replace(/\bNo\.\b/gi, 'Nomor');
+                    processedText = processedText.replace(/\bKab\.\b/gi, 'Kabupaten');
+                    processedText = processedText.replace(/\bKec\.\b/gi, 'Kecamatan');
+                    processedText = processedText.replace(/\bTtd\b/gi, 'Tertanda');
+
+                    return processedText;
+                },
+                speak(text) {
+                    if (!this.isSoundEnabled) return;
+                    window.speechSynthesis.cancel();
+
+                    const processedText = this.formatTextForTTS(text);
+                    const utterance = new SpeechSynthesisUtterance(processedText);
+                    utterance.lang = 'id-ID';
+                    window.speechSynthesis.speak(utterance);
                 }
             }
         }
