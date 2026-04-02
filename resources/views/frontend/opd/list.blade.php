@@ -43,14 +43,18 @@
 
                             @auth
                                 @php
-                                    $canManage = false;
                                     $user = Auth::user();
+                                    $canManage = $user->isSuperAdmin();
                                     
-                                    // Strictly match unit even for Superadmins
-                                    if (isset($api_unit_id) && (string)$api_unit_id === (string)$organization->remote_id) {
-                                        $canManage = true;
-                                    } elseif ((string)$user->unit_id === (string)$organization->remote_id) {
-                                        $canManage = true;
+                                    if (!$canManage) {
+                                        // Match by local unit_id
+                                        if ($user->unit_id && (string)$user->unit_id === (string)$organization->unit_id) {
+                                            $canManage = true;
+                                        }
+                                        // Match by API unit_id fallback
+                                        elseif (isset($api_unit_id) && (string)$api_unit_id === (string)$organization->remote_id) {
+                                            $canManage = true;
+                                        }
                                     }
                                 @endphp
 
