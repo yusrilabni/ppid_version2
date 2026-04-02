@@ -36,40 +36,49 @@
                     <div class="flex flex-col lg:flex-row gap-3 lg:items-end">
                         <!-- Combined Search Input (Title/Description/Unit) -->
                         <div class="w-full lg:flex-1 lg:min-w-[200px]">
-                            <label for="search" class="block text-xs font-medium text-gray-600 mb-1">Pencarian</label>
-                            <input
-                                type="text"
-                                id="search"
-                                name="search"
-                                value="{{ request('search') ?? '' }}"
-                                placeholder="Cari judul, unit kerja..."
-                                class="w-full border border-gray-300 rounded-md px-3 py-1.5 text-sm focus:outline-none focus:ring-1 focus:ring-blue-500"
-                            >
+                            <label for="search" class="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wider">Pencarian</label>
+                            <div class="relative group">
+                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400 group-focus-within:text-blue-500 transition-colors">
+                                    <i class="fas fa-search text-xs"></i>
+                                </span>
+                                <input
+                                    type="text"
+                                    id="search"
+                                    name="search"
+                                    value="{{ request('search') ?? '' }}"
+                                    placeholder="Cari judul, unit..."
+                                    class="w-full pl-10 pr-4 py-3 text-sm border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
+                                >
+                            </div>
                         </div>
 
                         <div class="grid grid-cols-2 md:grid-cols-4 lg:contents gap-2">
                             <!-- Date From Filter -->
                             <div class="w-full">
-                                <label for="date_from" class="block text-[10px] font-medium text-gray-600 mb-1 uppercase">Tgl Awal</label>
-                                <input
-                                    type="date"
-                                    id="date_from"
-                                    name="date_from"
-                                    value="{{ request('date_from') ?? '' }}"
-                                    class="w-full border border-gray-300 rounded-md px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                >
+                                <label for="date_from" class="block text-[10px] font-medium text-gray-600 mb-1 uppercase tracking-wider">Tgl Awal</label>
+                                <div class="relative">
+                                    <input
+                                        type="date"
+                                        id="date_from"
+                                        name="date_from"
+                                        value="{{ request('date_from') ?? '' }}"
+                                        class="w-full pl-3 pr-3 py-3 text-xs border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all uppercase"
+                                    >
+                                </div>
                             </div>
 
                             <!-- Date To Filter -->
                             <div class="w-full">
-                                <label for="date_to" class="block text-[10px] font-medium text-gray-600 mb-1 uppercase">Tgl Akhir</label>
-                                <input
-                                    type="date"
-                                    id="date_to"
-                                    name="date_to"
-                                    value="{{ request('date_to') ?? '' }}"
-                                    class="w-full border border-gray-300 rounded-md px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500"
-                                >
+                                <label for="date_to" class="block text-[10px] font-medium text-gray-600 mb-1 uppercase tracking-wider">Tgl Akhir</label>
+                                <div class="relative">
+                                    <input
+                                        type="date"
+                                        id="date_to"
+                                        name="date_to"
+                                        value="{{ request('date_to') ?? '' }}"
+                                        class="w-full pl-3 pr-3 py-3 text-xs border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all uppercase"
+                                    >
+                                </div>
                             </div>
 
                             <!-- Sort Control -->
