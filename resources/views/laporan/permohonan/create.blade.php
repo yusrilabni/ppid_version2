@@ -350,21 +350,21 @@
             selectedValue: old || null,
             get selectedLabel() {
                 if (!this.selectedValue) return null;
-                // Use robust comparison
-                const selected = this.allData.find(item => item.unit_id.toString() === this.selectedValue.toString());
+                // Pastikan perbandingan string agar cocok
+                const selected = this.allData.find(item => String(item.unit_id) === String(this.selectedValue));
                 return selected ? selected.unit_nama : null;
             },
             get filteredData() {
-                if (!this.search || this.search.trim() === '') return this.allData;
                 const term = this.search.toLowerCase().trim();
+                if (!term) return this.allData;
                 return this.allData.filter(item => 
                     item.unit_nama && item.unit_nama.toLowerCase().includes(term)
                 );
             },
             select(item) {
-                this.selectedValue = item.unit_id;
+                this.selectedValue = String(item.unit_id);
                 this.open = false;
-                this.search = ''; // Reset search after selection
+                this.search = '';
             }
         }));
     });
