@@ -531,10 +531,50 @@
                 resetAcc() { localStorage.clear(); sessionStorage.clear(); location.reload(); },
                 formatTextForTTS(text) {
                     if (!text) return '';
-                    const abbreviations = ['SOP', 'DIP', 'PPID', 'IPM', 'TPAK', 'RKPD', 'RPJMD', 'LKPJ', 'SPBU', 'ASN', 'OPD', 'TTS'];
+                    
+                    // Comprehensive mapping for titles and abbreviations
+                    const replacements = [
+                        { p: /\bDra\.\b/gi, r: 'Doktoranda' },
+                        { p: /\bDrs\.\b/gi, r: 'Doktorandus' },
+                        { p: /\bDr\.\b/gi, r: 'Doktor' },
+                        { p: /\bIr\.\b/gi, r: 'Insinyur' },
+                        { p: /\bHj\.\b/gi, r: 'Hajjah' },
+                        { p: /\bH\.\b/gi, r: 'Haji' },
+                        { p: /\bM\.Si\b/gi, r: 'Magister Sains' },
+                        { p: /\bM\.Pd\b/gi, r: 'Magister Pendidikan' },
+                        { p: /\bM\.H\b/gi, r: 'Magister Hukum' },
+                        { p: /\bM\.T\b/gi, r: 'Magister Teknik' },
+                        { p: /\bM\.M\b/gi, r: 'Magister Manajemen' },
+                        { p: /\bS\.Si\b/gi, r: 'Sarjana Sains' },
+                        { p: /\bS\.Pd\b/gi, r: 'Sarjana Pendidikan' },
+                        { p: /\bS\.Sos\b/gi, r: 'Sarjana Sosial' },
+                        { p: /\bS\.H\b/gi, r: 'Sarjana Hukum' },
+                        { p: /\bS\.T\b/gi, r: 'Sarjana Teknik' },
+                        { p: /\bS\.E\b/gi, r: 'Sarjana Ekonomi' },
+                        { p: /\bS\.Kom\b/gi, r: 'Sarjana Komputer' },
+                        { p: /\bS\.IP\b/gi, r: 'Sarjana Ilmu Politik' },
+                        { p: /\bS\.AP\b/gi, r: 'Sarjana Administrasi Publik' },
+                        { p: /\bA\.Md\b/gi, r: 'Ahli Madya' },
+                        { p: /\bNo\.\b/gi, r: 'Nomor' },
+                        { p: /\bKab\.\b/gi, r: 'Kabupaten' },
+                        { p: /\bKec\.\b/gi, r: 'Kecamatan' },
+                        { p: /\bTtd\b/gi, r: 'Tertanda' }
+                    ];
+
                     let processedText = text;
-                    abbreviations.forEach(abbr => { const regex = new RegExp('\\b' + abbr + '\\b', 'gi'); processedText = processedText.replace(regex, abbr.split('').join(' ')); });
-                    processedText = processedText.replace(/\bNo\.\b/gi, 'Nomor').replace(/\bKab\.\b/gi, 'Kabupaten').replace(/\bKec\.\b/gi, 'Kecamatan').replace(/\bTtd\b/gi, 'Tertanda');
+                    
+                    // Apply title replacements
+                    replacements.forEach(item => {
+                        processedText = processedText.replace(item.p, item.r);
+                    });
+
+                    // Spell out common abbreviations
+                    const abbreviations = ['SOP', 'DIP', 'PPID', 'IPM', 'TPAK', 'RKPD', 'RPJMD', 'LKPJ', 'SPBU', 'ASN', 'OPD', 'TTS'];
+                    abbreviations.forEach(abbr => { 
+                        const regex = new RegExp('\\b' + abbr + '\\b', 'gi'); 
+                        processedText = processedText.replace(regex, abbr.split('').join(' ')); 
+                    });
+
                     return processedText;
                 },
                 speak(text) {
