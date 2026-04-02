@@ -12,11 +12,12 @@ use App\Http\Controllers\Frontend\DIPController;
 use App\Http\Controllers\Frontend\LhkpnController;
 use App\Http\Controllers\Frontend\ExtraToolsController;
 
-// --- HIGH PRIORITY ROUTES (TO AVOID 404) ---
+// --- DIAGNOSTIC & HIGH PRIORITY ---
+Route::get('/cek-rute', function() { return "Rute Berhasil Diakses!"; });
+
 Route::middleware('auth')->group(function () {
-    // URL unik untuk mengelola profil OPD agar tidak bentrok dengan cache rute lama
-    Route::get('/update-profil-opd/{organization}', [FrontendController::class, 'manageStrukturOrganisasiPublic'])->name('opd.manage-public')->whereNumber('organization');
-    Route::post('/update-profil-opd/{organization}', [FrontendController::class, 'updateStrukturOrganisasiPublic'])->name('opd.update-public')->whereNumber('organization');
+    Route::get('/kelola-opd-sekarang/{organization}', [FrontendController::class, 'manageStrukturOrganisasiPublic'])->name('opd.manage-public');
+    Route::post('/kelola-opd-sekarang/{organization}', [FrontendController::class, 'updateStrukturOrganisasiPublic'])->name('opd.update-public');
 });
 
 // Proxy route for Dinas
