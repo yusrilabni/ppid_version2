@@ -69,17 +69,20 @@
                         @endphp
                         @foreach($ratios as $ratio)
                             <div class="relative">
+                                <!-- Input Radio sebagai Peer -->
                                 <input type="radio" id="ratio_{{ $loop->index }}" name="aspect_ratio" value="{{ $ratio['id'] }}" 
                                        class="peer hidden" 
                                        {{ $aspectRatio == $ratio['id'] ? 'checked' : '' }}>
+                                
+                                <!-- Label sebagai Sibling 1 -->
                                 <label for="ratio_{{ $loop->index }}" 
                                        class="flex flex-col p-4 border rounded-2xl cursor-pointer transition-all bg-gray-50 border-gray-100 hover:bg-gray-100 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:ring-2 peer-checked:ring-blue-200">
                                     <span class="text-sm font-bold text-gray-800">{{ $ratio['label'] }}</span>
                                     <span class="text-[10px] text-gray-400 mt-1 uppercase">{{ $ratio['desc'] }}</span>
-                                    
-                                    <!-- Centang menggunakan peer-checked -->
-                                    <i class="fas fa-check-circle absolute top-2 right-2 text-blue-500 hidden peer-checked:block animate-fadeIn"></i>
                                 </label>
+
+                                <!-- Icon Centang sebagai Sibling 2 (Harus sejajar dengan Peer) -->
+                                <i class="fas fa-check-circle absolute top-2 right-2 text-blue-500 hidden peer-checked:block animate-fadeIn pointer-events-none"></i>
                             </div>
                         @endforeach
                     </div>
