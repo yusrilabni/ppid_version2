@@ -3,7 +3,7 @@
 @section('title', 'Pengaturan Slider Utama')
 
 @section('content')
-<div class="max-w-4xl mx-auto" x-data="{ selectedRatio: '{{ $aspectRatio }}' }">
+<div class="max-w-4xl mx-auto">
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="px-8 py-6 bg-gradient-to-r from-white to-blue-50/30 border-b border-gray-100 flex justify-between items-center">
             <div>
@@ -68,19 +68,18 @@
                             ];
                         @endphp
                         @foreach($ratios as $ratio)
-                            <div class="relative group">
+                            <div class="relative">
                                 <input type="radio" id="ratio_{{ $loop->index }}" name="aspect_ratio" value="{{ $ratio['id'] }}" 
                                        class="peer hidden" 
-                                       x-model="selectedRatio"
                                        {{ $aspectRatio == $ratio['id'] ? 'checked' : '' }}>
                                 <label for="ratio_{{ $loop->index }}" 
-                                       class="flex flex-col p-4 border rounded-2xl cursor-pointer transition-all bg-gray-50 border-gray-100 group-hover:bg-gray-100 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:ring-2 peer-checked:ring-blue-200">
+                                       class="flex flex-col p-4 border rounded-2xl cursor-pointer transition-all bg-gray-50 border-gray-100 hover:bg-gray-100 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:ring-2 peer-checked:ring-blue-200">
                                     <span class="text-sm font-bold text-gray-800">{{ $ratio['label'] }}</span>
                                     <span class="text-[10px] text-gray-400 mt-1 uppercase">{{ $ratio['desc'] }}</span>
+                                    
+                                    <!-- Centang menggunakan peer-checked -->
+                                    <i class="fas fa-check-circle absolute top-2 right-2 text-blue-500 hidden peer-checked:block animate-fadeIn"></i>
                                 </label>
-                                <template x-if="selectedRatio === '{{ $ratio['id'] }}'">
-                                    <i class="fas fa-check-circle absolute top-2 right-2 text-blue-500 animate-fadeIn pointer-events-none"></i>
-                                </template>
                             </div>
                         @endforeach
                     </div>
@@ -100,7 +99,7 @@
 </div>
 
 <style>
-    @keyframes fadeIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.5); } to { opacity: 1; transform: scale(1); } }
     .animate-fadeIn { animation: fadeIn 0.2s ease-out; }
 </style>
 @endsection
