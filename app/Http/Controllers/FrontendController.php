@@ -639,6 +639,12 @@ class FrontendController extends Controller
     {
         $laporans = \App\Models\Laporan::latest()->paginate(12);
         
+        // Add a temporary encoded_id attribute to each laporan
+        $laporans->getCollection()->transform(function ($laporan) {
+            $laporan->encoded_id = strtoupper(base_convert(($laporan->id + 100000000) * 7, 10, 36));
+            return $laporan;
+        });
+
         $breadcrumbs = [
             ['title' => 'Beranda', 'url' => route('home'), 'icon' => 'fas fa-home'],
             ['title' => 'Laporan PPID', 'url' => '#', 'icon' => 'fas fa-file-alt'],
@@ -647,23 +653,23 @@ class FrontendController extends Controller
         return view('frontend.pages.laporan.ppid', compact('laporans', 'breadcrumbs'));
     }
 
-    public function previewLaporan($encodedId)
+    public function previewLaporan($token)
     {
         try {
-            $id = base64_decode($encodedId);
+            $id = (base_convert(strtolower($token), 36, 10) / 7) - 100000000;
             $laporan = \App\Models\Laporan::findOrFail($id);
-            return view('frontend.pages.laporan.preview', compact('laporan', 'encodedId'));
+            return view('frontend.pages.laporan.preview', compact('laporan', 'token'));
         } catch (\Exception $e) {
             abort(404);
         }
     }
 
-    public function serveLaporanFile($encodedId)
+    public function serveLaporanFile($token)
     {
         try {
-            $id = base64_decode($encodedId);
+            $id = (base_convert(strtolower($token), 36, 10) / 7) - 100000000;
             $laporan = \App\Models\Laporan::findOrFail($id);
-
+            
             $disk = \Illuminate\Support\Facades\Storage::disk('public');
 
             if (!$laporan->file || !$disk->exists($laporan->file)) {
