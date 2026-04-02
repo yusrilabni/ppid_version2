@@ -84,8 +84,8 @@ Route::middleware('auth')->group(function () {
     Route::put('/profil/pimpinan/{official}', [FrontendController::class, 'updatePimpinanPublic'])->name('pimpinan.update-public');
 
     // Manage Tentang OPD via Frontend
-    Route::get('/profil/tentang-opd/{organization}/manage', [FrontendController::class, 'manageStrukturOrganisasiPublic'])->name('opd.manage-public');
-    Route::post('/profil/tentang-opd/{organization}/manage', [FrontendController::class, 'updateStrukturOrganisasiPublic'])->name('opd.update-public');
+    Route::get('/profil/tentang-opd/{organization}/manage', [FrontendController::class, 'manageStrukturOrganisasiPublic'])->name('opd.manage-public')->whereNumber('organization');
+    Route::post('/profil/tentang-opd/{organization}/manage', [FrontendController::class, 'updateStrukturOrganisasiPublic'])->name('opd.update-public')->whereNumber('organization');
 });
 
 // Category & Detail Routes
