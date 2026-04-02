@@ -65,9 +65,31 @@
                     <button class="swiper-button-next-custom absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-2 md:p-3 rounded-full z-20 border-2 border-white/50 shadow-xl transition-all duration-300 group">
                         <i data-lucide="chevron-right" class="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-0.5 transition-transform"></i>
                     </button>
-                    <div class="swiper-pagination !bottom-6 !z-20"></div>
+                    <!-- Pagination Overlay -->
+                    <div class="swiper-pagination !bottom-4 !z-20"></div>
                 @endif
             </div>
+            <style>
+                /* Force pagination to be overlay and bullets color */
+                .hero-slider .swiper-pagination-bullet {
+                    background: white !important;
+                    opacity: 0.6;
+                    width: 10px;
+                    height: 10px;
+                    margin: 0 5px !important;
+                }
+                .hero-slider .swiper-pagination-bullet-active {
+                    background: #2563eb !important; /* Blue-600 */
+                    opacity: 1;
+                    width: 24px;
+                    border-radius: 5px;
+                    transition: width 0.3s ease;
+                }
+                /* Ensure no extra padding in swiper container */
+                .hero-slider.swiper {
+                    padding-bottom: 0 !important;
+                }
+            </style>
         @endif
 
         <section class="py-10 bg-white">
