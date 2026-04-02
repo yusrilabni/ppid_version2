@@ -494,15 +494,27 @@ class FrontendController extends Controller
             abort(403, 'Anda harus login untuk mengakses halaman ini.');
         }
 
-        $api_unit_id = null;
-        if ($user->nip) {
-            $apiData = \App\Models\User::getDataFromApi($user->nip);
-            if (isset($apiData['unit_id'])) {
-                $api_unit_id = $apiData['unit_id'];
+        // Bypass check if Super Admin
+        $hasAccess = $user->isSuperAdmin();
+
+        if (!$hasAccess) {
+            // Check local unit_id first
+            if ($user->unit_id && (string)$user->unit_id === (string)$organization->unit_id) {
+                $hasAccess = true;
             }
         }
 
-        if (is_null($api_unit_id) || (string)$api_unit_id !== (string)$organization->remote_id) {
+        if (!$hasAccess && $user->nip) {
+            // Check API unit_id as fallback
+            $apiData = \App\Models\User::getDataFromApi($user->nip);
+            $api_unit_id = $apiData['unit_id'] ?? null;
+            
+            if (!is_null($api_unit_id) && (string)$api_unit_id === (string)$organization->remote_id) {
+                $hasAccess = true;
+            }
+        }
+
+        if (!$hasAccess) {
             abort(403, 'Anda tidak memiliki akses untuk mengelola struktur organisasi ini.');
         }
 
@@ -524,18 +536,38 @@ class FrontendController extends Controller
      */
     public function updateStrukturOrganisasiPublic(Request $request, \App\Models\Organization $organization)
     {
-        // Authorize if the authenticated user has permission to manage this organization's structure
-        // Ensure type-safe comparison for unit_id
-        $userUnitId = (string) Auth::user()->unit_id;
-        $organizationUnitId = (string) $organization->unit_id;
+        $user = Auth::user();
+        if (!$user) {
+            abort(403, 'Anda harus login untuk mengakses halaman ini.');
+        }
 
-        if (!Auth::check() || (string)Auth::user()->unit_id !== (string)$organization->unit_id) {
+        // Bypass check if Super Admin
+        $hasAccess = $user->isSuperAdmin();
+
+        if (!$hasAccess) {
+            // Check local unit_id
+            if ($user->unit_id && (string)$user->unit_id === (string)$organization->unit_id) {
+                $hasAccess = true;
+            }
+        }
+
+        if (!$hasAccess && $user->nip) {
+            // Check API unit_id as fallback
+            $apiData = \App\Models\User::getDataFromApi($user->nip);
+            $api_unit_id = $apiData['unit_id'] ?? null;
+            
+            if (!is_null($api_unit_id) && (string)$api_unit_id === (string)$organization->remote_id) {
+                $hasAccess = true;
+            }
+        }
+
+        if (!$hasAccess) {
             abort(403, 'Anda tidak memiliki akses untuk mengelola struktur organisasi ini.');
         }
 
         $request->validate([
             'structure_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10240', // 10 MB
-            'website_url' => 'nullable|url', // Add this line
+            'website_url' => 'nullable|url',
         ]);
 
         $struktur = \App\Models\StrukturOrganisasi::firstOrCreate(
