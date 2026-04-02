@@ -31,7 +31,7 @@
                         </div>
                         
                         <div class="mt-auto space-y-3">
-                            <a href="{{ route('opd.detail', $organization->id) }}" class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 w-full shadow-lg shadow-blue-100 hover:shadow-blue-200">
+                            <a href="{{ route('opd.detail', $organization) }}" class="inline-flex items-center justify-center bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-6 rounded-xl transition-all duration-300 w-full shadow-lg shadow-blue-100 hover:shadow-blue-200">
                                 <i class="fas fa-sitemap mr-2"></i> Lihat Struktur Organisasi
                             </a>
                             

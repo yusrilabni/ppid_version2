@@ -32,4 +32,9 @@ class Organization extends Model
     {
         return $this->hasMany(Official::class);
     }
+
+    public function getRouteKeyName()
+    {
+        return 'slug';
+    }
 }

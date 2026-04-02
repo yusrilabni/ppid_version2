@@ -129,9 +129,9 @@ Route::prefix('admin')->name('admin.')->group(function () {
 
 // Profil & OPD Pages
 Route::get('/profil/ppid', [FrontendController::class, 'showProfilPpid'])->name('frontend.profil-ppid.show');
-Route::get('/profil/organisasi/{organization}', [FrontendController::class, 'organizationDetail'])->name('organization.detail');
+Route::get('/profil/organisasi/{organization:slug}', [FrontendController::class, 'organizationDetail'])->name('organization.detail');
 Route::get('/profil/tentang-opd', [FrontendController::class, 'opdList'])->name('opd.list');
-Route::get('/profil/tentang-opd/{organization}', [FrontendController::class, 'opdDetail'])->name('opd.detail');
+Route::get('/profil/tentang-opd/{organization:slug}', [FrontendController::class, 'opdDetail'])->name('opd.detail');
 Route::get('/profil/bupati', fn() => app(\App\Http\Controllers\OfficialProfileController::class)->show('bupati-sinjai'))->name('official.bupati');
 Route::get('/profil/wakil-bupati', fn() => app(\App\Http\Controllers\OfficialProfileController::class)->show('wakil-bupati-sinjai'))->name('official.wakil-bupati');
 Route::get('/profil/sekretaris-daerah', fn() => app(\App\Http\Controllers\OfficialProfileController::class)->show('sekretaris-daerah-sinjai'))->name('official.sekretaris-daerah');
