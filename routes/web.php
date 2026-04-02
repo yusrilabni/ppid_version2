@@ -12,14 +12,6 @@ use App\Http\Controllers\Frontend\DIPController;
 use App\Http\Controllers\Frontend\LhkpnController;
 use App\Http\Controllers\Frontend\ExtraToolsController;
 
-// --- DIAGNOSTIC & HIGH PRIORITY ---
-Route::get('/cek-rute', function() { return "Rute Berhasil Diakses!"; });
-
-Route::middleware('auth')->group(function () {
-    Route::get('/kelola-opd-sekarang/{organization}', [FrontendController::class, 'manageStrukturOrganisasiPublic'])->name('opd.manage-public');
-    Route::post('/kelola-opd-sekarang/{organization}', [FrontendController::class, 'updateStrukturOrganisasiPublic'])->name('opd.update-public');
-});
-
 // Proxy route for Dinas
 Route::get('/dinas', [DinasController::class, 'index'])->name('dinas.index');
 Route::get('/dinas/dip/{organization:slug}', [DinasController::class, 'opdDip'])->name('opd.dip.show');
@@ -87,9 +79,13 @@ Route::middleware('auth')->group(function () {
     Route::delete('informasi-crud/{informasi}', [App\Http\Controllers\Admin\InformasiController::class, 'destroy'])->name('informasi-crud.destroy');
     Route::post('informasi-crud/check-similarity', [App\Http\Controllers\Admin\InformasiController::class, 'checkSimilarity'])->name('admin.informasi.check_similarity');
 
-    // Manage Pimpinan via Frontend
+    // Manage Pimpinan via Frontend (INI YANG BERHASIL)
     Route::get('/profil/pimpinan/{official}/edit', [FrontendController::class, 'editPimpinanPublic'])->name('pimpinan.edit-public');
     Route::put('/profil/pimpinan/{official}', [FrontendController::class, 'updatePimpinanPublic'])->name('pimpinan.update-public');
+
+    // Manage Tentang OPD via Frontend (MENGIKUTI POLA YANG BERHASIL)
+    Route::get('/profil/kelola-opd/{organization}/edit', [FrontendController::class, 'manageStrukturOrganisasiPublic'])->name('opd.manage-public');
+    Route::post('/profil/kelola-opd/{organization}/update', [FrontendController::class, 'updateStrukturOrganisasiPublic'])->name('opd.update-public');
 });
 
 // Category & Detail Routes
