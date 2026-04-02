@@ -101,7 +101,10 @@ class FrontendController extends Controller
         }
 
         $globalSliderTransitionDuration = Setting::where('key', 'slider_transition_duration_ms')->first();
-        $transitionDuration = $globalSliderTransitionDuration ? (int)$globalSliderTransitionDuration->value : 5000; // Default to 5000ms
+        $transitionDuration = $globalSliderTransitionDuration ? (int)$globalSliderTransitionDuration->value : 5000;
+
+        $sliderAspectRatio = Setting::where('key', 'slider_aspect_ratio')->first()->value ?? 'aspect-video';
+        $sliderAnimationType = Setting::where('key', 'slider_animation_type')->first()->value ?? 'slide';
 
         // --- START of Laporan Kinerja Logic ---
         $allPermohonans = \App\Models\PermohonanInformasi::all();
@@ -136,7 +139,7 @@ class FrontendController extends Controller
 
         $latestInformasis = Informasi::with(['user', 'organization'])->latest()->take(16)->get();
 
-        return view('frontend.home', compact('sliders', 'berita', 'galeri', 'frontendStats', 'rss_items', 'contactInfo', 'transitionDuration', 'tingkatKepuasan', 'rataRataWaktuRespon', 'tingkatPenyelesaian', 'latestInformasis'));
+        return view('frontend.home', compact('sliders', 'berita', 'galeri', 'frontendStats', 'rss_items', 'contactInfo', 'transitionDuration', 'tingkatKepuasan', 'rataRataWaktuRespon', 'tingkatPenyelesaian', 'latestInformasis', 'sliderAspectRatio', 'sliderAnimationType'));
     }
 
     public function allGaleri()

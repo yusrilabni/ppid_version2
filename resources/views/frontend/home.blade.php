@@ -27,16 +27,40 @@
         {{-- Hero Slider --}}
         @if ($sliders->count() > 0)
             <div x-data="{ currentSlide: 0, sliders: @js($sliders), transitionDuration: {{ $transitionDuration }} }" x-init="setInterval(() => { currentSlide = (currentSlide + 1) % sliders.length }, transitionDuration)"
-                class="relative w-full overflow-hidden slider-container">
-                <div class="grid grid-cols-1 grid-rows-1">
+                class="relative w-full overflow-hidden slider-container {{ $sliderAspectRatio }}">
+                <div class="grid grid-cols-1 grid-rows-1 w-full h-full">
                     @foreach ($sliders as $index => $slider)
-                        <div class="col-start-1 row-start-1" x-show="currentSlide === {{ $index }}"
+                        <div class="col-start-1 row-start-1 w-full h-full" x-show="currentSlide === {{ $index }}"
                             x-cloak
-                            x-transition:opacity.duration.1000ms>
+                            @if($sliderAnimationType === 'slide')
+                                x-transition:enter="transition ease-out duration-700 transform"
+                                x-transition:enter-start="translate-x-full"
+                                x-transition:enter-end="translate-x-0"
+                                x-transition:leave="transition ease-in duration-700 transform"
+                                x-transition:leave-start="translate-x-0"
+                                x-transition:leave-end="-translate-x-full"
+                            @elseif($sliderAnimationType === 'fade')
+                                x-transition:enter="transition opacity duration-1000"
+                                x-transition:enter-start="opacity-0"
+                                x-transition:enter-end="opacity-100"
+                                x-transition:leave="transition opacity duration-1000"
+                                x-transition:leave-start="opacity-100"
+                                x-transition:leave-end="opacity-0"
+                            @elseif($sliderAnimationType === 'cube' || $sliderAnimationType === 'flip')
+                                x-transition:enter="transition ease-out duration-700 transform"
+                                x-transition:enter-start="rotate-y-90 opacity-0"
+                                x-transition:enter-end="rotate-y-0 opacity-100"
+                                x-transition:leave="transition ease-in duration-700 transform"
+                                x-transition:leave-start="rotate-y-0 opacity-100"
+                                x-transition:leave-end="-rotate-y-90 opacity-0"
+                            @else
+                                x-transition:opacity.duration.1000ms
+                            @endif
+                        >
                             <a href="{{ $slider->link ?: ($slider->informasi ? route('frontend.informasi.detail', $slider->informasi->slug) : '#') }}"
                                 class="block relative w-full h-full">
                                 <img src="{{ asset('storage/' . $slider->image) ?: '/placeholder.jpg' }}"
-                                    alt="{{ $slider->title }}" class="w-full h-auto md:h-[500px] md:object-cover" />
+                                    alt="{{ $slider->title }}" class="w-full h-full object-cover" />
                                 <div
                                     class="absolute inset-0 @if ($slider->show_title || $slider->show_description) bg-black bg-opacity-40 @endif flex items-center justify-center overlay-content">
                                     <div class="text-center text-white max-w-4xl mx-auto px-4">

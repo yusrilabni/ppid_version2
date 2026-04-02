@@ -11,24 +11,26 @@ class AdminSettingController extends Controller
     public function showSliderSettings()
     {
         $sliderTransitionDuration = Setting::where('key', 'slider_transition_duration_ms')->first();
-        $durationInSeconds = ($sliderTransitionDuration ? $sliderTransitionDuration->value : 5000) / 1000; // Default to 5 seconds
+        $durationInSeconds = ($sliderTransitionDuration ? $sliderTransitionDuration->value : 5000) / 1000;
 
-        return view('admin.settings.slider', compact('durationInSeconds'));
+        $aspectRatio = Setting::where('key', 'slider_aspect_ratio')->first()->value ?? 'aspect-video';
+        $animationType = Setting::where('key', 'slider_animation_type')->first()->value ?? 'slide';
+
+        return view('admin.settings.slider', compact('durationInSeconds', 'aspectRatio', 'animationType'));
     }
 
     public function updateSliderSettings(Request $request)
     {
         $request->validate([
             'duration_in_seconds' => 'required|integer|min:1',
+            'aspect_ratio' => 'required|string',
+            'animation_type' => 'required|string',
         ]);
 
-        $durationInMs = $request->duration_in_seconds * 1000;
+        Setting::updateOrCreate(['key' => 'slider_transition_duration_ms'], ['value' => $request->duration_in_seconds * 1000]);
+        Setting::updateOrCreate(['key' => 'slider_aspect_ratio'], ['value' => $request->aspect_ratio]);
+        Setting::updateOrCreate(['key' => 'slider_animation_type'], ['value' => $request->animation_type]);
 
-        Setting::updateOrCreate(
-            ['key' => 'slider_transition_duration_ms'],
-            ['value' => $durationInMs]
-        );
-
-        return redirect()->back()->with('success', 'Pengaturan durasi transisi slider berhasil diperbarui.');
+        return redirect()->back()->with('success', 'Pengaturan slider berhasil diperbarui.');
     }
 }
