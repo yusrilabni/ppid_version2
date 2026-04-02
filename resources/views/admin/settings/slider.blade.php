@@ -3,59 +3,89 @@
 @section('title', 'Pengaturan Slider Utama')
 
 @section('content')
-<div class="max-w-4xl mx-auto">
-    <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
-        <div class="px-8 py-6 bg-gradient-to-r from-white to-blue-50/30 border-b border-gray-100 flex justify-between items-center">
+<div class="max-w-4xl mx-auto" x-data="{ 
+    selectedRatio: '{{ $aspectRatio }}',
+    duration: {{ $durationInSeconds }},
+    increment() { this.duration++ },
+    decrement() { if(this.duration > 1) this.duration-- }
+}">
+    <!-- Header with Back Button -->
+    <div class="flex items-center justify-between mb-6">
+        <div class="flex items-center gap-4">
+            <a href="{{ route('admin.sliders.index') }}" class="w-10 h-10 flex items-center justify-center bg-white border border-gray-200 rounded-xl text-gray-400 hover:text-blue-600 hover:border-blue-100 hover:shadow-sm transition-all">
+                <i class="fas fa-arrow-left text-sm"></i>
+            </a>
             <div>
                 <h2 class="text-2xl font-bold text-gray-800">Pengaturan Slider</h2>
-                <p class="text-sm text-gray-500 mt-1">Sesuaikan tampilan dan animasi profesional untuk slider beranda</p>
+                <p class="text-sm text-gray-500">Sesuaikan tampilan dan perilaku slider beranda</p>
             </div>
-            <i class="fas fa-magic text-blue-200 text-3xl"></i>
         </div>
+        <i class="fas fa-sliders-h text-blue-100 text-4xl hidden md:block"></i>
+    </div>
 
-        <form action="{{ route('admin.slider-settings.update') }}" method="POST" class="p-8 space-y-8">
+    <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
+        <!-- Notification Area -->
+        @if(session('success'))
+            <div class="m-6 p-4 bg-green-50 border border-green-100 text-green-700 rounded-2xl flex items-center animate-fadeIn shadow-sm">
+                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white mr-3 shrink-0">
+                    <i class="fas fa-check text-xs"></i>
+                </div>
+                <span class="font-bold text-sm">{{ session('success') }}</span>
+            </div>
+        @endif
+
+        <form action="{{ route('admin.slider-settings.update') }}" method="POST" class="p-8 space-y-10">
             @csrf
             
-            @if(session('success'))
-                <div class="p-4 bg-green-50 border-l-4 border-green-500 text-green-700 rounded-r-xl flex items-center shadow-sm animate-fadeIn">
-                    <i class="fas fa-check-circle mr-3"></i>
-                    <span class="font-medium">{{ session('success') }}</span>
-                </div>
-            @endif
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-                <!-- Durasi Transisi -->
-                <div class="space-y-3">
-                    <label class="block text-sm font-bold text-gray-700 uppercase tracking-wider">
-                        <i class="fas fa-clock mr-2 text-blue-500"></i> Durasi Tampil (Detik)
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <!-- Durasi Transisi with Stepper -->
+                <div class="space-y-4">
+                    <label class="block text-sm font-extrabold text-gray-700 uppercase tracking-widest">
+                        Durasi Tampil (Detik)
                     </label>
-                    <div class="relative">
-                        <input type="number" name="duration_in_seconds" value="{{ $durationInSeconds }}" 
-                               class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all text-lg font-bold"
-                               required min="1">
-                        <span class="absolute right-4 top-3.5 text-gray-400 font-medium text-sm">DETIK</span>
+                    <div class="flex items-center gap-3">
+                        <button type="button" @click="decrement()" class="w-14 h-14 flex items-center justify-center bg-gray-50 border border-gray-200 rounded-2xl text-gray-600 hover:bg-red-50 hover:text-red-600 hover:border-red-100 transition-all active:scale-95 shadow-sm">
+                            <i class="fas fa-minus"></i>
+                        </button>
+                        
+                        <div class="relative flex-grow">
+                            <input type="number" name="duration_in_seconds" x-model="duration" 
+                                   class="w-full h-14 text-center bg-gray-50 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition-all text-xl font-black text-blue-600 shadow-inner appearance-none"
+                                   readonly>
+                        </div>
+
+                        <button type="button" @click="increment()" class="w-14 h-14 flex items-center justify-center bg-gray-50 border border-gray-200 rounded-2xl text-gray-600 hover:bg-green-50 hover:text-green-600 hover:border-green-100 transition-all active:scale-95 shadow-sm">
+                            <i class="fas fa-plus"></i>
+                        </button>
                     </div>
+                    <p class="text-[11px] text-gray-400 font-bold uppercase tracking-tight">Gunakan tombol +/- untuk mengatur kecepatan</p>
                 </div>
 
                 <!-- Tipe Animasi -->
-                <div class="space-y-3">
-                    <label class="block text-sm font-bold text-gray-700 uppercase tracking-wider">
-                        <i class="fas fa-film mr-2 text-blue-500"></i> Efek Transisi
+                <div class="space-y-4">
+                    <label class="block text-sm font-extrabold text-gray-700 uppercase tracking-widest">
+                        Efek Transisi
                     </label>
-                    <select name="animation_type" class="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500 focus:bg-white transition-all font-bold text-blue-600">
-                        <option value="fade" {{ $animationType == 'fade' ? 'selected' : '' }}>Pudar Halus (Default)</option>
-                        <option value="slide" {{ $animationType == 'slide' ? 'selected' : '' }}>Geser Mulus (Slide)</option>
-                        <option value="cube" {{ $animationType == 'cube' ? 'selected' : '' }}>Kubus 3D (Cube)</option>
-                        <option value="flip" {{ $animationType == 'flip' ? 'selected' : '' }}>Balik 3D (Flip)</option>
-                        <option value="coverflow" {{ $animationType == 'coverflow' ? 'selected' : '' }}>Aliran Sampul (Coverflow)</option>
-                        <option value="cards" {{ $animationType == 'cards' ? 'selected' : '' }}>Tumpukan Kartu (Cards)</option>
-                    </select>
+                    <div class="relative">
+                        <select name="animation_type" class="w-full h-14 pl-5 pr-10 bg-gray-50 border border-gray-200 rounded-2xl focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 focus:bg-white transition-all font-bold text-gray-700 appearance-none shadow-sm">
+                            <option value="fade" {{ $animationType == 'fade' ? 'selected' : '' }}>Pudar Halus (Default)</option>
+                            <option value="slide" {{ $animationType == 'slide' ? 'selected' : '' }}>Geser Mulus (Slide)</option>
+                            <option value="cube" {{ $animationType == 'cube' ? 'selected' : '' }}>Kubus 3D (Cube)</option>
+                            <option value="flip" {{ $animationType == 'flip' ? 'selected' : '' }}>Balik 3D (Flip)</option>
+                            <option value="coverflow" {{ $animationType == 'coverflow' ? 'selected' : '' }}>Aliran Sampul (Coverflow)</option>
+                            <option value="cards" {{ $animationType == 'cards' ? 'selected' : '' }}>Tumpukan Kartu (Cards)</option>
+                        </select>
+                        <div class="absolute right-5 top-1/2 -translate-y-1/2 pointer-events-none text-gray-400">
+                            <i class="fas fa-chevron-down text-xs"></i>
+                        </div>
+                    </div>
+                    <p class="text-[11px] text-gray-400 font-bold uppercase tracking-tight text-right">Gaya perpindahan slide</p>
                 </div>
 
                 <!-- Rasio Dimensi -->
-                <div class="space-y-3 md:col-span-2">
-                    <label class="block text-sm font-bold text-gray-700 uppercase tracking-wider mb-4">
-                        <i class="fas fa-expand mr-2 text-blue-500"></i> Rasio Tampilan (Ukuran Layar)
+                <div class="space-y-6 md:col-span-2 pt-4 border-t border-gray-50">
+                    <label class="block text-sm font-extrabold text-gray-700 uppercase tracking-widest text-center">
+                        Rasio Tampilan Slider
                     </label>
                     <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                         @php
@@ -69,32 +99,32 @@
                         @endphp
                         @foreach($ratios as $ratio)
                             <div class="relative">
-                                <!-- Input Radio sebagai Peer -->
                                 <input type="radio" id="ratio_{{ $loop->index }}" name="aspect_ratio" value="{{ $ratio['id'] }}" 
                                        class="peer hidden" 
+                                       @change="selectedRatio = '{{ $ratio['id'] }}'"
                                        {{ $aspectRatio == $ratio['id'] ? 'checked' : '' }}>
                                 
-                                <!-- Label sebagai Sibling 1 -->
                                 <label for="ratio_{{ $loop->index }}" 
-                                       class="flex flex-col p-4 border rounded-2xl cursor-pointer transition-all bg-gray-50 border-gray-100 hover:bg-gray-100 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:ring-2 peer-checked:ring-blue-200">
-                                    <span class="text-sm font-bold text-gray-800">{{ $ratio['label'] }}</span>
-                                    <span class="text-[10px] text-gray-400 mt-1 uppercase">{{ $ratio['desc'] }}</span>
+                                       class="flex flex-col items-center justify-center p-5 border-2 rounded-[2rem] cursor-pointer transition-all duration-300 bg-gray-50 border-transparent hover:bg-white hover:border-blue-100 hover:shadow-md peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:shadow-lg peer-checked:shadow-blue-500/10">
+                                    <span class="text-base font-black text-gray-800 peer-checked:text-blue-600">{{ $ratio['label'] }}</span>
+                                    <span class="text-[9px] text-gray-400 font-bold uppercase tracking-widest mt-1">{{ $ratio['desc'] }}</span>
                                 </label>
 
-                                <!-- Icon Centang sebagai Sibling 2 (Harus sejajar dengan Peer) -->
-                                <i class="fas fa-check-circle absolute top-2 right-2 text-blue-500 hidden peer-checked:block animate-fadeIn pointer-events-none"></i>
+                                <div class="absolute -top-1 -right-1 hidden peer-checked:flex w-6 h-6 bg-blue-500 rounded-full items-center justify-center text-white shadow-md animate-bounce-short border-2 border-white">
+                                    <i class="fas fa-check text-[10px]"></i>
+                                </div>
                             </div>
                         @endforeach
                     </div>
-                    <p class="text-xs text-gray-400 italic mt-4">
-                        <strong>Catatan:</strong> Pilih "Paten Awal" agar semua slide mengikuti tinggi gambar pertama secara seragam.
-                    </p>
                 </div>
             </div>
 
-            <div class="pt-6 border-t border-gray-50 flex justify-end">
-                <button type="submit" class="px-10 py-4 bg-blue-600 text-white rounded-2xl font-bold hover:bg-blue-700 hover:scale-[1.02] transition-all shadow-lg shadow-blue-100 flex items-center">
-                    <i class="fas fa-save mr-2 text-lg"></i> Simpan Pengaturan
+            <div class="pt-8 flex justify-center">
+                <button type="submit" class="group relative px-12 py-5 bg-gray-900 text-white rounded-[2rem] font-black uppercase tracking-widest hover:bg-blue-600 transition-all duration-300 shadow-xl hover:shadow-blue-500/20 active:scale-95">
+                    <span class="relative z-10 flex items-center">
+                        <i class="fas fa-save mr-3 text-lg opacity-50 group-hover:opacity-100 transition-opacity"></i>
+                        Simpan Pengaturan
+                    </span>
                 </button>
             </div>
         </form>
@@ -102,7 +132,23 @@
 </div>
 
 <style>
-    @keyframes fadeIn { from { opacity: 0; transform: scale(0.5); } to { opacity: 1; transform: scale(1); } }
-    .animate-fadeIn { animation: fadeIn 0.2s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
+    .animate-fadeIn { animation: fadeIn 0.4s ease-out; }
+    
+    @keyframes bounce-short {
+        0%, 100% { transform: translateY(0); }
+        50% { transform: translateY(-3px); }
+    }
+    .animate-bounce-short { animation: bounce-short 1s ease-in-out infinite; }
+
+    /* Hide number input arrows */
+    input::-webkit-outer-spin-button,
+    input::-webkit-inner-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+    }
+    input[type=number] {
+        -moz-appearance: textfield;
+    }
 </style>
 @endsection
