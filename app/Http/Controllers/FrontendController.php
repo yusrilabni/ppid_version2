@@ -494,18 +494,15 @@ class FrontendController extends Controller
             abort(403, 'Anda harus login untuk mengakses halaman ini.');
         }
 
-        // Bypass check if Super Admin
-        $hasAccess = $user->isSuperAdmin();
+        $hasAccess = false;
 
-        if (!$hasAccess) {
-            // Check local unit_id first
-            if ($user->unit_id && (string)$user->unit_id === (string)$organization->unit_id) {
-                $hasAccess = true;
-            }
+        // 1. Cek unit_id lokal user
+        if ($user->unit_id && (string)$user->unit_id === (string)$organization->remote_id) {
+            $hasAccess = true;
         }
 
+        // 2. Cek unit_id dari API (fallback jika lokal tidak cocok atau kosong)
         if (!$hasAccess && $user->nip) {
-            // Check API unit_id as fallback
             $apiData = \App\Models\User::getDataFromApi($user->nip);
             $api_unit_id = $apiData['unit_id'] ?? null;
             
@@ -515,7 +512,7 @@ class FrontendController extends Controller
         }
 
         if (!$hasAccess) {
-            abort(403, 'Anda tidak memiliki akses untuk mengelola struktur organisasi ini.');
+            abort(403, 'Anda tidak memiliki akses untuk mengelola profil OPD ini. Akses hanya diberikan sesuai dengan unit kerja yang terdaftar pada NIP Anda.');
         }
 
         $struktur = \App\Models\StrukturOrganisasi::firstOrCreate(
@@ -541,18 +538,15 @@ class FrontendController extends Controller
             abort(403, 'Anda harus login untuk mengakses halaman ini.');
         }
 
-        // Bypass check if Super Admin
-        $hasAccess = $user->isSuperAdmin();
+        $hasAccess = false;
 
-        if (!$hasAccess) {
-            // Check local unit_id
-            if ($user->unit_id && (string)$user->unit_id === (string)$organization->unit_id) {
-                $hasAccess = true;
-            }
+        // 1. Cek unit_id lokal
+        if ($user->unit_id && (string)$user->unit_id === (string)$organization->remote_id) {
+            $hasAccess = true;
         }
 
+        // 2. Cek unit_id dari API
         if (!$hasAccess && $user->nip) {
-            // Check API unit_id as fallback
             $apiData = \App\Models\User::getDataFromApi($user->nip);
             $api_unit_id = $apiData['unit_id'] ?? null;
             
@@ -562,7 +556,7 @@ class FrontendController extends Controller
         }
 
         if (!$hasAccess) {
-            abort(403, 'Anda tidak memiliki akses untuk mengelola struktur organisasi ini.');
+            abort(403, 'Anda tidak memiliki akses untuk mengelola profil OPD ini.');
         }
 
         $request->validate([

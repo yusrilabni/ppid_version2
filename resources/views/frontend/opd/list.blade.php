@@ -46,11 +46,11 @@
                                     $user = Auth::user();
                                     $canManage = false;
                                     
-                                    // Hanya izinkan kelola jika unit_id user cocok dengan unit_id organisasi atau remote_id organisasi
-                                    if ($user->unit_id && ((string)$user->unit_id === (string)$organization->unit_id || (string)$user->unit_id === (string)$organization->remote_id)) {
+                                    // 1. Cek unit_id lokal user vs remote_id organisasi
+                                    if ($user->unit_id && (string)$user->unit_id === (string)$organization->remote_id) {
                                         $canManage = true;
                                     }
-                                    // Fallback: Cek matching dengan API unit id jika tersedia
+                                    // 2. Cek unit_id dari API (melalui variabel api_unit_id yang sudah dikirim controller)
                                     elseif (isset($api_unit_id) && (string)$api_unit_id === (string)$organization->remote_id) {
                                         $canManage = true;
                                     }
