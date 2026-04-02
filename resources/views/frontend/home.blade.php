@@ -738,7 +738,7 @@
                 const heroSwiper = new Swiper('.hero-slider', {
                     loop: true,
                     effect: '{{ $sliderAnimationType }}',
-                    autoHeight: {{ ($sliderAspectRatio === 'aspect-auto' || $sliderAspectRatio === 'aspect-first') ? 'true' : 'false' }},
+                    autoHeight: {{ $sliderAspectRatio === 'aspect-auto' ? 'true' : 'false' }},
                     speed: 1000,
                     observer: true,
                     observeParents: true,
@@ -753,13 +753,15 @@
                                         const ratio = firstImg.naturalHeight / firstImg.naturalWidth;
                                         const targetHeight = self.el.offsetWidth * ratio;
                                         self.el.style.height = targetHeight + 'px';
-                                        self.slides.forEach(s => s.style.height = targetHeight + 'px');
+                                        self.slides.forEach(s => {
+                                            s.style.height = targetHeight + 'px';
+                                        });
                                         self.update();
                                     } else if (firstImg) {
                                         firstImg.onload = lockToFirst;
                                     }
                                 };
-                                setTimeout(lockToFirst, 200);
+                                setTimeout(lockToFirst, 300);
                                 window.addEventListener('resize', lockToFirst);
                             } else {
                                 setTimeout(() => { self.update(); }, 300);
