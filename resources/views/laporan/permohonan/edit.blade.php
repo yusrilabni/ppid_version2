@@ -216,25 +216,29 @@
                                     </label>
                                     <input type="hidden" name="tempat_mendapatkan_salinan" x-model="selectedValue">
                                     <div class="relative">
-                                        <button type="button" @click="open = !open" class="relative w-full bg-white border border-gray-300 rounded-xl shadow-sm pl-3 pr-10 py-3 text-left cursor-default focus:outline-none focus:ring-1 focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm">
+                                        <button type="button" @click="open = !open" class="relative w-full bg-white border border-gray-300 rounded-xl shadow-sm pl-3 pr-10 py-3 text-left cursor-default focus:outline-none focus:ring-2 focus:ring-blue-500/20 sm:text-sm transition-all">
                                             <span class="flex items-center"><span class="ml-3 block truncate" x-text="selectedLabel || '-- Pilih Dinas/Unit Kerja --'"></span></span>
                                             <span class="ml-3 absolute inset-y-0 right-0 flex items-center pr-2 pointer-events-none"><svg class="h-5 w-5 text-gray-400" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M10 3a1 1 0 01.707.293l3 3a1 1 0 01-1.414 1.414L10 5.414 7.707 7.707a1 1 0 01-1.414-1.414l3-3A1 1 0 0110 3zm-3.707 9.293a1 1 0 011.414 0L10 14.586l2.293-2.293a1 1 0 011.414 1.414l-3 3a1 1 0 01-1.414 0l-3-3a1 1 0 010-1.414z" clip-rule="evenodd" /></svg></span>
                                         </button>
-                                        <div x-show="open" @click.away="open = false" class="absolute mt-1 w-full rounded-md bg-white shadow-lg z-10 border border-gray-100" x-transition>
-                                            <div class="p-2">
-                                                <input type="text" x-model.debounce.300ms="search" @click.stop placeholder="Cari dinas..." 
-                                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500">
+                                        <div x-show="open" @click.away="open = false" class="absolute mt-1 w-full rounded-md bg-white shadow-lg z-[100] border border-gray-100 overflow-hidden" x-transition x-cloak>
+                                            <div class="p-2 bg-gray-50 border-b">
+                                                <input type="text" x-model="search" @click.stop placeholder="Cari dinas..." 
+                                                       class="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-1 focus:ring-indigo-500 text-sm">
                                             </div>
-                                            <ul class="max-h-60 rounded-md py-1 text-base ring-1 ring-black ring-opacity-5 overflow-auto focus:outline-none sm:text-sm" tabindex="-1" role="listbox">
+                                            <ul class="max-h-60 py-1 text-base overflow-auto focus:outline-none sm:text-sm" tabindex="-1" role="listbox">
                                                 <template x-for="item in filteredData" :key="item.unit_id">
-                                                    <li @click="select(item)" class="text-gray-900 cursor-default select-none relative py-2 pl-3 pr-9 hover:bg-indigo-600 hover:text-white">
+                                                    <li @click="select(item)" class="text-gray-900 cursor-default select-none relative py-2.5 pl-3 pr-9 hover:bg-indigo-600 hover:text-white transition-colors">
                                                         <span class="font-normal block truncate" x-text="item.unit_nama"></span>
-                                                        <template x-if="selectedValue === item.unit_id">
+                                                        <template x-if="selectedValue == item.unit_id">
                                                             <span class="text-indigo-600 absolute inset-y-0 right-0 flex items-center pr-4"><svg class="h-5 w-5" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true"><path fill-rule="evenodd" d="M16.707 5.293a1 1 0 010 1.414l-8 8a1 1 0 01-1.414 0l-4-4a1 1 0 011.414-1.414L8 12.586l7.293-7.293a1 1 0 011.414 0z" clip-rule="evenodd" /></svg></span>
                                                         </template>
                                                     </li>
                                                 </template>
-                                                <template x-if="filteredData.length === 0 && search.length > 1"><li class="px-3 py-2 text-gray-500">Tidak ada hasil ditemukan.</li></template>
+                                                <template x-if="filteredData.length === 0">
+                                                    <li class="px-4 py-3 text-xs text-gray-500 text-center italic">
+                                                        {{ __('Data tidak ditemukan.') }}
+                                                    </li>
+                                                </template>
                                             </ul>
                                         </div>
                                     </div>
@@ -250,34 +254,22 @@
                             search: '',
                             allData: data,
                             selectedValue: old || null,
-                            selectedLabel: '',
-                            init() {
-                                this.updateSelectedLabel();
-                                // Re-update when selectedValue changes
-                                this.$watch('selectedValue', () => this.updateSelectedLabel());
-                            },
-                            updateSelectedLabel() {
-                                if (this.selectedValue) {
-                                    // Robust comparison (string to string)
-                                    const selected = this.allData.find(item => item.unit_id.toString() === this.selectedValue.toString());
-                                    this.selectedLabel = selected ? selected.unit_nama : '';
-                                } else {
-                                    this.selectedLabel = '';
-                                }
+                            get selectedLabel() {
+                                if (!this.selectedValue) return null;
+                                const selected = this.allData.find(item => item.unit_id.toString() === this.selectedValue.toString());
+                                return selected ? selected.unit_nama : null;
                             },
                             get filteredData() {
-                                if (!this.search || this.search.trim() === '') { 
-                                    return this.allData; 
-                                }
-                                const searchTerm = this.search.toLowerCase().trim();
-                                return this.allData.filter(item => {
-                                    return item.unit_nama && item.unit_nama.toLowerCase().includes(searchTerm);
-                                });
+                                if (!this.search || this.search.trim() === '') return this.allData;
+                                const term = this.search.toLowerCase().trim();
+                                return this.allData.filter(item => 
+                                    item.unit_nama && item.unit_nama.toLowerCase().includes(term)
+                                );
                             },
-                            select(item) { 
-                                this.selectedValue = item.unit_id; 
-                                this.open = false; 
-                                this.search = ''; // Clear search after selection
+                            select(item) {
+                                this.selectedValue = item.unit_id;
+                                this.open = false;
+                                this.search = ''; 
                             }
                         }));
                     });
