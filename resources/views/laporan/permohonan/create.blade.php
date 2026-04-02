@@ -196,34 +196,14 @@
                             </div>
 
                             <div x-show="caraMendapatkanSalinan.includes('Mengambil')" x-transition class="bg-blue-50 p-4 md:p-5 rounded-xl border border-blue-100">
-                                <div x-data="customSelect({ data: {{ isset($units) ? json_encode($units) : '[]' }}, old: '{{ old('tempat_mendapatkan_salinan') }}' })" class="relative">
-                                    <label class="block text-xs md:text-sm font-bold text-gray-700 mb-2">{{ __('Lokasi Pengambilan') }}</label>
-                                    <input type="hidden" name="tempat_mendapatkan_salinan" x-model="selectedValue">
-                                    <div class="relative">
-                                        <button type="button" @click="open = !open" class="w-full bg-white border border-gray-300 rounded-xl px-4 py-2.5 text-left text-sm flex justify-between items-center focus:outline-none focus:ring-2 focus:ring-blue-500/20">
-                                            <span class="truncate" x-text="selectedLabel || 'Pilih Dinas/Unit Kerja'"></span>
-                                            <i class="fas fa-chevron-down text-gray-400 text-xs transition-transform" :class="open ? 'rotate-180' : ''"></i>
-                                        </button>
-                                        <div x-show="open" @click.away="open = false" class="absolute bottom-full md:bottom-auto md:top-full mb-2 md:mb-0 md:mt-2 w-full bg-white border border-gray-200 rounded-xl shadow-2xl z-[100] overflow-hidden" x-transition x-cloak>
-                                            <div class="p-2 border-b border-gray-100 bg-gray-50">
-                                                <input type="text" x-model="search" @click.stop placeholder="Cari unit kerja..." class="w-full px-3 py-2 text-xs border border-gray-300 rounded-lg focus:outline-none focus:ring-1 focus:ring-blue-500">
-                                            </div>
-                                            <ul class="max-h-60 overflow-y-auto py-1">
-                                                <template x-for="item in filteredData" :key="item.unit_id">
-                                                    <li @click="select(item)" class="px-4 py-2.5 text-xs hover:bg-blue-50 cursor-pointer flex justify-between items-center transition-colors">
-                                                        <span x-text="item.unit_nama"></span>
-                                                        <i x-show="selectedValue == item.unit_id" class="fas fa-check text-blue-600"></i>
-                                                    </li>
-                                                </template>
-                                                <template x-if="filteredData.length === 0">
-                                                    <li class="px-4 py-3 text-xs text-gray-500 text-center italic">
-                                                        {{ __('Data tidak ditemukan.') }}
-                                                    </li>
-                                                </template>
-                                            </ul>
-                                        </div>
-                                    </div>
-                                </div>
+                                <label class="block text-xs md:text-sm font-bold text-gray-700 mb-2">{{ __('Lokasi Pengambilan') }}</label>
+                                <x-custom-select 
+                                    name="tempat_mendapatkan_salinan" 
+                                    :options="$units" 
+                                    :value="old('tempat_mendapatkan_salinan')"
+                                    placeholder="Pilih Dinas/Unit Kerja"
+                                    :searchable="true"
+                                />
                             </div>
                         </div>
                     </div>
@@ -340,33 +320,5 @@
             </div>
         </div>
     </div>
-
-    <script>
-    document.addEventListener('alpine:init', () => {
-        Alpine.data('customSelect', ({ data, old }) => ({
-            open: false,
-            search: '',
-            // Pastikan data adalah array agar bisa di-filter dan di-find
-            allData: Array.isArray(data) ? data : Object.values(data),
-            selectedValue: (old && old !== '') ? String(old) : null,
-            get selectedLabel() {
-                if (!this.selectedValue) return null;
-                const selected = this.allData.find(item => String(item.unit_id) === String(this.selectedValue));
-                return selected ? selected.unit_nama : null;
-            },
-            get filteredData() {
-                const term = this.search.toLowerCase().trim();
-                if (!term) return this.allData;
-                return this.allData.filter(item => 
-                    item.unit_nama && item.unit_nama.toLowerCase().includes(term)
-                );
-            },
-            select(item) {
-                this.selectedValue = String(item.unit_id);
-                this.open = false;
-                this.search = '';
-            }
-        }));
-    });
-    </script>
+@endsection
 @endsection

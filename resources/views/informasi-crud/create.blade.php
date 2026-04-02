@@ -66,20 +66,36 @@
                             <div class="md:col-span-2"><label for="title" class="block text-gray-700 text-sm font-semibold mb-2">Judul Informasi <span class="text-red-500">*</span></label><input type="text" name="title" id="title" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" value="{{ old('title') }}" required minlength="5" placeholder="Masukkan judul informasi"></div>
                             <div class="md:col-span-2"><label for="deskripsi" class="block text-gray-700 text-sm font-semibold mb-2">Deskripsi Singkat</label><textarea name="deskripsi" id="deskripsi" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" placeholder="Deskripsi singkat tentang informasi ini">{{ old('deskripsi') }}</textarea></div>
                             <div class="md:col-span-2"><label for="content" class="block text-gray-700 text-sm font-semibold mb-2">Konten Informasi Lengkap</label><textarea name="content" id="content" rows="6" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" placeholder="Konten lengkap informasi publik">{{ old('content') }}</textarea></div>
-                            <div><label for="category" class="block text-gray-700 text-sm font-semibold mb-2">Kategori Informasi <span class="text-red-500">*</span></label><select name="category" id="category" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" required x-model="category" x-ref="category"><option value="">Pilih Kategori</option><option value="Informasi Berkala" {{ old('category', $selectedCategory) == 'Informasi Berkala' ? 'selected' : '' }}>Informasi Berkala</option><option value="Informasi Setiap Saat" {{ old('category', $selectedCategory) == 'Informasi Setiap Saat' ? 'selected' : '' }}>Informasi Setiap Saat</option><option value="Informasi Serta Merta" {{ old('category', $selectedCategory) == 'Informasi Serta Merta' ? 'selected' : '' }}>Informasi Serta Merta</option><option value="Informasi Dikecualikan" {{ old('category', $selectedCategory) == 'Informasi Dikecualikan' ? 'selected' : '' }}>Informasi Dikecualikan</option></select></div>
+                            @php
+                                $categories = [
+                                    ['value' => 'Informasi Berkala', 'label' => 'Informasi Berkala'],
+                                    ['value' => 'Informasi Setiap Saat', 'label' => 'Informasi Setiap Saat'],
+                                    ['value' => 'Informasi Serta Merta', 'label' => 'Informasi Serta Merta'],
+                                    ['value' => 'Informasi Dikecualikan', 'label' => 'Informasi Dikecualikan'],
+                                ];
+                            @endphp
+                            <div>
+                                <label for="category" class="block text-gray-700 text-sm font-semibold mb-2">Kategori Informasi <span class="text-red-500">*</span></label>
+                                <x-custom-select 
+                                    name="category" 
+                                    :options="$categories" 
+                                    :value="old('category', $selectedCategory)"
+                                    placeholder="Pilih Kategori"
+                                    :searchable="false"
+                                    required="true"
+                                />
+                            </div>
                             @if ($isSuperAdmin)
                                 <div>
                                     <label for="unit_id" class="block text-gray-700 text-sm font-semibold mb-2">Unit Kerja <span class="text-red-500">*</span></label>
-                                    <select name="unit_id" id="unit_id" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" required>
-                                        <option value="">Pilih Unit Kerja</option>
-                                        @if (!empty($units))
-                                            @foreach ($units as $unit)
-                                                <option value="{{ $unit['unit_id'] }}" {{ old('unit_id') == $unit['unit_id'] ? 'selected' : '' }}>{{ $unit['unit_nama'] }}</option>
-                                            @endforeach
-                                        @else
-                                            <option value="" disabled>Gagal memuat data Unit dari API.</option>
-                                        @endif
-                                    </select>
+                                    <x-custom-select 
+                                        name="unit_id" 
+                                        :options="$units" 
+                                        :value="old('unit_id')"
+                                        placeholder="Pilih Unit Kerja"
+                                        :searchable="true"
+                                        required="true"
+                                    />
                                 </div>
                             @else
                                 <div>
