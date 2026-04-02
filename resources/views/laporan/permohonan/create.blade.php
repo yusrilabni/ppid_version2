@@ -346,11 +346,11 @@
         Alpine.data('customSelect', ({ data, old }) => ({
             open: false,
             search: '',
-            allData: data,
-            selectedValue: old || null,
+            // Pastikan data adalah array agar bisa di-filter dan di-find
+            allData: Array.isArray(data) ? data : Object.values(data),
+            selectedValue: (old && old !== '') ? String(old) : null,
             get selectedLabel() {
                 if (!this.selectedValue) return null;
-                // Pastikan perbandingan string agar cocok
                 const selected = this.allData.find(item => String(item.unit_id) === String(this.selectedValue));
                 return selected ? selected.unit_nama : null;
             },
