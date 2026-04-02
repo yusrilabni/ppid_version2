@@ -9,7 +9,7 @@
         <!-- Header / Toolbar -->
         <div class="flex flex-col md:flex-row justify-between items-center bg-gray-800 text-white p-4 rounded-t-lg shadow-lg mb-0 border-b border-gray-700">
             <div class="mb-4 md:mb-0">
-                <a href="{{ route('page.show', ['page' => 'laporan', 'subpage' => 'ppid']) }}" class="inline-flex items-center text-gray-300 hover:text-white transition-colors">
+                <a href="{{ route('laporan.ppid.index') }}" class="inline-flex items-center text-gray-300 hover:text-white transition-colors">
                     <i class="fas fa-arrow-left mr-2"></i>
                     Kembali ke Daftar Laporan
                 </a>
@@ -86,7 +86,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             // Use the Laravel route to serve the file
-            const url = "{{ route('laporan.file.serve', $laporan) }}";
+            const url = "{{ route('laporan.ppid.file', $laporan) }}";
             const loading = document.getElementById('loading');
             const loadingText = document.getElementById('loading-text');
             const bookContainer = document.getElementById('book');

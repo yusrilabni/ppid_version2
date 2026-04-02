@@ -151,6 +151,11 @@ Route::get('/standar-layanan/visit-url/{subStandarLayanan}', [App\Http\Controlle
 Route::get('/lhkpn/view/{lhkpn}', [LhkpnController::class, 'viewFile'])->name('frontend.lhkpn.view');
 Route::get('/lhkpn/{year?}', [LhkpnController::class, 'index'])->name('frontend.lhkpn.index');
 
+// Laporan PPID Routes
+Route::get('/laporan/ppid', [FrontendController::class, 'laporanPpid'])->name('laporan.ppid.index');
+Route::get('/laporan/ppid/preview/{laporan}', [FrontendController::class, 'previewLaporan'])->name('laporan.ppid.preview');
+Route::get('/laporan/ppid/file/{laporan}', [FrontendController::class, 'serveLaporanFile'])->name('laporan.ppid.file');
+
 // Storage & Fallback
 Route::get('storage/{path}', [App\Http\Controllers\StorageController::class, 'show'])->where('path', '.*')->name('storage.fallback');
 

@@ -635,6 +635,18 @@ class FrontendController extends Controller
         }
     }
 
+    public function laporanPpid()
+    {
+        $laporans = \App\Models\Laporan::latest()->paginate(12);
+        
+        $breadcrumbs = [
+            ['title' => 'Beranda', 'url' => route('home'), 'icon' => 'fas fa-home'],
+            ['title' => 'Laporan PPID', 'url' => '#', 'icon' => 'fas fa-file-alt'],
+        ];
+
+        return view('frontend.pages.laporan.ppid', compact('laporans', 'breadcrumbs'));
+    }
+
     public function previewLaporan(\App\Models\Laporan $laporan)
     {
         return view('frontend.pages.laporan.preview', compact('laporan'));
