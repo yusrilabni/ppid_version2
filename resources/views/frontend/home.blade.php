@@ -67,8 +67,6 @@
                 <button class="swiper-button-next-custom absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-2 md:p-3 rounded-full z-20 border-2 border-white/50 shadow-xl transition-all duration-300 group">
                     <i data-lucide="chevron-right" class="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-0.5 transition-transform"></i>
                 </button>
-                
-                <!-- Pagination Overlay -->
                 <div class="swiper-pagination !absolute !bottom-4 !left-0 !right-0 !z-30"></div>
             @endif
         </div>
@@ -82,7 +80,7 @@
 
     <section class="py-10 bg-white">
         <div class="max-w-[1440px] mx-auto px-4 sm:px-6 lg:px-8">
-            <div class="text-center mb-4">
+            <div class="text-center mb-10">
                 <h2 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">Informasi Terbaru</h2>
                 <p class="text-gray-600 text-sm md:text-base max-w-2xl mx-auto">Dokumen dan pengumuman publik terkini dari PPID Kabupaten Sinjai.</p>
             </div>
@@ -184,9 +182,99 @@
         </div>
     </section>
 
-    <!-- Stat & Contact sections would go here - restoring standard structure -->
-    @include('frontend.sections.stats')
-    @include('frontend.sections.contact')
+    {{-- Statistik Section --}}
+    <section class="py-16 bg-white">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="text-center mb-16">
+                <h2 class="text-3xl md:text-4xl font-black text-gray-900 mb-4 tracking-tight">Statistik Layanan</h2>
+                <p class="text-gray-500 text-lg">Transparansi kinerja pelayanan informasi publik PPID Kabupaten Sinjai.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-3 gap-8 mb-16">
+                <div class="bg-blue-50 p-10 rounded-[2.5rem] text-center border border-blue-100 shadow-sm">
+                    <i class="fas fa-info-circle text-blue-600 text-5xl mb-6"></i>
+                    <h3 class="text-4xl font-black text-gray-900 mb-2">{{ number_format($frontendStats['informasi']['total'], 0, ',', '.') }}</h3>
+                    <p class="text-blue-600 font-bold uppercase tracking-widest text-xs">Informasi Publik</p>
+                </div>
+                <div class="bg-green-50 p-10 rounded-[2.5rem] text-center border border-green-100 shadow-sm">
+                    <i class="fas fa-file-alt text-green-600 text-5xl mb-6"></i>
+                    <h3 class="text-4xl font-black text-gray-900 mb-2">{{ number_format($frontendStats['permohonan'], 0, ',', '.') }}</h3>
+                    <p class="text-green-600 font-bold uppercase tracking-widest text-xs">Permohonan</p>
+                </div>
+                <div class="bg-purple-50 p-10 rounded-[2.5rem] text-center border border-purple-100 shadow-sm">
+                    <i class="fas fa-poll text-purple-600 text-5xl mb-6"></i>
+                    <h3 class="text-4xl font-black text-gray-900 mb-2">{{ number_format($frontendStats['survey_responses'], 0, ',', '.') }}</h3>
+                    <p class="text-purple-600 font-bold uppercase tracking-widest text-xs">Respon Survei</p>
+                </div>
+            </div>
+
+            <div class="bg-gray-900 rounded-[3rem] p-12 text-white shadow-2xl relative overflow-hidden">
+                <div class="absolute top-0 right-0 p-12 opacity-10">
+                    <i class="fas fa-chart-line text-[10rem]"></i>
+                </div>
+                <h3 class="text-2xl font-bold mb-12 text-center relative z-10">Laporan Akuntabilitas Kinerja</h3>
+                <div class="grid grid-cols-1 md:grid-cols-3 gap-12 text-center relative z-10">
+                    <div>
+                        <div class="text-5xl font-black text-blue-400 mb-3">{{ $tingkatKepuasan }}%</div>
+                        <p class="text-gray-400 font-medium uppercase tracking-widest text-[10px]">Tingkat Kepuasan</p>
+                    </div>
+                    <div>
+                        <div class="text-5xl font-black text-green-400 mb-3">{{ $rataRataWaktuRespon }} Hari</div>
+                        <p class="text-gray-400 font-medium uppercase tracking-widest text-[10px]">Rata-rata Respon</p>
+                    </div>
+                    <div>
+                        <div class="text-5xl font-black text-purple-400 mb-3">{{ $tingkatPenyelesaian }}%</div>
+                        <p class="text-gray-400 font-medium uppercase tracking-widest text-[10px]">Penyelesaian</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- Kontak Section --}}
+    <section class="py-20 bg-gray-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-16 items-start">
+                <div>
+                    <h2 class="text-4xl font-black text-gray-900 mb-6 tracking-tight">Hubungi Kami</h2>
+                    <p class="text-gray-500 text-lg mb-12 leading-relaxed">Punya pertanyaan atau ingin menyampaikan aspirasi? Tim kami siap melayani Anda melalui berbagai saluran komunikasi resmi.</p>
+                    
+                    <div class="space-y-8">
+                        <div class="flex items-center gap-6">
+                            <div class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center text-blue-600 border border-gray-100"><i class="fas fa-map-marker-alt text-xl"></i></div>
+                            <div><h4 class="font-bold text-gray-900">Alamat Kantor</h4><p class="text-gray-500 text-sm">{{ $contactInfo['address'] ?? 'Kabupaten Sinjai' }}</p></div>
+                        </div>
+                        <div class="flex items-center gap-6">
+                            <div class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center text-green-600 border border-gray-100"><i class="fas fa-phone-alt text-xl"></i></div>
+                            <div><h4 class="font-bold text-gray-900">Telepon</h4><p class="text-gray-500 text-sm">{{ $contactInfo['phone'] ?? '-' }}</p></div>
+                        </div>
+                        <div class="flex items-center gap-6">
+                            <div class="w-14 h-14 bg-white rounded-2xl shadow-sm flex items-center justify-center text-purple-600 border border-gray-100"><i class="fas fa-envelope text-xl"></i></div>
+                            <div><h4 class="font-bold text-gray-900">Email Resmi</h4><p class="text-gray-500 text-sm">{{ $contactInfo['email'] ?? '-' }}</p></div>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="bg-white p-10 rounded-[3rem] shadow-xl border border-gray-100">
+                    <h3 class="text-2xl font-bold text-gray-900 mb-8">Kirim Pesan Langsung</h3>
+                    <form id="contactForm" class="space-y-6">
+                        @csrf
+                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                            <input type="text" name="name" placeholder="Nama Lengkap" class="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all" required>
+                            <input type="email" name="email" placeholder="Alamat Email" class="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all" required>
+                        </div>
+                        <input type="text" name="subject" placeholder="Subjek Pesan" class="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all" required>
+                        <textarea name="message" rows="5" placeholder="Tuliskan pesan atau pertanyaan Anda di sini..." class="w-full px-6 py-4 bg-gray-50 border-none rounded-2xl focus:ring-2 focus:ring-blue-500 transition-all resize-none" required></textarea>
+                        <button type="submit" id="submitBtn" class="w-full py-5 bg-blue-600 text-white rounded-2xl font-black uppercase tracking-widest hover:bg-blue-700 transition-all shadow-xl shadow-blue-500/20 flex items-center justify-center gap-3">
+                            <span id="submitText">Kirim Pesan Sekarang</span>
+                            <span id="loadingSpinner" class="hidden animate-spin"><i class="fas fa-circle-notch"></i></span>
+                        </button>
+                        <div id="formMessage" class="hidden"></div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </section>
 
 @endsection
 
@@ -202,20 +290,9 @@
                 parallax: true,
                 grabCursor: true,
                 watchSlidesProgress: true,
-                autoplay: {
-                    delay: {{ $transitionDuration }},
-                    disableOnInteraction: false,
-                    pauseOnMouseEnter: true
-                },
-                pagination: {
-                    el: '.hero-slider .swiper-pagination',
-                    clickable: true,
-                    dynamicBullets: true
-                },
-                navigation: {
-                    nextEl: '.swiper-button-next-custom',
-                    prevEl: '.swiper-button-prev-custom'
-                },
+                autoplay: { delay: {{ $transitionDuration }}, disableOnInteraction: false, pauseOnMouseEnter: true },
+                pagination: { el: '.hero-slider .swiper-pagination', clickable: true, dynamicBullets: true },
+                navigation: { nextEl: '.swiper-button-next-custom', prevEl: '.swiper-button-prev-custom' },
                 @if($sliderAnimationType === 'fade')
                 fadeEffect: { crossFade: true },
                 @elseif($sliderAnimationType === 'cube')
@@ -262,11 +339,7 @@
                 watchSlidesProgress: true,
                 autoplay: { delay: 4000, disableOnInteraction: false, pauseOnMouseEnter: true },
                 pagination: { el: '.latest-info-pagination', clickable: true, dynamicBullets: true },
-                breakpoints: {
-                    640: { slidesPerView: 2 },
-                    1024: { slidesPerView: 3 },
-                    1280: { slidesPerView: 4 }
-                }
+                breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 }, 1280: { slidesPerView: 4 } }
             });
 
             // 3. NEWS CAROUSEL
@@ -279,12 +352,43 @@
                 watchSlidesProgress: true,
                 autoplay: { delay: 5000, disableOnInteraction: false, pauseOnMouseEnter: true },
                 pagination: { el: '.news-pagination', clickable: true, dynamicBullets: true },
-                breakpoints: {
-                    640: { slidesPerView: 2 },
-                    1024: { slidesPerView: 3 },
-                    1280: { slidesPerView: 4 }
-                }
+                breakpoints: { 640: { slidesPerView: 2 }, 1024: { slidesPerView: 3 }, 1280: { slidesPerView: 4 } }
             });
+
+            // 4. CONTACT FORM LOGIC
+            const contactForm = document.getElementById('contactForm');
+            if (contactForm) {
+                contactForm.addEventListener('submit', async function(e) {
+                    e.preventDefault();
+                    const submitBtn = document.getElementById('submitBtn');
+                    const submitText = document.getElementById('submitText');
+                    const loadingSpinner = document.getElementById('loadingSpinner');
+                    const formMessage = document.getElementById('formMessage');
+                    const formData = new FormData(this);
+                    submitBtn.disabled = true;
+                    submitText.classList.add('hidden');
+                    loadingSpinner.classList.remove('hidden');
+                    try {
+                        const name = formData.get('name');
+                        const subject = formData.get('subject');
+                        const message = formData.get('message');
+                        const gmailUrl = `https://mail.google.com/mail/?view=cm&fs=1&to=ppidkabsinjai@gmail.com&su=${encodeURIComponent(subject)}&body=${encodeURIComponent(message)}`;
+                        window.open(gmailUrl, '_blank');
+                        formMessage.textContent = "Pesan Anda telah disiapkan di Gmail.";
+                        formMessage.className = "text-center text-sm mt-4 text-green-600 font-bold";
+                        formMessage.classList.remove('hidden');
+                        this.reset();
+                    } catch (error) {
+                        formMessage.textContent = "Terjadi kesalahan.";
+                        formMessage.className = "text-center text-sm mt-4 text-red-600";
+                        formMessage.classList.remove('hidden');
+                    } finally {
+                        submitBtn.disabled = false;
+                        submitText.classList.remove('hidden');
+                        loadingSpinner.classList.add('hidden');
+                    }
+                });
+            }
         });
     </script>
 @endpush
