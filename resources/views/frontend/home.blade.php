@@ -58,9 +58,13 @@
 
                 {{-- Slider Controls --}}
                 @if ($sliders->count() > 1)
-                    <div class="swiper-button-prev !text-white !w-10 !h-10 !bg-black/40 !rounded-full after:!text-lg"></div>
-                    <div class="swiper-button-next !text-white !w-10 !h-10 !bg-black/40 !rounded-full after:!text-lg"></div>
-                    <div class="swiper-pagination !bottom-4"></div>
+                    <button class="swiper-button-prev-custom absolute left-2 md:left-4 top-1/2 transform -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-2 md:p-3 rounded-full z-20 border-2 border-white/50 shadow-xl transition-all duration-300 group">
+                        <i data-lucide="chevron-left" class="w-5 h-5 md:w-6 md:h-6 group-hover:-translate-x-0.5 transition-transform"></i>
+                    </button>
+                    <button class="swiper-button-next-custom absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-2 md:p-3 rounded-full z-20 border-2 border-white/50 shadow-xl transition-all duration-300 group">
+                        <i data-lucide="chevron-right" class="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-0.5 transition-transform"></i>
+                    </button>
+                    <div class="swiper-pagination !bottom-6 !z-20"></div>
                 @endif
             </div>
         @endif
@@ -715,10 +719,9 @@
                     clickable: true,
                 },
                 navigation: {
-                    nextEl: '.swiper-button-next',
-                    prevEl: '.swiper-button-prev',
-                },
-                @if($sliderAnimationType === 'cube')
+                    nextEl: '.swiper-button-next-custom',
+                    prevEl: '.swiper-button-prev-custom',
+                },                @if($sliderAnimationType === 'cube')
                 cubeEffect: {
                     shadow: true,
                     slideShadows: true,
