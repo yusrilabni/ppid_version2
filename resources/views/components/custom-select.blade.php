@@ -20,8 +20,10 @@
         }
         return ['value' => $option, 'label' => $option];
     })->values()->toArray();
-@endphp
 
+    // Tampilkan pencarian hanya jika item > 10
+    $shouldShowSearch = $searchable && count($normalizedOptions) > 10;
+@endphp
 <div x-data="customSelectComponent({ 
     data: {{ json_encode($normalizedOptions) }}, 
     selectedValue: '{{ old($name, $value) }}' 
@@ -62,8 +64,8 @@
         x-transition:leave-end="opacity-0 transform scale-95"
         class="absolute mt-2 w-full rounded-xl bg-white shadow-2xl z-[100] border border-gray-100 overflow-hidden ring-1 ring-black ring-opacity-5"
         x-cloak>
-        
-        @if($searchable)
+
+        @if($shouldShowSearch)
         <div class="p-2 bg-gray-50 border-b border-gray-100">
             <div class="relative">
                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
@@ -78,7 +80,6 @@
             </div>
         </div>
         @endif
-
         <ul class="max-h-60 py-1 text-base overflow-auto focus:outline-none sm:text-sm custom-scrollbar" tabindex="-1">
             <template x-for="item in filteredData" :key="item.value">
                 <li @click="select(item)" 
