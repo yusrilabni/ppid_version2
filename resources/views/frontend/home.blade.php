@@ -65,29 +65,38 @@
                     <button class="swiper-button-next-custom absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 bg-black/60 hover:bg-black/80 text-white p-2 md:p-3 rounded-full z-20 border-2 border-white/50 shadow-xl transition-all duration-300 group">
                         <i data-lucide="chevron-right" class="w-5 h-5 md:w-6 md:h-6 group-hover:translate-x-0.5 transition-transform"></i>
                     </button>
-                    <!-- Pagination Overlay -->
-                    <div class="swiper-pagination !bottom-4 !z-20"></div>
+                    
+                    <!-- Pagination Overlay: Menempel di atas gambar -->
+                    <div class="swiper-pagination !absolute !bottom-4 !left-0 !right-0 !z-30"></div>
                 @endif
             </div>
             <style>
-                /* Force pagination to be overlay and bullets color */
+                /* CSS untuk memastikan tidak ada celah di bawah slider */
+                .hero-slider {
+                    padding-bottom: 0 !important;
+                    margin-bottom: 0 !important;
+                }
+                .hero-slider .swiper-wrapper {
+                    height: auto !important; /* Mencegah wrapper melar melebihi gambar */
+                }
+                .hero-slider .swiper-pagination {
+                    line-height: 0 !important;
+                    pointer-events: none; /* Klik tembus ke link di bawahnya jika perlu */
+                }
                 .hero-slider .swiper-pagination-bullet {
+                    pointer-events: auto; /* Titik tetap bisa diklik */
                     background: white !important;
-                    opacity: 0.6;
-                    width: 10px;
-                    height: 10px;
-                    margin: 0 5px !important;
+                    opacity: 0.5;
+                    width: 8px;
+                    height: 8px;
+                    margin: 0 4px !important;
+                    box-shadow: 0 1px 3px rgba(0,0,0,0.3);
                 }
                 .hero-slider .swiper-pagination-bullet-active {
-                    background: #2563eb !important; /* Blue-600 */
+                    background: #2563eb !important;
                     opacity: 1;
-                    width: 24px;
-                    border-radius: 5px;
-                    transition: width 0.3s ease;
-                }
-                /* Ensure no extra padding in swiper container */
-                .hero-slider.swiper {
-                    padding-bottom: 0 !important;
+                    width: 20px;
+                    border-radius: 4px;
                 }
             </style>
         @endif
@@ -734,10 +743,12 @@
                 effect: '{{ $sliderAnimationType }}',
                 autoHeight: {{ $sliderAspectRatio === 'aspect-auto' ? 'true' : 'false' }},
                 speed: 1000,
+                observer: true,
+                observeParents: true,
                 on: {
                     init: function() {
-                        if ('{{ $sliderAspectRatio }}' === 'aspect-first') {
-                            const lockToFirst = () => {
+                        this.update(); // Force update on init
+                        if ('{{ $sliderAspectRatio }}' === 'aspect-first') {                            const lockToFirst = () => {
                                 // Find the original first slide
                                 const firstSlide = this.slides.find(s => s.getAttribute('data-swiper-slide-index') === '0');
                                 const firstImg = firstSlide ? firstSlide.querySelector('img') : null;
