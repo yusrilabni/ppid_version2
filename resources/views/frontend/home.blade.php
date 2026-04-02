@@ -26,15 +26,15 @@
     </style>
         {{-- Hero Slider --}}
         @if ($sliders->count() > 0)
-            <div class="swiper hero-slider relative w-full overflow-hidden {{ $sliderAspectRatio }}">
+            <div class="swiper hero-slider relative w-full overflow-hidden {{ $sliderAspectRatio === 'aspect-first' ? 'aspect-auto' : $sliderAspectRatio }}">
                 <div class="swiper-wrapper">
                     @foreach ($sliders as $slider)
-                        <div class="swiper-slide relative h-auto">
+                        <div class="swiper-slide relative {{ $sliderAspectRatio === 'aspect-first' ? 'h-auto' : '' }}">
                             <a href="{{ $slider->link ?: ($slider->informasi ? route('frontend.informasi.detail', $slider->informasi->slug) : '#') }}"
                                 class="block w-full h-full">
                                 <img src="{{ asset('storage/' . $slider->image) ?: '/placeholder.jpg' }}"
                                     alt="{{ $slider->title }}" 
-                                    class="w-full {{ $sliderAspectRatio === 'aspect-auto' ? 'h-auto' : 'h-full' }} object-cover" />
+                                    class="w-full {{ ($sliderAspectRatio === 'aspect-auto' || $sliderAspectRatio === 'aspect-first') ? 'h-auto' : 'h-full' }} object-cover" />
                                 <div
                                     class="absolute inset-0 @if ($slider->show_title || $slider->show_description) bg-black bg-opacity-40 @endif flex items-center justify-center overlay-content">
                                     <div class="text-center text-white max-w-4xl mx-auto px-4">
@@ -712,8 +712,24 @@
                 effect: '{{ $sliderAnimationType }}',
                 autoHeight: {{ $sliderAspectRatio === 'aspect-auto' ? 'true' : 'false' }},
                 speed: 1000,
-                autoplay: {
-                    delay: {{ $transitionDuration }},
+                on: {
+                    init: function() {
+                        if ('{{ $sliderAspectRatio }}' === 'aspect-first') {
+                            const firstSlide = this.slides[0];
+                            if (firstSlide) {
+                                const img = firstSlide.querySelector('img');
+                                if (img.complete) {
+                                    this.el.style.height = img.offsetHeight + 'px';
+                                } else {
+                                    img.onload = () => {
+                                        this.el.style.height = img.offsetHeight + 'px';
+                                    };
+                                }
+                            }
+                        }
+                    }
+                },
+                autoplay: {                    delay: {{ $transitionDuration }},
                     disableOnInteraction: false,
                 },
                 pagination: {

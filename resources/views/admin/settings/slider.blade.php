@@ -3,7 +3,7 @@
 @section('title', 'Pengaturan Slider Utama')
 
 @section('content')
-<div class="max-w-4xl mx-auto">
+<div class="max-w-4xl mx-auto" x-data="{ selectedRatio: '{{ $aspectRatio }}' }">
     <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden">
         <div class="px-8 py-6 bg-gradient-to-r from-white to-blue-50/30 border-b border-gray-100 flex justify-between items-center">
             <div>
@@ -35,7 +35,6 @@
                                required min="1">
                         <span class="absolute right-4 top-3.5 text-gray-400 font-medium text-sm">DETIK</span>
                     </div>
-                    <p class="text-xs text-gray-400 italic">Lama gambar berhenti sebelum berganti.</p>
                 </div>
 
                 <!-- Tipe Animasi -->
@@ -51,7 +50,6 @@
                         <option value="coverflow" {{ $animationType == 'coverflow' ? 'selected' : '' }}>Aliran Sampul (Coverflow)</option>
                         <option value="cards" {{ $animationType == 'cards' ? 'selected' : '' }}>Tumpukan Kartu (Cards)</option>
                     </select>
-                    <p class="text-xs text-gray-400 italic">Pilih gaya animasi perpindahan gambar.</p>
                 </div>
 
                 <!-- Rasio Dimensi -->
@@ -59,26 +57,33 @@
                     <label class="block text-sm font-bold text-gray-700 uppercase tracking-wider mb-4">
                         <i class="fas fa-expand mr-2 text-blue-500"></i> Rasio Tampilan (Ukuran Layar)
                     </label>
-                    <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
+                    <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
                         @php
                             $ratios = [
-                                ['id' => 'aspect-video', 'label' => '16:9 (Landscape)', 'desc' => 'Modern & Lebar'],
-                                ['id' => 'aspect-[4/3]', 'label' => '4:3 (Classic)', 'desc' => 'Lebih Tinggi'],
-                                ['id' => 'aspect-[21/9]', 'label' => '21:9 (Cinematic)', 'desc' => 'Ultra Wide'],
-                                ['id' => 'aspect-auto', 'label' => 'Auto (Asli)', 'desc' => 'Sesuai Gambar'],
+                                ['id' => 'aspect-video', 'label' => '16:9', 'desc' => 'Landscape'],
+                                ['id' => 'aspect-[4/3]', 'label' => '4:3', 'desc' => 'Classic'],
+                                ['id' => 'aspect-[21/9]', 'label' => '21:9', 'desc' => 'Ultra Wide'],
+                                ['id' => 'aspect-first', 'label' => 'Slide 1', 'desc' => 'Paten Awal'],
+                                ['id' => 'aspect-auto', 'label' => 'Auto', 'desc' => 'Beda-beda'],
                             ];
                         @endphp
                         @foreach($ratios as $ratio)
-                            <label class="relative flex flex-col p-4 border rounded-2xl cursor-pointer hover:bg-blue-50 transition-all {{ $aspectRatio == $ratio['id'] ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' : 'border-gray-100 bg-gray-50' }}">
-                                <input type="radio" name="aspect_ratio" value="{{ $ratio['id'] }}" class="hidden" {{ $aspectRatio == $ratio['id'] ? 'checked' : '' }}>
+                            <label class="relative flex flex-col p-4 border rounded-2xl cursor-pointer transition-all"
+                                   :class="selectedRatio === '{{ $ratio['id'] }}' ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' : 'border-gray-100 bg-gray-50 hover:bg-gray-100'">
+                                <input type="radio" name="aspect_ratio" value="{{ $ratio['id'] }}" class="hidden" 
+                                       @click="selectedRatio = '{{ $ratio['id'] }}'"
+                                       {{ $aspectRatio == $ratio['id'] ? 'checked' : '' }}>
                                 <span class="text-sm font-bold text-gray-800">{{ $ratio['label'] }}</span>
                                 <span class="text-[10px] text-gray-400 mt-1 uppercase">{{ $ratio['desc'] }}</span>
-                                @if($aspectRatio == $ratio['id'])
-                                    <i class="fas fa-check-circle absolute top-2 right-2 text-blue-500"></i>
-                                @endif
+                                <template x-if="selectedRatio === '{{ $ratio['id'] }}'">
+                                    <i class="fas fa-check-circle absolute top-2 right-2 text-blue-500 animate-fadeIn"></i>
+                                </template>
                             </label>
                         @endforeach
                     </div>
+                    <p class="text-xs text-gray-400 italic mt-4">
+                        <strong>Catatan:</strong> Pilih "Paten Awal" agar semua slide mengikuti tinggi gambar pertama secara seragam.
+                    </p>
                 </div>
             </div>
 
@@ -92,7 +97,7 @@
 </div>
 
 <style>
-    @keyframes fadeIn { from { opacity: 0; transform: translateY(-10px); } to { opacity: 1; transform: translateY(0); } }
-    .animate-fadeIn { animation: fadeIn 0.3s ease-out; }
+    @keyframes fadeIn { from { opacity: 0; transform: scale(0.8); } to { opacity: 1; transform: scale(1); } }
+    .animate-fadeIn { animation: fadeIn 0.2s ease-out; }
 </style>
 @endsection
