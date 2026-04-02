@@ -39,7 +39,7 @@
                                 <td class="px-6 py-4">
                                     <div class="flex items-center">
                                         @if($official->photo)
-                                            <img src="{{ Storage::url($official->photo) }}" alt="{{ $official->full_name }}" class="w-10 h-10 rounded-full object-cover mr-3">
+                                            <img src="{{ asset('storage/' . $official->photo) }}" alt="{{ $official->full_name }}" class="w-10 h-10 rounded-full object-cover mr-3">
                                         @else
                                             <div class="w-10 h-10 bg-gray-200 rounded-full flex items-center justify-center mr-3">
                                                 <i class="fas fa-user text-gray-600"></i>

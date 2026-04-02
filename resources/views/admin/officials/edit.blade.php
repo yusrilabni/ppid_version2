@@ -54,7 +54,7 @@
                         <label class="block text-sm font-medium text-gray-700 mb-2">Foto</label>
                         @if($official->photo)
                             <div class="mb-3">
-                                <img src="{{ Storage::url($official->photo) }}" alt="Foto Profil" class="w-32 h-32 rounded-full object-cover border-2 border-gray-300">
+                                <img src="{{ asset('storage/' . $official->photo) }}" alt="Foto Profil" class="w-32 h-32 rounded-full object-cover border-2 border-gray-300">
                             </div>
                         @endif
                         <div class="w-full max-w-xs">
