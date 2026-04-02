@@ -29,11 +29,12 @@
             <div class="swiper hero-slider relative w-full overflow-hidden {{ $sliderAspectRatio }}">
                 <div class="swiper-wrapper">
                     @foreach ($sliders as $slider)
-                        <div class="swiper-slide relative">
+                        <div class="swiper-slide relative h-auto">
                             <a href="{{ $slider->link ?: ($slider->informasi ? route('frontend.informasi.detail', $slider->informasi->slug) : '#') }}"
                                 class="block w-full h-full">
                                 <img src="{{ asset('storage/' . $slider->image) ?: '/placeholder.jpg' }}"
-                                    alt="{{ $slider->title }}" class="w-full h-full object-cover" />
+                                    alt="{{ $slider->title }}" 
+                                    class="w-full {{ $sliderAspectRatio === 'aspect-auto' ? 'h-auto' : 'h-full' }} object-cover" />
                                 <div
                                     class="absolute inset-0 @if ($slider->show_title || $slider->show_description) bg-black bg-opacity-40 @endif flex items-center justify-center overlay-content">
                                     <div class="text-center text-white max-w-4xl mx-auto px-4">
@@ -709,6 +710,7 @@
             const heroSwiper = new Swiper('.hero-slider', {
                 loop: true,
                 effect: '{{ $sliderAnimationType }}',
+                autoHeight: {{ $sliderAspectRatio === 'aspect-auto' ? 'true' : 'false' }},
                 speed: 1000,
                 autoplay: {
                     delay: {{ $transitionDuration }},
@@ -721,7 +723,12 @@
                 navigation: {
                     nextEl: '.swiper-button-next-custom',
                     prevEl: '.swiper-button-prev-custom',
-                },                @if($sliderAnimationType === 'cube')
+                },
+                @if($sliderAnimationType === 'fade')
+                fadeEffect: {
+                    crossFade: true
+                },
+                @elseif($sliderAnimationType === 'cube')
                 cubeEffect: {
                     shadow: true,
                     slideShadows: true,
