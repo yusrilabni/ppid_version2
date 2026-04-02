@@ -67,6 +67,10 @@ Route::post('/login/protection/verify', [App\Http\Controllers\Auth\LoginProtecti
 
 // Authenticated Routes
 Route::middleware('auth')->group(function () {
+    // Priority Route for OPD Management (Frontend)
+    Route::get('/manage-opd-profile/{organization}', [FrontendController::class, 'manageStrukturOrganisasiPublic'])->name('opd.manage-public')->whereNumber('organization');
+    Route::post('/manage-opd-profile/{organization}', [FrontendController::class, 'updateStrukturOrganisasiPublic'])->name('opd.update-public')->whereNumber('organization');
+
     Route::get('/dashboard', function () { return view('dashboard'); })->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
@@ -82,10 +86,6 @@ Route::middleware('auth')->group(function () {
     // Manage Pimpinan via Frontend
     Route::get('/profil/pimpinan/{official}/edit', [FrontendController::class, 'editPimpinanPublic'])->name('pimpinan.edit-public');
     Route::put('/profil/pimpinan/{official}', [FrontendController::class, 'updatePimpinanPublic'])->name('pimpinan.update-public');
-
-    // Manage Tentang OPD via Frontend (Unique URL to avoid collision with detail slug)
-    Route::get('/profil/kelola-opd/{organization}', [FrontendController::class, 'manageStrukturOrganisasiPublic'])->name('opd.manage-public')->whereNumber('organization');
-    Route::post('/profil/kelola-opd/{organization}', [FrontendController::class, 'updateStrukturOrganisasiPublic'])->name('opd.update-public')->whereNumber('organization');
 });
 
 // Category & Detail Routes

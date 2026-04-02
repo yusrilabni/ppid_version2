@@ -44,17 +44,15 @@
                             @auth
                                 @php
                                     $user = Auth::user();
-                                    $canManage = $user->isSuperAdmin();
+                                    $canManage = false;
                                     
-                                    if (!$canManage) {
-                                        // Match by local unit_id
-                                        if ($user->unit_id && (string)$user->unit_id === (string)$organization->unit_id) {
-                                            $canManage = true;
-                                        }
-                                        // Match by API unit_id fallback
-                                        elseif (isset($api_unit_id) && (string)$api_unit_id === (string)$organization->remote_id) {
-                                            $canManage = true;
-                                        }
+                                    // Hanya izinkan kelola jika unit_id user cocok dengan unit_id organisasi atau remote_id organisasi
+                                    if ($user->unit_id && ((string)$user->unit_id === (string)$organization->unit_id || (string)$user->unit_id === (string)$organization->remote_id)) {
+                                        $canManage = true;
+                                    }
+                                    // Fallback: Cek matching dengan API unit id jika tersedia
+                                    elseif (isset($api_unit_id) && (string)$api_unit_id === (string)$organization->remote_id) {
+                                        $canManage = true;
                                     }
                                 @endphp
 
