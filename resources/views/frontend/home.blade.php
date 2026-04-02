@@ -715,22 +715,27 @@
                 on: {
                     init: function() {
                         if ('{{ $sliderAspectRatio }}' === 'aspect-first') {
-                            const lockHeight = () => {
-                                const firstSlide = this.slides[0];
+                            const lockToFirstSlide = () => {
+                                // Find the original first slide (data-swiper-slide-index="0")
+                                const firstSlide = this.slides.find(s => s.getAttribute('data-swiper-slide-index') === '0');
                                 if (firstSlide) {
                                     const img = firstSlide.querySelector('img');
                                     if (img && img.complete && img.naturalWidth) {
                                         const ratio = img.naturalHeight / img.naturalWidth;
                                         const currentWidth = this.el.offsetWidth;
-                                        this.el.style.height = (currentWidth * ratio) + 'px';
+                                        const targetHeight = currentWidth * ratio;
+
+                                        // Lock the height of the container and all slides
+                                        this.el.style.height = targetHeight + 'px';
+                                        this.slides.forEach(s => s.style.height = targetHeight + 'px');
                                         this.update();
                                     } else if (img) {
-                                        img.onload = lockHeight;
+                                        img.onload = lockToFirstSlide;
                                     }
                                 }
                             };
-                            lockHeight();
-                            window.addEventListener('resize', lockHeight);
+                            setTimeout(lockToFirstSlide, 100); // Small delay to ensure DOM is ready
+                            window.addEventListener('resize', lockToFirstSlide);
                         }
                     }
                 },
