@@ -647,28 +647,38 @@ class FrontendController extends Controller
         return view('frontend.pages.laporan.ppid', compact('laporans', 'breadcrumbs'));
     }
 
-    public function previewLaporan(\App\Models\Laporan $laporan)
+    public function previewLaporan($encodedId)
     {
-        return view('frontend.pages.laporan.preview', compact('laporan'));
-    }
-
-    public function serveLaporanFile(\App\Models\Laporan $laporan)
-    {
-        $disk = \Illuminate\Support\Facades\Storage::disk('public');
-        
-        if (!$laporan->file || !$disk->exists($laporan->file)) {
-            abort(404, 'File not found');
+        try {
+            $id = base64_decode($encodedId);
+            $laporan = \App\Models\Laporan::findOrFail($id);
+            return view('frontend.pages.laporan.preview', compact('laporan', 'encodedId'));
+        } catch (\Exception $e) {
+            abort(404);
         }
-
-        $path = $disk->path($laporan->file);
-
-        // Use octet-stream to prevent browser/download managers from sniffing it as a PDF download
-        // PDF.js will handle the rendering from the binary data
-        return response()->file($path, [
-            'Content-Type' => 'application/octet-stream',
-        ]);
     }
 
+    public function serveLaporanFile($encodedId)
+    {
+        try {
+            $id = base64_decode($encodedId);
+            $laporan = \App\Models\Laporan::findOrFail($id);
+
+            $disk = \Illuminate\Support\Facades\Storage::disk('public');
+
+            if (!$laporan->file || !$disk->exists($laporan->file)) {
+                abort(404, 'File not found');
+            }
+
+            $path = $disk->path($laporan->file);
+
+            return response()->file($path, [
+                'Content-Type' => 'application/octet-stream',
+            ]);
+        } catch (\Exception $e) {
+            abort(404);
+        }
+    }
     /**
      * Display the active Profil PPID on the frontend.
      */

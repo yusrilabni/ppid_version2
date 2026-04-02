@@ -153,8 +153,8 @@ Route::get('/lhkpn/{year?}', [LhkpnController::class, 'index'])->name('frontend.
 
 // Laporan PPID Routes
 Route::get('/laporan/ppid', [FrontendController::class, 'laporanPpid'])->name('laporan.ppid.index');
-Route::get('/laporan/ppid/preview/{laporan}', [FrontendController::class, 'previewLaporan'])->name('laporan.ppid.preview');
-Route::get('/laporan/ppid/file/{laporan}', [FrontendController::class, 'serveLaporanFile'])->name('laporan.ppid.file');
+Route::get('/laporan/ppid/preview/{id}', [FrontendController::class, 'previewLaporan'])->name('laporan.ppid.preview');
+Route::get('/laporan/ppid/file/{id}', [FrontendController::class, 'serveLaporanFile'])->name('laporan.ppid.file');
 
 // Storage & Fallback
 Route::get('storage/{path}', [App\Http\Controllers\StorageController::class, 'show'])->where('path', '.*')->name('storage.fallback');

@@ -86,7 +86,7 @@
     <script>
         document.addEventListener('DOMContentLoaded', async () => {
             // Use the Laravel route to serve the file
-            const url = "{{ route('laporan.ppid.file', $laporan) }}";
+            const url = "{{ route('laporan.ppid.file', $encodedId) }}";
             const loading = document.getElementById('loading');
             const loadingText = document.getElementById('loading-text');
             const bookContainer = document.getElementById('book');

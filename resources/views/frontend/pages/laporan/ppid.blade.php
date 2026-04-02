@@ -55,7 +55,7 @@
                                     </h3>
                                 </div>
                                 <div class="grid grid-cols-2 gap-2 mt-auto">
-                                    <a href="{{ route('laporan.ppid.preview', $laporan) }}" 
+                                    <a href="{{ route('laporan.ppid.preview', base64_encode($laporan->id)) }}" 
                                        class="flex items-center justify-center px-4 py-2 border border-gray-300 shadow-sm text-sm font-medium rounded-md text-gray-700 bg-white hover:bg-gray-50 transition-colors">
                                         <i class="fas fa-eye mr-2"></i>
                                         Preview
