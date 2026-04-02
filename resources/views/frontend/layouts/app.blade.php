@@ -534,12 +534,15 @@
                     
                     // Comprehensive mapping for titles and abbreviations
                     const replacements = [
-                        { p: /\bDra\.\b/gi, r: 'Doktoranda' },
-                        { p: /\bDrs\.\b/gi, r: 'Doktorandus' },
-                        { p: /\bDr\.\b/gi, r: 'Doktor' },
-                        { p: /\bIr\.\b/gi, r: 'Insinyur' },
-                        { p: /\bHj\.\b/gi, r: 'Hajjah' },
-                        { p: /\bH\.\b/gi, r: 'Haji' },
+                        { p: /\bDra\./gi, r: 'Doktoranda' },
+                        { p: /\bDrs\./gi, r: 'Doktorandus' },
+                        { p: /\bDr\./gi, r: 'Doktor' },
+                        { p: /\bIr\./gi, r: 'Insinyur' },
+                        { p: /\bHj\./gi, r: 'Hajjah' },
+                        { p: /\bH\./gi, r: 'Haji' },
+                        { p: /\bDra\b/gi, r: 'Doktoranda' },
+                        { p: /\bDrs\b/gi, r: 'Doktorandus' },
+                        { p: /\bHj\b/gi, r: 'Hajjah' },
                         { p: /\bM\.Si\b/gi, r: 'Magister Sains' },
                         { p: /\bM\.Pd\b/gi, r: 'Magister Pendidikan' },
                         { p: /\bM\.H\b/gi, r: 'Magister Hukum' },
