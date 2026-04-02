@@ -26,39 +26,12 @@
     </style>
         {{-- Hero Slider --}}
         @if ($sliders->count() > 0)
-            <div x-data="{ currentSlide: 0, sliders: @js($sliders), transitionDuration: {{ $transitionDuration }} }" x-init="setInterval(() => { currentSlide = (currentSlide + 1) % sliders.length }, transitionDuration)"
-                class="relative w-full overflow-hidden slider-container {{ $sliderAspectRatio }}">
-                <div class="grid grid-cols-1 grid-rows-1 w-full h-full">
-                    @foreach ($sliders as $index => $slider)
-                        <div class="col-start-1 row-start-1 w-full h-full" x-show="currentSlide === {{ $index }}"
-                            x-cloak
-                            @if($sliderAnimationType === 'slide')
-                                x-transition:enter="transition ease-out duration-700 transform"
-                                x-transition:enter-start="translate-x-full"
-                                x-transition:enter-end="translate-x-0"
-                                x-transition:leave="transition ease-in duration-700 transform"
-                                x-transition:leave-start="translate-x-0"
-                                x-transition:leave-end="-translate-x-full"
-                            @elseif($sliderAnimationType === 'fade')
-                                x-transition:enter="transition opacity duration-1000"
-                                x-transition:enter-start="opacity-0"
-                                x-transition:enter-end="opacity-100"
-                                x-transition:leave="transition opacity duration-1000"
-                                x-transition:leave-start="opacity-100"
-                                x-transition:leave-end="opacity-0"
-                            @elseif($sliderAnimationType === 'cube' || $sliderAnimationType === 'flip')
-                                x-transition:enter="transition ease-out duration-700 transform"
-                                x-transition:enter-start="rotate-y-90 opacity-0"
-                                x-transition:enter-end="rotate-y-0 opacity-100"
-                                x-transition:leave="transition ease-in duration-700 transform"
-                                x-transition:leave-start="rotate-y-0 opacity-100"
-                                x-transition:leave-end="-rotate-y-90 opacity-0"
-                            @else
-                                x-transition:opacity.duration.1000ms
-                            @endif
-                        >
+            <div class="swiper hero-slider relative w-full overflow-hidden {{ $sliderAspectRatio }}">
+                <div class="swiper-wrapper">
+                    @foreach ($sliders as $slider)
+                        <div class="swiper-slide relative">
                             <a href="{{ $slider->link ?: ($slider->informasi ? route('frontend.informasi.detail', $slider->informasi->slug) : '#') }}"
-                                class="block relative w-full h-full">
+                                class="block w-full h-full">
                                 <img src="{{ asset('storage/' . $slider->image) ?: '/placeholder.jpg' }}"
                                     alt="{{ $slider->title }}" class="w-full h-full object-cover" />
                                 <div
@@ -85,36 +58,9 @@
 
                 {{-- Slider Controls --}}
                 @if ($sliders->count() > 1)
-                    <button @click="currentSlide = (currentSlide - 1 + sliders.length) % sliders.length"
-                        class="absolute left-2 md:left-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-60 hover:bg-opacity-80 text-white p-2 md:p-3 rounded-full z-20 border-2 border-white border-opacity-50 shadow-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" class="lucide lucide-arrow-left w-4 h-4 md:w-5 md:h-5">
-                            <path d="m12 19-7-7 7-7" />
-                            <path d="M19 12H5" />
-                        </svg>
-                    </button>
-                    <button @click="currentSlide = (currentSlide + 1) % sliders.length"
-                        class="absolute right-2 md:right-4 top-1/2 transform -translate-y-1/2 bg-black bg-opacity-60 hover:bg-opacity-80 text-white p-2 md:p-3 rounded-full z-20 border-2 border-white border-opacity-50 shadow-lg">
-                        <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24"
-                            fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"
-                            stroke-linejoin="round" class="lucide lucide-arrow-right w-4 h-4 md:w-5 md:h-5">
-                            <path d="M5 12h14" />
-                            <path d="m12 5 7 7-7 7" />
-                        </svg>
-                    </button>
-                    <div class="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2 z-20">
-                        @foreach ($sliders as $index => $slider)
-                            <button @click="currentSlide = {{ $index }}"
-                                :class="{
-                                    'bg-white border-2 border-white': currentSlide ===
-                                        {{ $index }},
-                                    'bg-white bg-opacity-50 border border-white': currentSlide !==
-                                        {{ $index }}
-                                }"
-                                class="w-3 h-3 rounded-full transition-all duration-300"></button>
-                        @endforeach
-                    </div>
+                    <div class="swiper-button-prev !text-white !w-10 !h-10 !bg-black/40 !rounded-full after:!text-lg"></div>
+                    <div class="swiper-button-next !text-white !w-10 !h-10 !bg-black/40 !rounded-full after:!text-lg"></div>
+                    <div class="swiper-pagination !bottom-4"></div>
                 @endif
             </div>
         @endif
@@ -756,7 +702,48 @@
 @push('scripts')
     <script>
         document.addEventListener('DOMContentLoaded', function() {
-            var latestInfoSwiper = new Swiper('.latest-info-carousel', {
+            const heroSwiper = new Swiper('.hero-slider', {
+                loop: true,
+                effect: '{{ $sliderAnimationType }}',
+                speed: 1000,
+                autoplay: {
+                    delay: {{ $transitionDuration }},
+                    disableOnInteraction: false,
+                },
+                pagination: {
+                    el: '.swiper-pagination',
+                    clickable: true,
+                },
+                navigation: {
+                    nextEl: '.swiper-button-next',
+                    prevEl: '.swiper-button-prev',
+                },
+                @if($sliderAnimationType === 'cube')
+                cubeEffect: {
+                    shadow: true,
+                    slideShadows: true,
+                    shadowOffset: 20,
+                    shadowScale: 0.94,
+                },
+                @elseif($sliderAnimationType === 'flip')
+                flipEffect: {
+                    rotate: 30,
+                    slideShadows: true,
+                },
+                @elseif($sliderAnimationType === 'coverflow')
+                coverflowEffect: {
+                    rotate: 50,
+                    stretch: 0,
+                    depth: 100,
+                    modifier: 1,
+                    slideShadows: true,
+                },
+                @endif
+            });
+        });
+    </script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {            var latestInfoSwiper = new Swiper('.latest-info-carousel', {
                 slidesPerView: 1,
                 slidesPerGroup: 1,
                 spaceBetween: 20,
