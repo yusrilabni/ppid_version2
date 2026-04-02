@@ -18,15 +18,8 @@ class DinasController extends Controller
      */
     public function index()
     {
-        // Get all unique unit_ids that have uploaded information
-        $participatingUnitIds = Informasi::whereNotNull('unit_id')
-            ->distinct()
-            ->pluck('unit_id')
-            ->toArray();
-
-        // Fetch organizations matching these unit_ids
-        $organizations = Organization::whereIn('remote_id', $participatingUnitIds)
-            ->with('strukturOrganisasi.informasi')
+        // Fetch all organizations
+        $organizations = Organization::with('strukturOrganisasi.informasi')
             ->get();
 
         $unitData = collect($this->getUnitData());
@@ -43,7 +36,7 @@ class DinasController extends Controller
             }
         });
 
-        return view('frontend.opd.list', compact('organizations'));
+        return view('frontend.opd.list_dip', compact('organizations'));
     }
 
     /**
