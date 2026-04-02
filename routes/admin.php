@@ -35,6 +35,7 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\SuperadminMiddleware
     Route::resource('statistik', \App\Http\Controllers\Admin\StatistikController::class);
     Route::resource('officials', \App\Http\Controllers\Admin\OfficialController::class);
     Route::resource('surveys', SurveyController::class);
+    Route::resource('surveys.sections', \App\Http\Controllers\Admin\SurveySectionController::class)->shallow();
     Route::resource('profil-ppid', ProfilPpidController::class);
     Route::resource('surveys.questions', SurveyQuestionController::class)->shallow();
     Route::resource('surveys.responses', SurveyResponseController::class)->only(['index', 'show']);
