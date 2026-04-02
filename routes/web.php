@@ -83,9 +83,9 @@ Route::middleware('auth')->group(function () {
     Route::get('/profil/pimpinan/{official}/edit', [FrontendController::class, 'editPimpinanPublic'])->name('pimpinan.edit-public');
     Route::put('/profil/pimpinan/{official}', [FrontendController::class, 'updatePimpinanPublic'])->name('pimpinan.update-public');
 
-    // Manage Tentang OPD via Frontend (MENGIKUTI POLA YANG BERHASIL)
-    Route::get('/profil/kelola-opd/{organization}/edit', [FrontendController::class, 'manageStrukturOrganisasiPublic'])->name('opd.manage-public');
-    Route::post('/profil/kelola-opd/{organization}/update', [FrontendController::class, 'updateStrukturOrganisasiPublic'])->name('opd.update-public');
+    // Manage Tentang OPD via Frontend (Explicit ID binding to avoid slug collision)
+    Route::get('/profil/kelola-opd/{organization:id}/edit', [FrontendController::class, 'manageStrukturOrganisasiPublic'])->name('opd.manage-public');
+    Route::post('/profil/kelola-opd/{organization:id}/update', [FrontendController::class, 'updateStrukturOrganisasiPublic'])->name('opd.update-public');
 });
 
 // Category & Detail Routes
