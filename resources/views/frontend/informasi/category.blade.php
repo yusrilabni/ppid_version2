@@ -75,22 +75,40 @@
                             <!-- Sort Control -->
                             <div class="w-full">
                                 <label for="sort" class="block text-[10px] font-medium text-gray-600 mb-1 uppercase">Urutkan</label>
-                                <select id="sort" name="sort" class="w-full border border-gray-300 rounded-md px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500">
-                                    <option value="tanggal_upload_desc" {{ request('sort') === 'tanggal_upload_desc' || !request('sort') ? 'selected' : '' }}>Terbaru</option>
-                                    <option value="tanggal_upload_asc" {{ request('sort') === 'tanggal_upload_asc' ? 'selected' : '' }}>Terlama</option>
-                                    <option value="title_asc" {{ request('sort') === 'title_asc' ? 'selected' : '' }}>Judul (A-Z)</option>
-                                    <option value="title_desc" {{ request('sort') === 'title_desc' ? 'selected' : '' }}>Judul (Z-A)</option>
-                                </select>
+                                @php
+                                    $sortOptions = [
+                                        ['value' => 'tanggal_upload_desc', 'label' => 'Terbaru'],
+                                        ['value' => 'tanggal_upload_asc', 'label' => 'Terlama'],
+                                        ['value' => 'title_asc', 'label' => 'Judul (A-Z)'],
+                                        ['value' => 'title_desc', 'label' => 'Judul (Z-A)'],
+                                    ];
+                                @endphp
+                                <x-custom-select 
+                                    name="sort" 
+                                    :options="$sortOptions" 
+                                    :value="request('sort', 'tanggal_upload_desc')"
+                                    placeholder="Urutkan"
+                                    :searchable="false"
+                                />
                             </div>
 
                             <!-- Items Per Page Control -->
                             <div class="w-full">
                                 <label for="per_page" class="block text-[10px] font-medium text-gray-600 mb-1 uppercase">Tampilan</label>
-                                <select id="per_page" name="per_page" class="w-full border border-gray-300 rounded-md px-2 py-1.5 text-xs focus:outline-none focus:ring-1 focus:ring-blue-500">
-                                    <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10/hal</option>
-                                    <option value="20" {{ request('per_page', 10) == 20 ? 'selected' : '' }}>20/hal</option>
-                                    <option value="50" {{ request('per_page', 10) == 50 ? 'selected' : '' }}>50/hal</option>
-                                </select>
+                                @php
+                                    $perPageOptions = [
+                                        ['value' => '10', 'label' => '10/hal'],
+                                        ['value' => '20', 'label' => '20/hal'],
+                                        ['value' => '50', 'label' => '50/hal'],
+                                    ];
+                                @endphp
+                                <x-custom-select 
+                                    name="per_page" 
+                                    :options="$perPageOptions" 
+                                    :value="request('per_page', '10')"
+                                    placeholder="Tampilan"
+                                    :searchable="false"
+                                />
                             </div>
                         </div>
 

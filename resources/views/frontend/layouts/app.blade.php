@@ -74,6 +74,27 @@
             background: #ffffff !important;
             min-height: 64px !important;
         }
+
+        /* Global Select Modernization */
+        select:not([multiple]) {
+            appearance: none;
+            background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' fill='none' viewBox='0 0 20 20' stroke='%239ca3af' stroke-width='1.5'%3E%3Cpath stroke-linecap='round' stroke-linejoin='round' d='M5 7l5 5 5-5'/%3E%3C/svg%3E");
+            background-repeat: no-repeat;
+            background-position: right 0.75rem center;
+            background-size: 1.25rem;
+            padding-right: 2.5rem !important;
+            border-radius: 0.75rem !important; /* XL rounding like custom select */
+            border-color: #d1d5db !important;
+            transition: all 0.2s ease-in-out;
+            box-shadow: 0 1px 2px 0 rgba(0, 0, 0, 0.05);
+        }
+        select:not([multiple]):focus {
+            outline: none !important;
+            border-color: #3b82f6 !important;
+            ring: 2px;
+            ring-color: rgba(59, 130, 246, 0.2) !important;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1) !important;
+        }
     </style>
 
     <!-- Favicons -->
