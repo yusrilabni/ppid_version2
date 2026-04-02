@@ -106,41 +106,32 @@
                             @endif
                             <div>
                                 <label for="jenis_dokumen" class="block text-gray-700 text-sm font-semibold mb-2">Jenis Dokumen</label>
-                                <select name="jenis_dokumen" id="jenis_dokumen" 
-                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" 
-                                    onchange="updateJenisDokumenDescription(this)"
-                                    onfocus="handleJenisDokumenFocus(this)"
-                                    onblur="handleJenisDokumenBlur(this)"
-                                    onmousedown="handleJenisDokumenFocus(this)">
-                                    <option value="">Pilih Jenis Dokumen</option>
-                                    <optgroup label="Profil & Organisasi">
-                                        <option value="Profil Badan Publik" data-desc="Sejarah, Visi Misi, Tupoksi, Struktur Organisasi, Profil Pimpinan, Domisili" {{ old('jenis_dokumen') == 'Profil Badan Publik' ? 'selected' : '' }}>Profil Badan Publik</option>
-                                        <option value="Informasi Organisasi & Kepegawaian" data-desc="Data Statistik Pegawai, Daftar Pejabat Struktural, LHKPN/LHKASN" {{ old('jenis_dokumen') == 'Informasi Organisasi & Kepegawaian' ? 'selected' : '' }}>Informasi Organisasi & Kepegawaian</option>
-                                    </optgroup>
-                                    <optgroup label="Kinerja & Strategis">
-                                        <option value="Dokumen Strategis" data-desc="RPJMD, Renstra, Renja, Indikator Kinerja Utama/IKU" {{ old('jenis_dokumen') == 'Dokumen Strategis' ? 'selected' : '' }}>Dokumen Strategis</option>
-                                        <option value="Program & Kegiatan" data-desc="DPA, Kalender Kegiatan Tahunan, Ringkasan Program Kerja" {{ old('jenis_dokumen') == 'Program & Kegiatan' ? 'selected' : '' }}>Program & Kegiatan</option>
-                                        <option value="Laporan Kinerja Instansi" data-desc="LKjIP, LKPJ, Laporan Tahunan Instansi" {{ old('jenis_dokumen') == 'Laporan Kinerja Instansi' ? 'selected' : '' }}>Laporan Kinerja Instansi</option>
-                                    </optgroup>
-                                    <optgroup label="Keuangan & Aset">
-                                        <option value="Informasi Keuangan" data-desc="RKA, LRA, Neraca, Laporan Arus Kas, CALK, Opini BPK" {{ old('jenis_dokumen') == 'Informasi Keuangan' ? 'selected' : '' }}>Informasi Keuangan</option>
-                                        <option value="Pengadaan Barang/Jasa" data-desc="RUP, Kerangka Acuan Kerja/KAK, Ringkasan Kontrak, Daftar Pemenang Tender" {{ old('jenis_dokumen') == 'Pengadaan Barang/Jasa' ? 'selected' : '' }}>Pengadaan Barang/Jasa</option>
-                                        <option value="Daftar Aset dan Inventaris" data-desc="Buku Inventaris Barang, Rekapitulasi Aset Daerah" {{ old('jenis_dokumen') == 'Daftar Aset dan Inventaris' ? 'selected' : '' }}>Daftar Aset dan Inventaris</option>
-                                    </optgroup>
-                                    <optgroup label="Layanan & Laporan PPID">
-                                        <option value="Standar Layanan & SOP PPID" data-desc="Maklumat Pelayanan, SOP Permohonan Informasi, SOP Sengketa, Standar Pelayanan Minimal/SPM" {{ old('jenis_dokumen') == 'Standar Layanan & SOP PPID' ? 'selected' : '' }}>Standar Layanan & SOP PPID</option>
-                                        <option value="Daftar Informasi Publik & Laporan PPID" data-desc="Buku DIP Tahunan, Register Permohonan, Daftar Informasi Dikecualikan, Laporan Layanan Informasi" {{ old('jenis_dokumen') == 'Daftar Informasi Publik & Laporan PPID' ? 'selected' : '' }}>Daftar Informasi Publik & Laporan PPID</option>
-                                    </optgroup>
-                                    <optgroup label="Regulasi & Kerja Sama">
-                                        <option value="Regulasi & Peraturan" data-desc="Undang-Undang, Peraturan Pemerintah, Perda, Perbup, SK Kepala Daerah/Dinas" {{ old('jenis_dokumen') == 'Regulasi & Peraturan' ? 'selected' : '' }}>Regulasi & Peraturan</option>
-                                        <option value="Perjanjian Kerja Sama / MoU" data-desc="Nota Kesepahaman Antar Lembaga, Kontrak Kerja Sama Pihak Ketiga" {{ old('jenis_dokumen') == 'Perjanjian Kerja Sama / MoU' ? 'selected' : '' }}>Perjanjian Kerja Sama / MoU</option>
-                                    </optgroup>
-                                    <optgroup label="Lainnya">
-                                        <option value="Pengumuman & Siaran Pers" data-desc="Pengumuman Resmi, Siaran Pers, Surat Edaran, Hasil Survei Kepuasan Masyarakat/SKM" {{ old('jenis_dokumen') == 'Pengumuman & Siaran Pers' ? 'selected' : '' }}>Pengumuman & Siaran Pers</option>
-                                        <option value="Informasi Serta Merta" data-desc="Peringatan Dini Bencana, Informasi Gangguan Layanan Massal, Protokol Darurat" {{ old('jenis_dokumen') == 'Informasi Serta Merta' ? 'selected' : '' }}>Informasi Serta Merta</option>
-                                        <option value="Lainnya" data-desc="" {{ old('jenis_dokumen') == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
-                                    </optgroup>
-                                </select>
+                                @php
+                                    $jenisDokumenOptions = [
+                                        ['value' => 'Profil Badan Publik', 'label' => 'Profil Badan Publik'],
+                                        ['value' => 'Informasi Organisasi & Kepegawaian', 'label' => 'Informasi Organisasi & Kepegawaian'],
+                                        ['value' => 'Dokumen Strategis', 'label' => 'Dokumen Strategis'],
+                                        ['value' => 'Program & Kegiatan', 'label' => 'Program & Kegiatan'],
+                                        ['value' => 'Laporan Kinerja Instansi', 'label' => 'Laporan Kinerja Instansi'],
+                                        ['value' => 'Informasi Keuangan', 'label' => 'Informasi Keuangan'],
+                                        ['value' => 'Pengadaan Barang/Jasa', 'label' => 'Pengadaan Barang/Jasa'],
+                                        ['value' => 'Daftar Aset dan Inventaris', 'label' => 'Daftar Aset dan Inventaris'],
+                                        ['value' => 'Standar Layanan & SOP PPID', 'label' => 'Standar Layanan & SOP PPID'],
+                                        ['value' => 'Daftar Informasi Publik & Laporan PPID', 'label' => 'Daftar Informasi Publik & Laporan PPID'],
+                                        ['value' => 'Regulasi & Peraturan', 'label' => 'Regulasi & Peraturan'],
+                                        ['value' => 'Perjanjian Kerja Sama / MoU', 'label' => 'Perjanjian Kerja Sama / MoU'],
+                                        ['value' => 'Pengumuman & Siaran Pers', 'label' => 'Pengumuman & Siaran Pers'],
+                                        ['value' => 'Informasi Serta Merta', 'label' => 'Informasi Serta Merta'],
+                                        ['value' => 'Lainnya', 'label' => 'Lainnya'],
+                                    ];
+                                @endphp
+                                <x-custom-select 
+                                    name="jenis_dokumen" 
+                                    :options="$jenisDokumenOptions" 
+                                    :value="old('jenis_dokumen')"
+                                    placeholder="Pilih Jenis Dokumen"
+                                    :searchable="true"
+                                />
                                 <div id="jenis_dokumen_desc" class="mt-2 text-xs text-blue-600 font-medium italic min-h-[1rem]"></div>
                             </div>
                             <div><label for="tahun" class="block text-gray-700 text-sm font-semibold mb-2">Tahun Dokumen <span class="text-red-500">*</span></label><input type="date" name="tahun" id="tahun" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" value="{{ old('tahun', date('Y-m-d')) }}" required x-model="tahun"></div>

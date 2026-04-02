@@ -66,20 +66,36 @@
                             <div class="md:col-span-2"><label for="title" class="block text-gray-700 text-sm font-semibold mb-2">Judul Informasi <span class="text-red-500">*</span></label><input type="text" name="title" id="title" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" value="{{ old('title', $informasi->title) }}" required minlength="5" placeholder="Masukkan judul informasi"></div>
                             <div class="md:col-span-2"><label for="deskripsi" class="block text-gray-700 text-sm font-semibold mb-2">Deskripsi Singkat</label><textarea name="deskripsi" id="deskripsi" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" placeholder="Deskripsi singkat tentang informasi ini">{{ old('deskripsi', $informasi->deskripsi) }}</textarea></div>
                             <div class="md:col-span-2"><label for="content" class="block text-gray-700 text-sm font-semibold mb-2">Konten Informasi Lengkap</label><textarea name="content" id="content" rows="6" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" placeholder="Konten lengkap informasi publik">{{ old('content', $informasi->content) }}</textarea></div>
-                            <div><label for="category" class="block text-gray-700 text-sm font-semibold mb-2">Kategori Informasi <span class="text-red-500">*</span></label><select name="category" id="category" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" required x-model="category" x-ref="category"><option value="Informasi Berkala" {{ old('category', $informasi->category) == 'Informasi Berkala' ? 'selected' : '' }}>Informasi Berkala</option><option value="Informasi Setiap Saat" {{ old('category', $informasi->category) == 'Informasi Setiap Saat' ? 'selected' : '' }}>Informasi Setiap Saat</option><option value="Informasi Serta Merta" {{ old('category', $informasi->category) == 'Informasi Serta Merta' ? 'selected' : '' }}>Informasi Serta Merta</option><option value="Informasi Dikecualikan" {{ old('category', $informasi->category) == 'Informasi Dikecualikan' ? 'selected' : '' }}>Informasi Dikecualikan</option></select></div>
+                            @php
+                                $categories = [
+                                    ['value' => 'Informasi Berkala', 'label' => 'Informasi Berkala'],
+                                    ['value' => 'Informasi Setiap Saat', 'label' => 'Informasi Setiap Saat'],
+                                    ['value' => 'Informasi Serta Merta', 'label' => 'Informasi Serta Merta'],
+                                    ['value' => 'Informasi Dikecualikan', 'label' => 'Informasi Dikecualikan'],
+                                ];
+                            @endphp
+                            <div>
+                                <label for="category" class="block text-gray-700 text-sm font-semibold mb-2">Kategori Informasi <span class="text-red-500">*</span></label>
+                                <x-custom-select 
+                                    name="category" 
+                                    :options="$categories" 
+                                    :value="old('category', $informasi->category)"
+                                    placeholder="Pilih Kategori"
+                                    :searchable="false"
+                                    required="true"
+                                />
+                            </div>
                             @if ($isSuperAdmin)
                                 <div>
                                     <label for="unit_id" class="block text-gray-700 text-sm font-semibold mb-2">Unit Kerja <span class="text-red-500">*</span></label>
-                                    <select name="unit_id" id="unit_id" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" required>
-                                        <option value="">Pilih Unit Kerja</option>
-                                        @if (!empty($units))
-                                            @foreach ($units as $unit)
-                                                <option value="{{ $unit['unit_id'] }}" {{ old('unit_id', $informasi->unit_id) == $unit['unit_id'] ? 'selected' : '' }}>{{ $unit['unit_nama'] }}</option>
-                                            @endforeach
-                                        @else
-                                            <option value="" disabled>Gagal memuat data Unit dari API.</option>
-                                        @endif
-                                    </select>
+                                    <x-custom-select 
+                                        name="unit_id" 
+                                        :options="$units" 
+                                        :value="old('unit_id', $informasi->unit_id)"
+                                        placeholder="Pilih Unit Kerja"
+                                        :searchable="true"
+                                        required="true"
+                                    />
                                 </div>
                             @else
                                 <div>
@@ -90,36 +106,32 @@
                             @endif
                             <div>
                                 <label for="jenis_dokumen" class="block text-gray-700 text-sm font-semibold mb-2">Jenis Dokumen</label>
-                                <select name="jenis_dokumen" id="jenis_dokumen" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" onchange="updateJenisDokumenDescription(this)">
-                                    <option value="">Pilih Jenis Dokumen</option>
-                                    <optgroup label="Profil & Organisasi">
-                                        <option value="Profil Badan Publik" data-desc="Sejarah, Visi Misi, Tupoksi, Struktur Organisasi, Profil Pimpinan, Domisili" {{ old('jenis_dokumen', $informasi->jenis_dokumen) == 'Profil Badan Publik' ? 'selected' : '' }}>Profil Badan Publik</option>
-                                        <option value="Informasi Organisasi & Kepegawaian" data-desc="Data Statistik Pegawai, Daftar Pejabat Struktural, LHKPN/LHKASN" {{ old('jenis_dokumen', $informasi->jenis_dokumen) == 'Informasi Organisasi & Kepegawaian' ? 'selected' : '' }}>Informasi Organisasi & Kepegawaian</option>
-                                    </optgroup>
-                                    <optgroup label="Kinerja & Strategis">
-                                        <option value="Dokumen Strategis" data-desc="RPJMD, Renstra, Renja, Indikator Kinerja Utama/IKU" {{ old('jenis_dokumen', $informasi->jenis_dokumen) == 'Dokumen Strategis' ? 'selected' : '' }}>Dokumen Strategis</option>
-                                        <option value="Program & Kegiatan" data-desc="DPA, Kalender Kegiatan Tahunan, Ringkasan Program Kerja" {{ old('jenis_dokumen', $informasi->jenis_dokumen) == 'Program & Kegiatan' ? 'selected' : '' }}>Program & Kegiatan</option>
-                                        <option value="Laporan Kinerja Instansi" data-desc="LKjIP, LKPJ, Laporan Tahunan Instansi" {{ old('jenis_dokumen', $informasi->jenis_dokumen) == 'Laporan Kinerja Instansi' ? 'selected' : '' }}>Laporan Kinerja Instansi</option>
-                                    </optgroup>
-                                    <optgroup label="Keuangan & Aset">
-                                        <option value="Informasi Keuangan" data-desc="RKA, LRA, Neraca, Laporan Arus Kas, CALK, Opini BPK" {{ old('jenis_dokumen', $informasi->jenis_dokumen) == 'Informasi Keuangan' ? 'selected' : '' }}>Informasi Keuangan</option>
-                                        <option value="Pengadaan Barang/Jasa" data-desc="RUP, Kerangka Acuan Kerja/KAK, Ringkasan Kontrak, Daftar Pemenang Tender" {{ old('jenis_dokumen', $informasi->jenis_dokumen) == 'Pengadaan Barang/Jasa' ? 'selected' : '' }}>Pengadaan Barang/Jasa</option>
-                                        <option value="Daftar Aset dan Inventaris" data-desc="Buku Inventaris Barang, Rekapitulasi Aset Daerah" {{ old('jenis_dokumen', $informasi->jenis_dokumen) == 'Daftar Aset dan Inventaris' ? 'selected' : '' }}>Daftar Aset dan Inventaris</option>
-                                    </optgroup>
-                                    <optgroup label="Layanan & Laporan PPID">
-                                        <option value="Standar Layanan & SOP PPID" data-desc="Maklumat Pelayanan, SOP Permohonan Informasi, SOP Sengketa, Standar Pelayanan Minimal/SPM" {{ old('jenis_dokumen', $informasi->jenis_dokumen) == 'Standar Layanan & SOP PPID' ? 'selected' : '' }}>Standar Layanan & SOP PPID</option>
-                                        <option value="Daftar Informasi Publik & Laporan PPID" data-desc="Buku DIP Tahunan, Register Permohonan, Daftar Informasi Dikecualikan, Laporan Layanan Informasi" {{ old('jenis_dokumen', $informasi->jenis_dokumen) == 'Daftar Informasi Publik & Laporan PPID' ? 'selected' : '' }}>Daftar Informasi Publik & Laporan PPID</option>
-                                    </optgroup>
-                                    <optgroup label="Regulasi & Kerja Sama">
-                                        <option value="Regulasi & Peraturan" data-desc="Undang-Undang, Peraturan Pemerintah, Perda, Perbup, SK Kepala Daerah/Dinas" {{ old('jenis_dokumen', $informasi->jenis_dokumen) == 'Regulasi & Peraturan' ? 'selected' : '' }}>Regulasi & Peraturan</option>
-                                        <option value="Perjanjian Kerja Sama / MoU" data-desc="Nota Kesepahaman Antar Lembaga, Kontrak Kerja Sama Pihak Ketiga" {{ old('jenis_dokumen', $informasi->jenis_dokumen) == 'Perjanjian Kerja Sama / MoU' ? 'selected' : '' }}>Perjanjian Kerja Sama / MoU</option>
-                                    </optgroup>
-                                    <optgroup label="Lainnya">
-                                        <option value="Pengumuman & Siaran Pers" data-desc="Pengumuman Resmi, Siaran Pers, Surat Edaran, Hasil Survei Kepuasan Masyarakat/SKM" {{ old('jenis_dokumen', $informasi->jenis_dokumen) == 'Pengumuman & Siaran Pers' ? 'selected' : '' }}>Pengumuman & Siaran Pers</option>
-                                        <option value="Informasi Serta Merta" data-desc="Peringatan Dini Bencana, Informasi Gangguan Layanan Massal, Protokol Darurat" {{ old('jenis_dokumen', $informasi->jenis_dokumen) == 'Informasi Serta Merta' ? 'selected' : '' }}>Informasi Serta Merta</option>
-                                        <option value="Lainnya" data-desc="" {{ old('jenis_dokumen', $informasi->jenis_dokumen) == 'Lainnya' ? 'selected' : '' }}>Lainnya</option>
-                                    </optgroup>
-                                </select>
+                                @php
+                                    $jenisDokumenOptions = [
+                                        ['value' => 'Profil Badan Publik', 'label' => 'Profil Badan Publik'],
+                                        ['value' => 'Informasi Organisasi & Kepegawaian', 'label' => 'Informasi Organisasi & Kepegawaian'],
+                                        ['value' => 'Dokumen Strategis', 'label' => 'Dokumen Strategis'],
+                                        ['value' => 'Program & Kegiatan', 'label' => 'Program & Kegiatan'],
+                                        ['value' => 'Laporan Kinerja Instansi', 'label' => 'Laporan Kinerja Instansi'],
+                                        ['value' => 'Informasi Keuangan', 'label' => 'Informasi Keuangan'],
+                                        ['value' => 'Pengadaan Barang/Jasa', 'label' => 'Pengadaan Barang/Jasa'],
+                                        ['value' => 'Daftar Aset dan Inventaris', 'label' => 'Daftar Aset dan Inventaris'],
+                                        ['value' => 'Standar Layanan & SOP PPID', 'label' => 'Standar Layanan & SOP PPID'],
+                                        ['value' => 'Daftar Informasi Publik & Laporan PPID', 'label' => 'Daftar Informasi Publik & Laporan PPID'],
+                                        ['value' => 'Regulasi & Peraturan', 'label' => 'Regulasi & Peraturan'],
+                                        ['value' => 'Perjanjian Kerja Sama / MoU', 'label' => 'Perjanjian Kerja Sama / MoU'],
+                                        ['value' => 'Pengumuman & Siaran Pers', 'label' => 'Pengumuman & Siaran Pers'],
+                                        ['value' => 'Informasi Serta Merta', 'label' => 'Informasi Serta Merta'],
+                                        ['value' => 'Lainnya', 'label' => 'Lainnya'],
+                                    ];
+                                @endphp
+                                <x-custom-select 
+                                    name="jenis_dokumen" 
+                                    :options="$jenisDokumenOptions" 
+                                    :value="old('jenis_dokumen', $informasi->jenis_dokumen)"
+                                    placeholder="Pilih Jenis Dokumen"
+                                    :searchable="true"
+                                />
                                 <div id="jenis_dokumen_desc" class="mt-2 text-xs text-blue-600 font-medium italic min-h-[1rem]"></div>
                             </div>
                             <div><label for="tahun" class="block text-gray-700 text-sm font-semibold mb-2">Tahun Dokumen <span class="text-red-500">*</span></label><input type="date" name="tahun" id="tahun" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" value="{{ old('tahun', $informasi->tanggal_upload) }}" required x-model="tahun"></div>
