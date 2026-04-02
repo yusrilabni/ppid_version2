@@ -24,16 +24,6 @@
     </div>
 
     <div class="bg-white rounded-3xl shadow-sm border border-gray-100 overflow-hidden">
-        <!-- Notification Area -->
-        @if(session('success'))
-            <div class="m-6 p-4 bg-green-50 border border-green-100 text-green-700 rounded-2xl flex items-center animate-fadeIn shadow-sm">
-                <div class="w-8 h-8 bg-green-500 rounded-full flex items-center justify-center text-white mr-3 shrink-0">
-                    <i class="fas fa-check text-xs"></i>
-                </div>
-                <span class="font-bold text-sm">{{ session('success') }}</span>
-            </div>
-        @endif
-
         <form action="{{ route('admin.slider-settings.update') }}" method="POST" class="p-8 space-y-10">
             @csrf
             
