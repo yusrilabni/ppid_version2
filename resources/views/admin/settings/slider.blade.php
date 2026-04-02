@@ -68,17 +68,20 @@
                             ];
                         @endphp
                         @foreach($ratios as $ratio)
-                            <label class="relative flex flex-col p-4 border rounded-2xl cursor-pointer transition-all"
-                                   :class="selectedRatio === '{{ $ratio['id'] }}' ? 'border-blue-500 bg-blue-50 ring-2 ring-blue-200' : 'border-gray-100 bg-gray-50 hover:bg-gray-100'">
-                                <input type="radio" name="aspect_ratio" value="{{ $ratio['id'] }}" class="hidden" 
-                                       @click="selectedRatio = '{{ $ratio['id'] }}'"
+                            <div class="relative group">
+                                <input type="radio" id="ratio_{{ $loop->index }}" name="aspect_ratio" value="{{ $ratio['id'] }}" 
+                                       class="peer hidden" 
+                                       x-model="selectedRatio"
                                        {{ $aspectRatio == $ratio['id'] ? 'checked' : '' }}>
-                                <span class="text-sm font-bold text-gray-800">{{ $ratio['label'] }}</span>
-                                <span class="text-[10px] text-gray-400 mt-1 uppercase">{{ $ratio['desc'] }}</span>
+                                <label for="ratio_{{ $loop->index }}" 
+                                       class="flex flex-col p-4 border rounded-2xl cursor-pointer transition-all bg-gray-50 border-gray-100 group-hover:bg-gray-100 peer-checked:border-blue-500 peer-checked:bg-blue-50 peer-checked:ring-2 peer-checked:ring-blue-200">
+                                    <span class="text-sm font-bold text-gray-800">{{ $ratio['label'] }}</span>
+                                    <span class="text-[10px] text-gray-400 mt-1 uppercase">{{ $ratio['desc'] }}</span>
+                                </label>
                                 <template x-if="selectedRatio === '{{ $ratio['id'] }}'">
-                                    <i class="fas fa-check-circle absolute top-2 right-2 text-blue-500 animate-fadeIn"></i>
+                                    <i class="fas fa-check-circle absolute top-2 right-2 text-blue-500 animate-fadeIn pointer-events-none"></i>
                                 </template>
-                            </label>
+                            </div>
                         @endforeach
                     </div>
                     <p class="text-xs text-gray-400 italic mt-4">
