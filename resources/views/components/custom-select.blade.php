@@ -10,21 +10,19 @@
 
 @php
     $id = $id ?? $name;
-    // Normalize options to handle different formats
+    // Normalize options to handle different formats but keep extra keys like 'desc'
     $normalizedOptions = collect($options)->map(function($option) {
         if (is_array($option)) {
-            return [
-                'value' => $option['value'] ?? ($option['unit_id'] ?? ($option['id'] ?? '')),
-                'label' => $option['label'] ?? ($option['unit_nama'] ?? ($option['name'] ?? ''))
-            ];
+            $val = $option['value'] ?? ($option['unit_id'] ?? ($option['id'] ?? ''));
+            $lbl = $option['label'] ?? ($option['unit_nama'] ?? ($option['name'] ?? ''));
+            return array_merge($option, ['value' => $val, 'label' => $lbl]);
         }
         return ['value' => $option, 'label' => $option];
     })->values()->toArray();
 
     // Tampilkan pencarian hanya jika item > 10
     $shouldShowSearch = $searchable && count($normalizedOptions) > 10;
-@endphp
-<div x-data="customSelectComponent({ 
+@endphp<div x-data="customSelectComponent({ 
     data: {{ json_encode($normalizedOptions) }}, 
     selectedValue: '{{ old($name, $value) }}' 
 })" class="relative w-full group">
