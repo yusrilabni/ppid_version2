@@ -83,26 +83,43 @@
                             </div>
                             <div>
                                 <label class="block text-gray-700 text-sm font-semibold mb-2">Status Jabatan</label>
-                                <select name="status_jabatan" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 @error('status_jabatan') border-red-500 @enderror">
-                                    <option value="Definitif" {{ old('status_jabatan', $official->status_jabatan) == 'Definitif' ? 'selected' : '' }}>Definitif</option>
-                                    <option value="Penjabat (Pj)" {{ old('status_jabatan', $official->status_jabatan) == 'Penjabat (Pj)' ? 'selected' : '' }}>Penjabat (Pj)</option>
-                                    <option value="Pelaksana Tugas (Plt)" {{ old('status_jabatan', $official->status_jabatan) == 'Pelaksana Tugas (Plt)' ? 'selected' : '' }}>Pelaksana Tugas (Plt)</option>
-                                    <option value="Pelaksana Harian (Plh)" {{ old('status_jabatan', $official->status_jabatan) == 'Pelaksana Harian (Plh)' ? 'selected' : '' }}>Pelaksana Harian (Plh)</option>
-                                    <option value="Pejabat Sementara (Pjs)" {{ old('status_jabatan', $official->status_jabatan) == 'Pejabat Sementara (Pjs)' ? 'selected' : '' }}>Pejabat Sementara (Pjs)</option>
-                                </select>
+                                @php
+                                    $statusJabatanOptions = [
+                                        ['value' => 'Definitif', 'label' => 'Definitif'],
+                                        ['value' => 'Penjabat (Pj)', 'label' => 'Penjabat (Pj)'],
+                                        ['value' => 'Pelaksana Tugas (Plt)', 'label' => 'Pelaksana Tugas (Plt)'],
+                                        ['value' => 'Pelaksana Harian (Plh)', 'label' => 'Pelaksana Harian (Plh)'],
+                                        ['value' => 'Pejabat Sementara (Pjs)', 'label' => 'Pejabat Sementara (Pjs)'],
+                                    ];
+                                @endphp
+                                <x-custom-select 
+                                    name="status_jabatan" 
+                                    :options="$statusJabatanOptions" 
+                                    :value="old('status_jabatan', $official->status_jabatan)"
+                                    placeholder="Pilih Status Jabatan"
+                                    :searchable="false"
+                                />
                                 @error('status_jabatan') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                             </div>
                             <div>
                                 <label class="block text-gray-700 text-sm font-semibold mb-2">Agama</label>
-                                <select name="religion" id="religion" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 @error('religion') border-red-500 @enderror">
-                                    <option value="">Pilih Agama</option>
-                                    <option value="Islam" {{ old('religion', $official->religion) == 'Islam' ? 'selected' : '' }}>Islam</option>
-                                    <option value="Kristen" {{ old('religion', $official->religion) == 'Kristen' ? 'selected' : '' }}>Kristen</option>
-                                    <option value="Katolik" {{ old('religion', $official->religion) == 'Katolik' ? 'selected' : '' }}>Katolik</option>
-                                    <option value="Hindu" {{ old('religion', $official->religion) == 'Hindu' ? 'selected' : '' }}>Hindu</option>
-                                    <option value="Buddha" {{ old('religion', $official->religion) == 'Buddha' ? 'selected' : '' }}>Buddha</option>
-                                    <option value="Khonghucu" {{ old('religion', $official->religion) == 'Khonghucu' ? 'selected' : '' }}>Khonghucu</option>
-                                </select>
+                                @php
+                                    $religionOptions = [
+                                        ['value' => 'Islam', 'label' => 'Islam'],
+                                        ['value' => 'Kristen', 'label' => 'Kristen'],
+                                        ['value' => 'Katolik', 'label' => 'Katolik'],
+                                        ['value' => 'Hindu', 'label' => 'Hindu'],
+                                        ['value' => 'Buddha', 'label' => 'Buddha'],
+                                        ['value' => 'Khonghucu', 'label' => 'Khonghucu'],
+                                    ];
+                                @endphp
+                                <x-custom-select 
+                                    name="religion" 
+                                    :options="$religionOptions" 
+                                    :value="old('religion', $official->religion)"
+                                    placeholder="Pilih Agama"
+                                    :searchable="false"
+                                />
                                 @error('religion') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                             </div>
                             <div>
@@ -117,22 +134,38 @@
                             </div>
                             <div>
                                 <label class="block text-gray-700 text-sm font-semibold mb-2">Status Pernikahan</label>
-                                <select name="marital_status" id="marital_status" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 @error('marital_status') border-red-500 @enderror">
-                                    <option value="">Pilih Status</option>
-                                    <option value="Belum Menikah" {{ old('marital_status', $official->marital_status) == 'Belum Menikah' ? 'selected' : '' }}>Belum Menikah</option>
-                                    <option value="Menikah" {{ old('marital_status', $official->marital_status) == 'Menikah' ? 'selected' : '' }}>Menikah</option>
-                                    <option value="Cerai Hidup" {{ old('marital_status', $official->marital_status) == 'Cerai Hidup' ? 'selected' : '' }}>Cerai Hidup</option>
-                                    <option value="Cerai Mati" {{ old('marital_status', $official->marital_status) == 'Cerai Mati' ? 'selected' : '' }}>Cerai Mati</option>
-                                </select>
+                                @php
+                                    $maritalOptions = [
+                                        ['value' => 'Belum Menikah', 'label' => 'Belum Menikah'],
+                                        ['value' => 'Menikah', 'label' => 'Menikah'],
+                                        ['value' => 'Cerai Hidup', 'label' => 'Cerai Hidup'],
+                                        ['value' => 'Cerai Mati', 'label' => 'Cerai Mati'],
+                                    ];
+                                @endphp
+                                <x-custom-select 
+                                    name="marital_status" 
+                                    :options="$maritalOptions" 
+                                    :value="old('marital_status', $official->marital_status)"
+                                    placeholder="Pilih Status"
+                                    :searchable="false"
+                                />
                                 @error('marital_status') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                             </div>
                             <div>
                                 <label class="block text-gray-700 text-sm font-semibold mb-2">Jenis Kelamin</label>
-                                <select name="jenis_kelamin" id="jenis_kelamin" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 @error('jenis_kelamin') border-red-500 @enderror">
-                                    <option value="">Pilih Jenis Kelamin</option>
-                                    <option value="Laki-laki" {{ old('jenis_kelamin', $official->jenis_kelamin) == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
-                                    <option value="Perempuan" {{ old('jenis_kelamin', $official->jenis_kelamin) == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
-                                </select>
+                                @php
+                                    $genderOptions = [
+                                        ['value' => 'Laki-laki', 'label' => 'Laki-laki'],
+                                        ['value' => 'Perempuan', 'label' => 'Perempuan'],
+                                    ];
+                                @endphp
+                                <x-custom-select 
+                                    name="jenis_kelamin" 
+                                    :options="$genderOptions" 
+                                    :value="old('jenis_kelamin', $official->jenis_kelamin)"
+                                    placeholder="Pilih Jenis Kelamin"
+                                    :searchable="false"
+                                />
                                 @error('jenis_kelamin') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                             </div>
                             <div>
@@ -157,11 +190,21 @@
                             </div>
                             <div>
                                 <label class="block text-gray-700 text-sm font-semibold mb-2">Status *</label>
-                                <select name="status" required class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200 @error('status') border-red-500 @enderror">
-                                    <option value="active" {{ old('status', $official->status) == 'active' ? 'selected' : '' }}>Aktif</option>
-                                    <option value="inactive" {{ old('status', $official->status) == 'inactive' ? 'selected' : '' }}>Nonaktif</option>
-                                    <option value="draft" {{ old('status', $official->status) == 'draft' ? 'selected' : '' }}>Draft</option>
-                                </select>
+                                @php
+                                    $statusOptions = [
+                                        ['value' => 'active', 'label' => 'Aktif'],
+                                        ['value' => 'inactive', 'label' => 'Nonaktif'],
+                                        ['value' => 'draft', 'label' => 'Draft'],
+                                    ];
+                                @endphp
+                                <x-custom-select 
+                                    name="status" 
+                                    :options="$statusOptions" 
+                                    :value="old('status', $official->status)"
+                                    placeholder="Pilih Status"
+                                    :searchable="false"
+                                    required="true"
+                                />
                                 @error('status') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                             </div>
                         </div>
