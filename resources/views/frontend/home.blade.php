@@ -26,7 +26,7 @@
     </style>
         {{-- Hero Slider --}}
         @if ($sliders->count() > 0)
-            <div class="swiper hero-slider relative w-full overflow-hidden {{ $sliderAspectRatio === 'aspect-first' ? 'aspect-auto' : $sliderAspectRatio }}">
+            <div class="swiper hero-slider relative w-full overflow-hidden {{ ($sliderAspectRatio === 'aspect-first' || $sliderAspectRatio === 'aspect-auto') ? '' : $sliderAspectRatio }}">
                 <div class="swiper-wrapper">
                     @foreach ($sliders as $slider)
                         <div class="swiper-slide relative">
@@ -715,27 +715,28 @@
                 on: {
                     init: function() {
                         if ('{{ $sliderAspectRatio }}' === 'aspect-first') {
-                            const lockToFirstSlide = () => {
-                                // Find the original first slide (data-swiper-slide-index="0")
+                            const lockToFirst = () => {
+                                // Find the original first slide
                                 const firstSlide = this.slides.find(s => s.getAttribute('data-swiper-slide-index') === '0');
-                                if (firstSlide) {
-                                    const img = firstSlide.querySelector('img');
-                                    if (img && img.complete && img.naturalWidth) {
-                                        const ratio = img.naturalHeight / img.naturalWidth;
-                                        const currentWidth = this.el.offsetWidth;
-                                        const targetHeight = currentWidth * ratio;
+                                const firstImg = firstSlide ? firstSlide.querySelector('img') : null;
 
-                                        // Lock the height of the container and all slides
-                                        this.el.style.height = targetHeight + 'px';
-                                        this.slides.forEach(s => s.style.height = targetHeight + 'px');
-                                        this.update();
-                                    } else if (img) {
-                                        img.onload = lockToFirstSlide;
-                                    }
+                                if (firstImg && firstImg.complete && firstImg.naturalWidth) {
+                                    const ratio = firstImg.naturalHeight / firstImg.naturalWidth;
+                                    const containerWidth = this.el.offsetWidth;
+                                    const targetHeight = containerWidth * ratio;
+
+                                    // Force the height on container and all slide elements
+                                    this.el.style.height = targetHeight + 'px';
+                                    this.slides.forEach(s => {
+                                        s.style.height = targetHeight + 'px';
+                                    });
+                                    this.update();
+                                } else if (firstImg) {
+                                    firstImg.onload = lockToFirst;
                                 }
                             };
-                            setTimeout(lockToFirstSlide, 100); // Small delay to ensure DOM is ready
-                            window.addEventListener('resize', lockToFirstSlide);
+                            setTimeout(lockToFirst, 200);
+                            window.addEventListener('resize', lockToFirst);
                         }
                     }
                 },
