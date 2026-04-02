@@ -108,30 +108,32 @@
                                 <label for="jenis_dokumen" class="block text-gray-700 text-sm font-semibold mb-2">Jenis Dokumen</label>
                                 @php
                                     $jenisDokumenOptions = [
-                                        ['value' => 'Profil Badan Publik', 'label' => 'Profil Badan Publik'],
-                                        ['value' => 'Informasi Organisasi & Kepegawaian', 'label' => 'Informasi Organisasi & Kepegawaian'],
-                                        ['value' => 'Dokumen Strategis', 'label' => 'Dokumen Strategis'],
-                                        ['value' => 'Program & Kegiatan', 'label' => 'Program & Kegiatan'],
-                                        ['value' => 'Laporan Kinerja Instansi', 'label' => 'Laporan Kinerja Instansi'],
-                                        ['value' => 'Informasi Keuangan', 'label' => 'Informasi Keuangan'],
-                                        ['value' => 'Pengadaan Barang/Jasa', 'label' => 'Pengadaan Barang/Jasa'],
-                                        ['value' => 'Daftar Aset dan Inventaris', 'label' => 'Daftar Aset dan Inventaris'],
-                                        ['value' => 'Standar Layanan & SOP PPID', 'label' => 'Standar Layanan & SOP PPID'],
-                                        ['value' => 'Daftar Informasi Publik & Laporan PPID', 'label' => 'Daftar Informasi Publik & Laporan PPID'],
-                                        ['value' => 'Regulasi & Peraturan', 'label' => 'Regulasi & Peraturan'],
-                                        ['value' => 'Perjanjian Kerja Sama / MoU', 'label' => 'Perjanjian Kerja Sama / MoU'],
-                                        ['value' => 'Pengumuman & Siaran Pers', 'label' => 'Pengumuman & Siaran Pers'],
-                                        ['value' => 'Informasi Serta Merta', 'label' => 'Informasi Serta Merta'],
-                                        ['value' => 'Lainnya', 'label' => 'Lainnya'],
+                                        ['value' => 'Profil Badan Publik', 'label' => 'Profil Badan Publik', 'desc' => 'Sejarah, Visi Misi, Tupoksi, Struktur Organisasi, Profil Pimpinan, Domisili'],
+                                        ['value' => 'Informasi Organisasi & Kepegawaian', 'label' => 'Informasi Organisasi & Kepegawaian', 'desc' => 'Data Statistik Pegawai, Daftar Pejabat Struktural, LHKPN/LHKASN'],
+                                        ['value' => 'Dokumen Strategis', 'label' => 'Dokumen Strategis', 'desc' => 'RPJMD, Renstra, Renja, Indikator Kinerja Utama/IKU'],
+                                        ['value' => 'Program & Kegiatan', 'label' => 'Program & Kegiatan', 'desc' => 'DPA, Kalender Kegiatan Tahunan, Ringkasan Program Kerja'],
+                                        ['value' => 'Laporan Kinerja Instansi', 'label' => 'Laporan Kinerja Instansi', 'desc' => 'LKjIP, LKPJ, Laporan Tahunan Instansi'],
+                                        ['value' => 'Informasi Keuangan', 'label' => 'Informasi Keuangan', 'desc' => 'RKA, LRA, Neraca, Laporan Arus Kas, CALK, Opini BPK'],
+                                        ['value' => 'Pengadaan Barang/Jasa', 'label' => 'Pengadaan Barang/Jasa', 'desc' => 'RUP, Kerangka Acuan Kerja/KAK, Ringkasan Kontrak, Daftar Pemenang Tender'],
+                                        ['value' => 'Daftar Aset dan Inventaris', 'label' => 'Daftar Aset dan Inventaris', 'desc' => 'Buku Inventaris Barang, Rekapitulasi Aset Daerah'],
+                                        ['value' => 'Standar Layanan & SOP PPID', 'label' => 'Standar Layanan & SOP PPID', 'desc' => 'Maklumat Pelayanan, SOP Permohonan Informasi, SOP Sengketa, Standar Pelayanan Minimal/SPM'],
+                                        ['value' => 'Daftar Informasi Publik & Laporan PPID', 'label' => 'Daftar Informasi Publik & Laporan PPID', 'desc' => 'Buku DIP Tahunan, Register Permohonan, Daftar Informasi Dikecualikan, Laporan Layanan Informasi'],
+                                        ['value' => 'Regulasi & Peraturan', 'label' => 'Regulasi & Peraturan', 'desc' => 'Undang-Undang, Peraturan Pemerintah, Perda, Perbup, SK Kepala Daerah/Dinas'],
+                                        ['value' => 'Perjanjian Kerja Sama / MoU', 'label' => 'Perjanjian Kerja Sama / MoU', 'desc' => 'Nota Kesepahaman Antar Lembaga, Kontrak Kerja Sama Pihak Ketiga'],
+                                        ['value' => 'Pengumuman & Siaran Pers', 'label' => 'Pengumuman & Siaran Pers', 'desc' => 'Pengumuman Resmi, Siaran Pers, Surat Edaran, Hasil Survei Kepuasan Masyarakat/SKM'],
+                                        ['value' => 'Informasi Serta Merta', 'label' => 'Informasi Serta Merta', 'desc' => 'Peringatan Dini Bencana, Informasi Gangguan Layanan Massal, Protokol Darurat'],
+                                        ['value' => 'Lainnya', 'label' => 'Lainnya', 'desc' => ''],
                                     ];
                                 @endphp
-                                <x-custom-select 
-                                    name="jenis_dokumen" 
-                                    :options="$jenisDokumenOptions" 
-                                    :value="old('jenis_dokumen')"
-                                    placeholder="Pilih Jenis Dokumen"
-                                    :searchable="true"
-                                />
+                                <div @change="const item = $event.detail.item; if(item) { document.getElementById('jenis_dokumen_desc').innerText = item.desc || ''; }">
+                                    <x-custom-select 
+                                        name="jenis_dokumen" 
+                                        :options="$jenisDokumenOptions" 
+                                        :value="old('jenis_dokumen')"
+                                        placeholder="Pilih Jenis Dokumen"
+                                        :searchable="true"
+                                    />
+                                </div>
                                 <div id="jenis_dokumen_desc" class="mt-2 text-xs text-blue-600 font-medium italic min-h-[1rem]"></div>
                             </div>
                             <div><label for="tahun" class="block text-gray-700 text-sm font-semibold mb-2">Tahun Dokumen <span class="text-red-500">*</span></label><input type="date" name="tahun" id="tahun" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" value="{{ old('tahun', date('Y-m-d')) }}" required x-model="tahun"></div>
