@@ -58,7 +58,7 @@
 
                                 @if ($canManage)
                                     <div class="pt-2">
-                                        <a href="{{ route('opd.manage-public', $organization->id) }}" class="inline-flex items-center justify-center bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-6 rounded-xl transition-all duration-300 w-full shadow-lg shadow-amber-100 hover:shadow-amber-200">
+                                        <a href="{{ route('opd.manage-public', ['organization' => $organization->id]) }}" class="inline-flex items-center justify-center bg-amber-500 hover:bg-amber-600 text-white font-bold py-2.5 px-6 rounded-xl transition-all duration-300 w-full shadow-lg shadow-amber-100 hover:shadow-amber-200">
                                             <i class="fas fa-edit mr-2"></i> Kelola Struktur & Web
                                         </a>
                                     </div>

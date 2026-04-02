@@ -12,12 +12,19 @@ use App\Http\Controllers\Frontend\DIPController;
 use App\Http\Controllers\Frontend\LhkpnController;
 use App\Http\Controllers\Frontend\ExtraToolsController;
 
-// Proxy route for Dinas - moved here for diagnostics
+// --- HIGH PRIORITY ROUTES (TO AVOID 404) ---
+Route::middleware('auth')->group(function () {
+    // URL unik untuk mengelola profil OPD agar tidak bentrok dengan cache rute lama
+    Route::get('/update-profil-opd/{organization}', [FrontendController::class, 'manageStrukturOrganisasiPublic'])->name('opd.manage-public')->whereNumber('organization');
+    Route::post('/update-profil-opd/{organization}', [FrontendController::class, 'updateStrukturOrganisasiPublic'])->name('opd.update-public')->whereNumber('organization');
+});
+
+// Proxy route for Dinas
 Route::get('/dinas', [DinasController::class, 'index'])->name('dinas.index');
 Route::get('/dinas/dip/{organization:slug}', [DinasController::class, 'opdDip'])->name('opd.dip.show');
 Route::get('/dinas/dip/{organization:slug}/export', [DinasController::class, 'export'])->name('opd.dip.export');
 
-// RSS Feed & Widget Routes (PRIORITY - MUST BE ABOVE CATCH-ALL)
+// RSS Feed & Widget Routes
 Route::get('/rss-feed', [ExtraToolsController::class, 'rssIndex'])->name('extra.rss');
 Route::get('/rss/generate', [ExtraToolsController::class, 'rssGenerate'])->name('extra.rss.generate');
 Route::get('/widget', [ExtraToolsController::class, 'widgetIndex'])->name('extra.widget');
@@ -67,10 +74,6 @@ Route::post('/login/protection/verify', [App\Http\Controllers\Auth\LoginProtecti
 
 // Authenticated Routes
 Route::middleware('auth')->group(function () {
-    // Priority Route for OPD Management (Frontend)
-    Route::get('/manage-opd-profile/{organization}', [FrontendController::class, 'manageStrukturOrganisasiPublic'])->name('opd.manage-public')->whereNumber('organization');
-    Route::post('/manage-opd-profile/{organization}', [FrontendController::class, 'updateStrukturOrganisasiPublic'])->name('opd.update-public')->whereNumber('organization');
-
     Route::get('/dashboard', function () { return view('dashboard'); })->name('dashboard');
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
