@@ -31,7 +31,7 @@
             </div>
 
             <!-- Search and Filter Controls -->
-            <div class="mt-6 p-3 bg-gray-50 rounded-lg border border-gray-200 overflow-hidden">
+            <div class="mt-6 p-3 bg-gray-50 rounded-lg border border-gray-200 relative z-20">
                 <form id="searchForm" method="GET" action="">
                     <div class="flex flex-col lg:flex-row gap-3 lg:items-end">
                         <!-- Combined Search Input (Title/Description/Unit) -->
