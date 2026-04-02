@@ -76,15 +76,12 @@
                     padding-bottom: 0 !important;
                     margin-bottom: 0 !important;
                 }
-                .hero-slider .swiper-wrapper {
-                    height: auto !important; /* Mencegah wrapper melar melebihi gambar */
-                }
                 .hero-slider .swiper-pagination {
                     line-height: 0 !important;
-                    pointer-events: none; /* Klik tembus ke link di bawahnya jika perlu */
+                    pointer-events: none;
                 }
                 .hero-slider .swiper-pagination-bullet {
-                    pointer-events: auto; /* Titik tetap bisa diklik */
+                    pointer-events: auto;
                     background: white !important;
                     opacity: 0.5;
                     width: 8px;
@@ -736,82 +733,68 @@
 @endsection
 
 @push('scripts')
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const heroSwiper = new Swiper('.hero-slider', {
-                loop: true,
-                effect: '{{ $sliderAnimationType }}',
-                autoHeight: {{ $sliderAspectRatio === 'aspect-auto' ? 'true' : 'false' }},
-                speed: 1000,
-                observer: true,
-                observeParents: true,
-                on: {
-                    init: function() {
-                        this.update(); // Force update on init
-                        if ('{{ $sliderAspectRatio }}' === 'aspect-first') {                            const lockToFirst = () => {
-                                // Find the original first slide
-                                const firstSlide = this.slides.find(s => s.getAttribute('data-swiper-slide-index') === '0');
-                                const firstImg = firstSlide ? firstSlide.querySelector('img') : null;
-
-                                if (firstImg && firstImg.complete && firstImg.naturalWidth) {
-                                    const ratio = firstImg.naturalHeight / firstImg.naturalWidth;
-                                    const containerWidth = this.el.offsetWidth;
-                                    const targetHeight = containerWidth * ratio;
-
-                                    // Force the height on container and all slide elements
-                                    this.el.style.height = targetHeight + 'px';
-                                    this.slides.forEach(s => {
-                                        s.style.height = targetHeight + 'px';
-                                    });
-                                    this.update();
-                                } else if (firstImg) {
-                                    firstImg.onload = lockToFirst;
-                                }
-                            };
-                            setTimeout(lockToFirst, 200);
-                            window.addEventListener('resize', lockToFirst);
+        <script>
+            document.addEventListener('DOMContentLoaded', function() {
+                const heroSwiper = new Swiper('.hero-slider', {
+                    loop: true,
+                    effect: '{{ $sliderAnimationType }}',
+                    autoHeight: {{ ($sliderAspectRatio === 'aspect-auto' || $sliderAspectRatio === 'aspect-first') ? 'true' : 'false' }},
+                    speed: 1000,
+                    observer: true,
+                    observeParents: true,
+                    on: {
+                        init: function() {
+                            const self = this;
+                            if ('{{ $sliderAspectRatio }}' === 'aspect-first') {
+                                const lockToFirst = () => {
+                                    const firstSlide = self.slides.find(s => s.getAttribute('data-swiper-slide-index') === '0');
+                                    const firstImg = firstSlide ? firstSlide.querySelector('img') : null;
+                                    if (firstImg && firstImg.complete && firstImg.naturalWidth) {
+                                        const ratio = firstImg.naturalHeight / firstImg.naturalWidth;
+                                        const targetHeight = self.el.offsetWidth * ratio;
+                                        self.el.style.height = targetHeight + 'px';
+                                        self.slides.forEach(s => s.style.height = targetHeight + 'px');
+                                        self.update();
+                                    } else if (firstImg) {
+                                        firstImg.onload = lockToFirst;
+                                    }
+                                };
+                                setTimeout(lockToFirst, 200);
+                                window.addEventListener('resize', lockToFirst);
+                            } else {
+                                setTimeout(() => { self.update(); }, 300);
+                            }
+                        },
+                        slideChangeTransitionStart: function() {
+                            if (this.params.autoHeight) {
+                                this.updateAutoHeight(500);
+                            }
                         }
-                    }
-                },
-                autoplay: {                    delay: {{ $transitionDuration }},
-                    disableOnInteraction: false,
-                },
-                pagination: {
-                    el: '.swiper-pagination',
-                    clickable: true,
-                },
-                navigation: {
-                    nextEl: '.swiper-button-next-custom',
-                    prevEl: '.swiper-button-prev-custom',
-                },
-                @if($sliderAnimationType === 'fade')
-                fadeEffect: {
-                    crossFade: true
-                },
-                @elseif($sliderAnimationType === 'cube')
-                cubeEffect: {
-                    shadow: true,
-                    slideShadows: true,
-                    shadowOffset: 20,
-                    shadowScale: 0.94,
-                },
-                @elseif($sliderAnimationType === 'flip')
-                flipEffect: {
-                    rotate: 30,
-                    slideShadows: true,
-                },
-                @elseif($sliderAnimationType === 'coverflow')
-                coverflowEffect: {
-                    rotate: 50,
-                    stretch: 0,
-                    depth: 100,
-                    modifier: 1,
-                    slideShadows: true,
-                },
-                @endif
+                    },
+                    autoplay: {
+                        delay: {{ $transitionDuration }},
+                        disableOnInteraction: false,
+                    },
+                    pagination: {
+                        el: '.swiper-pagination',
+                        clickable: true,
+                    },
+                    navigation: {
+                        nextEl: '.swiper-button-next-custom',
+                        prevEl: '.swiper-button-prev-custom',
+                    },
+                    @if($sliderAnimationType === 'fade')
+                    fadeEffect: { crossFade: true },
+                    @elseif($sliderAnimationType === 'cube')
+                    cubeEffect: { shadow: true, slideShadows: true, shadowOffset: 20, shadowScale: 0.94 },
+                    @elseif($sliderAnimationType === 'flip')
+                    flipEffect: { rotate: 30, slideShadows: true },
+                    @elseif($sliderAnimationType === 'coverflow')
+                    coverflowEffect: { rotate: 50, stretch: 0, depth: 100, modifier: 1, slideShadows: true },
+                    @endif
+                });
             });
-        });
-    </script>
+        </script>
     <script>
         document.addEventListener('DOMContentLoaded', function() {            var latestInfoSwiper = new Swiper('.latest-info-carousel', {
                 slidesPerView: 1,
