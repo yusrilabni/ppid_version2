@@ -534,6 +534,7 @@
                     
                     // Comprehensive mapping for titles and abbreviations
                     const replacements = [
+                        { p: /\bA\.\s/gi, r: 'Andi ' },
                         { p: /\bDra\./gi, r: 'Doktoranda' },
                         { p: /\bDrs\./gi, r: 'Doktorandus' },
                         { p: /\bDr\./gi, r: 'Doktor' },
