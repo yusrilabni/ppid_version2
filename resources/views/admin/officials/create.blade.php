@@ -154,6 +154,18 @@
                         </div>
 
                         <div class="space-y-1">
+                            <label class="block text-sm font-semibold text-gray-700">Status Pernikahan</label>
+                            <select name="marital_status" id="marital_status"
+                                    class="w-full px-4 py-3 rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition-all duration-200">
+                                <option value="">Pilih Status</option>
+                                <option value="Belum Menikah" {{ old('marital_status') == 'Belum Menikah' ? 'selected' : '' }}>Belum Menikah</option>
+                                <option value="Menikah" {{ old('marital_status') == 'Menikah' ? 'selected' : '' }}>Menikah</option>
+                                <option value="Cerai Hidup" {{ old('marital_status') == 'Cerai Hidup' ? 'selected' : '' }}>Cerai Hidup</option>
+                                <option value="Cerai Mati" {{ old('marital_status') == 'Cerai Mati' ? 'selected' : '' }}>Cerai Mati</option>
+                            </select>
+                        </div>
+
+                        <div class="space-y-1">
                             <label class="block text-sm font-semibold text-gray-700">Jenis Kelamin</label>
                             <select name="jenis_kelamin" id="jenis_kelamin"
                                     class="w-full px-4 py-3 rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition-all duration-200">
@@ -161,6 +173,38 @@
                                 <option value="Laki-laki" {{ old('jenis_kelamin') == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
                                 <option value="Perempuan" {{ old('jenis_kelamin') == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
                             </select>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="block text-sm font-semibold text-gray-700">Pekerjaan</label>
+                            <input type="text" name="occupation" value="{{ old('occupation', '') }}"
+                                   class="w-full px-4 py-3 rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition-all duration-200"
+                                   placeholder="Contoh: Pegawai Negeri Sipil">
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="block text-sm font-semibold text-gray-700">Alamat Email</label>
+                            <input type="email" name="email" value="{{ old('email', '') }}"
+                                   class="w-full px-4 py-3 rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition-all duration-200"
+                                   placeholder="nama@email.com">
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="block text-sm font-semibold text-gray-700">Alamat Rumah</label>
+                            <textarea name="home_address" rows="1"
+                                      class="w-full px-4 py-3 rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition-all duration-200 min-h-[50px]">{{ old('home_address', '') }}</textarea>
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="block text-sm font-semibold text-gray-700">Mulai Jabatan</label>
+                            <input type="date" name="start_term" value="{{ old('start_term', '') }}"
+                                   class="w-full px-4 py-3 rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition-all duration-200">
+                        </div>
+
+                        <div class="space-y-1">
+                            <label class="block text-sm font-semibold text-gray-700">Akhir Jabatan</label>
+                            <input type="date" name="end_term" value="{{ old('end_term', '') }}"
+                                   class="w-full px-4 py-3 rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition-all duration-200">
                         </div>
 
                         <div class="space-y-1 md:col-span-2">
