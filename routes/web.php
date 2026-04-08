@@ -62,29 +62,6 @@ Route::get('/logout', function() {
     return redirect()->route('login');
 });
 
-// Diagnostic Route
-Route::get('/test-telegram', function() {
-    $token = "8684002355:AAEvGLpwQVKHF8nkmeznuLOjTclkU52pzlk";
-    $chat_id = "-1003717845788";
-    
-    echo "<b>Diagnostic Force Mode:</b><br>";
-    echo "Token: OK<br>";
-    echo "Chat ID: " . $chat_id . " (Supergroup)<br><br>";
-
-    try {
-        $response = \Illuminate\Support\Facades\Http::timeout(10)->post("https://api.telegram.org/bot{$token}/sendMessage", [
-            'chat_id' => $chat_id,
-            'text' => "<b>TES KONEKSI PPID (FORCE MODE)</b>\nJika Anda melihat pesan ini, berarti masalah cache ID sudah teratasi.",
-            'parse_mode' => 'HTML'
-        ]);
-
-        echo "<b>Response from Telegram:</b><br>";
-        echo "<pre>" . json_encode($response->json(), JSON_PRETTY_PRINT) . "</pre>";
-    } catch (\Exception $e) {
-        echo "<b>Fatal Exception:</b> " . $e->getMessage();
-    }
-});
-
 // OAuth & Security
 Route::get('/auth/google', [HybridLoginController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [HybridLoginController::class, 'handleGoogleCallback']);
