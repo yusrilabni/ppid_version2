@@ -13,13 +13,6 @@ use App\Services\TelegramService;
 
 class LaporanPermohonanController extends Controller
 {
-    protected $telegram;
-
-    public function __construct(TelegramService $telegram)
-    {
-        $this->telegram = $telegram;
-    }
-
     private function getUnitData()
     {
         return GeneralHelper::getUnitData();
@@ -276,7 +269,7 @@ class LaporanPermohonanController extends Controller
                  . "🔒 *Privasi:* {$permohonan->privacy_status}\n\n"
                  . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan->id) . ")";
         
-        $this->telegram->sendMessage($message);
+        app(TelegramService::class)->sendMessage($message);
 
         return redirect()->route('laporan.permohonan.saya')->with('success', 'Permohonan informasi berhasil dikirim.');
     }
@@ -315,7 +308,7 @@ class LaporanPermohonanController extends Controller
                  . "📩 *Pesan:* \n_{$validatedData['message']}_\n\n"
                  . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonanInformasi->id) . ")";
         
-        $this->telegram->sendMessage($tgMessage);
+        app(TelegramService::class)->sendMessage($tgMessage);
 
         // 5. Redirect back with a success message
         return redirect()->route('laporan.permohonan.show', $permohonanInformasi)
@@ -360,7 +353,7 @@ class LaporanPermohonanController extends Controller
                  . ($isFirstRating ? "📌 Permohonan ditandai sebagai *Selesai*.\n" : "🔄 Penilaian diperbarui.\n")
                  . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonanInformasi->id) . ")";
         
-        $this->telegram->sendMessage($tgMessage);
+        app(TelegramService::class)->sendMessage($tgMessage);
 
         // 5. Redirect back with a success message
         $message = $isFirstRating 

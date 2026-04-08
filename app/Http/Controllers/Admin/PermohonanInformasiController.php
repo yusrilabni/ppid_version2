@@ -12,13 +12,6 @@ use App\Services\TelegramService;
 
 class PermohonanInformasiController extends Controller
 {
-    protected $telegram;
-
-    public function __construct(TelegramService $telegram)
-    {
-        $this->telegram = $telegram;
-    }
-
     /**
      * Display a listing of the resource.
      */
@@ -85,7 +78,7 @@ class PermohonanInformasiController extends Controller
                      . "📌 Status diperbarui menjadi *Diproses*.\n"
                      . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan->id) . ")";
             
-            $this->telegram->sendMessage($tgMessage);
+            app(TelegramService::class)->sendMessage($tgMessage);
         }
 
         return redirect()->route('admin.permohonan-informasi.show', $permohonan)
@@ -157,7 +150,7 @@ class PermohonanInformasiController extends Controller
                  . "🏁 Permohonan telah ditandai sebagai *Selesai* oleh Admin.\n\n"
                  . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan_informasi->id) . ")";
         
-        $this->telegram->sendMessage($tgMessage);
+        app(TelegramService::class)->sendMessage($tgMessage);
 
         return redirect()->route('admin.permohonan-informasi.index')
                          ->with('success', 'Permohonan ditandai sebagai Selesai.');
@@ -178,7 +171,7 @@ class PermohonanInformasiController extends Controller
                  . "🚫 Permohonan telah *Ditolak* oleh Admin.\n\n"
                  . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan_informasi->id) . ")";
         
-        $this->telegram->sendMessage($tgMessage);
+        app(TelegramService::class)->sendMessage($tgMessage);
 
         // Optionally, add a default rejection response
         PermohonanResponse::create([
