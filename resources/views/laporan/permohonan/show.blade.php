@@ -393,7 +393,7 @@
                     <p class="text-sm text-gray-600 mb-4">
                         Anda dapat memberikan tanggapan atau pertanyaan lanjutan terkait permohonan ini.
                     </p>
-                    <form action="{{ route('laporan.permohonan.respond', $permohonan) }}" method="POST">
+                    <form action="{{ route('laporan.permohonan.respond', $permohonan) }}" method="POST" id="respondForm">
                         @csrf
                         <div class="mb-4">
                             <label for="message" class="block text-sm font-medium text-gray-700 mb-2">
@@ -503,5 +503,23 @@
     label {
         transition: all 0.2s ease;
     }
-</style>
-@endsection
+    </style>
+
+    <script>
+    document.addEventListener('DOMContentLoaded', function() {
+    const respondForm = document.getElementById('respondForm');
+    if (respondForm) {
+        respondForm.addEventListener('submit', function(e) {
+            const message = document.getElementById('message').value;
+            const email = "{{ auth()->user()->email ?? '' }}";
+            const waNumber = "6285156878911";
+            const text = `*Tanggapan Permohonan Informasi*\n\n*Email:* ${email}\n*Pesan:* \n${message}`;
+            const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(text)}`;
+
+            // Open WA link in a new tab
+            window.open(waUrl, '_blank');
+        });
+    }
+    });
+    </script>
+    @endsection
