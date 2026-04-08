@@ -51,15 +51,24 @@ class PermohonanInformasiController extends Controller
             $permohonan->status_permohonan = 'diproses';
             $permohonan->save();
 
-            // Kirim Notifikasi Telegram
-            $escNama = GeneralHelper::escapeTelegramMarkdown($permohonan->nama_pemohon);
+            $admin = Auth::user();
+            $adminName = GeneralHelper::escapeTelegramMarkdown($admin->name);
+            $adminNip = GeneralHelper::escapeTelegramMarkdown($admin->nip ?? '-');
+            
+            // Masking pelapor jika Anonim/Rahasia
+            $isPrivate = in_array($permohonan->privacy_status, ['Anonim', 'Rahasia']);
+            $pelaporName = $isPrivate ? "Sesuai Prosedur Keamanan (" . $permohonan->privacy_status . ")" : $permohonan->nama_pemohon;
+            $escPelapor = GeneralHelper::escapeTelegramMarkdown($pelaporName);
             $escMsg = GeneralHelper::escapeTelegramMarkdown($request->message);
 
+            // Kirim Notifikasi Telegram
             $tgMsg = "👨‍💼 *Admin Memberikan Tanggapan*\n\n"
                    . "🆔 *ID Permohonan:* #{$permohonan->unique_code}\n"
-                   . "👤 *Kepada:* {$escNama}\n"
+                   . "👤 *Kepada:* {$escPelapor}\n"
                    . "🏷️ *Tipe:* {$request->response_type}\n"
                    . "📩 *Pesan:* \n_{$escMsg}_\n\n"
+                   . "🛠️ *Oleh Admin:* {$adminName}\n"
+                   . "🪪 *NIP:* {$adminNip}\n"
                    . "📌 Status diperbarui menjadi *Diproses*.\n"
                    . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan->id) . ")";
             
@@ -67,20 +76,21 @@ class PermohonanInformasiController extends Controller
 
             // Siapkan URL WhatsApp untuk Pemohon
             $waPhone = GeneralHelper::formatPhoneNumber($permohonan->nomor_telepon_pemohon);
+            $directLink = route('laporan.permohonan.show', $permohonan->unique_code);
             $waMessage = "*NOTIFIKASI PPID KABUPATEN SINJAI*\n\n"
                        . "Halo {$permohonan->nama_pemohon},\n"
                        . "Permohonan Informasi Anda dengan ID *#{$permohonan->unique_code}* telah mendapatkan tanggapan dari Admin.\n\n"
                        . "*Status:* Diproses\n"
                        . "*Pesan Admin:* \n_{$request->message}_\n\n"
-                       . "Silakan cek detail lengkap dan unduh file (jika ada) melalui tautan berikut:\n"
-                       . route('laporan.permohonan.show', $permohonan->unique_code) . "\n\n"
+                       . "Silakan cek detail lengkap melalui tautan berikut:\n"
+                       . $directLink . "\n\n"
                        . "Terima kasih.";
             
             $waUrl = "https://wa.me/{$waPhone}?text=" . urlencode($waMessage);
 
             return redirect()->route('admin.permohonan-informasi.show', $permohonan)
                              ->with('success', 'Jawaban berhasil disimpan. Silakan klik link berikut untuk meneruskan ke WhatsApp Pemohon: <a href="'.$waUrl.'" target="_blank" class="font-bold underline text-blue-600">Kirim WhatsApp ke Pemohon</a>')
-                             ->with('wa_url', $waUrl); // Simpan di session agar bisa di-auto-open oleh view
+                             ->with('wa_url', $waUrl);
         }
 
         return redirect()->route('admin.permohonan-informasi.show', $permohonan)
@@ -138,11 +148,21 @@ class PermohonanInformasiController extends Controller
         $permohonan_informasi->status_permohonan = 'selesai';
         $permohonan_informasi->save();
 
+        $admin = Auth::user();
+        $adminName = GeneralHelper::escapeTelegramMarkdown($admin->name);
+        $adminNip = GeneralHelper::escapeTelegramMarkdown($admin->nip ?? '-');
+
+        // Masking pelapor jika Anonim/Rahasia
+        $isPrivate = in_array($permohonan_informasi->privacy_status, ['Anonim', 'Rahasia']);
+        $pelaporName = $isPrivate ? "Sesuai Prosedur Keamanan (" . $permohonan_informasi->privacy_status . ")" : $permohonan_informasi->nama_pemohon;
+        $escPelapor = GeneralHelper::escapeTelegramMarkdown($pelaporName);
+
         // Kirim Notifikasi Telegram
-        $escNama = GeneralHelper::escapeTelegramMarkdown($permohonan_informasi->nama_pemohon);
         $tgMsg = "✅ *Permohonan Selesai*\n\n"
                . "🆔 *ID Permohonan:* #{$permohonan_informasi->unique_code}\n"
-               . "👤 *Pemohon:* {$escNama}\n"
+               . "👤 *Pemohon:* {$escPelapor}\n"
+               . "🛠️ *Oleh Admin:* {$adminName}\n"
+               . "🪪 *NIP:* {$adminNip}\n"
                . "🏁 Permohonan telah ditandai sebagai *Selesai* oleh Admin.\n\n"
                . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan_informasi->id) . ")";
         
@@ -150,11 +170,12 @@ class PermohonanInformasiController extends Controller
 
         // Notifikasi WhatsApp Selesai
         $waPhone = GeneralHelper::formatPhoneNumber($permohonan_informasi->nomor_telepon_pemohon);
+        $directLink = route('laporan.permohonan.show', $permohonan_informasi->unique_code);
         $waMessage = "*NOTIFIKASI PPID KABUPATEN SINJAI*\n\n"
                    . "Halo {$permohonan_informasi->nama_pemohon},\n"
                    . "Permohonan Informasi Anda (#{$permohonan_informasi->unique_code}) telah dinyatakan *SELESAI* oleh Admin.\n\n"
                    . "Silakan berikan penilaian Anda terhadap layanan kami melalui tautan berikut:\n"
-                   . route('laporan.permohonan.show', $permohonan_informasi->unique_code) . "\n\n"
+                   . $directLink . "\n\n"
                    . "Terima kasih.";
         
         $waUrl = "https://wa.me/{$waPhone}?text=" . urlencode($waMessage);
@@ -172,11 +193,21 @@ class PermohonanInformasiController extends Controller
         $permohonan_informasi->status_permohonan = 'ditolak';
         $permohonan_informasi->save();
 
+        $admin = Auth::user();
+        $adminName = GeneralHelper::escapeTelegramMarkdown($admin->name);
+        $adminNip = GeneralHelper::escapeTelegramMarkdown($admin->nip ?? '-');
+
+        // Masking pelapor jika Anonim/Rahasia
+        $isPrivate = in_array($permohonan_informasi->privacy_status, ['Anonim', 'Rahasia']);
+        $pelaporName = $isPrivate ? "Sesuai Prosedur Keamanan (" . $permohonan_informasi->privacy_status . ")" : $permohonan_informasi->nama_pemohon;
+        $escPelapor = GeneralHelper::escapeTelegramMarkdown($pelaporName);
+
         // Kirim Notifikasi Telegram
-        $escNama = GeneralHelper::escapeTelegramMarkdown($permohonan_informasi->nama_pemohon);
         $tgMsg = "❌ *Permohonan Ditolak*\n\n"
                . "🆔 *ID Permohonan:* #{$permohonan_informasi->unique_code}\n"
-               . "👤 *Pemohon:* {$escNama}\n"
+               . "👤 *Pemohon:* {$escPelapor}\n"
+               . "🛠️ *Oleh Admin:* {$adminName}\n"
+               . "🪪 *NIP:* {$adminNip}\n"
                . "🚫 Permohonan telah *Ditolak* oleh Admin.\n\n"
                . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan_informasi->id) . ")";
         
@@ -192,11 +223,12 @@ class PermohonanInformasiController extends Controller
 
         // Notifikasi WhatsApp Ditolak
         $waPhone = GeneralHelper::formatPhoneNumber($permohonan_informasi->nomor_telepon_pemohon);
+        $directLink = route('laporan.permohonan.show', $permohonan_informasi->unique_code);
         $waMessage = "*NOTIFIKASI PPID KABUPATEN SINJAI*\n\n"
                    . "Mohon maaf {$permohonan_informasi->nama_pemohon},\n"
                    . "Permohonan Informasi Anda (#{$permohonan_informasi->unique_code}) telah *DITOLAK* oleh Admin.\n\n"
                    . "Silakan cek alasan penolakan melalui tautan berikut:\n"
-                   . route('laporan.permohonan.show', $permohonan_informasi->unique_code) . "\n\n"
+                   . $directLink . "\n\n"
                    . "Terima kasih.";
         
         $waUrl = "https://wa.me/{$waPhone}?text=" . urlencode($waMessage);
