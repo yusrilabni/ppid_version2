@@ -398,7 +398,10 @@ class LaporanPermohonanController extends Controller
 
     public function downloadPDF(Request $request, PermohonanInformasi $permohonanInformasi)
     {
-        // Apply the same access control as the show method
+        // 1. Eager load relationships to prevent lazy loading in view
+        $permohonanInformasi->load(['user', 'responses.user']);
+
+        // 2. Access control
         $isOwner = auth()->check() && auth()->id() == $permohonanInformasi->user_id;
         $isPubliclyVisible = in_array($permohonanInformasi->privacy_status, ['Publik', 'Anonim']) &&
                              in_array($permohonanInformasi->status_permohonan, ['selesai', 'ditolak']);
@@ -407,25 +410,41 @@ class LaporanPermohonanController extends Controller
             abort(404, 'Permohonan informasi tidak ditemukan atau tidak dapat diakses.');
         }
 
+        // 3. Prepare Logo (use fallback if not exists)
         $ppidLogoBase64 = '';
-        $logoPath = storage_path('app/public/logo/ppid.webp'); // Get absolute path
+        $logoPath = public_path('storage/logo/ppid.webp');
         
-        if (file_exists($logoPath)) { // Use standard file_exists check
-            $logoContent = file_get_contents($logoPath);
-            $ppidLogoBase64 = 'data:image/webp;base64,' . base64_encode($logoContent);
+        // If webp fails in dompdf, try standard path
+        if (!file_exists($logoPath)) {
+            $logoPath = storage_path('app/public/logo/ppid.webp');
         }
 
-        $pdf = Pdf::loadView('laporan.permohonan.pdf', [
-            'permohonan' => $permohonanInformasi,
-            'ppidLogoBase64' => $ppidLogoBase64
-        ]);
-        
-        $fileName = 'laporan-permohonan-' . $permohonanInformasi->unique_code . '.pdf';
-
-        if ($request->query('action') === 'preview') {
-            return $pdf->stream($fileName);
+        if (file_exists($logoPath)) {
+            try {
+                $logoContent = file_get_contents($logoPath);
+                $ppidLogoBase64 = 'data:image/webp;base64,' . base64_encode($logoContent);
+            } catch (\Exception $e) {
+                Log::error("Failed to encode PDF logo: " . $e->getMessage());
+            }
         }
 
-        return $pdf->download($fileName);
+        // 4. Generate PDF
+        try {
+            $pdf = Pdf::loadView('laporan.permohonan.pdf', [
+                'permohonan' => $permohonanInformasi,
+                'ppidLogoBase64' => $ppidLogoBase64
+            ]);
+            
+            $fileName = 'laporan-permohonan-' . $permohonanInformasi->unique_code . '.pdf';
+
+            if ($request->query('action') === 'preview') {
+                return $pdf->stream($fileName);
+            }
+
+            return $pdf->download($fileName);
+        } catch (\Exception $e) {
+            Log::error("PDF Generation Error: " . $e->getMessage());
+            return back()->with('error', 'Gagal membuat file PDF. Silakan hubungi admin.');
+        }
     }
 }

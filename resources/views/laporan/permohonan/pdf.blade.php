@@ -19,27 +19,16 @@
         /* HEADER */
         .header-container {
             text-align: center;
-            margin: 0 0 8px 0;
-            padding: 0;
+            margin-bottom: 20px;
         }
 
-        .logo-circle {
-            width: 200px;
-            height: 200px;
-            border-radius: 50%;
-            background: linear-gradient(135deg, #3b82f6 0%, #4f46e5 100%);
-            margin: 0 auto 5px auto;
-            padding: 10px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
+        .logo-container {
+            margin-bottom: 10px;
         }
 
-        .logo-circle img {
-            width: 180px;
-            height: 180px;
-            border-radius: 50%;
-            object-fit: cover;
+        .logo-img {
+            width: 120px;
+            height: auto;
         }
 
         .header-title {
@@ -181,12 +170,13 @@
 <body>
     <!-- HEADER -->
     <div class="header-container">
-        <div class="logo-circle">
-            <img src="{{ $ppidLogoBase64 }}" alt="Logo PPID">
+        @if($ppidLogoBase64)
+        <div class="logo-container">
+            <img src="{{ $ppidLogoBase64 }}" alt="Logo PPID" class="logo-img">
         </div>
+        @endif
         <div class="header-title">Detail Permohonan Informasi</div>
-        <div class="header-subtitle">Lihat rincian lengkap permohonan informasi Anda, termasuk status dan riwayat
-            tanggapan.</div>
+        <div class="header-subtitle">Laporan resmi rincian permohonan informasi publik.</div>
     </div>
 
     <!-- BADGES -->
