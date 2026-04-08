@@ -398,6 +398,9 @@ class LaporanPermohonanController extends Controller
 
     public function downloadPDF(Request $request, PermohonanInformasi $permohonanInformasi)
     {
+        ini_set('memory_limit', '256M');
+        ini_set('max_execution_time', '120');
+
         // 1. Eager load relationships to prevent lazy loading in view
         $permohonanInformasi->load(['user', 'responses.user']);
 
@@ -410,8 +413,9 @@ class LaporanPermohonanController extends Controller
             abort(404, 'Permohonan informasi tidak ditemukan atau tidak dapat diakses.');
         }
 
-        // 3. Prepare Logo (PNG is more stable for dompdf)
+        // 3. Prepare Logo (Temporarily disabled for debugging)
         $ppidLogoBase64 = '';
+        /*
         $logoPath = storage_path('app/public/logo/Logo PPID With Caption.png');
         
         if (file_exists($logoPath)) {
@@ -422,6 +426,7 @@ class LaporanPermohonanController extends Controller
                 Log::error("Failed to encode PDF logo: " . $e->getMessage());
             }
         }
+        */
 
         // 4. Generate PDF
         try {
