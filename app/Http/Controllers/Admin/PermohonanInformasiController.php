@@ -237,4 +237,50 @@ class PermohonanInformasiController extends Controller
                          ->with('success', 'Permohonan ditandai sebagai Ditolak. <a href="'.$waUrl.'" target="_blank" class="font-bold underline">Kirim Notifikasi WA ke Pemohon</a>')
                          ->with('wa_url', $waUrl);
     }
+
+    /**
+     * Resend notification for a specific response.
+     */
+    public function resendNotification(PermohonanResponse $response)
+    {
+        $permohonan = $response->permohonanInformasi;
+        $admin = Auth::user();
+        
+        // Telegram Notification
+        $adminName = GeneralHelper::escapeTelegramMarkdown($admin->name);
+        $adminNip = GeneralHelper::escapeTelegramMarkdown($admin->nip ?? '-');
+        
+        $isPrivate = in_array($permohonan->privacy_status, ['Anonim', 'Rahasia']);
+        $pelaporName = $isPrivate ? "Sesuai Prosedur Keamanan (" . $permohonan->privacy_status . ")" : $permohonan->nama_pemohon;
+        $escPelapor = GeneralHelper::escapeTelegramMarkdown($pelaporName);
+        $escMsg = GeneralHelper::escapeTelegramMarkdown($response->message ?? '(File/Tautan)');
+
+        $tgMsg = "🔄 *Admin Mengirim Ulang Notifikasi*\n\n"
+               . "🆔 *ID Permohonan:* #{$permohonan->unique_code}\n"
+               . "👤 *Kepada:* {$escPelapor}\n"
+               . "📩 *Pesan:* \n_{$escMsg}_\n\n"
+               . "🛠️ *Oleh Admin:* {$adminName}\n"
+               . "🪪 *NIP:* {$adminNip}\n"
+               . "📢 Notifikasi dikirim ulang ke WhatsApp Pemohon.\n"
+               . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan->id) . ")";
+        
+        GeneralHelper::sendTelegramMessage($tgMsg);
+
+        // WhatsApp Notification
+        $waPhone = GeneralHelper::formatPhoneNumber($permohonan->nomor_telepon_pemohon);
+        $directLink = route('laporan.permohonan.show', $permohonan->unique_code);
+        $waMessage = "*PENGIRIMAN ULANG NOTIFIKASI PPID KABUPATEN SINJAI*\n\n"
+                   . "Halo {$permohonan->nama_pemohon},\n"
+                   . "Berikut adalah informasi terkait permohonan Anda (#{$permohonan->unique_code}):\n\n"
+                   . "*Isi Balasan:* \n_{$response->message}_\n\n"
+                   . "Silakan cek detail lengkap dan unduh file melalui tautan berikut:\n"
+                   . $directLink . "\n\n"
+                   . "Terima kasih.";
+        
+        $waUrl = "https://wa.me/{$waPhone}?text=" . urlencode($waMessage);
+
+        return redirect()->back()
+                         ->with('success', 'Notifikasi berhasil dikirim ulang ke Telegram dan WhatsApp.')
+                         ->with('wa_url', $waUrl);
+    }
 }

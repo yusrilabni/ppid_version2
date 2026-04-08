@@ -72,7 +72,9 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\SuperadminMiddleware
     // Permohonan
     Route::resource('permohonan-informasi', \App\Http\Controllers\Admin\PermohonanInformasiController::class);
     Route::post('permohonan-informasi/{permohonan_informasi}/complete', [\App\Http\Controllers\Admin\PermohonanInformasiController::class, 'complete'])->name('permohonan-informasi.complete');
-    Route::post('permohonan-informasi/{permohonan_informasi}/reject', [\App\Http\Controllers\Admin\PermohonanInformasiController::class, 'reject'])->name('permohonan-informasi.reject');
+    Route::post('permohonan-informasi/{permohonan_informasi}/reject', [\App\Http\Controllers\Admin\PermohonanInformasiController.class, 'reject'])->name('permohonan-informasi.reject');
+    Route::post('permohonan-response/{response}/resend', [\App\Http\Controllers\Admin\PermohonanInformasiController.class, 'resendNotification'])->name('permohonan-response.resend');
+
 
     // Reports
     Route::prefix('reports')->name('reports.')->group(function () {
