@@ -101,11 +101,11 @@
 
                             <div class="space-y-2">
                                 <label for="nomor_telepon_pemohon" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                                    <i class="fas fa-phone text-blue-500 mr-2 text-sm"></i> {{ __('Nomor Telepon/WhatsApp') }}
+                                    <i class="fas fa-phone text-blue-500 mr-2 text-sm"></i> {{ __('Nomor Telepon/WhatsApp') }} <span class="text-red-500 ml-1">*</span>
                                 </label>
                                 <div class="relative">
                                     <input type="text" name="nomor_telepon_pemohon" id="nomor_telepon_pemohon" class="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
-                                        placeholder="08xxxxxxxxxx" value="{{ old('nomor_telepon_pemohon', $permohonan->nomor_telepon_pemohon) }}">
+                                        placeholder="08xxxxxxxxxx" value="{{ old('nomor_telepon_pemohon', $permohonan->nomor_telepon_pemohon) }}" required>
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-phone text-gray-400"></i></div>
                                 </div>
                                 @error('nomor_telepon_pemohon')<p class="mt-2 text-sm text-red-600 flex items-center"><i class="fas fa-exclamation-circle mr-1"></i> {{ $message }}</p>@enderror
@@ -113,11 +113,11 @@
 
                             <div class="space-y-2 md:col-span-2">
                                 <label for="email_pemohon" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                                    <i class="fas fa-envelope text-blue-500 mr-2 text-sm"></i> {{ __('Alamat Email') }}
+                                    <i class="fas fa-envelope text-blue-500 mr-2 text-sm"></i> {{ __('Alamat Email') }} <span class="text-red-500 ml-1">*</span>
                                 </label>
                                 <div class="relative">
                                     <input type="email" name="email_pemohon" id="email_pemohon" class="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
-                                        placeholder="nama@contoh.com" value="{{ old('email_pemohon', $permohonan->email_pemohon) }}">
+                                        placeholder="nama@contoh.com" value="{{ old('email_pemohon', $permohonan->email_pemohon) }}" required>
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-envelope text-gray-400"></i></div>
                                 </div>
                                 @error('email_pemohon')<p class="mt-2 text-sm text-red-600 flex items-center"><i class="fas fa-exclamation-circle mr-1"></i> {{ $message }}</p>@enderror

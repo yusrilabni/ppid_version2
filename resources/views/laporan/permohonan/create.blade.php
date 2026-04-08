@@ -66,8 +66,10 @@
                                         <i class="fas fa-user text-sm"></i>
                                     </span>
                                     <input type="text" name="nama_pemohon" id="nama_pemohon" required
-                                        class="w-full pl-10 pr-4 py-2.5 md:py-3 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                                        placeholder="Nama lengkap sesuai identitas" value="{{ old('nama_pemohon') }}">
+                                        class="w-full pl-10 pr-4 py-2.5 md:py-3 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-gray-50"
+                                        placeholder="Nama lengkap sesuai identitas" 
+                                        value="{{ old('nama_pemohon', auth()->user()->name ?? '') }}"
+                                        {{ auth()->check() && auth()->user()->name ? 'readonly' : '' }}>
                                 </div>
                                 @error('nama_pemohon') <p class="text-[10px] md:text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                             </div>
@@ -97,30 +99,34 @@
 
                             <div class="space-y-1.5">
                                 <label for="nomor_telepon_pemohon" class="block text-xs md:text-sm font-semibold text-gray-700">
-                                    {{ __('Nomor Telepon/WA') }}
+                                    {{ __('Nomor Telepon/WA') }} <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative group">
                                     <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400 group-focus-within:text-blue-500 transition-colors">
                                         <i class="fas fa-phone text-sm"></i>
                                     </span>
-                                    <input type="text" name="nomor_telepon_pemohon" id="nomor_telepon_pemohon"
+                                    <input type="text" name="nomor_telepon_pemohon" id="nomor_telepon_pemohon" required
                                         class="w-full pl-10 pr-4 py-2.5 md:py-3 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                                         placeholder="08xxxxxxxxxx" value="{{ old('nomor_telepon_pemohon') }}">
                                 </div>
+                                @error('nomor_telepon_pemohon') <p class="text-[10px] md:text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                             </div>
 
                             <div class="space-y-1.5">
                                 <label for="email_pemohon" class="block text-xs md:text-sm font-semibold text-gray-700">
-                                    {{ __('Alamat Email') }}
+                                    {{ __('Alamat Email') }} <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative group">
                                     <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400 group-focus-within:text-blue-500 transition-colors">
                                         <i class="fas fa-envelope text-sm"></i>
                                     </span>
-                                    <input type="email" name="email_pemohon" id="email_pemohon"
-                                        class="w-full pl-10 pr-4 py-2.5 md:py-3 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                                        placeholder="nama@email.com" value="{{ old('email_pemohon') }}">
+                                    <input type="email" name="email_pemohon" id="email_pemohon" required
+                                        class="w-full pl-10 pr-4 py-2.5 md:py-3 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all bg-gray-50"
+                                        placeholder="nama@email.com" 
+                                        value="{{ old('email_pemohon', auth()->user()->email ?? '') }}"
+                                        {{ auth()->check() && auth()->user()->email ? 'readonly' : '' }}>
                                 </div>
+                                @error('email_pemohon') <p class="text-[10px] md:text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                             </div>
                         </div>
                     </div>
