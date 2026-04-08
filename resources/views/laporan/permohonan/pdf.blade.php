@@ -170,7 +170,7 @@
 <body>
     <!-- HEADER -->
     <div class="header-container">
-        @if($ppidLogoBase64)
+        @if(!empty($ppidLogoBase64))
         <div class="logo-container">
             <img src="{{ $ppidLogoBase64 }}" alt="Logo PPID" class="logo-img">
         </div>

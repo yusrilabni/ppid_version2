@@ -410,19 +410,14 @@ class LaporanPermohonanController extends Controller
             abort(404, 'Permohonan informasi tidak ditemukan atau tidak dapat diakses.');
         }
 
-        // 3. Prepare Logo (use fallback if not exists)
+        // 3. Prepare Logo (PNG is more stable for dompdf)
         $ppidLogoBase64 = '';
-        $logoPath = public_path('storage/logo/ppid.webp');
+        $logoPath = storage_path('app/public/logo/Logo PPID With Caption.png');
         
-        // If webp fails in dompdf, try standard path
-        if (!file_exists($logoPath)) {
-            $logoPath = storage_path('app/public/logo/ppid.webp');
-        }
-
         if (file_exists($logoPath)) {
             try {
                 $logoContent = file_get_contents($logoPath);
-                $ppidLogoBase64 = 'data:image/webp;base64,' . base64_encode($logoContent);
+                $ppidLogoBase64 = 'data:image/png;base64,' . base64_encode($logoContent);
             } catch (\Exception $e) {
                 Log::error("Failed to encode PDF logo: " . $e->getMessage());
             }
@@ -433,7 +428,9 @@ class LaporanPermohonanController extends Controller
             $pdf = Pdf::loadView('laporan.permohonan.pdf', [
                 'permohonan' => $permohonanInformasi,
                 'ppidLogoBase64' => $ppidLogoBase64
-            ]);
+            ])->setPaper('a4', 'portrait')
+              ->setWarnings(false)
+              ->setOption(['isRemoteEnabled' => true, 'isHtml5ParserEnabled' => true]);
             
             $fileName = 'laporan-permohonan-' . $permohonanInformasi->unique_code . '.pdf';
 
