@@ -578,7 +578,7 @@
                                                 <div
                                                     class="mt-4 pt-4 border-t @if ($response->user_id === Auth::id()) border-white/20 @else border-gray-300/30 @endif">
                                                     <div class="flex items-center p-3 rounded-lg @if ($response->user_id === Auth::id()) bg-white/10 hover:bg-white/20 @else bg-gray-200/80 hover:bg-gray-300/80 @endif transition-colors duration-200 cursor-pointer"
-                                                        onclick="window.open('{{ asset('storage/' . $filePath) }}', '_blank')">
+                                                        onclick="window.open('{{ \App\Helpers\StorageHelper::getUrl($filePath) }}', '_blank')">
                                                         @if (in_array($extension, $imageExtensions))
                                                             <div
                                                                 class="h-10 w-10 rounded-lg bg-gradient-to-r from-green-100 to-emerald-100 flex items-center justify-center mr-3">
@@ -625,9 +625,9 @@
 
                                                     @if (in_array($extension, $imageExtensions))
                                                         <div class="mt-3">
-                                                            <a href="{{ asset('storage/' . $filePath) }}" target="_blank"
+                                                            <a href="{{ \App\Helpers\StorageHelper::getUrl($filePath) }}" target="_blank"
                                                                 class="inline-block">
-                                                                <img src="{{ asset('storage/' . $filePath) }}" alt="Preview"
+                                                                <img src="{{ \App\Helpers\StorageHelper::getUrl($filePath) }}" alt="Preview"
                                                                     class="max-w-full max-h-48 rounded-lg border @if ($response->user_id === Auth::id()) border-white/20 @else border-gray-300 @endif hover:scale-105 transition-transform duration-200">
                                                             </a>
                                                         </div>
