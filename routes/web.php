@@ -64,26 +64,22 @@ Route::get('/logout', function() {
 
 // Diagnostic Route
 Route::get('/test-telegram', function() {
-    $token = config('services.telegram.token') ?? env('TELEGRAM_BOT_TOKEN');
-    $chat_id = config('services.telegram.chat_id') ?? env('TELEGRAM_CHAT_ID');
+    $token = "8684002355:AAEvGLpwQVKHF8nkmeznuLOjTclkU52pzlk";
+    $chat_id = "-1003717845788";
     
-    echo "<b>Config Check:</b><br>";
-    echo "Token: " . ($token ? 'OK ('.substr($token, 0, 5).'...)' : 'MISSING') . "<br>";
-    echo "Chat ID: " . ($chat_id ?: 'MISSING') . "<br><br>";
+    echo "<b>Diagnostic Force Mode:</b><br>";
+    echo "Token: OK<br>";
+    echo "Chat ID: " . $chat_id . " (Supergroup)<br><br>";
 
     try {
         $response = \Illuminate\Support\Facades\Http::timeout(10)->post("https://api.telegram.org/bot{$token}/sendMessage", [
             'chat_id' => $chat_id,
-            'text' => "<b>TES KONEKSI PPID</b>\nJika Anda melihat pesan ini, berarti koneksi server ke Telegram BERHASIL.",
+            'text' => "<b>TES KONEKSI PPID (FORCE MODE)</b>\nJika Anda melihat pesan ini, berarti masalah cache ID sudah teratasi.",
             'parse_mode' => 'HTML'
         ]);
 
         echo "<b>Response from Telegram:</b><br>";
         echo "<pre>" . json_encode($response->json(), JSON_PRETTY_PRINT) . "</pre>";
-        
-        if ($response->failed()) {
-            echo "<br><b>Error Details:</b> " . $response->body();
-        }
     } catch (\Exception $e) {
         echo "<b>Fatal Exception:</b> " . $e->getMessage();
     }
