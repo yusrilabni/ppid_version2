@@ -150,9 +150,12 @@ class LaporanPermohonanController extends Controller
         $tgMsg = "<b>🔄 Permohonan Informasi Diperbarui</b>\n\n"
                . "<b>🆔 ID:</b> #{$permohonanInformasi->unique_code}\n"
                . "<b>👤 Pemohon:</b> " . htmlspecialchars($permohonanInformasi->nama_pemohon) . "\n"
+               . "<b>💼 Pekerjaan:</b> " . htmlspecialchars($permohonanInformasi->pekerjaan) . "\n"
+               . "<b>📍 Alamat:</b> " . htmlspecialchars($permohonanInformasi->alamat_pemohon) . "\n"
                . "<b>📧 Email:</b> " . htmlspecialchars($permohonanInformasi->email_pemohon) . "\n"
-               . "<b>📞 Telp:</b> " . htmlspecialchars($permohonanInformasi->nomor_telepon_pemohon) . "\n"
-               . "<b>📝 Informasi (Baru):</b> " . htmlspecialchars($permohonanInformasi->detail_informasi) . "\n"
+               . "<b>📞 Telp:</b> " . htmlspecialchars($permohonanInformasi->nomor_telepon_pemohon) . "\n\n"
+               . "<b>📝 Informasi (Baru):</b>\n" . htmlspecialchars($permohonanInformasi->detail_informasi) . "\n\n"
+               . "<b>🎯 Tujuan:</b>\n" . htmlspecialchars($permohonanInformasi->tujuan_penggunaan_informasi) . "\n\n"
                . "<b>🔒 Privasi:</b> {$permohonanInformasi->privacy_status}\n\n"
                . '<a href="' . route('admin.permohonan-informasi.show', $permohonanInformasi->id) . '">🔗 Lihat Detail di Website</a>';
         
@@ -283,11 +286,12 @@ class LaporanPermohonanController extends Controller
         $tgMsg = "<b>📄 Permohonan Informasi Baru</b>\n\n"
                . "<b>🆔 ID:</b> #{$uniqueCode}\n"
                . "<b>👤 Pemohon:</b> " . htmlspecialchars($permohonan->nama_pemohon) . "\n"
-               . "<b>📧 Email:</b> " . htmlspecialchars($permohonan->email_pemohon) . "\n"
-               . "<b>📞 Telp:</b> " . htmlspecialchars($permohonan->nomor_telepon_pemohon) . "\n"
                . "<b>💼 Pekerjaan:</b> " . htmlspecialchars($permohonan->pekerjaan) . "\n"
-               . "<b>📝 Informasi:</b> " . htmlspecialchars($permohonan->detail_informasi) . "\n"
-               . "<b>🎯 Tujuan:</b> " . htmlspecialchars($permohonan->tujuan_penggunaan_informasi) . "\n"
+               . "<b>📍 Alamat:</b> " . htmlspecialchars($permohonan->alamat_pemohon) . "\n"
+               . "<b>📧 Email:</b> " . htmlspecialchars($permohonan->email_pemohon) . "\n"
+               . "<b>📞 Telp:</b> " . htmlspecialchars($permohonan->nomor_telepon_pemohon) . "\n\n"
+               . "<b>📝 Informasi:</b>\n" . htmlspecialchars($permohonan->detail_informasi) . "\n\n"
+               . "<b>🎯 Tujuan:</b>\n" . htmlspecialchars($permohonan->tujuan_penggunaan_informasi) . "\n\n"
                . "<b>🔒 Privasi:</b> {$permohonan->privacy_status}\n\n"
                . '<a href="' . route('admin.permohonan-informasi.show', $permohonan->id) . '">🔗 Lihat Detail di Website</a>';
         
