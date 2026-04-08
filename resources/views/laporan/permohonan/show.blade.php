@@ -426,30 +426,34 @@
                     
                     <div class="mt-4 bg-gradient-to-r from-blue-50 to-indigo-50 p-6 rounded-lg border border-blue-200 shadow-sm">
                         @if(is_null($permohonan->rating))
-                        <p class="text-sm text-gray-600 mb-4 bg-white p-3 rounded-md border border-blue-100">
-                            Layanan untuk permohonan ini telah diberikan. Silakan berikan penilaian Anda. 
-                            <span class="font-medium text-blue-600">Dengan mengirimkan penilaian, permohonan akan ditandai sebagai 'selesai'.</span>
-                        </p>
+                        <div class="mb-6 bg-white p-4 rounded-xl border-l-4 border-blue-500 shadow-sm">
+                            <p class="text-sm text-gray-700 leading-relaxed">
+                                <i class="fas fa-info-circle text-blue-500 mr-2"></i>
+                                **Layanan permohonan informasi Anda telah tersedia.** 
+                                Sebagai langkah akhir untuk menutup laporan ini secara resmi, mohon kesediaan Anda untuk memberikan **tanggapan penutup** serta **penilaian** terhadap kualitas pelayanan kami.
+                            </p>
+                        </div>
                         @endif
 
-                        <form action="{{ route('laporan.permohonan.rate', $permohonan) }}" method="POST" onsubmit="{{ is_null($permohonan->rating) ? "return confirm('Apakah Anda yakin? Dengan mengirimkan penilaian, permohonan ini akan ditandai sebagai \\'selesai\\'.');" : "" }}">
+                        <form action="{{ route('laporan.permohonan.rate', $permohonan) }}" method="POST" onsubmit="{{ is_null($permohonan->rating) ? "return confirm('Apakah Anda yakin? Dengan mengirimkan tanggapan dan penilaian, permohonan ini akan ditandai sebagai \\'selesai\\'.');" : "" }}">
                             @csrf
 
                             @if(is_null($permohonan->rating))
                             <div class="mb-6">
-                                <label for="rating_message" class="block text-sm font-medium text-gray-700 mb-2">
-                                    <i class="fas fa-comment-alt mr-2 text-blue-400"></i>
-                                    Pesan Tanggapan Akhir (Opsional)
+                                <label for="rating_message" class="block text-sm font-semibold text-gray-700 mb-2">
+                                    <i class="fas fa-comment-dots mr-2 text-blue-500"></i>
+                                    Pesan Tanggapan Penutup <span class="text-red-500">*</span>
                                 </label>
-                                <textarea id="rating_message" name="message" rows="3" 
-                                          class="w-full px-3 py-2 border border-blue-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
-                                          placeholder="Tulis pesan penutup atau evaluasi layanan kami di sini..."></textarea>
+                                <textarea id="rating_message" name="message" rows="3" required
+                                          class="w-full px-4 py-3 border border-blue-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white transition-all"
+                                          placeholder="Contoh: Terima kasih, informasi sudah diterima. / Layanan sangat memuaskan."></textarea>
+                                <p class="text-[10px] text-gray-500 mt-1.5 ml-1 italic">Tanggapan ini wajib diisi sebagai prasyarat penutupan permohonan.</p>
                             </div>
                             @endif
 
                             <div class="mb-4">
-                                <label class="block text-sm font-medium text-gray-700 mb-3">
-                                    Berikan Rating Terhadap Pelayanan Kami <span class="text-red-500">*</span>
+                                <label class="block text-sm font-semibold text-gray-700 mb-3">
+                                    Rating Pelayanan <span class="text-red-500">*</span>
                                 </label>
                                 <div class="rating flex flex-row-reverse items-center justify-end">
                                     @php
@@ -467,32 +471,23 @@
                                     @endfor
                                 </div>
                                 <div class="mt-4 p-3 bg-yellow-100 border border-yellow-200 rounded-md text-yellow-800 flex items-center">
-                                    <i class="fas fa-exclamation-triangle mr-2 text-lg"></i>
+                                    <i class="fas fa-clock mr-2 text-lg"></i>
                                     <span class="text-sm font-medium">
-                                        Mohon diperhatikan: Jika penilaian tidak diberikan dalam waktu 3 hari setelah tanggapan terakhir, sistem akan secara otomatis memberikan penilaian bintang 5.
+                                        Catatan: Jika penilaian tidak diberikan dalam 3 hari, sistem akan menutup otomatis dengan rating bintang 5.
                                     </span>
                                 </div>
                                 @if(!is_null($permohonan->rating))
-                                    @php
-                                        $rating = $permohonan->rating;
-                                        $message = '';
-                                        if ($rating >= 4) {
-                                            $message = 'Terima kasih atas penilaian Anda! Kami akan terus berusaha mempertahankan kualitas layanan kami.';
-                                        } else {
-                                            $message = 'Terima kasih atas masukan Anda. Kami akan terus berupaya untuk meningkatkan kualitas layanan kami.';
-                                        }
-                                    @endphp
                                     <div class="text-sm text-gray-600 mt-4 bg-white p-3 rounded-md border border-blue-100">
-                                        <p class="font-medium text-blue-700">{{ $message }}</p>
+                                        <p class="font-medium text-blue-700">Terima kasih atas partisipasi Anda dalam meningkatkan kualitas layanan kami.</p>
                                     </div>
                                 @endif
                             </div>
 
                             <div class="text-right">
                                 <button type="submit"
-                                        class="inline-flex items-center px-4 py-2 bg-gradient-to-r from-yellow-500 to-yellow-600 text-white rounded-md hover:from-yellow-600 hover:to-yellow-700 shadow-sm focus:outline-none focus:ring-2 focus:ring-yellow-500 focus:ring-offset-2">
+                                        class="inline-flex items-center px-5 py-2.5 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-bold rounded-xl hover:from-blue-700 hover:to-indigo-800 shadow-lg transition-all focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2">
                                     <i class="fas fa-paper-plane mr-2"></i>
-                                    {{ is_null($permohonan->rating) ? 'Kirim Penilaian' : 'Perbarui Penilaian' }}
+                                    {{ is_null($permohonan->rating) ? 'Kirim Tanggapan & Penilaian' : 'Perbarui Penilaian' }}
                                 </button>
                             </div>
                         </form>

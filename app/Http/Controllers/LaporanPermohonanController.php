@@ -336,14 +336,14 @@ class LaporanPermohonanController extends Controller
             return redirect()->back()->with('error', 'Anda belum bisa memberikan penilaian karena belum ada tanggapan.');
         }
 
+        $isFirstRating = is_null($permohonanInformasi->rating);
+
         // 3. Validate the request
         $validatedData = $request->validate([
             'rating' => 'required|integer|min:1|max:5',
-            'message' => 'nullable|string|max:5000',
+            'message' => ($isFirstRating ? 'required' : 'nullable') . '|string|max:5000',
         ]);
         
-        $isFirstRating = is_null($permohonanInformasi->rating);
-
         // 4. Update the request
         $permohonanInformasi->rating = $validatedData['rating'];
         
@@ -363,20 +363,21 @@ class LaporanPermohonanController extends Controller
             ]);
         }
 
-        // Kirim Notifikasi Telegram
+        // Kirim Notifikasi Telegram (Satu Pesan Terpadu)
         $escNama = GeneralHelper::escapeTelegramMarkdown($permohonanInformasi->nama_pemohon);
         $stars = str_repeat('⭐', $validatedData['rating']);
-        $tgMsg = "🌟 *Penilaian Baru dari Pemohon*\n\n"
+        
+        $tgMsg = "🌟 *Penilaian & Tanggapan Akhir*\n\n"
                . "🆔 *ID Permohonan:* #{$permohonanInformasi->unique_code}\n"
                . "👤 *Nama:* {$escNama}\n"
                . "⭐ *Rating:* {$stars} ({$validatedData['rating']}/5)\n";
 
         if (!empty($validatedData['message'])) {
             $escMsg = GeneralHelper::escapeTelegramMarkdown($validatedData['message']);
-            $tgMsg .= "📩 *Pesan Penutup:* \n_{$escMsg}_\n";
+            $tgMsg .= "📩 *Tanggapan Penutup:* \n_{$escMsg}_\n";
         }
 
-        $tgMsg .= "\n" . ($isFirstRating ? "📌 Permohonan ditandai sebagai *Selesai*.\n" : "🔄 Penilaian diperbarui.\n")
+        $tgMsg .= "\n" . ($isFirstRating ? "🏁 *Permohonan Selesai*" : "🔄 *Penilaian Diperbarui*") . "\n"
                . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonanInformasi->id) . ")";
         
         GeneralHelper::sendTelegramMessage($tgMsg);
