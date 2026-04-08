@@ -434,10 +434,24 @@
 
                         <form action="{{ route('laporan.permohonan.rate', $permohonan) }}" method="POST" onsubmit="{{ is_null($permohonan->rating) ? "return confirm('Apakah Anda yakin? Dengan mengirimkan penilaian, permohonan ini akan ditandai sebagai \\'selesai\\'.');" : "" }}">
                             @csrf
+
+                            @if(is_null($permohonan->rating))
+                            <div class="mb-6">
+                                <label for="rating_message" class="block text-sm font-medium text-gray-700 mb-2">
+                                    <i class="fas fa-comment-alt mr-2 text-blue-400"></i>
+                                    Pesan Tanggapan Akhir (Opsional)
+                                </label>
+                                <textarea id="rating_message" name="message" rows="3" 
+                                          class="w-full px-3 py-2 border border-blue-300 rounded-md shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-blue-500 bg-white"
+                                          placeholder="Tulis pesan penutup atau evaluasi layanan kami di sini..."></textarea>
+                            </div>
+                            @endif
+
                             <div class="mb-4">
-                                                            <label class="block text-sm font-medium text-gray-700 mb-3">
-                                                                Berikan Rating Terhadap Pelayanan Kami
-                                                            </label>                                <div class="rating flex flex-row-reverse items-center justify-end">
+                                <label class="block text-sm font-medium text-gray-700 mb-3">
+                                    Berikan Rating Terhadap Pelayanan Kami <span class="text-red-500">*</span>
+                                </label>
+                                <div class="rating flex flex-row-reverse items-center justify-end">
                                     @php
                                         $satisfactionLevels = [
                                             1 => 'Tidak Puas',

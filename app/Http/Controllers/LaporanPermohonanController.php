@@ -339,6 +339,7 @@ class LaporanPermohonanController extends Controller
         // 3. Validate the request
         $validatedData = $request->validate([
             'rating' => 'required|integer|min:1|max:5',
+            'message' => 'nullable|string|max:5000',
         ]);
         
         $isFirstRating = is_null($permohonanInformasi->rating);
@@ -353,14 +354,29 @@ class LaporanPermohonanController extends Controller
         
         $permohonanInformasi->save();
 
+        // Jika ada pesan tanggapan akhir, simpan ke responses
+        if (!empty($validatedData['message'])) {
+            PermohonanResponse::create([
+                'permohonan_informasi_id' => $permohonanInformasi->id,
+                'user_id' => auth()->id(),
+                'message' => $validatedData['message'],
+            ]);
+        }
+
         // Kirim Notifikasi Telegram
         $escNama = GeneralHelper::escapeTelegramMarkdown($permohonanInformasi->nama_pemohon);
         $stars = str_repeat('⭐', $validatedData['rating']);
         $tgMsg = "🌟 *Penilaian Baru dari Pemohon*\n\n"
                . "🆔 *ID Permohonan:* #{$permohonanInformasi->unique_code}\n"
                . "👤 *Nama:* {$escNama}\n"
-               . "⭐ *Rating:* {$stars} ({$validatedData['rating']}/5)\n\n"
-               . ($isFirstRating ? "📌 Permohonan ditandai sebagai *Selesai*.\n" : "🔄 Penilaian diperbarui.\n")
+               . "⭐ *Rating:* {$stars} ({$validatedData['rating']}/5)\n";
+
+        if (!empty($validatedData['message'])) {
+            $escMsg = GeneralHelper::escapeTelegramMarkdown($validatedData['message']);
+            $tgMsg .= "📩 *Pesan Penutup:* \n_{$escMsg}_\n";
+        }
+
+        $tgMsg .= "\n" . ($isFirstRating ? "📌 Permohonan ditandai sebagai *Selesai*.\n" : "🔄 Penilaian diperbarui.\n")
                . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonanInformasi->id) . ")";
         
         GeneralHelper::sendTelegramMessage($tgMsg);
