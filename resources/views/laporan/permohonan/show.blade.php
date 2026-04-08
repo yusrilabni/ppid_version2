@@ -201,40 +201,6 @@
 
                 <!-- Detail Permohonan -->
                 <div class="space-y-8">
-                    @if(!is_null($permohonan->rating))
-                    <!-- Dedicated Rating Summary -->
-                    <div class="mt-10 bg-gradient-to-br from-yellow-50 to-amber-50 p-5 md:p-6 rounded-3xl border border-yellow-200 shadow-sm animate-fade-in">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-base md:text-lg font-black text-amber-900 flex items-center">
-                                <span class="bg-amber-500 text-white p-1.5 rounded-lg mr-3 shadow-sm">
-                                    <i class="fas fa-star"></i>
-                                </span>
-                                Penilaian & Ulasan Anda
-                            </h3>
-                            <div class="flex gap-1">
-                                @for($i = 1; $i <= 5; $i++)
-                                    <i class="fas fa-star {{ $i <= $permohonan->rating ? 'text-amber-500' : 'text-gray-300' }} text-xl"></i>
-                                @endfor
-                            </div>
-                        </div>
-                        
-                        @php
-                            $ratingResponse = $permohonan->responses->where('user_id', $permohonan->user_id)->last();
-                        @endphp
-                        
-                        @if($ratingResponse)
-                        <div class="bg-white/60 backdrop-blur-sm p-4 rounded-2xl border border-white shadow-inner">
-                            <p class="text-gray-800 text-sm md:text-base italic leading-relaxed">
-                                "{{ $ratingResponse->message }}"
-                            </p>
-                            <p class="text-[10px] text-amber-700 mt-3 font-bold uppercase tracking-widest">
-                                <i class="far fa-calendar-alt mr-1"></i> {{ $ratingResponse->created_at->translatedFormat('d M Y') }}
-                            </p>
-                        </div>
-                        @endif
-                    </div>
-                    @endif
-
                     <!-- Informasi yang Dimohon -->
                     <div class="group">
                         <h3 class="text-base md:text-lg font-bold text-gray-900 mb-3 flex items-center">
@@ -397,7 +363,10 @@
                                 </div>
                                 
                                 <div class="flex-1">
-                                    <div class="bg-white p-4 md:p-5 rounded-2xl rounded-tl-none border border-gray-100 shadow-sm hover:shadow-md transition-shadow">
+                                    @php
+                                        $isRatingMsg = !is_null($permohonan->rating) && $loop->last && $isResponseFromOwner;
+                                    @endphp
+                                    <div class="p-4 md:p-5 rounded-2xl rounded-tl-none border shadow-sm hover:shadow-md transition-shadow {{ $isRatingMsg ? 'bg-gradient-to-br from-yellow-50 to-amber-50 border-yellow-200' : 'bg-white border-gray-100' }}">
                                         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-3 gap-1">
                                             <p class="font-bold text-gray-900 text-sm md:text-base">
                                                 {{ $response->user->name ?? ($isResponseFromOwner ? 'Pemohon' : 'Petugas PPID') }}
@@ -407,17 +376,26 @@
                                                     <span class="ml-2 px-2 py-0.5 bg-blue-100 text-blue-700 text-[10px] rounded-full uppercase">Petugas</span>
                                                 @endif
 
-                                                @if(!is_null($permohonan->rating) && $loop->last && $isResponseFromOwner)
-                                                    <span class="ml-1 px-2 py-0.5 bg-yellow-100 text-yellow-700 text-[10px] rounded-full uppercase"><i class="fas fa-star mr-1"></i>Rating</span>
+                                                @if($isRatingMsg)
+                                                    <span class="ml-1 px-2 py-0.5 bg-yellow-500 text-white text-[10px] rounded-full uppercase font-black tracking-tighter"><i class="fas fa-star mr-1"></i>Penilaian</span>
                                                 @endif
                                             </p>
-                                            <p class="text-[10px] md:text-xs font-medium text-gray-400 flex items-center italic">
-                                                <i class="far fa-clock mr-1"></i>
-                                                {{ $response->created_at->translatedFormat('d M Y, H:i') }}
-                                            </p>
+                                            <div class="flex flex-col items-end">
+                                                <p class="text-[10px] md:text-xs font-medium text-gray-400 flex items-center italic">
+                                                    <i class="far fa-clock mr-1"></i>
+                                                    {{ $response->created_at->translatedFormat('d M Y, H:i') }}
+                                                </p>
+                                                @if($isRatingMsg)
+                                                <div class="flex mt-1">
+                                                    @for($i = 1; $i <= 5; $i++)
+                                                        <i class="fas fa-star {{ $i <= $permohonan->rating ? 'text-amber-500' : 'text-gray-300' }} text-[10px]"></i>
+                                                    @endfor
+                                                </div>
+                                                @endif
+                                            </div>
                                         </div>
                                         
-                                        <div class="text-gray-700 text-sm md:text-base leading-relaxed mb-4 whitespace-pre-line">{!! nl2br(e($response->message)) !!}</div>
+                                        <div class="text-gray-700 text-sm md:text-base leading-relaxed mb-4 whitespace-pre-line @if($isRatingMsg) italic font-medium @endif">{!! nl2br(e($response->message)) !!}</div>
                                         
                                         @if ($response->file_path || $response->link)
                                         <div class="pt-4 border-t border-gray-50 space-y-3">
