@@ -58,6 +58,9 @@ Route::post('/login', [HybridLoginController::class, 'login']);
 Route::get('/register', [HybridLoginController::class, 'showRegisterForm'])->name('register');
 Route::post('/register', [HybridLoginController::class, 'register']);
 Route::post('/logout', [HybridLoginController::class, 'logout'])->name('logout');
+Route::get('/logout', function() {
+    return redirect()->route('login');
+});
 
 // OAuth & Security
 Route::get('/auth/google', [HybridLoginController::class, 'redirectToGoogle'])->name('auth.google');

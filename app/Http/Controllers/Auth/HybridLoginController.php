@@ -40,6 +40,10 @@ class HybridLoginController extends Controller
      */
     public function login(Request $request)
     {
+        if (Auth::check()) {
+            return redirect()->intended('/');
+        }
+
         $request->validate([
             'login' => 'required|string',
             'password' => 'required|string',
@@ -148,6 +152,10 @@ class HybridLoginController extends Controller
      */
     public function register(Request $request)
     {
+        if (Auth::check()) {
+            return redirect()->intended('/');
+        }
+
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
@@ -223,6 +231,10 @@ class HybridLoginController extends Controller
      */
     public function logout(Request $request)
     {
+        if (!Auth::check()) {
+            return redirect()->route('login');
+        }
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();
