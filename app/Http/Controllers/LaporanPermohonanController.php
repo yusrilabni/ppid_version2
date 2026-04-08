@@ -146,6 +146,25 @@ class LaporanPermohonanController extends Controller
 
         $permohonanInformasi->update($validatedData);
 
+        // Kirim Notifikasi Telegram
+        $tgMsg = "<b>🔄 Permohonan Informasi Diperbarui</b>\n\n"
+               . "<b>🆔 ID:</b> #{$permohonanInformasi->unique_code}\n"
+               . "<b>👤 Pemohon:</b> " . htmlspecialchars($permohonanInformasi->nama_pemohon) . "\n"
+               . "<b>📧 Email:</b> " . htmlspecialchars($permohonanInformasi->email_pemohon) . "\n"
+               . "<b>📞 Telp:</b> " . htmlspecialchars($permohonanInformasi->nomor_telepon_pemohon) . "\n"
+               . "<b>📝 Informasi (Baru):</b> " . htmlspecialchars($permohonanInformasi->detail_informasi) . "\n"
+               . "<b>🔒 Privasi:</b> {$permohonanInformasi->privacy_status}\n\n"
+               . '<a href="' . route('admin.permohonan-informasi.show', $permohonanInformasi->id) . '">🔗 Lihat Detail di Website</a>';
+        
+        $buttons = [
+            [
+                ['text' => '✅ Respon Awal (Auto)', 'callback_data' => "respond_awal_{$permohonanInformasi->id}"],
+                ['text' => '❌ Tolak', 'callback_data' => "reject_permohonan_{$permohonanInformasi->id}"]
+            ]
+        ];
+
+        GeneralHelper::sendTelegramMessage($tgMsg, $buttons);
+
         return redirect()->route('laporan.permohonan.saya')
                         ->with('success', 'Permohonan informasi berhasil diperbarui.');
     }
