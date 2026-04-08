@@ -8,6 +8,7 @@ use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use App\Helpers\GeneralHelper;
+use App\Helpers\TelegramHelper;
 
 class LaporanPermohonanController extends Controller
 {
@@ -253,7 +254,21 @@ class LaporanPermohonanController extends Controller
 
         $validatedData['unique_code'] = $uniqueCode; // Tambahkan unique_code ke data yang divalidasi
 
-        PermohonanInformasi::create($validatedData);
+        $permohonan = PermohonanInformasi::create($validatedData);
+
+        // Kirim Notifikasi Telegram
+        $tgMsg = "📄 *Permohonan Informasi Baru*\n\n"
+               . "🆔 *ID:* #{$uniqueCode}\n"
+               . "👤 *Pemohon:* {$permohonan->nama_pemohon}\n"
+               . "📧 *Email:* {$permohonan->email_pemohon}\n"
+               . "📞 *Telp:* {$permohonan->nomor_telepon_pemohon}\n"
+               . "💼 *Pekerjaan:* {$permohonan->pekerjaan}\n"
+               . "📝 *Informasi:* {$permohonan->detail_informasi}\n"
+               . "🎯 *Tujuan:* {$permohonan->tujuan_penggunaan_informasi}\n"
+               . "🔒 *Privasi:* {$permohonan->privacy_status}\n\n"
+               . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan->id) . ")";
+        
+        TelegramHelper::sendMessage($tgMsg);
 
         return redirect()->route('laporan.permohonan.saya')->with('success', 'Permohonan informasi berhasil dikirim.');
     }
@@ -283,6 +298,16 @@ class LaporanPermohonanController extends Controller
             'file_path' => null, // Not allowing file uploads for this user response for now
             'link' => null,
         ]);
+
+        // Kirim Notifikasi Telegram
+        $tgMsg = "💬 *Tanggapan Baru dari Pemohon*\n\n"
+               . "🆔 *ID Permohonan:* #{$permohonanInformasi->unique_code}\n"
+               . "👤 *Dari:* {$permohonanInformasi->nama_pemohon}\n"
+               . "📧 *Email:* {$permohonanInformasi->email_pemohon}\n"
+               . "📩 *Pesan:* \n_{$validatedData['message']}_\n\n"
+               . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonanInformasi->id) . ")";
+        
+        TelegramHelper::sendMessage($tgMsg);
 
         // 5. Redirect back with a success message
         return redirect()->route('laporan.permohonan.show', $permohonanInformasi)
@@ -317,6 +342,17 @@ class LaporanPermohonanController extends Controller
         }
         
         $permohonanInformasi->save();
+
+        // Kirim Notifikasi Telegram
+        $stars = str_repeat('⭐', $validatedData['rating']);
+        $tgMsg = "🌟 *Penilaian Baru dari Pemohon*\n\n"
+               . "🆔 *ID Permohonan:* #{$permohonanInformasi->unique_code}\n"
+               . "👤 *Nama:* {$permohonanInformasi->nama_pemohon}\n"
+               . "⭐ *Rating:* {$stars} ({$validatedData['rating']}/5)\n\n"
+               . ($isFirstRating ? "📌 Permohonan ditandai sebagai *Selesai*.\n" : "🔄 Penilaian diperbarui.\n")
+               . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonanInformasi->id) . ")";
+        
+        TelegramHelper::sendMessage($tgMsg);
 
         // 5. Redirect back with a success message
         $message = $isFirstRating 
