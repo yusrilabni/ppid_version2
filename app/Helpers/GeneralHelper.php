@@ -2,6 +2,9 @@
 
 namespace App\Helpers;
 
+use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Log;
+
 class GeneralHelper
 {
     public static function generateUniqueCode($length = 5)
@@ -22,6 +25,47 @@ class GeneralHelper
             return implode(" ", array_slice($words, 0, $limit)) . "...";
         }
         return $string;
+    }
+
+    /**
+     * Escape special characters for Telegram Markdown.
+     */
+    public static function escapeTelegramMarkdown($text)
+    {
+        if (!$text) return '';
+        return str_replace(['_', '*', '[', ']', '`'], ['\_', '\*', '\[', '\]', '\`'], $text);
+    }
+
+    /**
+     * Send message to Telegram Bot.
+     */
+    public static function sendTelegramMessage($message)
+    {
+        $token = config('services.telegram.token');
+        $chat_id = config('services.telegram.chat_id');
+
+        if (!$token || !$chat_id || $chat_id === 'YOUR_CHAT_ID_HERE') {
+            Log::warning('Telegram configuration is missing.');
+            return false;
+        }
+
+        try {
+            $response = Http::timeout(10)->post("https://api.telegram.org/bot{$token}/sendMessage", [
+                'chat_id' => $chat_id,
+                'text' => $message,
+                'parse_mode' => 'Markdown',
+            ]);
+
+            if ($response->failed()) {
+                Log::error('Telegram error: ' . $response->body());
+                return false;
+            }
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error('Telegram exception: ' . $e->getMessage());
+            return false;
+        }
     }
 
     public static function getUnitData()

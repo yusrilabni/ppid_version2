@@ -8,7 +8,7 @@ use App\Models\PermohonanResponse;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
-use App\Helpers\TelegramHelper;
+use App\Helpers\GeneralHelper;
 
 class PermohonanInformasiController extends Controller
 {
@@ -19,7 +19,7 @@ class PermohonanInformasiController extends Controller
     {
         $permohonanPending = PermohonanInformasi::with('user')->where('status_permohonan', 'pending')->get();
         $permohonanDiproses = PermohonanInformasi::with(['user', 'responses' => function($query) {
-            $query->latest(); // Order by created_at DESC
+            $query->orderBy('created_at', 'desc');
         }])->where('status_permohonan', 'diproses')->get();
         $permohonanSelesai = PermohonanInformasi::with('user')->where('status_permohonan', 'selesai')->get();
         $permohonanDitolak = PermohonanInformasi::with('user')->where('status_permohonan', 'ditolak')->get();
@@ -28,39 +28,21 @@ class PermohonanInformasiController extends Controller
     }
 
     /**
-     * Show the form for creating a new resource.
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
+     * Store a newly created resource in storage (Admin Response).
      */
     public function store(Request $request)
     {
         $request->validate([
             'permohonan_informasi_id' => 'required|exists:permohonan_informasi,id',
-            'response_type' => 'required|string|in:Respon Awal,Tindaklanjut',
-            'message' => 'nullable|string',
-            'file' => 'nullable|file|max:10240', // Max 10MB
-            'link' => 'nullable|url',
+            'message' => 'required|string',
+            'response_type' => 'required|string',
         ]);
 
-        $filePath = null;
-        $file = $request->file('file');
-        if ($file && $file->isValid()) {
-            $filePath = $file->store('permohonan_files', 'public');
-        }
-
-        PermohonanResponse::create([
+        $response = PermohonanResponse::create([
             'permohonan_informasi_id' => $request->permohonan_informasi_id,
             'user_id' => Auth::id(),
             'message' => $request->message,
             'response_type' => $request->response_type,
-            'file_path' => $filePath,
-            'link' => $request->link,
         ]);
 
         // Automatically update the status to 'diproses'
@@ -70,8 +52,8 @@ class PermohonanInformasiController extends Controller
             $permohonan->save();
 
             // Kirim Notifikasi Telegram
-            $escNama = TelegramHelper::escapeMarkdown($permohonan->nama_pemohon);
-            $escMsg = TelegramHelper::escapeMarkdown($request->message);
+            $escNama = GeneralHelper::escapeTelegramMarkdown($permohonan->nama_pemohon);
+            $escMsg = GeneralHelper::escapeTelegramMarkdown($request->message);
 
             $tgMsg = "👨‍💼 *Admin Memberikan Tanggapan*\n\n"
                    . "🆔 *ID Permohonan:* #{$permohonan->unique_code}\n"
@@ -81,7 +63,7 @@ class PermohonanInformasiController extends Controller
                    . "📌 Status diperbarui menjadi *Diproses*.\n"
                    . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan->id) . ")";
             
-            TelegramHelper::sendMessage($tgMsg);
+            GeneralHelper::sendTelegramMessage($tgMsg);
         }
 
         return redirect()->route('admin.permohonan-informasi.show', $permohonan)
@@ -111,16 +93,13 @@ class PermohonanInformasiController extends Controller
     public function update(Request $request, PermohonanInformasi $permohonan_informasi)
     {
         $request->validate([
-            'nama_pemohon' => 'required|string|max:255',
-            'email_pemohon' => 'required|email|max:255',
-            'detail_informasi' => 'required|string',
             'status_permohonan' => 'required|in:pending,diproses,selesai,ditolak',
         ]);
 
-        $permohonan_informasi->update($request->all());
+        $permohonan_informasi->update($request->only('status_permohonan'));
 
-        return redirect()->route('admin.permohonan-informasi.show', $permohonan_informasi)
-                         ->with('success', 'Permohonan berhasil diperbarui.');
+        return redirect()->route('admin.permohonan-informasi.index')
+                         ->with('success', 'Status permohonan berhasil diperbarui.');
     }
 
     /**
@@ -128,10 +107,6 @@ class PermohonanInformasiController extends Controller
      */
     public function destroy(PermohonanInformasi $permohonan_informasi)
     {
-        // Delete associated responses
-        $permohonan_informasi->responses()->delete();
-
-        // Delete the main request
         $permohonan_informasi->delete();
 
         return redirect()->route('admin.permohonan-informasi.index')
@@ -139,7 +114,7 @@ class PermohonanInformasiController extends Controller
     }
 
     /**
-     * Mark the specified resource as complete.
+     * Mark the specified resource as completed.
      */
     public function complete(PermohonanInformasi $permohonan_informasi)
     {
@@ -147,14 +122,14 @@ class PermohonanInformasiController extends Controller
         $permohonan_informasi->save();
 
         // Kirim Notifikasi Telegram
-        $escNama = TelegramHelper::escapeMarkdown($permohonan_informasi->nama_pemohon);
+        $escNama = GeneralHelper::escapeTelegramMarkdown($permohonan_informasi->nama_pemohon);
         $tgMsg = "✅ *Permohonan Selesai*\n\n"
                . "🆔 *ID Permohonan:* #{$permohonan_informasi->unique_code}\n"
                . "👤 *Pemohon:* {$escNama}\n"
                . "🏁 Permohonan telah ditandai sebagai *Selesai* oleh Admin.\n\n"
                . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan_informasi->id) . ")";
         
-        TelegramHelper::sendMessage($tgMsg);
+        GeneralHelper::sendTelegramMessage($tgMsg);
 
         return redirect()->route('admin.permohonan-informasi.index')
                          ->with('success', 'Permohonan ditandai sebagai Selesai.');
@@ -169,14 +144,14 @@ class PermohonanInformasiController extends Controller
         $permohonan_informasi->save();
 
         // Kirim Notifikasi Telegram
-        $escNama = TelegramHelper::escapeMarkdown($permohonan_informasi->nama_pemohon);
+        $escNama = GeneralHelper::escapeTelegramMarkdown($permohonan_informasi->nama_pemohon);
         $tgMsg = "❌ *Permohonan Ditolak*\n\n"
                . "🆔 *ID Permohonan:* #{$permohonan_informasi->unique_code}\n"
                . "👤 *Pemohon:* {$escNama}\n"
                . "🚫 Permohonan telah *Ditolak* oleh Admin.\n\n"
                . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan_informasi->id) . ")";
         
-        TelegramHelper::sendMessage($tgMsg);
+        GeneralHelper::sendTelegramMessage($tgMsg);
 
         // Optionally, add a default rejection response
         PermohonanResponse::create([

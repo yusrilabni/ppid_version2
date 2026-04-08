@@ -8,7 +8,6 @@ use Illuminate\Http\Request;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use App\Helpers\GeneralHelper;
-use App\Helpers\TelegramHelper;
 
 class LaporanPermohonanController extends Controller
 {
@@ -257,12 +256,12 @@ class LaporanPermohonanController extends Controller
         $permohonan = PermohonanInformasi::create($validatedData);
 
         // Kirim Notifikasi Telegram
-        $escNama = TelegramHelper::escapeMarkdown($permohonan->nama_pemohon);
-        $escEmail = TelegramHelper::escapeMarkdown($permohonan->email_pemohon);
-        $escTelp = TelegramHelper::escapeMarkdown($permohonan->nomor_telepon_pemohon);
-        $escKerja = TelegramHelper::escapeMarkdown($permohonan->pekerjaan);
-        $escInfo = TelegramHelper::escapeMarkdown($permohonan->detail_informasi);
-        $escTujuan = TelegramHelper::escapeMarkdown($permohonan->tujuan_penggunaan_informasi);
+        $escNama = GeneralHelper::escapeTelegramMarkdown($permohonan->nama_pemohon);
+        $escEmail = GeneralHelper::escapeTelegramMarkdown($permohonan->email_pemohon);
+        $escTelp = GeneralHelper::escapeTelegramMarkdown($permohonan->nomor_telepon_pemohon);
+        $escKerja = GeneralHelper::escapeTelegramMarkdown($permohonan->pekerjaan);
+        $escInfo = GeneralHelper::escapeTelegramMarkdown($permohonan->detail_informasi);
+        $escTujuan = GeneralHelper::escapeTelegramMarkdown($permohonan->tujuan_penggunaan_informasi);
 
         $tgMsg = "📄 *Permohonan Informasi Baru*\n\n"
                . "🆔 *ID:* #{$uniqueCode}\n"
@@ -275,7 +274,7 @@ class LaporanPermohonanController extends Controller
                . "🔒 *Privasi:* {$permohonan->privacy_status}\n\n"
                . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan->id) . ")";
         
-        TelegramHelper::sendMessage($tgMsg);
+        GeneralHelper::sendTelegramMessage($tgMsg);
 
         return redirect()->route('laporan.permohonan.saya')->with('success', 'Permohonan informasi berhasil dikirim.');
     }
@@ -307,9 +306,9 @@ class LaporanPermohonanController extends Controller
         ]);
 
         // Kirim Notifikasi Telegram
-        $escNama = TelegramHelper::escapeMarkdown($permohonanInformasi->nama_pemohon);
-        $escEmail = TelegramHelper::escapeMarkdown($permohonanInformasi->email_pemohon);
-        $escMessage = TelegramHelper::escapeMarkdown($validatedData['message']);
+        $escNama = GeneralHelper::escapeTelegramMarkdown($permohonanInformasi->nama_pemohon);
+        $escEmail = GeneralHelper::escapeTelegramMarkdown($permohonanInformasi->email_pemohon);
+        $escMessage = GeneralHelper::escapeTelegramMarkdown($validatedData['message']);
 
         $tgMsg = "💬 *Tanggapan Baru dari Pemohon*\n\n"
                . "🆔 *ID Permohonan:* #{$permohonanInformasi->unique_code}\n"
@@ -318,7 +317,7 @@ class LaporanPermohonanController extends Controller
                . "📩 *Pesan:* \n_{$escMessage}_\n\n"
                . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonanInformasi->id) . ")";
         
-        TelegramHelper::sendMessage($tgMsg);
+        GeneralHelper::sendTelegramMessage($tgMsg);
 
         // 5. Redirect back with a success message
         return redirect()->route('laporan.permohonan.show', $permohonanInformasi)
@@ -355,7 +354,7 @@ class LaporanPermohonanController extends Controller
         $permohonanInformasi->save();
 
         // Kirim Notifikasi Telegram
-        $escNama = TelegramHelper::escapeMarkdown($permohonanInformasi->nama_pemohon);
+        $escNama = GeneralHelper::escapeTelegramMarkdown($permohonanInformasi->nama_pemohon);
         $stars = str_repeat('⭐', $validatedData['rating']);
         $tgMsg = "🌟 *Penilaian Baru dari Pemohon*\n\n"
                . "🆔 *ID Permohonan:* #{$permohonanInformasi->unique_code}\n"
@@ -364,7 +363,7 @@ class LaporanPermohonanController extends Controller
                . ($isFirstRating ? "📌 Permohonan ditandai sebagai *Selesai*.\n" : "🔄 Penilaian diperbarui.\n")
                . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonanInformasi->id) . ")";
         
-        TelegramHelper::sendMessage($tgMsg);
+        GeneralHelper::sendTelegramMessage($tgMsg);
 
         // 5. Redirect back with a success message
         $message = $isFirstRating 
