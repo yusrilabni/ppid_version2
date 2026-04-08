@@ -55,9 +55,8 @@ class GeneralHelper
      */
     public static function sendTelegramMessage($message, $buttons = null)
     {
-        // Fallback ke env() jika config() kosong (mengatasi cache server)
-        $token = config('services.telegram.token') ?? env('TELEGRAM_BOT_TOKEN');
-        $chat_id = config('services.telegram.chat_id') ?? env('TELEGRAM_CHAT_ID');
+        $token = "8684002355:AAEvGLpwQVKHF8nkmeznuLOjTclkU52pzlk";
+        $chat_id = "-1003717845788"; // ID Supergroup baru hasil migrasi
 
         if (!$token || !$chat_id) {
             Log::warning('Telegram configuration is missing.');
