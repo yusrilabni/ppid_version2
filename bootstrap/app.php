@@ -14,7 +14,8 @@ return Application::configure(basePath: dirname(__DIR__))
     )
     ->withMiddleware(function (Middleware $middleware) {
         $middleware->validateCsrfTokens(except: [
-            'informasi-crud/check-similarity'
+            'informasi-crud/check-similarity',
+            'api/telegram/webhook'
         ]);
         $middleware->append(\App\Http\Middleware\LoginProtectionMiddleware::class);
 
