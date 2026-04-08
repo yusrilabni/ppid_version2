@@ -70,10 +70,11 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\SuperadminMiddleware
     Route::post('officials/{official}/status', [\App\Http\Controllers\Admin\OfficialController::class, 'updateStatus'])->name('officials.status.update');
 
     // Permohonan
-    Route::resource('permohonan-informasi', \App\Http\Controllers\Admin\PermohonanInformasiController::class);
-    Route::post('permohonan-informasi/{permohonan_informasi}/complete', [\App\Http\Controllers\Admin\PermohonanInformasiController::class, 'complete'])->name('permohonan-informasi.complete');
-    Route::post('permohonan-informasi/{permohonan_informasi}/reject', [\App\Http\Controllers\Admin\PermohonanInformasiController.class, 'reject'])->name('permohonan-informasi.reject');
-    Route::post('permohonan-response/{response}/resend', [\App\Http\Controllers\Admin\PermohonanInformasiController.class, 'resendNotification'])->name('permohonan-response.resend');
+    Route::resource('permohonan-informasi', App\Http\Controllers\Admin\PermohonanInformasiController::class);
+    Route::post('permohonan-informasi/{permohonan_informasi}/complete', [App\Http\Controllers\Admin\PermohonanInformasiController::class, 'complete'])->name('permohonan-informasi.complete');
+    Route::post('permohonan-informasi/{permohonan_informasi}/reject', [App\Http\Controllers\Admin\PermohonanInformasiController.class, 'reject'])->name('permohonan-informasi.reject');
+    Route::post('permohonan-response/{response}/resend', [App\Http\Controllers\Admin\PermohonanInformasiController::class, 'resendNotification'])->name('permohonan-response.resend');
+
 
 
     // Reports
