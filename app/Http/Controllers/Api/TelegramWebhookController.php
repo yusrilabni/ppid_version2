@@ -63,13 +63,13 @@ class TelegramWebhookController extends Controller
         ]);
 
         // 3. Notify back to Telegram (Edit original message to remove buttons and show success)
-        $escAdmin = GeneralHelper::escapeTelegramMarkdown($adminName);
-        $statusMsg = "✅ *BERHASIL DIRESPON*\n\n"
-                   . "🆔 *ID:* #{$permohonan->unique_code}\n"
-                   . "👤 *Pemohon:* " . GeneralHelper::escapeTelegramMarkdown($permohonan->nama_pemohon) . "\n"
-                   . "🛠️ *Diproses Oleh:* {$escAdmin} (via Telegram)\n"
-                   . "📢 *Status:* Diproses\n"
-                   . "📩 *Pesan Auto:* \n_{$autoMsg}_";
+        $escAdmin = htmlspecialchars($adminName);
+        $statusMsg = "<b>✅ BERHASIL DIRESPON</b>\n\n"
+                   . "<b>🆔 ID:</b> #{$permohonan->unique_code}\n"
+                   . "<b>👤 Pemohon:</b> " . htmlspecialchars($permohonan->nama_pemohon) . "\n"
+                   . "<b>🛠️ Diproses Oleh:</b> {$escAdmin} (via Telegram)\n"
+                   . "<b>📢 Status:</b> Diproses\n"
+                   . "<b>📩 Pesan Auto:</b> \n<i>{$autoMsg}</i>";
 
         $this->updateTelegramMessage($messageId, $statusMsg);
     }
@@ -89,25 +89,25 @@ class TelegramWebhookController extends Controller
             'response_type' => 'Tindaklanjut Permohonan'
         ]);
 
-        $escAdmin = GeneralHelper::escapeTelegramMarkdown($adminName);
-        $statusMsg = "❌ *PERMOHONAN DITOLAK*\n\n"
-                   . "🆔 *ID:* #{$permohonan->unique_code}\n"
-                   . "🛠️ *Ditolak Oleh:* {$escAdmin} (via Telegram)\n"
-                   . "📢 *Status:* Ditolak";
+        $escAdmin = htmlspecialchars($adminName);
+        $statusMsg = "<b>❌ PERMOHONAN DITOLAK</b>\n\n"
+                   . "<b>🆔 ID:</b> #{$permohonan->unique_code}\n"
+                   . "<b>🛠️ Ditolak Oleh:</b> {$escAdmin} (via Telegram)\n"
+                   . "<b>📢 Status:</b> Ditolak";
 
         $this->updateTelegramMessage($messageId, $statusMsg);
     }
 
     private function updateTelegramMessage($messageId, $text)
     {
-        $token = config('services.telegram.token');
-        $chatId = config('services.telegram.chat_id');
+        $token = config('services.telegram.token') ?? env('TELEGRAM_BOT_TOKEN');
+        $chatId = config('services.telegram.chat_id') ?? env('TELEGRAM_CHAT_ID');
 
         Http::post("https://api.telegram.org/bot{$token}/editMessageText", [
             'chat_id' => $chatId,
             'message_id' => $messageId,
             'text' => $text,
-            'parse_mode' => 'Markdown',
+            'parse_mode' => 'HTML',
             'reply_markup' => json_encode(['inline_keyboard' => []]) // Hapus tombol setelah diklik
         ]);
     }

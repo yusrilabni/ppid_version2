@@ -55,15 +55,9 @@ class GeneralHelper
      */
     public static function sendTelegramMessage($message, $buttons = null)
     {
-        $token = config('services.telegram.token');
-        $chat_id = config('services.telegram.chat_id');
-
-        Log::info('Attempting to send Telegram message', [
-            'token_exists' => !empty($token),
-            'chat_id' => $chat_id,
-            'message_length' => strlen($message),
-            'has_buttons' => !empty($buttons)
-        ]);
+        // Fallback ke env() jika config() kosong (mengatasi cache server)
+        $token = config('services.telegram.token') ?? env('TELEGRAM_BOT_TOKEN');
+        $chat_id = config('services.telegram.chat_id') ?? env('TELEGRAM_CHAT_ID');
 
         if (!$token || !$chat_id) {
             Log::warning('Telegram configuration is missing.');
@@ -74,14 +68,12 @@ class GeneralHelper
             $payload = [
                 'chat_id' => $chat_id,
                 'text' => $message,
-                'parse_mode' => 'Markdown',
+                'parse_mode' => 'HTML', // Ganti ke HTML agar lebih stabil
             ];
 
             if ($buttons) {
                 $payload['reply_markup'] = json_encode(['inline_keyboard' => $buttons]);
             }
-
-            Log::debug('Telegram Payload:', $payload);
 
             $response = Http::timeout(10)->post("https://api.telegram.org/bot{$token}/sendMessage", $payload);
 
@@ -90,7 +82,6 @@ class GeneralHelper
                 return false;
             }
 
-            Log::info('Telegram message sent successfully');
             return true;
         } catch (\Exception $e) {
             Log::error('Telegram exception occurred: ' . $e->getMessage());

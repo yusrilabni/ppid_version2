@@ -261,23 +261,16 @@ class LaporanPermohonanController extends Controller
         $permohonan = PermohonanInformasi::create($validatedData);
 
         // Kirim Notifikasi Telegram
-        $escNama = GeneralHelper::escapeTelegramMarkdown($permohonan->nama_pemohon);
-        $escEmail = GeneralHelper::escapeTelegramMarkdown($permohonan->email_pemohon);
-        $escTelp = GeneralHelper::escapeTelegramMarkdown($permohonan->nomor_telepon_pemohon);
-        $escKerja = GeneralHelper::escapeTelegramMarkdown($permohonan->pekerjaan);
-        $escInfo = GeneralHelper::escapeTelegramMarkdown($permohonan->detail_informasi);
-        $escTujuan = GeneralHelper::escapeTelegramMarkdown($permohonan->tujuan_penggunaan_informasi);
-
-        $tgMsg = "📄 *Permohonan Informasi Baru*\n\n"
-               . "🆔 *ID:* #{$uniqueCode}\n"
-               . "👤 *Pemohon:* {$escNama}\n"
-               . "📧 *Email:* {$escEmail}\n"
-               . "📞 *Telp:* {$escTelp}\n"
-               . "💼 *Pekerjaan:* {$escKerja}\n"
-               . "📝 *Informasi:* {$escInfo}\n"
-               . "🎯 *Tujuan:* {$escTujuan}\n"
-               . "🔒 *Privasi:* {$permohonan->privacy_status}\n\n"
-               . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan->id) . ")";
+        $tgMsg = "<b>📄 Permohonan Informasi Baru</b>\n\n"
+               . "<b>🆔 ID:</b> #{$uniqueCode}\n"
+               . "<b>👤 Pemohon:</b> " . htmlspecialchars($permohonan->nama_pemohon) . "\n"
+               . "<b>📧 Email:</b> " . htmlspecialchars($permohonan->email_pemohon) . "\n"
+               . "<b>📞 Telp:</b> " . htmlspecialchars($permohonan->nomor_telepon_pemohon) . "\n"
+               . "<b>💼 Pekerjaan:</b> " . htmlspecialchars($permohonan->pekerjaan) . "\n"
+               . "<b>📝 Informasi:</b> " . htmlspecialchars($permohonan->detail_informasi) . "\n"
+               . "<b>🎯 Tujuan:</b> " . htmlspecialchars($permohonan->tujuan_penggunaan_informasi) . "\n"
+               . "<b>🔒 Privasi:</b> {$permohonan->privacy_status}\n\n"
+               . '<a href="' . route('admin.permohonan-informasi.show', $permohonan->id) . '">🔗 Lihat Detail di Website</a>';
         
         $buttons = [
             [
