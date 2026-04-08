@@ -59,14 +59,10 @@ class HybridLoginController extends Controller
     }
 
     /**
-     * Handle post-login redirect based on role
+     * Handle post-login redirect
      */
     private function authenticated($request, $user)
     {
-        if ($user->isAdmin()) {
-            return redirect()->route('admin.dashboard');
-        }
-
         return redirect()->intended('/');
     }
 

@@ -83,7 +83,7 @@ class LaporanPermohonanController extends Controller
         // 2. Cek Sinkronisasi Akun
         if (!$isOwner && !$isPubliclyVisible) {
             // Jika dia login tapi bukan pemilik dan data tidak publik
-            abort(403, 'Akses Ditolak: Akun Anda tidak tersinkronisasi dengan permohonan ini. Silakan masuk menggunakan akun yang digunakan saat mengajukan permohonan agar dapat melihat detail dan riwayat diskusi.');
+            abort(403, 'Akses Dibatasi: Akun Anda tidak tersinkronisasi dengan data permohonan ini. Silakan masuk menggunakan akun yang digunakan saat mengajukan permohonan agar dapat mengakses detail informasi ini.');
         }
         
         $units = $this->getUnitData();
