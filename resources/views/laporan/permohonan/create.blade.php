@@ -9,13 +9,13 @@
                 ['title' => 'Formulir Permohonan', 'url' => '#', 'icon' => 'fas fa-file-signature']
             ]" />
             
-            <div class="text-center mb-8 md:mb-10 mt-4 md:mt-6">
-                <div class="inline-flex items-center justify-center w-14 h-14 md:w-16 md:h-16 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mb-4 md:mb-6 shadow-lg">
-                    <img src="{{ asset('storage/logo/ppid.webp') }}" alt="Logo PPID" class="w-10 h-10 md:w-12 md:h-12">
+            <div class="text-center mb-6 md:mb-10 mt-4 md:mt-6">
+                <div class="inline-flex items-center justify-center w-24 h-24 md:w-36 md:h-36 bg-gradient-to-r from-blue-500 to-indigo-600 rounded-full mb-4 md:mb-6 shadow-lg overflow-hidden">
+                    <img src="{{ asset('storage/logo/ppid.webp') }}" alt="Logo PPID" class="w-20 h-20 md:w-32 md:h-32 object-contain">
                 </div>
-                <h1 class="text-2xl md:text-4xl font-bold text-gray-800 mb-2 md:mb-3">{{ __('Permohonan Informasi') }}</h1>
-                <p class="text-sm md:text-base text-gray-600 max-w-2xl mx-auto px-2">
-                    {{ __('Lengkapi formulir di bawah ini untuk membuat permohonan informasi publik.') }}
+                <h1 class="text-2xl md:text-4xl font-extrabold text-gray-800 mb-2 md:mb-3 tracking-tight">{{ __('Permohonan Informasi') }}</h1>
+                <p class="text-sm md:text-base text-gray-600 max-w-2xl mx-auto px-4 leading-relaxed">
+                    {{ __('Lengkapi formulir di bawah ini untuk mengajukan permohonan informasi publik secara resmi.') }}
                 </p>
             </div>
 
