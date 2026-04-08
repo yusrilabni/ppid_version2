@@ -2,6 +2,8 @@
 
 namespace App\Helpers;
 
+use App\Helpers\GeneralHelper;
+
 class PrivacyHelper
 {
     public static function maskName(string $name, bool $should_mask): string
@@ -39,25 +41,11 @@ class PrivacyHelper
             return 'Unit tidak tersedia';
         }
 
-        static $unitNames = [];
-
-        if (isset($unitNames[$unitId])) {
-            return $unitNames[$unitId];
+        $units = GeneralHelper::getUnitData();
+        if ($units->has($unitId)) {
+            return $units->get($unitId)['unit_nama'];
         }
 
-        try {
-            $client = new \GuzzleHttp\Client();
-            $response = $client->get("http://apps.sinjaikab.go.id/api/pegawai/get_unit?unit_id={$unitId}");
-            $data = json_decode($response->getBody()->getContents(), true);
-
-            if (isset($data['unit_nama'])) {
-                $unitNames[$unitId] = $data['unit_nama'];
-                return $data['unit_nama'];
-            }
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error("Failed to fetch unit name for ID {$unitId}: " . $e->getMessage());
-        }
-
-        return $unitId; // Fallback
+        return $unitId; // Fallback to ID if not found in hardcoded list
     }
 }
