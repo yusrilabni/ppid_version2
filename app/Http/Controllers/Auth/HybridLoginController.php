@@ -59,6 +59,18 @@ class HybridLoginController extends Controller
     }
 
     /**
+     * Handle post-login redirect based on role
+     */
+    private function authenticated($request, $user)
+    {
+        if ($user->isAdmin()) {
+            return redirect()->route('admin.dashboard');
+        }
+
+        return redirect()->intended('/');
+    }
+
+    /**
      * Handle email login
      */
     private function handleEmailLogin($email, $password, $remember, $request)
@@ -68,7 +80,7 @@ class HybridLoginController extends Controller
             session(['show_pedoman_modal' => true]);
             
             $user = Auth::user();
-            return redirect()->intended('/');
+            return $this->authenticated($request, $user);
         }
 
         return back()->withErrors([
@@ -94,8 +106,7 @@ class HybridLoginController extends Controller
                 $request->session()->regenerate();
                 session(['show_pedoman_modal' => true]);
                 
-                // FORCE REDIRECT TO HOME
-                return redirect()->intended('/');
+                return $this->authenticated($request, $user);
             }
         }
 
@@ -110,8 +121,7 @@ class HybridLoginController extends Controller
                     $request->session()->regenerate();
                     session(['show_pedoman_modal' => true]);
                     
-                    // FORCE REDIRECT TO HOME
-                    return redirect()->intended('/');
+                    return $this->authenticated($request, $user);
                 }
             }
         }
@@ -129,7 +139,7 @@ class HybridLoginController extends Controller
             $request->session()->regenerate();
             session(['show_pedoman_modal' => true]);
             
-            return redirect()->intended('/');
+            return $this->authenticated($request, $user);
         }
 
         return back()->withErrors([
@@ -161,7 +171,8 @@ class HybridLoginController extends Controller
         $request->session()->regenerate();
         session(['show_pedoman_modal' => true]);
 
-        return redirect('/');
+        return $this->authenticated($request, $user);
+
     }
 
     /**
@@ -201,7 +212,7 @@ class HybridLoginController extends Controller
             $request->session()->regenerate();
             session(['show_pedoman_modal' => true]);
             
-            return redirect()->intended('/');
+            return $this->authenticated($request, $user);
             
         } catch (\Exception $e) {
             Log::error('Google Login Error: ' . $e->getMessage());
