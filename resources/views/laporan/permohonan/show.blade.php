@@ -311,6 +311,30 @@
                 </div>
 
                 <!-- Riwayat Tanggapan -->
+                @php
+                    if (!function_exists('getFileIcon')) {
+                        function getFileIcon($filePath) {
+                            $extension = pathinfo($filePath, PATHINFO_EXTENSION);
+                            switch (strtolower($extension)) {
+                                case 'pdf': return 'fas fa-file-pdf';
+                                case 'doc':
+                                case 'docx': return 'fas fa-file-word';
+                                case 'xls':
+                                case 'xlsx': return 'fas fa-file-excel';
+                                case 'ppt':
+                                case 'pptx': return 'fas fa-file-powerpoint';
+                                case 'zip':
+                                case 'rar': return 'fas fa-file-archive';
+                                case 'jpg':
+                                case 'jpeg':
+                                case 'png':
+                                case 'gif':
+                                case 'webp': return 'fas fa-file-image';
+                                default: return 'fas fa-file-alt';
+                            }
+                        }
+                    }
+                @endphp
                 @if ($permohonan->responses->count() > 0)
                 <div class="mt-12">
                     <h3 class="text-base md:text-lg font-bold text-gray-900 mb-6 pb-2 border-b-2 border-blue-100 flex items-center">
