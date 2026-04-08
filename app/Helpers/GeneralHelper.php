@@ -58,7 +58,14 @@ class GeneralHelper
         $token = config('services.telegram.token');
         $chat_id = config('services.telegram.chat_id');
 
-        if (!$token || !$chat_id || $chat_id === 'YOUR_CHAT_ID_HERE') {
+        Log::info('Attempting to send Telegram message', [
+            'token_exists' => !empty($token),
+            'chat_id' => $chat_id,
+            'message_length' => strlen($message),
+            'has_buttons' => !empty($buttons)
+        ]);
+
+        if (!$token || !$chat_id) {
             Log::warning('Telegram configuration is missing.');
             return false;
         }
@@ -74,16 +81,19 @@ class GeneralHelper
                 $payload['reply_markup'] = json_encode(['inline_keyboard' => $buttons]);
             }
 
+            Log::debug('Telegram Payload:', $payload);
+
             $response = Http::timeout(10)->post("https://api.telegram.org/bot{$token}/sendMessage", $payload);
 
             if ($response->failed()) {
-                Log::error('Telegram error: ' . $response->body());
+                Log::error('Telegram error response: ' . $response->body());
                 return false;
             }
 
+            Log::info('Telegram message sent successfully');
             return true;
         } catch (\Exception $e) {
-            Log::error('Telegram exception: ' . $e->getMessage());
+            Log::error('Telegram exception occurred: ' . $e->getMessage());
             return false;
         }
     }
