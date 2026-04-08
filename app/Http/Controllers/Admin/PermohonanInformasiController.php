@@ -64,10 +64,27 @@ class PermohonanInformasiController extends Controller
                    . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan->id) . ")";
             
             GeneralHelper::sendTelegramMessage($tgMsg);
+
+            // Siapkan URL WhatsApp untuk Pemohon
+            $waPhone = GeneralHelper::formatPhoneNumber($permohonan->nomor_telepon_pemohon);
+            $waMessage = "*NOTIFIKASI PPID KABUPATEN SINJAI*\n\n"
+                       . "Halo {$permohonan->nama_pemohon},\n"
+                       . "Permohonan Informasi Anda dengan ID *#{$permohonan->unique_code}* telah mendapatkan tanggapan dari Admin.\n\n"
+                       . "*Status:* Diproses\n"
+                       . "*Pesan Admin:* \n_{$request->message}_\n\n"
+                       . "Silakan cek detail lengkap dan unduh file (jika ada) melalui tautan berikut:\n"
+                       . route('laporan.permohonan.show', $permohonan->unique_code) . "\n\n"
+                       . "Terima kasih.";
+            
+            $waUrl = "https://wa.me/{$waPhone}?text=" . urlencode($waMessage);
+
+            return redirect()->route('admin.permohonan-informasi.show', $permohonan)
+                             ->with('success', 'Jawaban berhasil disimpan. Silakan klik link berikut untuk meneruskan ke WhatsApp Pemohon: <a href="'.$waUrl.'" target="_blank" class="font-bold underline text-blue-600">Kirim WhatsApp ke Pemohon</a>')
+                             ->with('wa_url', $waUrl); // Simpan di session agar bisa di-auto-open oleh view
         }
 
         return redirect()->route('admin.permohonan-informasi.show', $permohonan)
-                         ->with('success', 'Jawaban berhasil dikirim dan status otomatis diperbarui menjadi "Diproses".');
+                         ->with('success', 'Jawaban berhasil dikirim.');
     }
 
     /**
@@ -131,8 +148,20 @@ class PermohonanInformasiController extends Controller
         
         GeneralHelper::sendTelegramMessage($tgMsg);
 
+        // Notifikasi WhatsApp Selesai
+        $waPhone = GeneralHelper::formatPhoneNumber($permohonan_informasi->nomor_telepon_pemohon);
+        $waMessage = "*NOTIFIKASI PPID KABUPATEN SINJAI*\n\n"
+                   . "Halo {$permohonan_informasi->nama_pemohon},\n"
+                   . "Permohonan Informasi Anda (#{$permohonan_informasi->unique_code}) telah dinyatakan *SELESAI* oleh Admin.\n\n"
+                   . "Silakan berikan penilaian Anda terhadap layanan kami melalui tautan berikut:\n"
+                   . route('laporan.permohonan.show', $permohonan_informasi->unique_code) . "\n\n"
+                   . "Terima kasih.";
+        
+        $waUrl = "https://wa.me/{$waPhone}?text=" . urlencode($waMessage);
+
         return redirect()->route('admin.permohonan-informasi.index')
-                         ->with('success', 'Permohonan ditandai sebagai Selesai.');
+                         ->with('success', 'Permohonan ditandai sebagai Selesai. <a href="'.$waUrl.'" target="_blank" class="font-bold underline">Kirim Notifikasi WA ke Pemohon</a>')
+                         ->with('wa_url', $waUrl);
     }
 
     /**
@@ -161,7 +190,19 @@ class PermohonanInformasiController extends Controller
             'response_type' => 'Tindaklanjut Permohonan', // Or a specific type for rejection
         ]);
 
+        // Notifikasi WhatsApp Ditolak
+        $waPhone = GeneralHelper::formatPhoneNumber($permohonan_informasi->nomor_telepon_pemohon);
+        $waMessage = "*NOTIFIKASI PPID KABUPATEN SINJAI*\n\n"
+                   . "Mohon maaf {$permohonan_informasi->nama_pemohon},\n"
+                   . "Permohonan Informasi Anda (#{$permohonan_informasi->unique_code}) telah *DITOLAK* oleh Admin.\n\n"
+                   . "Silakan cek alasan penolakan melalui tautan berikut:\n"
+                   . route('laporan.permohonan.show', $permohonan_informasi->unique_code) . "\n\n"
+                   . "Terima kasih.";
+        
+        $waUrl = "https://wa.me/{$waPhone}?text=" . urlencode($waMessage);
+
         return redirect()->route('admin.permohonan-informasi.index')
-                         ->with('success', 'Permohonan ditandai sebagai Ditolak.');
+                         ->with('success', 'Permohonan ditandai sebagai Ditolak. <a href="'.$waUrl.'" target="_blank" class="font-bold underline">Kirim Notifikasi WA ke Pemohon</a>')
+                         ->with('wa_url', $waUrl);
     }
 }
