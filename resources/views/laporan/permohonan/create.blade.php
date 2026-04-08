@@ -111,6 +111,10 @@
                                         class="w-full pl-10 pr-4 py-2.5 md:py-3 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                                         placeholder="08xxxxxxxxxx" value="{{ old('nomor_telepon_pemohon') }}">
                                 </div>
+                                <p class="text-[10px] text-blue-600 mt-1.5 flex items-start leading-tight">
+                                    <i class="fas fa-info-circle mr-1 mt-0.5"></i>
+                                    <span>Gunakan nomor WhatsApp aktif untuk menerima notifikasi berkala terkait status permohonan Anda.</span>
+                                </p>
                                 @error('nomor_telepon_pemohon') <p class="text-[10px] md:text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                             </div>
 
