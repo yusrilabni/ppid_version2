@@ -76,16 +76,17 @@
 
                             <div class="space-y-1.5">
                                 <label for="pekerjaan" class="block text-xs md:text-sm font-semibold text-gray-700">
-                                    {{ __('Pekerjaan') }}
+                                    {{ __('Pekerjaan') }} <span class="text-red-500">*</span>
                                 </label>
                                 <div class="relative group">
                                     <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400 group-focus-within:text-blue-500 transition-colors">
                                         <i class="fas fa-briefcase text-sm"></i>
                                     </span>
-                                    <input type="text" name="pekerjaan" id="pekerjaan"
+                                    <input type="text" name="pekerjaan" id="pekerjaan" required
                                         class="w-full pl-10 pr-4 py-2.5 md:py-3 text-sm border border-gray-300 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
                                         placeholder="Contoh: PNS, Swasta, Pelajar" value="{{ old('pekerjaan') }}">
                                 </div>
+                                @error('pekerjaan') <p class="text-[10px] md:text-xs text-red-600 mt-1">{{ $message }}</p> @enderror
                             </div>
 
                             <div class="space-y-1.5 md:col-span-2">

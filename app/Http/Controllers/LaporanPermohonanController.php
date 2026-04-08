@@ -118,7 +118,7 @@ class LaporanPermohonanController extends Controller
         $validatedData = $request->validate([
             'nama_pemohon' => 'required|string|max:255',
             'alamat_pemohon' => 'required|string',
-            'pekerjaan' => 'nullable|string|max:255',
+            'pekerjaan' => 'required|string|max:255',
             'nomor_telepon_pemohon' => 'required|string|max:20',
             'email_pemohon' => 'required|email|max:255',
             'detail_informasi' => 'required|string',
@@ -221,7 +221,7 @@ class LaporanPermohonanController extends Controller
         $validatedData = $request->validate([
             'nama_pemohon' => 'required|string|max:255',
             'alamat_pemohon' => 'required|string',
-            'pekerjaan' => 'nullable|string|max:255',
+            'pekerjaan' => 'required|string|max:255',
             'nomor_telepon_pemohon' => 'required|string|max:20',
             'email_pemohon' => 'required|email|max:255',
             'detail_informasi' => 'required|string',

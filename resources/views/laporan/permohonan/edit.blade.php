@@ -80,11 +80,11 @@
 
                             <div class="space-y-2">
                                 <label for="pekerjaan" class="block text-sm font-medium text-gray-700 mb-1 flex items-center">
-                                    <i class="fas fa-briefcase text-blue-500 mr-2 text-sm"></i> {{ __('Pekerjaan') }}
+                                    <i class="fas fa-briefcase text-blue-500 mr-2 text-sm"></i> {{ __('Pekerjaan') }} <span class="text-red-500 ml-1">*</span>
                                 </label>
                                 <div class="relative">
                                     <input type="text" name="pekerjaan" id="pekerjaan" class="w-full pl-11 pr-4 py-3 border border-gray-300 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent transition duration-200"
-                                        placeholder="Contoh: PNS, Swasta, Pelajar" value="{{ old('pekerjaan', $permohonan->pekerjaan) }}">
+                                        placeholder="Contoh: PNS, Swasta, Pelajar" value="{{ old('pekerjaan', $permohonan->pekerjaan) }}" required>
                                     <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none"><i class="fas fa-briefcase text-gray-400"></i></div>
                                 </div>
                                 @error('pekerjaan')<p class="mt-2 text-sm text-red-600 flex items-center"><i class="fas fa-exclamation-circle mr-1"></i> {{ $message }}</p>@enderror
