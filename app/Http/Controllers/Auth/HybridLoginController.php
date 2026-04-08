@@ -19,7 +19,7 @@ class HybridLoginController extends Controller
     public function showLoginForm()
     {
         if (Auth::check()) {
-            return redirect('/');
+            return redirect()->intended('/');
         }
         return view('auth.login');
     }
@@ -30,7 +30,7 @@ class HybridLoginController extends Controller
     public function showRegisterForm()
     {
         if (Auth::check()) {
-            return redirect('/');
+            return redirect()->intended('/');
         }
         return view('auth.register');
     }
@@ -68,7 +68,7 @@ class HybridLoginController extends Controller
             session(['show_pedoman_modal' => true]);
             
             $user = Auth::user();
-            return redirect('/');
+            return redirect()->intended('/');
         }
 
         return back()->withErrors([
@@ -95,7 +95,7 @@ class HybridLoginController extends Controller
                 session(['show_pedoman_modal' => true]);
                 
                 // FORCE REDIRECT TO HOME
-                return redirect('/');
+                return redirect()->intended('/');
             }
         }
 
@@ -111,7 +111,7 @@ class HybridLoginController extends Controller
                     session(['show_pedoman_modal' => true]);
                     
                     // FORCE REDIRECT TO HOME
-                    return redirect('/');
+                    return redirect()->intended('/');
                 }
             }
         }
@@ -129,7 +129,7 @@ class HybridLoginController extends Controller
             $request->session()->regenerate();
             session(['show_pedoman_modal' => true]);
             
-            return redirect('/');
+            return redirect()->intended('/');
         }
 
         return back()->withErrors([
@@ -201,7 +201,7 @@ class HybridLoginController extends Controller
             $request->session()->regenerate();
             session(['show_pedoman_modal' => true]);
             
-            return redirect('/');
+            return redirect()->intended('/');
             
         } catch (\Exception $e) {
             Log::error('Google Login Error: ' . $e->getMessage());

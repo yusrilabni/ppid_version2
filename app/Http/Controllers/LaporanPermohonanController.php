@@ -67,18 +67,23 @@ class LaporanPermohonanController extends Controller
 
     public function show(PermohonanInformasi $permohonanInformasi)
     {
+        // 1. Jika belum login, middleware 'auth' biasanya sudah menangani, 
+        // tapi kita pastikan URL tujuan disimpan (Intended URL)
+        if (!auth()->check()) {
+            return redirect()->guest(route('login'));
+        }
+
         $permohonan = $permohonanInformasi->load('user', 'responses.user');
+        $isOwner = auth()->id() == $permohonan->user_id;
 
-        $isOwner = auth()->check() && auth()->id() == $permohonan->user_id;
-
-        // Public view conditions
+        // Public view conditions (untuk user lain jika status publik)
         $isPubliclyVisible = in_array($permohonan->privacy_status, ['Publik', 'Anonim']) &&
                              in_array($permohonan->status_permohonan, ['selesai', 'ditolak']);
 
-        // A user can always see their own request, regardless of status.
-        // Others can only see it if it meets the public visibility criteria.
+        // 2. Cek Sinkronisasi Akun
         if (!$isOwner && !$isPubliclyVisible) {
-            abort(404, 'Permohonan informasi tidak ditemukan atau tidak dapat diakses.');
+            // Jika dia login tapi bukan pemilik dan data tidak publik
+            abort(403, 'Akses Ditolak: Akun Anda tidak tersinkronisasi dengan permohonan ini. Silakan masuk menggunakan akun yang digunakan saat mengajukan permohonan agar dapat melihat detail dan riwayat diskusi.');
         }
         
         $units = $this->getUnitData();
