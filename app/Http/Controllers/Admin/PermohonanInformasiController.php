@@ -70,11 +70,14 @@ class PermohonanInformasiController extends Controller
             $permohonan->save();
 
             // Kirim Notifikasi Telegram
+            $escNama = TelegramHelper::escapeMarkdown($permohonan->nama_pemohon);
+            $escMsg = TelegramHelper::escapeMarkdown($request->message);
+
             $tgMsg = "👨‍💼 *Admin Memberikan Tanggapan*\n\n"
                    . "🆔 *ID Permohonan:* #{$permohonan->unique_code}\n"
-                   . "👤 *Kepada:* {$permohonan->nama_pemohon}\n"
+                   . "👤 *Kepada:* {$escNama}\n"
                    . "🏷️ *Tipe:* {$request->response_type}\n"
-                   . "📩 *Pesan:* \n_{$request->message}_\n\n"
+                   . "📩 *Pesan:* \n_{$escMsg}_\n\n"
                    . "📌 Status diperbarui menjadi *Diproses*.\n"
                    . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan->id) . ")";
             
@@ -144,9 +147,10 @@ class PermohonanInformasiController extends Controller
         $permohonan_informasi->save();
 
         // Kirim Notifikasi Telegram
+        $escNama = TelegramHelper::escapeMarkdown($permohonan_informasi->nama_pemohon);
         $tgMsg = "✅ *Permohonan Selesai*\n\n"
                . "🆔 *ID Permohonan:* #{$permohonan_informasi->unique_code}\n"
-               . "👤 *Pemohon:* {$permohonan_informasi->nama_pemohon}\n"
+               . "👤 *Pemohon:* {$escNama}\n"
                . "🏁 Permohonan telah ditandai sebagai *Selesai* oleh Admin.\n\n"
                . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan_informasi->id) . ")";
         
@@ -165,9 +169,10 @@ class PermohonanInformasiController extends Controller
         $permohonan_informasi->save();
 
         // Kirim Notifikasi Telegram
+        $escNama = TelegramHelper::escapeMarkdown($permohonan_informasi->nama_pemohon);
         $tgMsg = "❌ *Permohonan Ditolak*\n\n"
                . "🆔 *ID Permohonan:* #{$permohonan_informasi->unique_code}\n"
-               . "👤 *Pemohon:* {$permohonan_informasi->nama_pemohon}\n"
+               . "👤 *Pemohon:* {$escNama}\n"
                . "🚫 Permohonan telah *Ditolak* oleh Admin.\n\n"
                . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan_informasi->id) . ")";
         

@@ -257,14 +257,21 @@ class LaporanPermohonanController extends Controller
         $permohonan = PermohonanInformasi::create($validatedData);
 
         // Kirim Notifikasi Telegram
+        $escNama = TelegramHelper::escapeMarkdown($permohonan->nama_pemohon);
+        $escEmail = TelegramHelper::escapeMarkdown($permohonan->email_pemohon);
+        $escTelp = TelegramHelper::escapeMarkdown($permohonan->nomor_telepon_pemohon);
+        $escKerja = TelegramHelper::escapeMarkdown($permohonan->pekerjaan);
+        $escInfo = TelegramHelper::escapeMarkdown($permohonan->detail_informasi);
+        $escTujuan = TelegramHelper::escapeMarkdown($permohonan->tujuan_penggunaan_informasi);
+
         $tgMsg = "📄 *Permohonan Informasi Baru*\n\n"
                . "🆔 *ID:* #{$uniqueCode}\n"
-               . "👤 *Pemohon:* {$permohonan->nama_pemohon}\n"
-               . "📧 *Email:* {$permohonan->email_pemohon}\n"
-               . "📞 *Telp:* {$permohonan->nomor_telepon_pemohon}\n"
-               . "💼 *Pekerjaan:* {$permohonan->pekerjaan}\n"
-               . "📝 *Informasi:* {$permohonan->detail_informasi}\n"
-               . "🎯 *Tujuan:* {$permohonan->tujuan_penggunaan_informasi}\n"
+               . "👤 *Pemohon:* {$escNama}\n"
+               . "📧 *Email:* {$escEmail}\n"
+               . "📞 *Telp:* {$escTelp}\n"
+               . "💼 *Pekerjaan:* {$escKerja}\n"
+               . "📝 *Informasi:* {$escInfo}\n"
+               . "🎯 *Tujuan:* {$escTujuan}\n"
                . "🔒 *Privasi:* {$permohonan->privacy_status}\n\n"
                . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan->id) . ")";
         
@@ -300,11 +307,15 @@ class LaporanPermohonanController extends Controller
         ]);
 
         // Kirim Notifikasi Telegram
+        $escNama = TelegramHelper::escapeMarkdown($permohonanInformasi->nama_pemohon);
+        $escEmail = TelegramHelper::escapeMarkdown($permohonanInformasi->email_pemohon);
+        $escMessage = TelegramHelper::escapeMarkdown($validatedData['message']);
+
         $tgMsg = "💬 *Tanggapan Baru dari Pemohon*\n\n"
                . "🆔 *ID Permohonan:* #{$permohonanInformasi->unique_code}\n"
-               . "👤 *Dari:* {$permohonanInformasi->nama_pemohon}\n"
-               . "📧 *Email:* {$permohonanInformasi->email_pemohon}\n"
-               . "📩 *Pesan:* \n_{$validatedData['message']}_\n\n"
+               . "👤 *Dari:* {$escNama}\n"
+               . "📧 *Email:* {$escEmail}\n"
+               . "📩 *Pesan:* \n_{$escMessage}_\n\n"
                . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonanInformasi->id) . ")";
         
         TelegramHelper::sendMessage($tgMsg);
@@ -344,10 +355,11 @@ class LaporanPermohonanController extends Controller
         $permohonanInformasi->save();
 
         // Kirim Notifikasi Telegram
+        $escNama = TelegramHelper::escapeMarkdown($permohonanInformasi->nama_pemohon);
         $stars = str_repeat('⭐', $validatedData['rating']);
         $tgMsg = "🌟 *Penilaian Baru dari Pemohon*\n\n"
                . "🆔 *ID Permohonan:* #{$permohonanInformasi->unique_code}\n"
-               . "👤 *Nama:* {$permohonanInformasi->nama_pemohon}\n"
+               . "👤 *Nama:* {$escNama}\n"
                . "⭐ *Rating:* {$stars} ({$validatedData['rating']}/5)\n\n"
                . ($isFirstRating ? "📌 Permohonan ditandai sebagai *Selesai*.\n" : "🔄 Penilaian diperbarui.\n")
                . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonanInformasi->id) . ")";

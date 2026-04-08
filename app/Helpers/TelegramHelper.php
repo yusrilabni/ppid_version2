@@ -7,6 +7,17 @@ use Illuminate\Support\Facades\Log;
 
 class TelegramHelper
 {
+    /**
+     * Escape special characters for Telegram Markdown.
+     */
+    public static function escapeMarkdown($text)
+    {
+        if (!$text) return '';
+        // Characters to escape in Markdown: _, *, [, ], (, ), ~, `, >, #, +, -, =, |, {, }, ., !
+        // But for standard Markdown we usually just need to handle _, *, [, ]
+        return str_replace(['_', '*', '[', ']', '`'], ['\_', '\*', '\[', '\]', '\`'], $text);
+    }
+
     public static function sendMessage($message)
     {
         $token = config('services.telegram.token');
@@ -18,7 +29,8 @@ class TelegramHelper
         }
 
         try {
-            $response = Http::post("https://api.telegram.org/bot{$token}/sendMessage", [
+            // Use timeout to prevent hanging in production
+            $response = Http::timeout(5)->post("https://api.telegram.org/bot{$token}/sendMessage", [
                 'chat_id' => $chat_id,
                 'text' => $message,
                 'parse_mode' => 'Markdown',
