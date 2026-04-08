@@ -8,9 +8,17 @@ use App\Models\PermohonanResponse;
 use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
+use App\Services\TelegramService;
 
 class PermohonanInformasiController extends Controller
 {
+    protected $telegram;
+
+    public function __construct(TelegramService $telegram)
+    {
+        $this->telegram = $telegram;
+    }
+
     /**
      * Display a listing of the resource.
      */
@@ -67,6 +75,17 @@ class PermohonanInformasiController extends Controller
         if ($permohonan) {
             $permohonan->status_permohonan = 'diproses';
             $permohonan->save();
+
+            // Kirim Notifikasi Telegram
+            $tgMessage = "👨‍💼 *Admin Memberikan Tanggapan*\n\n"
+                     . "🆔 *ID Permohonan:* #{$permohonan->unique_code}\n"
+                     . "👤 *Kepada:* {$permohonan->nama_pemohon}\n"
+                     . "🏷️ *Tipe:* {$request->response_type}\n"
+                     . "📩 *Pesan:* \n_{$request->message}_\n\n"
+                     . "📌 Status diperbarui menjadi *Diproses*.\n"
+                     . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan->id) . ")";
+            
+            $this->telegram->sendMessage($tgMessage);
         }
 
         return redirect()->route('admin.permohonan-informasi.show', $permohonan)
@@ -131,6 +150,15 @@ class PermohonanInformasiController extends Controller
         $permohonan_informasi->status_permohonan = 'selesai';
         $permohonan_informasi->save();
 
+        // Kirim Notifikasi Telegram
+        $tgMessage = "✅ *Permohonan Selesai*\n\n"
+                 . "🆔 *ID Permohonan:* #{$permohonan_informasi->unique_code}\n"
+                 . "👤 *Pemohon:* {$permohonan_informasi->nama_pemohon}\n"
+                 . "🏁 Permohonan telah ditandai sebagai *Selesai* oleh Admin.\n\n"
+                 . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan_informasi->id) . ")";
+        
+        $this->telegram->sendMessage($tgMessage);
+
         return redirect()->route('admin.permohonan-informasi.index')
                          ->with('success', 'Permohonan ditandai sebagai Selesai.');
     }
@@ -142,6 +170,15 @@ class PermohonanInformasiController extends Controller
     {
         $permohonan_informasi->status_permohonan = 'ditolak';
         $permohonan_informasi->save();
+
+        // Kirim Notifikasi Telegram
+        $tgMessage = "❌ *Permohonan Ditolak*\n\n"
+                 . "🆔 *ID Permohonan:* #{$permohonan_informasi->unique_code}\n"
+                 . "👤 *Pemohon:* {$permohonan_informasi->nama_pemohon}\n"
+                 . "🚫 Permohonan telah *Ditolak* oleh Admin.\n\n"
+                 . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan_informasi->id) . ")";
+        
+        $this->telegram->sendMessage($tgMessage);
 
         // Optionally, add a default rejection response
         PermohonanResponse::create([
