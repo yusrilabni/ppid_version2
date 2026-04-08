@@ -279,7 +279,14 @@ class LaporanPermohonanController extends Controller
                . "🔒 *Privasi:* {$permohonan->privacy_status}\n\n"
                . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan->id) . ")";
         
-        GeneralHelper::sendTelegramMessage($tgMsg);
+        $buttons = [
+            [
+                ['text' => '✅ Respon Awal (Auto)', 'callback_data' => "respond_awal_{$permohonan->id}"],
+                ['text' => '❌ Tolak', 'callback_data' => "reject_permohonan_{$permohonan->id}"]
+            ]
+        ];
+
+        GeneralHelper::sendTelegramMessage($tgMsg, $buttons);
 
         return redirect()->route('laporan.permohonan.saya')->with('success', 'Permohonan informasi berhasil dikirim.');
     }

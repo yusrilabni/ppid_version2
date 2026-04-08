@@ -51,9 +51,9 @@ class GeneralHelper
     }
 
     /**
-     * Send message to Telegram Bot.
+     * Send message to Telegram Bot with optional buttons.
      */
-    public static function sendTelegramMessage($message)
+    public static function sendTelegramMessage($message, $buttons = null)
     {
         $token = config('services.telegram.token');
         $chat_id = config('services.telegram.chat_id');
@@ -64,11 +64,17 @@ class GeneralHelper
         }
 
         try {
-            $response = Http::timeout(10)->post("https://api.telegram.org/bot{$token}/sendMessage", [
+            $payload = [
                 'chat_id' => $chat_id,
                 'text' => $message,
                 'parse_mode' => 'Markdown',
-            ]);
+            ];
+
+            if ($buttons) {
+                $payload['reply_markup'] = json_encode(['inline_keyboard' => $buttons]);
+            }
+
+            $response = Http::timeout(10)->post("https://api.telegram.org/bot{$token}/sendMessage", $payload);
 
             if ($response->failed()) {
                 Log::error('Telegram error: ' . $response->body());
