@@ -62,6 +62,33 @@ Route::get('/logout', function() {
     return redirect()->route('login');
 });
 
+// Diagnostic Route
+Route::get('/test-telegram', function() {
+    $token = config('services.telegram.token') ?? env('TELEGRAM_BOT_TOKEN');
+    $chat_id = config('services.telegram.chat_id') ?? env('TELEGRAM_CHAT_ID');
+    
+    echo "<b>Config Check:</b><br>";
+    echo "Token: " . ($token ? 'OK ('.substr($token, 0, 5).'...)' : 'MISSING') . "<br>";
+    echo "Chat ID: " . ($chat_id ?: 'MISSING') . "<br><br>";
+
+    try {
+        $response = \Illuminate\Support\Facades\Http::timeout(10)->post("https://api.telegram.org/bot{$token}/sendMessage", [
+            'chat_id' => $chat_id,
+            'text' => "<b>TES KONEKSI PPID</b>\nJika Anda melihat pesan ini, berarti koneksi server ke Telegram BERHASIL.",
+            'parse_mode' => 'HTML'
+        ]);
+
+        echo "<b>Response from Telegram:</b><br>";
+        echo "<pre>" . json_encode($response->json(), JSON_PRETTY_PRINT) . "</pre>";
+        
+        if ($response->failed()) {
+            echo "<br><b>Error Details:</b> " . $response->body();
+        }
+    } catch (\Exception $e) {
+        echo "<b>Fatal Exception:</b> " . $e->getMessage();
+    }
+});
+
 // OAuth & Security
 Route::get('/auth/google', [HybridLoginController::class, 'redirectToGoogle'])->name('auth.google');
 Route::get('/auth/google/callback', [HybridLoginController::class, 'handleGoogleCallback']);
