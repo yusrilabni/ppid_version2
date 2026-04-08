@@ -386,10 +386,17 @@
                                                     {{ $response->created_at->translatedFormat('d M Y, H:i') }}
                                                 </p>
                                                 @if($isRatingMsg)
-                                                <div class="flex mt-1">
-                                                    @for($i = 1; $i <= 5; $i++)
-                                                        <i class="fas fa-star {{ $i <= $permohonan->rating ? 'text-amber-500' : 'text-gray-300' }} text-[10px]"></i>
-                                                    @endfor
+                                                @php
+                                                    $labels = [1 => 'Tidak Puas', 2 => 'Kurang Puas', 3 => 'Cukup Puas', 4 => 'Puas', 5 => 'Sangat Puas'];
+                                                    $label = $labels[$permohonan->rating] ?? '';
+                                                @endphp
+                                                <div class="flex flex-col items-end mt-1">
+                                                    <div class="flex gap-0.5">
+                                                        @for($i = 1; $i <= 5; $i++)
+                                                            <i class="fas fa-star {{ $i <= $permohonan->rating ? 'text-amber-500' : 'text-gray-200' }} text-base md:text-xl shadow-sm"></i>
+                                                        @endfor
+                                                    </div>
+                                                    <span class="text-[9px] md:text-[11px] font-black text-amber-600 uppercase tracking-tighter mt-1 bg-amber-100 px-2 py-0.5 rounded-full border border-amber-200">{{ $label }}</span>
                                                 </div>
                                                 @endif
                                             </div>
