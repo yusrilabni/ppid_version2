@@ -5,11 +5,9 @@ namespace App\Http\Controllers;
 use App\Models\PermohonanInformasi;
 use App\Models\PermohonanResponse;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
 use Barryvdh\DomPDF\Facade\Pdf;
 use Illuminate\Support\Facades\Storage;
 use App\Helpers\GeneralHelper;
-use App\Services\TelegramService;
 
 class LaporanPermohonanController extends Controller
 {
@@ -207,7 +205,7 @@ class LaporanPermohonanController extends Controller
 
         $perPage = $request->get('per_page', 10);
         $permohonan = $query->paginate($perPage);
-                                   
+
         return view('laporan.permohonan.index', compact('permohonan'));
     }
 
@@ -255,21 +253,7 @@ class LaporanPermohonanController extends Controller
 
         $validatedData['unique_code'] = $uniqueCode; // Tambahkan unique_code ke data yang divalidasi
 
-        $permohonan = PermohonanInformasi::create($validatedData);
-
-        // Kirim Notifikasi Telegram
-        $message = "📄 *Permohonan Informasi Baru*\n\n"
-                 . "🆔 *ID:* #{$uniqueCode}\n"
-                 . "👤 *Pemohon:* {$permohonan->nama_pemohon}\n"
-                 . "📧 *Email:* {$permohonan->email_pemohon}\n"
-                 . "📞 *Telp:* {$permohonan->nomor_telepon_pemohon}\n"
-                 . "💼 *Pekerjaan:* {$permohonan->pekerjaan}\n"
-                 . "📝 *Informasi:* {$permohonan->detail_informasi}\n"
-                 . "🎯 *Tujuan:* {$permohonan->tujuan_penggunaan_informasi}\n"
-                 . "🔒 *Privasi:* {$permohonan->privacy_status}\n\n"
-                 . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan->id) . ")";
-        
-        app(TelegramService::class)->sendMessage($message);
+        PermohonanInformasi::create($validatedData);
 
         return redirect()->route('laporan.permohonan.saya')->with('success', 'Permohonan informasi berhasil dikirim.');
     }
@@ -292,23 +276,13 @@ class LaporanPermohonanController extends Controller
         ]);
 
         // 4. Create the response
-        $response = PermohonanResponse::create([
+        PermohonanResponse::create([
             'permohonan_informasi_id' => $permohonanInformasi->id,
             'user_id' => auth()->id(), // The user (applicant) is the one responding
             'message' => $validatedData['message'],
             'file_path' => null, // Not allowing file uploads for this user response for now
             'link' => null,
         ]);
-
-        // Kirim Notifikasi Telegram
-        $tgMessage = "💬 *Tanggapan Baru dari Pemohon*\n\n"
-                 . "🆔 *ID Permohonan:* #{$permohonanInformasi->unique_code}\n"
-                 . "👤 *Dari:* {$permohonanInformasi->nama_pemohon}\n"
-                 . "📧 *Email:* {$permohonanInformasi->email_pemohon}\n"
-                 . "📩 *Pesan:* \n_{$validatedData['message']}_\n\n"
-                 . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonanInformasi->id) . ")";
-        
-        app(TelegramService::class)->sendMessage($tgMessage);
 
         // 5. Redirect back with a success message
         return redirect()->route('laporan.permohonan.show', $permohonanInformasi)
@@ -343,17 +317,6 @@ class LaporanPermohonanController extends Controller
         }
         
         $permohonanInformasi->save();
-
-        // Kirim Notifikasi Telegram
-        $stars = str_repeat('⭐', $validatedData['rating']);
-        $tgMessage = "🌟 *Penilaian Baru dari Pemohon*\n\n"
-                 . "🆔 *ID Permohonan:* #{$permohonanInformasi->unique_code}\n"
-                 . "👤 *Nama:* {$permohonanInformasi->nama_pemohon}\n"
-                 . "⭐ *Rating:* {$stars} ({$validatedData['rating']}/5)\n\n"
-                 . ($isFirstRating ? "📌 Permohonan ditandai sebagai *Selesai*.\n" : "🔄 Penilaian diperbarui.\n")
-                 . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonanInformasi->id) . ")";
-        
-        app(TelegramService::class)->sendMessage($tgMessage);
 
         // 5. Redirect back with a success message
         $message = $isFirstRating 

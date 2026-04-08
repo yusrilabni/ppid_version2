@@ -346,7 +346,7 @@
                                         $longestText = (mb_strlen($nonHoverText) > mb_strlen($hoverText)) ? $nonHoverText : $hoverText;
                                     @endphp
                                     <div class="flex items-center text-sm" x-data="{ hovered: false }">
-                                        <a href="{{ \App\Helpers\StorageHelper::getUrl($response->file_path) }}" 
+                                        <a href="{{ Storage::url($response->file_path) }}" 
                                            target="_blank"
                                            class="text-blue-600 hover:text-blue-800 hover:underline flex items-center"
                                            @mouseenter="hovered = true" @mouseleave="hovered = false">
@@ -503,5 +503,5 @@
     label {
         transition: all 0.2s ease;
     }
-    </style>
-    @endsection
+</style>
+@endsection
