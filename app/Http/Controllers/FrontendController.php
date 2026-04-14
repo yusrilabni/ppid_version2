@@ -111,8 +111,13 @@ class FrontendController extends Controller
         $totalPermohonans = $allPermohonans->count();
 
         // Tingkat Kepuasan Layanan (Service Satisfaction Level)
-        $ratedPermohonans = $allPermohonans->whereNotNull('rating');
-        $averageRating = $ratedPermohonans->avg('rating');
+        $ratedPermohonans = \App\Models\PermohonanInformasi::whereNotNull('rating')
+            ->with('user')
+            ->orderBy('updated_at', 'desc')
+            ->take(10)
+            ->get();
+        
+        $averageRating = $allPermohonans->whereNotNull('rating')->avg('rating');
         $tingkatKepuasan = $averageRating !== null ? round(($averageRating / 5) * 100) : 0; // Assuming rating is 1-5
 
         // Rata-rata Waktu Respon (Average Response Time)
@@ -139,7 +144,7 @@ class FrontendController extends Controller
 
         $latestInformasis = Informasi::with(['user', 'organization'])->latest()->take(16)->get();
 
-        return view('frontend.home', compact('sliders', 'berita', 'galeri', 'frontendStats', 'rss_items', 'contactInfo', 'transitionDuration', 'tingkatKepuasan', 'rataRataWaktuRespon', 'tingkatPenyelesaian', 'latestInformasis', 'sliderAspectRatio', 'sliderAnimationType'));
+        return view('frontend.home', compact('sliders', 'berita', 'galeri', 'frontendStats', 'rss_items', 'contactInfo', 'transitionDuration', 'tingkatKepuasan', 'rataRataWaktuRespon', 'tingkatPenyelesaian', 'latestInformasis', 'sliderAspectRatio', 'sliderAnimationType', 'ratedPermohonans'));
     }
 
     public function allGaleri()

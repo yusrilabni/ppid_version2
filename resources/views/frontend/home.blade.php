@@ -537,10 +537,38 @@
 
                 <div class="bg-gray-50 rounded-lg p-5 md:p-8">
                     <h3 class="text-lg md:text-xl font-semibold mb-4 md:mb-6 text-center">Laporan Kinerja</h3>
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center">
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-center items-center">
                         <div class="p-4 md:p-0 bg-white md:bg-transparent rounded-lg shadow-sm md:shadow-none">
                             <div class="text-xl md:text-2xl font-bold text-blue-600 mb-1 md:mb-2">{{ $tingkatKepuasan }}%</div>
-                            <p class="text-xs md:text-sm text-gray-600">Tingkat Kepuasan Layanan</p>
+                            <p class="text-xs md:text-sm text-gray-600 mb-3">Tingkat Kepuasan Layanan</p>
+                            
+                            <!-- Overlapping Avatars for Ratings -->
+                            @if(isset($ratedPermohonans) && $ratedPermohonans->count() > 0)
+                                <div class="flex items-center justify-center -space-x-3 overflow-hidden py-2">
+                                    @foreach($ratedPermohonans as $permohonan)
+                                        @if($permohonan->user)
+                                            <div class="inline-block h-8 w-8 rounded-full ring-2 ring-white overflow-hidden bg-gray-100" title="{{ $permohonan->user->name }}">
+                                                @if($permohonan->user->profile_photo_path)
+                                                    <img src="{{ asset('storage/' . $permohonan->user->profile_photo_path) }}" alt="{{ $permohonan->user->name }}" class="h-full w-full object-cover">
+                                                @else
+                                                    <div class="h-full w-full flex items-center justify-center bg-blue-100 text-blue-600 text-[10px] font-bold">
+                                                        {{ strtoupper(substr($permohonan->user->name, 0, 1)) }}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        @else
+                                            <div class="inline-block h-8 w-8 rounded-full ring-2 ring-white overflow-hidden bg-gray-200 flex items-center justify-center text-[10px] text-gray-500 font-bold" title="{{ $permohonan->nama_pemohon }}">
+                                                {{ strtoupper(substr($permohonan->nama_pemohon, 0, 1)) }}
+                                            </div>
+                                        @endif
+                                    @endforeach
+                                    @if($frontendStats['permohonan'] > 10)
+                                        <div class="flex items-center justify-center h-8 w-8 rounded-full ring-2 ring-white bg-gray-900 text-[10px] font-medium text-white">
+                                            +{{ $frontendStats['permohonan'] - 10 }}
+                                        </div>
+                                    @endif
+                                </div>
+                            @endif
                         </div>
                         <div class="p-4 md:p-0 bg-white md:bg-transparent rounded-lg shadow-sm md:shadow-none">
                             <div class="text-xl md:text-2xl font-bold text-green-600 mb-1 md:mb-2">{{ $rataRataWaktuRespon }} Hari</div>
