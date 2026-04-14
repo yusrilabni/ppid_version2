@@ -80,7 +80,7 @@ Route::middleware('auth')->group(function () {
     Route::get('informasi-crud/{informasi}/edit', [App\Http\Controllers\Admin\InformasiController::class, 'edit'])->name('informasi-crud.edit');
     Route::put('informasi-crud/{informasi}', [App\Http\Controllers\Admin\InformasiController::class, 'update'])->name('informasi-crud.update');
     Route::delete('informasi-crud/{informasi}', [App\Http\Controllers\Admin\InformasiController::class, 'destroy'])->name('informasi-crud.destroy');
-    Route::post('informasi-crud/check-similarity', [App\Http\Controllers\Admin\InformasiController::class, 'checkSimilarity'])->name('admin.informasi.check_similarity');
+    Route::get('informasi-crud/check-similarity', [App\Http\Controllers\Admin\InformasiController.php, 'checkSimilarity'])->name('admin.informasi.check_similarity');
 
     // Manage Pimpinan via Frontend (INI YANG BERHASIL)
     Route::get('/profil/pimpinan/{official}/edit', [FrontendController::class, 'editPimpinanPublic'])->name('pimpinan.edit-public');

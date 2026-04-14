@@ -247,31 +247,30 @@
             this.disabled = true;
             this.textContent = 'Mengecek...';
 
-            const title = titleInput.value;
-            const payload = { title: title };
+            const title = encodeURIComponent(titleInput.value);
+            let url = `{{ route('admin.informasi.check_similarity') }}?title=${title}`;
             const isSuperAdmin = @json($isSuperAdmin);
 
             if (isSuperAdmin) {
                 const unitIdInput = document.getElementById('unit_id');
                 if (unitIdInput) {
-                    payload.unit_id = unitIdInput.value;
+                    url += `&unit_id=${encodeURIComponent(unitIdInput.value)}`;
                 }
             }
 
-            if (title.length < 5) {
+            if (titleInput.value.length < 5) {
                 alert('Judul informasi harus memiliki minimal 5 karakter.');
                 this.disabled = false;
                 this.textContent = 'Check Informasi';
                 return;
             }
 
-            fetch('{{ route('admin.informasi.check_similarity') }}', {
-                method: 'POST',
+            fetch(url, {
+                method: 'GET',
                 headers: {
-                    'Content-Type': 'application/json',
+                    'Accept': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify(payload)
+                }
             })
             .then(response => {
                 if (!response.ok) {

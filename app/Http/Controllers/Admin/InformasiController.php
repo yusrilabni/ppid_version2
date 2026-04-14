@@ -134,9 +134,9 @@ class InformasiController extends Controller
 
     public function checkSimilarity(Request $request)
     {
-        $title = $request->input('title');
+        $title = $request->query('title');
         $user = auth()->user();
-        $unitId = $request->input('unit_id'); // Get unit_id from request
+        $unitId = $request->query('unit_id'); // Get unit_id from query
 
         $query = Informasi::whereIn('status', ['BERLAKU', 'aktif']);
 
