@@ -310,12 +310,12 @@ class FrontendController extends Controller
         $informasi = Informasi::with('official.position')->where('slug', $slug)->firstOrFail();
         $informasi->increment('views_count');
 
-        $unitName = 'PPID Kabupaten Sinjai';
+        $unitName = '-';
         if ($informasi->unit_id) {
             $unitId = trim((string)$informasi->unit_id);
             $allUnits = $this->getUnitData();
             $unit = $allUnits->get($unitId);
-            $unitName = $unit['unit_nama'] ?? ($informasi->organization->name ?? ($informasi->user->opd_name ?? 'PPID Kabupaten Sinjai'));
+            $unitName = $unit['unit_nama'] ?? 'Unit Kerja Tidak Terdaftar';
         } elseif ($informasi->user && $informasi->user->opd_name) {
             $unitName = $informasi->user->opd_name;
         }

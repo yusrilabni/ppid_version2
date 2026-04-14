@@ -195,7 +195,7 @@
                                     @php
                                         $unitId = trim((string)$informasi->unit_id);
                                         $unit = $unitMap->get($unitId);
-                                        $unitName = $unit['unit_nama'] ?? ($informasi->organization->name ?? ($informasi->user->opd_name ?? 'PPID Kabupaten Sinjai'));
+                                        $unitName = $unit['unit_nama'] ?? 'Unit Tidak Terdaftar';
                                     @endphp
                                     <span class="inline-block px-2.5 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800">
                                         {{ $unitName }}
@@ -271,7 +271,7 @@
                                 @php
                                     $unitId = trim((string)$informasi->unit_id);
                                     $unit = $unitMap->get($unitId);
-                                    echo $unit['unit_nama'] ?? ($informasi->organization->name ?? ($informasi->user->opd_name ?? 'PPID Kabupaten Sinjai'));
+                                    echo $unit['unit_nama'] ?? 'Unit Tidak Terdaftar';
                                 @endphp
                             </span>
                             @if($informasi->status == 'ARSIP')

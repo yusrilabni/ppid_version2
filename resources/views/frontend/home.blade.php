@@ -116,7 +116,7 @@
                                     // Pre-calculate data for cleaner view
                                     $unitId = trim((string)$info->unit_id);
                                     $unit = $unitMap->get($unitId);
-                                    $unitName = $unit['unit_nama'] ?? ($info->organization->name ?? ($info->user->opd_name ?? 'PPID Kabupaten Sinjai'));
+                                    $unitName = $unit['unit_nama'] ?? ($info->user->opd_name ?? 'Unit Tidak Terdaftar');
                                     
                                     $uploaderName = 'Administrator';
                                     if ($info->user) {
