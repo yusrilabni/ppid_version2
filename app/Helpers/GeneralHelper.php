@@ -168,10 +168,9 @@ class GeneralHelper
         // 1. Masukkan OPD
         if (!empty($cached['units'])) {
             foreach ($cached['units'] as $unit) {
-                $cleanId = preg_replace('/[^a-zA-Z0-9]/', '', (string)$unit['unit_id']);
-                $encodedId = 'B64_' . base64_encode($cleanId);
-                $opdData[$encodedId] = [
-                    'unit_id' => $encodedId,
+                $id = preg_replace('/[^a-zA-Z0-9]/', '', (string)$unit['unit_id']);
+                $opdData[$id] = [
+                    'unit_id' => $id,
                     'unit_nama' => $unit['unit_nama'],
                     'type' => 'OPD'
                 ];
@@ -184,10 +183,9 @@ class GeneralHelper
             ksort($cached['villages_grouped']);
             foreach ($cached['villages_grouped'] as $kecamatan => $items) {
                 foreach ($items as $item) {
-                    $cleanId = preg_replace('/[^a-zA-Z0-9]/', '', (string)$item['desa_id']);
-                    $encodedId = 'B64_' . base64_encode($cleanId);
-                    $wilayahData[$encodedId] = [
-                        'unit_id' => $encodedId,
+                    $id = preg_replace('/[^a-zA-Z0-9]/', '', (string)$item['desa_id']);
+                    $wilayahData[$id] = [
+                        'unit_id' => $id,
                         'unit_nama' => $item['desa_tipe'] . ' ' . $item['desa_nama'] . ' (Kec. ' . $kecamatan . ')',
                         'kecamatan' => $kecamatan,
                         'type' => 'WILAYAH'
@@ -207,5 +205,17 @@ class GeneralHelper
         }
 
         return collect($data);
+    }
+
+    /**
+     * Khusus untuk Form Admin agar lolos Firewall (WAF)
+     */
+    public static function getEncodedUnitData()
+    {
+        $units = self::getUnitData();
+        return $units->map(function($unit) {
+            $unit['unit_id'] = 'B64_' . base64_encode($unit['unit_id']);
+            return $unit;
+        });
     }
 }

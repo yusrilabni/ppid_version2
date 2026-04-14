@@ -88,15 +88,14 @@
                             @if ($isSuperAdmin)
                                 <div>
                                     <label for="unit_id" class="block text-gray-700 text-sm font-semibold mb-2">Unit Kerja <span class="text-red-500">*</span></label>
-                                    <x-custom-select 
-                                        name="unit_id" 
-                                        :options="$units" 
-                                        :value="old('unit_id', $informasi->unit_id)"
+                                    <x-custom-select
+                                        name="unit_id"
+                                        :options="$units"
+                                        :value="old('unit_id', $currentUnitId ?? $informasi->unit_id)"
                                         placeholder="Pilih Unit Kerja"
                                         :searchable="true"
                                         required="true"
-                                    />
-                                </div>
+                                    />                                </div>
                             @else
                                 <div>
                                     <label class="block text-gray-700 text-sm font-semibold mb-2">Unit Kerja</label>

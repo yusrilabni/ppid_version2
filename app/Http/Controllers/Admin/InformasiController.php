@@ -66,8 +66,8 @@ class InformasiController extends Controller
         ];
 
         $allUnitsCached = GeneralHelper::getCachedUnits();
-        $allUnits = $this->getUnitData();
-        $unitMap = collect($allUnits)->keyBy('unit_id');
+        $allUnits = GeneralHelper::getEncodedUnitData();
+        $unitMap = $allUnits->keyBy('unit_id');
 
         if ($isSuperAdmin) {
             $viewData['units'] = $allUnits;
@@ -118,12 +118,15 @@ class InformasiController extends Controller
         ];
 
         $allUnitsCached = GeneralHelper::getCachedUnits();
-        $allUnits = $this->getUnitData();
-        $unitMap = collect($allUnits)->keyBy('unit_id');
+        $allUnits = GeneralHelper::getEncodedUnitData();
+        $unitMap = $allUnits->keyBy('unit_id');
 
         if ($isSuperAdmin) {
             $viewData['units'] = $allUnits;
             $viewData['villagesGrouped'] = $allUnitsCached['villages_grouped'] ?? [];
+            if ($informasi->unit_id) {
+                $viewData['currentUnitId'] = 'B64_' . base64_encode($informasi->unit_id);
+            }
         } else {
             $viewData['userUnitId'] = $informasi->unit_id;
             $viewData['userUnitName'] = $unitMap->get($informasi->unit_id)['unit_nama'] ?? 'Unit Tidak Diketahui';
