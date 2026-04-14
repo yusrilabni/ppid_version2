@@ -29,17 +29,36 @@
         <form action="{{ route('admin.organizations.store') }}" method="POST">
             @csrf
             <div class="mb-6">
-                <label for="unit_id" class="block text-sm font-medium text-gray-700 mb-2">Pilih Unit *</label>
+                <label for="unit_id" class="block text-sm font-medium text-gray-700 mb-2">Pilih Unit / Desa *</label>
                 <select name="unit_id" id="unit_id" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition" required>
-                    <option value="">Pilih OPD</option>
+                    <option value="">-- Pilih Unit / Desa --</option>
+                    
+                    {{-- Kelompok OPD --}}
                     @if(!empty($units))
-                        @foreach($units as $unit)
-                            <option value="{{ $unit['unit_id'] }}" data-name="{{ $unit['unit_nama'] }}" {{ old('unit_id') == $unit['unit_id'] ? 'selected' : '' }}>
-                                {{ $unit['unit_nama'] }}
-                            </option>
+                        <optgroup label="UNIT KERJA (OPD)">
+                            @foreach($units as $unit)
+                                <option value="{{ $unit['unit_id'] }}" data-name="{{ $unit['unit_nama'] }}" data-type="opd" {{ old('unit_id') == $unit['unit_id'] ? 'selected' : '' }}>
+                                    {{ $unit['unit_nama'] }}
+                                </option>
+                            @endforeach
+                        </optgroup>
+                    @endif
+
+                    {{-- Kelompok Desa Berdasarkan Kecamatan --}}
+                    @if(!empty($villagesGrouped))
+                        @foreach($villagesGrouped as $kecamatan => $villages)
+                            <optgroup label="KECAMATAN {{ strtoupper($kecamatan) }}">
+                                @foreach($villages as $desa)
+                                    <option value="{{ $desa['desa_id'] }}" data-name="{{ $desa['desa_nama'] }}" data-type="unit" {{ old('unit_id') == $desa['desa_id'] ? 'selected' : '' }}>
+                                        Desa {{ $desa['desa_nama'] }}
+                                    </option>
+                                @endforeach
+                            </optgroup>
                         @endforeach
-                    @else
-                        <option value="" disabled>Gagal memuat data OPD dari API.</option>
+                    @endif
+
+                    @if(empty($units) && empty($villagesGrouped))
+                        <option value="" disabled>Gagal memuat data dari API.</option>
                     @endif
                 </select>
                 <input type="hidden" name="name" id="name">
@@ -78,11 +97,18 @@
             document.addEventListener('DOMContentLoaded', function() {
                 const unitSelect = document.getElementById('unit_id');
                 const nameInput = document.getElementById('name');
+                const typeSelect = document.getElementById('type');
 
                 unitSelect.addEventListener('change', function() {
                     const selectedOption = this.options[this.selectedIndex];
                     if (selectedOption && selectedOption.value) {
                         nameInput.value = selectedOption.getAttribute('data-name');
+                        
+                        // Otomatis set tipe berdasarkan atribut data-type
+                        const autoType = selectedOption.getAttribute('data-type');
+                        if (autoType) {
+                            typeSelect.value = autoType;
+                        }
                     } else {
                         nameInput.value = '';
                     }

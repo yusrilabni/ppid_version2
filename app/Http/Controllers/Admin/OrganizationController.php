@@ -27,15 +27,26 @@ class OrganizationController extends Controller
     public function create()
     {
         $units = [];
+        $villagesGrouped = [];
+
         try {
-            $response = Http::get('http://apps.sinjaikab.go.id/api/pegawai/get_unit');
-            if ($response->successful()) {
-                $units = $response->json();
+            // Fetch General Units (OPD)
+            $unitResponse = Http::get('http://apps.sinjaikab.go.id/api/pegawai/get_unit');
+            if ($unitResponse->successful()) {
+                $units = $unitResponse->json();
+            }
+
+            // Fetch Villages and group by Kecamatan
+            $villageResponse = Http::get('http://apps.sinjaikab.go.id/api/pegawai/get_wilayah?tipe=Desa');
+            if ($villageResponse->successful()) {
+                $villages = collect($villageResponse->json());
+                $villagesGrouped = $villages->groupBy('kecamatan_nama')->toArray();
             }
         } catch (\Exception $e) {
-            // Handle exception, maybe log it or show a less critical error
+            Log::error('Error fetching API data for organizations: ' . $e->getMessage());
         }
-        return view('admin.organizations.create', compact('units'));
+
+        return view('admin.organizations.create', compact('units', 'villagesGrouped'));
     }
 
     /**
