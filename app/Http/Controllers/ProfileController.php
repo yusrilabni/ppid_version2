@@ -33,13 +33,21 @@ class ProfileController extends Controller
         // GET UNIT DATA FROM API to ensure correct unit information
         $allUnits = $this->getUnitData();
 
-        // Override the unit_nama from apiData with correct data from unit list API
+        // 1. Resolve unit name from apiData if available
         if ($apiData && isset($apiData['unit_id'])) {
             foreach ($allUnits as $unit) {
                 if (isset($unit['unit_id']) && $unit['unit_id'] == $apiData['unit_id']) {
                     $apiData['unit_nama'] = $unit['unit_nama'] ?? $apiData['unit_nama'] ?? 'Tidak Diketahui';
                     break;
                 }
+            }
+        }
+        
+        // 2. Resolve unit name from user model if apiData is missing or doesn't have unit_nama
+        if (empty($apiData['unit_nama']) && !empty($user->unit_id)) {
+            $userUnit = $allUnits->get($user->unit_id);
+            if ($userUnit) {
+                $apiData['unit_nama'] = $userUnit['unit_nama'];
             }
         }
 

@@ -50,66 +50,69 @@
 
         <!-- Display API Data -->
         <div class="mt-8 border-t border-gray-200 pt-8">
-            <h3 class="text-lg font-medium text-gray-900">{{ __('Data Kepegawaian') }}</h3>
-            @if (empty($apiData))
-            <div class="mt-4">
-                <p class="text-sm text-gray-600">
-                    {{ __('Data kepegawaian Anda tidak ditemukan. Silakan masukkan NIP Anda untuk sinkronisasi data.') }}
-                </p>
-                <div class="mt-4">
-                    <x-input-label for="nip" :value="__('NIP')" />
-                    <x-text-input id="nip" name="nip" type="text" class="mt-1 block w-full" :value="old('nip', $user->nip)" required autofocus autocomplete="nip" />
-                    <x-input-error class="mt-2" :messages="$errors->get('nip')" />
-                </div>
-            </div>
-            @else
+            <h3 class="text-lg font-medium text-gray-900">{{ __('Data Kepegawaian / Identitas') }}</h3>
+            
             <div class="mt-4">
                 <div class="grid grid-cols-1 gap-x-8 gap-y-6 sm:grid-cols-2">
                     <!-- Column 1 -->
                     <div class="space-y-6">
-                        <!-- NIP -->
+                        <!-- NIP/NIK Editable -->
                         <div>
-                            <x-input-label :value="__('NIP')" />
-                            <p class="mt-1 block w-full text-gray-700 font-semibold">{{ $apiData['nip'] ?? '-' }}</p>
+                            <x-input-label for="nip" :value="__('NIP / NIK')" />
+                            <x-text-input id="nip" name="nip" type="text" class="mt-1 block w-full" :value="old('nip', $user->nip)" autocomplete="nip" />
+                            <x-input-error class="mt-2" :messages="$errors->get('nip')" />
+                            <p class="mt-1 text-xs text-gray-500 italic">*Jika ASN, mohon masukkan NIP.</p>
                         </div>
-                        <!-- Pangkat -->
-                        <div>
-                            <x-input-label :value="__('Pangkat')" />
-                            <p class="mt-1 block w-full text-gray-700">{{ ($apiData['pangkat_nama'] ?? '') . ' (' . ($apiData['pangkat_golruang'] ?? '') . ')' }}</p>
-                        </div>
-                        <!-- Jabatan -->
-                        <div>
-                            <x-input-label :value="__('Jabatan')" />
-                            <p class="mt-1 block w-full text-gray-700">{{ $apiData['jabatan_nama'] ?? '-' }}</p>
-                        </div>
-                        <!-- Bidang -->
-                        <div>
-                            <x-input-label :value="__('Unit Bagian')" />
-                            <p class="mt-1 block w-full text-gray-700">{{ $apiData['jabatan_grup'] ?? 'Bidang Hubungan Masyarakat dan Informasi Komunikasi Publik' }}</p>
-                        </div>
+
+                        @if (!empty($apiData))
+                            <!-- Pangkat -->
+                            <div>
+                                <x-input-label :value="__('Pangkat')" />
+                                <p class="mt-1 block w-full text-gray-700">{{ ($apiData['pangkat_nama'] ?? '') . ' (' . ($apiData['pangkat_golruang'] ?? '') . ')' }}</p>
+                            </div>
+                            <!-- Jabatan -->
+                            <div>
+                                <x-input-label :value="__('Jabatan')" />
+                                <p class="mt-1 block w-full text-gray-700">{{ $apiData['jabatan_nama'] ?? '-' }}</p>
+                            </div>
+                            <!-- Bidang -->
+                            <div>
+                                <x-input-label :value="__('Unit Bagian')" />
+                                <p class="mt-1 block w-full text-gray-700">{{ $apiData['jabatan_grup'] ?? 'Bidang Hubungan Masyarakat dan Informasi Komunikasi Publik' }}</p>
+                            </div>
+                        @endif
                     </div>
 
                     <!-- Column 2 -->
                     <div class="space-y-6">
-                        <!-- Nama -->
-                        <div>
-                            <x-input-label :value="__('Nama')" />
-                            <p class="mt-1 block w-full text-gray-700 font-semibold">{{ $apiData['nama'] ?? '-' }}</p>
-                        </div>
-                        <!-- Unit Kerja -->
-                        <div>
-                            <x-input-label :value="__('Unit Kerja')" />
-                            <p class="mt-1 block w-full text-gray-700">{{ $apiData['unit_nama'] ?? 'Dinas Komunikasi Informatika dan Persandian' }}</p>
-                        </div>
-                        <!-- Nomor HP -->
-                        <div>
-                            <x-input-label :value="__('Nomor HP')" />
-                            <p class="mt-1 block w-full text-gray-700">{{ $apiData['nomor_hp'] ?? '-' }}</p>
-                        </div>
+                        @if (!empty($apiData['nama']) && $apiData['nama'] !== '-')
+                            <!-- Nama -->
+                            <div>
+                                <x-input-label :value="__('Nama')" />
+                                <p class="mt-1 block w-full text-gray-700 font-semibold">{{ $apiData['nama'] }}</p>
+                            </div>
+                        @endif
+
+                        @if (!empty($apiData['unit_nama']))
+                            <!-- Unit Kerja -->
+                            <div>
+                                <x-input-label :value="__('Unit Kerja')" />
+                                <p class="mt-1 block w-full text-gray-700">{{ $apiData['unit_nama'] }}</p>
+                            </div>
+                        @endif
+
+                        @if (!empty($apiData['nomor_hp']) && $apiData['nomor_hp'] !== '-')
+                            <!-- Nomor HP -->
+                            <div>
+                                <x-input-label :value="__('Nomor HP')" />
+                                <p class="mt-1 block w-full text-gray-700">{{ $apiData['nomor_hp'] }}</p>
+                            </div>
+                        @endif
+
                         <!-- Email -->
                         <div>
                             <x-input-label for="email" :value="__('Email')" />
-                            @if (!empty($apiData['email']) && $apiData['email'] !== '-')
+                            @if (!empty($apiData['email']) && $apiData['email'] !== '-' && empty($user->email))
                                 <p class="mt-1 block w-full text-gray-700">{{ $apiData['email'] }}</p>
                             @else
                                  <x-text-input id="email" name="email" type="email" class="mt-1 block w-full" :value="old('email', $user->email)" required autocomplete="username" />
@@ -120,7 +123,6 @@
                     </div>
                 </div>
             </div>
-            @endif
         </div>
 
         <!-- Other Editable Information Section -->
