@@ -129,9 +129,8 @@ class GeneralHelper
             // Grouping Wilayah by Kecamatan
             $allWilayah = collect(array_merge($desaData, $kelurahanData));
             $villagesGrouped = $allWilayah->map(function($item) {
-                // Ensure ID is clean and string
-                $item['desa_id'] = preg_replace('/[^a-zA-Z0-9]/', '', (string)$item['desa_id']);
-                // Ensure names are clean
+                // Ensure IDs and names are string and trimmed
+                $item['desa_id'] = (string)$item['desa_id'];
                 $item['desa_nama'] = trim($item['desa_nama']);
                 $item['kecamatan_nama'] = trim($item['kecamatan_nama']);
                 return $item;
@@ -168,7 +167,7 @@ class GeneralHelper
         // 1. Masukkan OPD
         if (!empty($cached['units'])) {
             foreach ($cached['units'] as $unit) {
-                $id = preg_replace('/[^a-zA-Z0-9]/', '', (string)$unit['unit_id']);
+                $id = (string)$unit['unit_id'];
                 $opdData[$id] = [
                     'unit_id' => $id,
                     'unit_nama' => $unit['unit_nama'],
@@ -183,7 +182,7 @@ class GeneralHelper
             ksort($cached['villages_grouped']);
             foreach ($cached['villages_grouped'] as $kecamatan => $items) {
                 foreach ($items as $item) {
-                    $id = preg_replace('/[^a-zA-Z0-9]/', '', (string)$item['desa_id']);
+                    $id = (string)$item['desa_id'];
                     $wilayahData[$id] = [
                         'unit_id' => $id,
                         'unit_nama' => $item['desa_tipe'] . ' ' . $item['desa_nama'] . ' (Kec. ' . $kecamatan . ')',
