@@ -193,8 +193,11 @@ class GeneralHelper
             }
         }
 
-        // Gabungkan: OPD dulu baru Wilayah
-        $data = array_merge($opdData, $wilayahData);
+        // Gabungkan: OPD dulu baru Wilayah, pastikan key (ID) tetap terjaga
+        $data = $opdData;
+        foreach ($wilayahData as $key => $value) {
+            $data[$key] = $value;
+        }
 
         // Jika cache benar-benar kosong, gunakan fallback hardcoded
         if (empty($data)) {
