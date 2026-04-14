@@ -51,7 +51,7 @@
                     @foreach($informasiList as $informasi)
                         @php
                             $unitId = trim((string)$informasi->unit_id);
-                            $infoUnitName = $unitMap->get($unitId)['unit_nama'] ?? 'N/A';
+                            $infoUnitName = $unitMap->get($unitId)['unit_nama'] ?? 'Unit Tidak Terdaftar';
                             $pejabat = ($infoUnitName == 'Dinas Komunikasi Informatika dan Persandian') ? 'PPID Utama' : 'PPID Pelaksana';
                             $bentuk = !empty($informasi->url) || !empty($informasi->official_id) ? 'Soft Copy' : (!empty($informasi->file) ? 'Hard Copy' : 'N/A');
                             $retensi = in_array(strtoupper(trim($informasi->status)), ['BERLAKU', 'AKTIF']) ? 'Selama Berlaku' : 'Arsip (Tahun ' . $informasi->tahun . ')';

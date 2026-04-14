@@ -18,7 +18,7 @@
             @forelse ($informasiList as $informasi)
                 @php
                     $unitId = trim((string)$informasi->unit_id);
-                    $unitName = $unitMap->get($unitId)['unit_nama'] ?? 'N/A';
+                    $unitName = $unitMap->get($unitId)['unit_nama'] ?? 'Unit Tidak Terdaftar';
                     $pejabat = ($unitName == 'Dinas Komunikasi Informatika dan Persandian') ? 'PPID Utama' : 'PPID Pelaksana';
                     $bentuk = !empty($informasi->url) || !empty($informasi->official_id) ? 'Soft Copy' : (!empty($informasi->file) ? 'Hard Copy' : 'N/A');
                 @endphp
@@ -63,7 +63,7 @@
     @forelse ($informasiList as $informasi)
         @php
             $unitId = trim((string)$informasi->unit_id);
-            $unitName = $unitMap->get($unitId)['unit_nama'] ?? 'N/A';
+            $unitName = $unitMap->get($unitId)['unit_nama'] ?? 'Unit Tidak Terdaftar';
             $pejabat = ($unitName == 'Dinas Komunikasi Informatika dan Persandian') ? 'PPID Utama' : 'PPID Pelaksana';
             $bentuk = !empty($informasi->url) || !empty($informasi->official_id) ? 'Soft Copy' : (!empty($informasi->file) ? 'Hard Copy' : 'N/A');
         @endphp
