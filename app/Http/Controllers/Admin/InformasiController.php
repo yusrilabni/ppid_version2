@@ -137,6 +137,11 @@ class InformasiController extends Controller
         $title = $request->query('title');
         $user = auth()->user();
         $unitId = $request->query('unit_id'); // Get unit_id from query
+        
+        // Strip UID_ prefix if present to match database
+        if ($unitId && is_string($unitId) && str_starts_with($unitId, 'UID_')) {
+            $unitId = substr($unitId, 4);
+        }
 
         $query = Informasi::whereIn('status', ['BERLAKU', 'aktif']);
 
@@ -254,7 +259,12 @@ class InformasiController extends Controller
                 $validatedData['status'] = $request->status;
 
                 if ($isSuperAdmin) {
-                    $validatedData['unit_id'] = $request->unit_id;
+                    $unitId = $request->unit_id;
+                    // Strip UID_ prefix if present
+                    if ($unitId && is_string($unitId) && str_starts_with($unitId, 'UID_')) {
+                        $unitId = substr($unitId, 4);
+                    }
+                    $validatedData['unit_id'] = $unitId;
                     $validatedData['user_id'] = $user->id;
                 } else {
                     // Ensure the user has a unit_id, fetch from API if not present
@@ -355,7 +365,12 @@ class InformasiController extends Controller
                 $validatedData['status'] = $request->status;
                 
                 if ($isSuperAdmin) {
-                    $validatedData['unit_id'] = $request->unit_id;
+                    $unitId = $request->unit_id;
+                    // Strip UID_ prefix if present
+                    if ($unitId && is_string($unitId) && str_starts_with($unitId, 'UID_')) {
+                        $unitId = substr($unitId, 4);
+                    }
+                    $validatedData['unit_id'] = $unitId;
                     $validatedData['user_id'] = $user->id;
                 } else {
                     // Ensure the user has a unit_id, fetch from API if not present

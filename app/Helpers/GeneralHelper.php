@@ -168,8 +168,9 @@ class GeneralHelper
         // 1. Masukkan OPD
         if (!empty($cached['units'])) {
             foreach ($cached['units'] as $unit) {
-                $opdData[$unit['unit_id']] = [
-                    'unit_id' => $unit['unit_id'],
+                $id = 'UID_' . preg_replace('/[^a-zA-Z0-9]/', '', (string)$unit['unit_id']);
+                $opdData[$id] = [
+                    'unit_id' => $id,
                     'unit_nama' => $unit['unit_nama'],
                     'type' => 'OPD'
                 ];
@@ -182,8 +183,9 @@ class GeneralHelper
             ksort($cached['villages_grouped']);
             foreach ($cached['villages_grouped'] as $kecamatan => $items) {
                 foreach ($items as $item) {
-                    $wilayahData[$item['desa_id']] = [
-                        'unit_id' => $item['desa_id'],
+                    $id = 'UID_' . preg_replace('/[^a-zA-Z0-9]/', '', (string)$item['desa_id']);
+                    $wilayahData[$id] = [
+                        'unit_id' => $id,
                         'unit_nama' => $item['desa_tipe'] . ' ' . $item['desa_nama'] . ' (Kec. ' . $kecamatan . ')',
                         'kecamatan' => $kecamatan,
                         'type' => 'WILAYAH'
