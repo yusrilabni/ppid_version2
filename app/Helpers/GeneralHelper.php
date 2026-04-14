@@ -128,7 +128,14 @@ class GeneralHelper
 
             // Grouping Wilayah by Kecamatan
             $allWilayah = collect(array_merge($desaData, $kelurahanData));
-            $villagesGrouped = $allWilayah->sortBy('desa_nama')->groupBy('kecamatan_nama')->toArray();
+            $villagesGrouped = $allWilayah->map(function($item) {
+                // Ensure ID is clean and string
+                $item['desa_id'] = preg_replace('/[^a-zA-Z0-9]/', '', (string)$item['desa_id']);
+                // Ensure names are clean
+                $item['desa_nama'] = trim($item['desa_nama']);
+                $item['kecamatan_nama'] = trim($item['kecamatan_nama']);
+                return $item;
+            })->sortBy('desa_nama')->groupBy('kecamatan_nama')->toArray();
 
             $finalData = [
                 'units' => $units,
