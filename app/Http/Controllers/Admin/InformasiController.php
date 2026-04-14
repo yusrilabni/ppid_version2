@@ -65,11 +65,13 @@ class InformasiController extends Controller
             'isSuperAdmin' => $isSuperAdmin,
         ];
 
+        $allUnitsCached = GeneralHelper::getCachedUnits();
         $allUnits = $this->getUnitData();
         $unitMap = collect($allUnits)->keyBy('unit_id');
 
         if ($isSuperAdmin) {
             $viewData['units'] = $allUnits;
+            $viewData['villagesGrouped'] = $allUnitsCached['villages_grouped'] ?? [];
         } else {
             $apiUserData = \App\Models\User::getDataFromApi($user->nip);
             $userUnitId = null;
@@ -115,11 +117,13 @@ class InformasiController extends Controller
             'isSuperAdmin' => $isSuperAdmin,
         ];
 
+        $allUnitsCached = GeneralHelper::getCachedUnits();
         $allUnits = $this->getUnitData();
         $unitMap = collect($allUnits)->keyBy('unit_id');
 
         if ($isSuperAdmin) {
             $viewData['units'] = $allUnits;
+            $viewData['villagesGrouped'] = $allUnitsCached['villages_grouped'] ?? [];
         } else {
             $viewData['userUnitId'] = $informasi->unit_id;
             $viewData['userUnitName'] = $unitMap->get($informasi->unit_id)['unit_nama'] ?? 'Unit Tidak Diketahui';
