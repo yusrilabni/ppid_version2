@@ -173,19 +173,6 @@
 
             <!-- Main content area -->
             <main id="main-content-area" class="flex-1 p-4 sm:p-6 lg:p-8">
-                <!-- Notification alerts -->
-                @if(session('success'))
-                    <div class="mb-4 rounded-lg bg-green-50 p-4 text-green-800">
-                        {{ session('success') }}
-                    </div>
-                @endif
-
-                @if(session('error'))
-                    <div class="mb-4 rounded-lg bg-red-50 p-4 text-red-800">
-                        {{ session('error') }}
-                    </div>
-                @endif
-
                 @yield('content')
             </main>
         </div>

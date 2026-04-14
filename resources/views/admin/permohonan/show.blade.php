@@ -35,9 +35,11 @@
 
     @if (session('error'))
         <div class="mb-8 animate-fade-in">
-            <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-2xl shadow-lg flex items-center">
-                <i class="fas fa-exclamation-circle text-red-500 text-2xl mr-4"></i>
-                <p class="text-red-700 font-semibold">{{ session('error') }}</p>
+            <div class="bg-white border-l-4 border-red-500 p-6 rounded-2xl shadow-xl overflow-hidden flex items-center">
+                <div class="flex-shrink-0 h-12 w-12 bg-red-100 rounded-full flex items-center justify-center mr-4">
+                    <i class="fas fa-exclamation-circle text-red-600 text-2xl"></i>
+                </div>
+                <p class="text-red-700 font-bold text-lg">{{ session('error') }}</p>
             </div>
         </div>
     @endif
