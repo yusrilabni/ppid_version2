@@ -123,7 +123,7 @@ class PermohonanInformasiController extends Controller
         }
 
         return redirect()->route('admin.permohonan-informasi.show', $permohonan)
-                         ->with('success', 'Jawaban berhasil dikirim.');
+                         ->with('success', 'Tanggapan berhasil disimpan.');
     }
 
     /**
@@ -210,7 +210,7 @@ class PermohonanInformasiController extends Controller
         $waUrl = "https://wa.me/{$waPhone}?text=" . urlencode($waMessage);
 
         return redirect()->route('admin.permohonan-informasi.index')
-                         ->with('success', 'Permohonan ditandai sebagai Selesai. <a href="'.$waUrl.'" target="_blank" class="font-bold underline">Kirim Notifikasi WA ke Pemohon</a>')
+                         ->with('success', 'Permohonan berhasil diselesaikan.')
                          ->with('wa_url', $waUrl);
     }
 
@@ -263,7 +263,7 @@ class PermohonanInformasiController extends Controller
         $waUrl = "https://wa.me/{$waPhone}?text=" . urlencode($waMessage);
 
         return redirect()->route('admin.permohonan-informasi.index')
-                         ->with('success', 'Permohonan ditandai sebagai Ditolak. <a href="'.$waUrl.'" target="_blank" class="font-bold underline">Kirim Notifikasi WA ke Pemohon</a>')
+                         ->with('success', 'Permohonan berhasil ditolak.')
                          ->with('wa_url', $waUrl);
     }
 
