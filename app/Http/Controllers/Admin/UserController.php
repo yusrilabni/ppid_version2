@@ -36,6 +36,7 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
+            'nip' => 'nullable|string|max:20|unique:users',
             'password' => 'required|string|min:8|confirmed',
             'role' => 'required|string|in:admin,user,superadmin',
             'unit_id' => 'required_if:role,admin,superadmin|nullable|string',
@@ -49,6 +50,7 @@ class UserController extends Controller
         User::create([
             'name' => $request->name,
             'email' => $request->email,
+            'nip' => $request->nip,
             'password' => Hash::make($request->password),
             'role' => $request->role,
             'unit_id' => $unitId,
@@ -75,6 +77,7 @@ class UserController extends Controller
         $request->validate([
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
+            'nip' => 'nullable|string|max:20|unique:users,nip,'.$user->id,
             'role' => 'required|string|in:admin,user,superadmin',
             'unit_id' => 'required_if:role,admin,superadmin|nullable|string',
         ]);
@@ -87,6 +90,7 @@ class UserController extends Controller
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
+            'nip' => $request->nip,
             'role' => $request->role,
             'unit_id' => $unitId,
         ]);

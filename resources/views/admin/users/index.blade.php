@@ -44,6 +44,9 @@
                         <tr class="hover:bg-gray-50 transition">
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-sm font-medium text-gray-900">{{ $user->name }}</div>
+                                @if($user->nip)
+                                    <div class="text-[10px] text-gray-400 font-mono">NIP/NIK: {{ $user->nip }}</div>
+                                @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 <div class="text-xs text-gray-600">
