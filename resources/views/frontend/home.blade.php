@@ -599,12 +599,35 @@
                             <div class="flex-1 overflow-hidden relative bg-gray-50/50 py-3">
                                 <div class="animate-marquee whitespace-nowrap flex items-center gap-12">
                                     @foreach($latestRatings as $rating)
-                                        <div class="inline-flex items-center gap-3">
+                                        @php
+                                            $isPublik = $rating->privacy_status === 'Publik';
+                                            $isAnonim = $rating->privacy_status === 'Anonim';
+                                            $isRahasia = $rating->privacy_status === 'Rahasia';
+
+                                            // Logika Nama Tampilan
+                                            if ($isRahasia) {
+                                                $displayName = 'Unknown (Rahasia)';
+                                                $displayInitial = '?';
+                                            } elseif ($isAnonim) {
+                                                $firstName = $rating->user->name ?? $rating->nama_pemohon;
+                                                $displayName = substr($firstName, 0, 1) . '******';
+                                                $displayInitial = substr($firstName, 0, 1);
+                                            } else {
+                                                $displayName = $rating->user->name ?? $rating->nama_pemohon;
+                                                $displayInitial = strtoupper(substr($displayName, 0, 1));
+                                            }
+
+                                            // URL Redirect (Hanya jika Publik)
+                                            $itemUrl = $isPublik ? route('laporan.permohonan.show', $rating->unique_code) : 'javascript:void(0)';
+                                        @endphp
+
+                                        <a href="{{ $itemUrl }}" @if($isPublik) target="_blank" @endif 
+                                           class="inline-flex items-center gap-3 group/item {{ $isPublik ? 'cursor-pointer hover:bg-white/50 rounded-xl px-2 py-1 transition-all' : 'cursor-default' }}">
                                             <div class="flex items-center gap-2">
-                                                <div class="w-6 h-6 rounded-full bg-yellow-100 flex items-center justify-center text-[10px] font-bold text-yellow-600 border border-yellow-200">
-                                                    {{ strtoupper(substr($rating->user->name ?? $rating->nama_pemohon, 0, 1)) }}
+                                                <div class="w-6 h-6 rounded-full {{ $isRahasia ? 'bg-gray-100 text-gray-400' : 'bg-yellow-100 text-yellow-600' }} flex items-center justify-center text-[10px] font-bold border border-yellow-200">
+                                                    {{ $displayInitial }}
                                                 </div>
-                                                <span class="font-bold text-gray-800 text-xs">{{ $rating->user->name ?? $rating->nama_pemohon }}</span>
+                                                <span class="font-bold text-gray-800 text-xs group-hover/item:text-blue-600 transition-colors">{{ $displayName }}</span>
                                             </div>
                                             <div class="flex text-yellow-400 text-[10px]">
                                                 @for($i = 0; $i < $rating->rating; $i++)
@@ -616,9 +639,11 @@
                                             <span class="text-[10px] text-gray-400 font-medium bg-white px-2 py-0.5 rounded-full border border-gray-100">
                                                 {{ $rating->updated_at->diffForHumans() }}
                                             </span>
-                                        </div>
-                                    @endforeach
-                                </div>
+                                            @if($isPublik)
+                                                <i class="fas fa-external-link-alt text-[10px] text-blue-400 opacity-0 group-hover/item:opacity-100 transition-opacity"></i>
+                                            @endif
+                                        </a>
+                                    @endforeach                                </div>
                             </div>
                         </div>
                         <style>
