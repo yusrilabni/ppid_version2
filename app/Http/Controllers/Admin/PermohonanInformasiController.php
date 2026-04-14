@@ -104,6 +104,7 @@ class PermohonanInformasiController extends Controller
 
             $waMessage .= "Silakan cek detail lengkap melalui tautan berikut:\n"
                        . $directLink . "\n\n"
+                       . "Kami sangat menghargai jika Anda bersedia memberikan penilaian (rating) atas layanan dan informasi yang kami berikan melalui tautan di atas. Masukan Anda sangat berarti bagi kami untuk terus meningkatkan kualitas pelayanan ke depannya.\n\n"
                        . "Terima kasih.";
             
             $waUrl = "https://wa.me/{$waPhone}?text=" . urlencode($waMessage);
@@ -195,8 +196,6 @@ class PermohonanInformasiController extends Controller
                . "🏁 Permohonan telah ditandai sebagai *Selesai* oleh Admin.\n\n"
                . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan_informasi->id) . ")";
         
-        GeneralHelper::sendTelegramMessage($tgMsg);
-
         // Notifikasi WhatsApp Selesai
         $waPhone = GeneralHelper::formatPhoneNumber($permohonan_informasi->nomor_telepon_pemohon);
         $directLink = route('laporan.permohonan.show', $permohonan_informasi->unique_code);
@@ -205,9 +204,19 @@ class PermohonanInformasiController extends Controller
                    . "Permohonan Informasi Anda (#{$permohonan_informasi->unique_code}) telah dinyatakan *SELESAI* oleh Admin.\n\n"
                    . "Silakan berikan penilaian Anda terhadap layanan kami melalui tautan berikut:\n"
                    . $directLink . "\n\n"
+                   . "Kami sangat menghargai jika Anda bersedia memberikan penilaian (rating) atas layanan kami. Masukan Anda sangat berarti bagi kami untuk terus meningkatkan kualitas pelayanan.\n\n"
                    . "Terima kasih.";
         
         $waUrl = "https://wa.me/{$waPhone}?text=" . urlencode($waMessage);
+
+        // Tambahkan tombol di Telegram
+        $buttons = [
+            [
+                ['text' => '📱 Kirim WhatsApp ke Pemohon', 'url' => $waUrl],
+            ]
+        ];
+
+        GeneralHelper::sendTelegramMessage($tgMsg, $buttons);
 
         return redirect()->route('admin.permohonan-informasi.index')
                          ->with('success', 'Permohonan berhasil diselesaikan.')
@@ -240,8 +249,6 @@ class PermohonanInformasiController extends Controller
                . "🚫 Permohonan telah *Ditolak* oleh Admin.\n\n"
                . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan_informasi->id) . ")";
         
-        GeneralHelper::sendTelegramMessage($tgMsg);
-
         // Optionally, add a default rejection response
         PermohonanResponse::create([
             'permohonan_informasi_id' => $permohonan_informasi->id, // Tetap gunakan id internal untuk relasi
@@ -258,9 +265,19 @@ class PermohonanInformasiController extends Controller
                    . "Permohonan Informasi Anda (#{$permohonan_informasi->unique_code}) telah *DITOLAK* oleh Admin.\n\n"
                    . "Silakan cek alasan penolakan melalui tautan berikut:\n"
                    . $directLink . "\n\n"
+                   . "Meskipun demikian, kami tetap menghargai jika Anda bersedia memberikan penilaian atas respon layanan kami sebagai bahan evaluasi ke depannya.\n\n"
                    . "Terima kasih.";
         
         $waUrl = "https://wa.me/{$waPhone}?text=" . urlencode($waMessage);
+
+        // Tambahkan tombol di Telegram
+        $buttons = [
+            [
+                ['text' => '📱 Kirim WhatsApp ke Pemohon', 'url' => $waUrl],
+            ]
+        ];
+
+        GeneralHelper::sendTelegramMessage($tgMsg, $buttons);
 
         return redirect()->route('admin.permohonan-informasi.index')
                          ->with('success', 'Permohonan berhasil ditolak.')
@@ -293,8 +310,6 @@ class PermohonanInformasiController extends Controller
                . "📢 Notifikasi dikirim ulang ke WhatsApp Pemohon.\n"
                . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan->id) . ")";
         
-        GeneralHelper::sendTelegramMessage($tgMsg);
-
         // WhatsApp Notification
         $waPhone = GeneralHelper::formatPhoneNumber($permohonan->nomor_telepon_pemohon);
         $directLink = route('laporan.permohonan.show', $permohonan->unique_code);
@@ -304,9 +319,19 @@ class PermohonanInformasiController extends Controller
                    . "*Isi Balasan:* \n_{$response->message}_\n\n"
                    . "Silakan cek detail lengkap dan unduh file melalui tautan berikut:\n"
                    . $directLink . "\n\n"
+                   . "Kami sangat menghargai jika Anda bersedia memberikan penilaian (rating) atas layanan dan informasi yang kami berikan. Masukan Anda sangat berarti bagi kami untuk terus meningkatkan kualitas pelayanan ke depannya.\n\n"
                    . "Terima kasih.";
         
         $waUrl = "https://wa.me/{$waPhone}?text=" . urlencode($waMessage);
+
+        // Tambahkan tombol di Telegram
+        $buttons = [
+            [
+                ['text' => '📱 Kirim WhatsApp ke Pemohon', 'url' => $waUrl],
+            ]
+        ];
+
+        GeneralHelper::sendTelegramMessage($tgMsg, $buttons);
 
         return redirect()->back()
                          ->with('success', 'Notifikasi berhasil dikirim ulang ke Telegram dan WhatsApp.')
