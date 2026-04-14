@@ -110,18 +110,26 @@ class FrontendController extends Controller
         $allPermohonans = \App\Models\PermohonanInformasi::all();
         $totalPermohonans = $allPermohonans->count();
 
-        // Ambil 10 Tanggapan Terbaru untuk Running Ticker
-        $latestResponses = \App\Models\PermohonanResponse::with(['user', 'permohonanInformasi'])
-            ->latest()
-            ->take(10)
-            ->get();
-
-        // Ambil pemohon yang memberikan rating
-        $ratedPermohonans = \App\Models\PermohonanInformasi::whereNotNull('rating')
-            ->with('user')
+        // Ambil 10 Penilaian (Rating) Terbaru untuk Running Ticker
+        $latestRatings = \App\Models\PermohonanInformasi::whereNotNull('rating')
+            ->with(['user', 'responses' => function($query) {
+                $query->orderBy('created_at', 'desc');
+            }])
             ->orderBy('updated_at', 'desc')
-            ->take(3)
-            ->get();
+            ->take(10)
+            ->get()
+            ->map(function($permohonan) {
+                // Cari pesan terakhir dari pemohon (ini ulasan ratingnya)
+                $ratingComment = $permohonan->responses
+                    ->where('user_id', $permohonan->user_id)
+                    ->first();
+                
+                $permohonan->rating_comment = $ratingComment ? $ratingComment->message : 'Memberikan penilaian tanpa komentar.';
+                return $permohonan;
+            });
+
+        // Ambil pemohon yang memberikan rating untuk avatar
+        $ratedPermohonans = $latestRatings->take(3);
         
         $totalRatings = \App\Models\PermohonanInformasi::whereNotNull('rating')->count();
         $averageRating = \App\Models\PermohonanInformasi::whereNotNull('rating')->avg('rating');
@@ -151,7 +159,7 @@ class FrontendController extends Controller
 
         $latestInformasis = Informasi::with(['user', 'organization'])->latest()->take(16)->get();
 
-        return view('frontend.home', compact('sliders', 'berita', 'galeri', 'frontendStats', 'rss_items', 'contactInfo', 'transitionDuration', 'tingkatKepuasan', 'rataRataWaktuRespon', 'tingkatPenyelesaian', 'latestInformasis', 'sliderAspectRatio', 'sliderAnimationType', 'ratedPermohonans', 'latestResponses'));
+        return view('frontend.home', compact('sliders', 'berita', 'galeri', 'frontendStats', 'rss_items', 'contactInfo', 'transitionDuration', 'tingkatKepuasan', 'rataRataWaktuRespon', 'tingkatPenyelesaian', 'latestInformasis', 'sliderAspectRatio', 'sliderAnimationType', 'ratedPermohonans', 'latestRatings'));
     }
 
     public function allGaleri()

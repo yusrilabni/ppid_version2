@@ -586,30 +586,35 @@
                         </div>
                     </div>
 
-                    {{-- Running Ticker: Latest Responses --}}
-                    @if(isset($latestResponses) && $latestResponses->count() > 0)
+                    {{-- Running Ticker: Latest Ratings --}}
+                    @if(isset($latestRatings) && $latestRatings->count() > 0)
                         <div class="mt-8 bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden flex items-center">
                             <div class="bg-blue-600 text-white px-4 py-3 font-bold text-xs md:text-sm whitespace-nowrap flex items-center gap-2 z-10 shadow-lg shrink-0">
                                 <span class="relative flex h-2 w-2">
                                     <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-100 opacity-75"></span>
                                     <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
                                 </span>
-                                TANGGAPAN TERBARU
+                                ULASAN PEMOHON
                             </div>
                             <div class="flex-1 overflow-hidden relative bg-gray-50/50 py-3">
                                 <div class="animate-marquee whitespace-nowrap flex items-center gap-12">
-                                    @foreach($latestResponses as $resp)
+                                    @foreach($latestRatings as $rating)
                                         <div class="inline-flex items-center gap-3">
                                             <div class="flex items-center gap-2">
-                                                <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-[10px] font-bold text-blue-600 border border-blue-200">
-                                                    {{ strtoupper(substr($resp->user->name ?? 'A', 0, 1)) }}
+                                                <div class="w-6 h-6 rounded-full bg-yellow-100 flex items-center justify-center text-[10px] font-bold text-yellow-600 border border-yellow-200">
+                                                    {{ strtoupper(substr($rating->user->name ?? $rating->nama_pemohon, 0, 1)) }}
                                                 </div>
-                                                <span class="font-bold text-gray-800 text-xs">{{ $resp->user->name ?? 'Admin' }}</span>
+                                                <span class="font-bold text-gray-800 text-xs">{{ $rating->user->name ?? $rating->nama_pemohon }}</span>
+                                            </div>
+                                            <div class="flex text-yellow-400 text-[10px]">
+                                                @for($i = 0; $i < $rating->rating; $i++)
+                                                    <i class="fas fa-star"></i>
+                                                @endfor
                                             </div>
                                             <span class="text-gray-400">|</span>
-                                            <span class="text-xs text-gray-600 italic">"{{ Str::limit($resp->message, 80) }}"</span>
+                                            <span class="text-xs text-gray-600 italic">"{{ Str::limit($rating->rating_comment, 100) }}"</span>
                                             <span class="text-[10px] text-gray-400 font-medium bg-white px-2 py-0.5 rounded-full border border-gray-100">
-                                                {{ $resp->created_at->diffForHumans() }}
+                                                {{ $rating->updated_at->diffForHumans() }}
                                             </span>
                                         </div>
                                     @endforeach
@@ -623,7 +628,7 @@
                             }
                             .animate-marquee {
                                 display: inline-flex;
-                                animation: marquee 40s linear infinite;
+                                animation: marquee 50s linear infinite;
                                 width: max-content;
                             }
                             .animate-marquee:hover {
@@ -634,7 +639,7 @@
                         <script>
                             document.addEventListener('DOMContentLoaded', function() {
                                 const marquee = document.querySelector('.animate-marquee');
-                                if (marquee) {
+                                if (marquee && marquee.children.length > 0) {
                                     marquee.innerHTML += marquee.innerHTML;
                                 }
                             });
