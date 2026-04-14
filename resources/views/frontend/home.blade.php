@@ -543,32 +543,38 @@
                             <p class="text-xs md:text-sm text-gray-600 mb-3">Tingkat Kepuasan Layanan</p>
                             
                             <!-- Overlapping Avatars for Ratings -->
-                            @if(isset($ratedPermohonans) && $ratedPermohonans->count() > 0)
-                                <div class="flex items-center justify-center py-2">
-                                    <div class="flex items-center -space-x-4 overflow-hidden">
-                                        @foreach($ratedPermohonans->take(3) as $permohonan)
-                                            @if($permohonan->user)
-                                                <div class="inline-block h-10 w-10 rounded-full ring-2 ring-white overflow-hidden bg-gray-100" title="{{ $permohonan->user->name }}">
-                                                    @if($permohonan->user->profile_photo_path)
-                                                        <img src="{{ asset('storage/' . $permohonan->user->profile_photo_path) }}" alt="{{ $permohonan->user->name }}" class="h-full w-full object-cover">
-                                                    @else
-                                                        <div class="h-full w-full flex items-center justify-center bg-blue-100 text-blue-600 text-xs font-bold">
-                                                            {{ strtoupper(substr($permohonan->user->name, 0, 1)) }}
-                                                        </div>
-                                                    @endif
-                                                </div>
-                                            @else
-                                                <div class="inline-block h-10 w-10 rounded-full ring-2 ring-white overflow-hidden bg-gray-200 flex items-center justify-center text-xs text-gray-500 font-bold" title="{{ $permohonan->nama_pemohon }}">
-                                                    {{ strtoupper(substr($permohonan->nama_pemohon, 0, 1)) }}
-                                                </div>
-                                            @endif
-                                        @endforeach
-                                    </div>
-                                    <div class="ml-4 text-xs md:text-sm font-bold text-gray-700 bg-gray-100 px-3 py-1 rounded-full border border-gray-200 shadow-sm">
-                                        {{ number_format($frontendStats['permohonan'], 0, ',', '.') }} Tanggapan
-                                    </div>
+                            <div class="flex items-center justify-center py-2">
+                                <div class="flex items-center -space-x-4 overflow-hidden">
+                                    @php
+                                        // Selalu tampilkan 3 bulatan profil
+                                        $displayCount = 3;
+                                        $realRatings = isset($ratedPermohonans) ? $ratedPermohonans : collect();
+                                    @endphp
+
+                                    @for ($i = 0; $i < $displayCount; $i++)
+                                        @if (isset($realRatings[$i]))
+                                            @php $permohonan = $realRatings[$i]; @endphp
+                                            <div class="inline-block h-10 w-10 rounded-full ring-2 ring-white overflow-hidden bg-gray-100 z-{{ 30 - ($i * 10) }}" title="{{ $permohonan->user->name ?? $permohonan->nama_pemohon }}">
+                                                @if($permohonan->user && $permohonan->user->profile_photo_path)
+                                                    <img src="{{ asset('storage/' . $permohonan->user->profile_photo_path) }}" alt="Avatar" class="h-full w-full object-cover">
+                                                @else
+                                                    <div class="h-full w-full flex items-center justify-center bg-blue-100 text-blue-600 text-xs font-bold">
+                                                        {{ strtoupper(substr($permohonan->user->name ?? $permohonan->nama_pemohon, 0, 1)) }}
+                                                    </div>
+                                                @endif
+                                            </div>
+                                        @else
+                                            {{-- Placeholder Bulat jika rating asli belum mencapai 3 --}}
+                                            <div class="inline-block h-10 w-10 rounded-full ring-2 ring-white overflow-hidden bg-gray-200 z-{{ 30 - ($i * 10) }} flex items-center justify-center text-gray-400">
+                                                <i class="fas fa-user text-xs"></i>
+                                            </div>
+                                        @endif
+                                    @endfor
                                 </div>
-                            @endif
+                                <div class="ml-4 text-xs md:text-sm font-bold text-gray-700 bg-gray-100 px-4 py-1.5 rounded-full border border-gray-200 shadow-sm">
+                                    {{ number_format(\App\Models\PermohonanInformasi::whereNotNull('rating')->count(), 0, ',', '.') }} Penilaian
+                                </div>
+                            </div>
                         </div>
                         <div class="p-4 md:p-0 bg-white md:bg-transparent rounded-lg shadow-sm md:shadow-none">
                             <div class="text-xl md:text-2xl font-bold text-green-600 mb-1 md:mb-2">{{ $rataRataWaktuRespon }} Hari</div>

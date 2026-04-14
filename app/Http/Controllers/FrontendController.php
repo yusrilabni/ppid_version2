@@ -110,15 +110,16 @@ class FrontendController extends Controller
         $allPermohonans = \App\Models\PermohonanInformasi::all();
         $totalPermohonans = $allPermohonans->count();
 
-        // Tingkat Kepuasan Layanan (Service Satisfaction Level)
+        // Ambil pemohon yang memberikan rating
         $ratedPermohonans = \App\Models\PermohonanInformasi::whereNotNull('rating')
             ->with('user')
             ->orderBy('updated_at', 'desc')
-            ->take(10)
+            ->take(3)
             ->get();
         
-        $averageRating = $allPermohonans->whereNotNull('rating')->avg('rating');
-        $tingkatKepuasan = $averageRating !== null ? round(($averageRating / 5) * 100) : 0; // Assuming rating is 1-5
+        $totalRatings = \App\Models\PermohonanInformasi::whereNotNull('rating')->count();
+        $averageRating = \App\Models\PermohonanInformasi::whereNotNull('rating')->avg('rating');
+        $tingkatKepuasan = $averageRating !== null ? round(($averageRating / 5) * 100) : 0; 
 
         // Rata-rata Waktu Respon (Average Response Time)
         $completedPermohonans = $allPermohonans->where('status_permohonan', 'selesai');
