@@ -36,14 +36,23 @@ class PermohonanInformasiController extends Controller
             'permohonan_informasi_id' => 'required|exists:permohonan_informasi,id',
             'message' => 'required|string',
             'response_type' => 'required|string',
+            'file' => 'nullable|file|max:2048',
+            'link' => 'nullable|url',
         ]);
 
-        $response = PermohonanResponse::create([
+        $data = [
             'permohonan_informasi_id' => $request->permohonan_informasi_id,
             'user_id' => Auth::id(),
             'message' => $request->message,
             'response_type' => $request->response_type,
-        ]);
+            'link' => $request->link,
+        ];
+
+        if ($request->hasFile('file')) {
+            $data['file_path'] = $request->file('file')->store('responses', 'public');
+        }
+
+        $response = PermohonanResponse::create($data);
 
         // Automatically update the status to 'diproses'
         $permohonan = PermohonanInformasi::find($request->permohonan_informasi_id);
@@ -61,19 +70,25 @@ class PermohonanInformasiController extends Controller
             $escPelapor = GeneralHelper::escapeTelegramMarkdown($pelaporName);
             $escMsg = GeneralHelper::escapeTelegramMarkdown($request->message);
 
-            // Kirim Notifikasi Telegram
+            // Kirim Notifikasi Telegram dengan Tombol WhatsApp
             $tgMsg = "👨‍💼 *Admin Memberikan Tanggapan*\n\n"
                    . "🆔 *ID Permohonan:* #{$permohonan->unique_code}\n"
                    . "👤 *Kepada:* {$escPelapor}\n"
                    . "🏷️ *Tipe:* {$request->response_type}\n"
-                   . "📩 *Pesan:* \n_{$escMsg}_\n\n"
-                   . "🛠️ *Oleh Admin:* {$adminName}\n"
-                   . "🪪 *NIP:* {$adminNip}\n"
-                   . "📌 Status diperbarui menjadi *Diproses*.\n"
+                   . "📩 *Pesan:* \n_{$escMsg}_\n\n";
+            
+            if ($request->link) {
+                $tgMsg .= "🔗 *Tautan:* {$request->link}\n";
+            }
+            
+            if ($request->hasFile('file')) {
+                $tgMsg .= "📁 *Lampiran:* Tersedia di sistem\n";
+            }
+
+            $tgMsg .= "🛠️ *Oleh Admin:* {$adminName}\n"
+                   . "📌 Status: *Diproses*.\n\n"
                    . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan->id) . ")";
             
-            GeneralHelper::sendTelegramMessage($tgMsg);
-
             // Siapkan URL WhatsApp untuk Pemohon
             $waPhone = GeneralHelper::formatPhoneNumber($permohonan->nomor_telepon_pemohon);
             $directLink = route('laporan.permohonan.show', $permohonan->unique_code);
@@ -81,15 +96,29 @@ class PermohonanInformasiController extends Controller
                        . "Halo {$permohonan->nama_pemohon},\n"
                        . "Permohonan Informasi Anda dengan ID *#{$permohonan->unique_code}* telah mendapatkan tanggapan dari Admin.\n\n"
                        . "*Status:* Diproses\n"
-                       . "*Pesan Admin:* \n_{$request->message}_\n\n"
-                       . "Silakan cek detail lengkap melalui tautan berikut:\n"
+                       . "*Pesan Admin:* \n_{$request->message}_\n\n";
+
+            if ($request->link) {
+                $waMessage .= "*Tautan Eksternal:* \n{$request->link}\n\n";
+            }
+
+            $waMessage .= "Silakan cek detail lengkap melalui tautan berikut:\n"
                        . $directLink . "\n\n"
                        . "Terima kasih.";
             
             $waUrl = "https://wa.me/{$waPhone}?text=" . urlencode($waMessage);
 
+            // Tambahkan tombol di Telegram
+            $buttons = [
+                [
+                    ['text' => '📱 Kirim WhatsApp ke Pemohon', 'url' => $waUrl],
+                ]
+            ];
+            
+            GeneralHelper::sendTelegramMessage($tgMsg, $buttons);
+
             return redirect()->route('admin.permohonan-informasi.show', $permohonan)
-                             ->with('success', 'Jawaban berhasil disimpan. Silakan klik link berikut untuk meneruskan ke WhatsApp Pemohon: <a href="'.$waUrl.'" target="_blank" class="font-bold underline text-blue-600">Kirim WhatsApp ke Pemohon</a>')
+                             ->with('success', 'Tanggapan berhasil disimpan.')
                              ->with('wa_url', $waUrl);
         }
 

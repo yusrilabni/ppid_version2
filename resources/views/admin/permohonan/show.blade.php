@@ -477,6 +477,45 @@
                 </div>
             </div>
 
+            <!-- Success Notifications -->
+            @if (session('success'))
+                <div class="mb-8 animate-fade-in">
+                    <div class="bg-white border-l-4 border-green-500 rounded-2xl shadow-xl overflow-hidden">
+                        <div class="p-6">
+                            <div class="flex items-center">
+                                <div class="flex-shrink-0 h-12 w-12 bg-green-100 rounded-full flex items-center justify-center">
+                                    <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                                </div>
+                                <div class="ml-4 flex-1">
+                                    <p class="text-lg font-bold text-gray-900">{{ session('success') }}</p>
+                                    @if(session('wa_url'))
+                                        <p class="text-gray-600 mt-1 text-sm">Silakan teruskan balasan ini ke WhatsApp pemohon untuk memberikan notifikasi langsung.</p>
+                                    @endif
+                                </div>
+                                @if(session('wa_url'))
+                                    <div class="ml-6">
+                                        <a href="{{ session('wa_url') }}" target="_blank"
+                                            class="inline-flex items-center px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg hover:shadow-green-200 transform hover:-translate-y-0.5 transition-all duration-300 text-sm">
+                                            <i class="fab fa-whatsapp mr-2 text-xl"></i>
+                                            Kirim ke WhatsApp
+                                        </a>
+                                    </div>
+                                @endif
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            @endif
+
+            @if (session('error'))
+                <div class="mb-8 animate-fade-in">
+                    <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-2xl shadow-lg flex items-center">
+                        <i class="fas fa-exclamation-circle text-red-500 text-2xl mr-4"></i>
+                        <p class="text-red-700 font-semibold">{{ session('error') }}</p>
+                    </div>
+                </div>
+            @endif
+
             <!-- Chat/Response Section -->
             <div
                 class="bg-gradient-to-br from-white to-gray-50 rounded-2xl shadow-xl border border-gray-200 overflow-hidden transform transition-all duration-300 hover:shadow-2xl">
@@ -542,7 +581,7 @@
                                         <div class="relative group/bubble @if($response->user_id === Auth::id()) bg-gradient-to-r from-blue-500 to-indigo-600 text-white w-fit max-w-lg @else bg-gradient-to-r from-gray-100 to-gray-200 text-gray-800 w-fit max-w-lg @endif rounded-xl @if($response->user_id === Auth::id()) rounded-tr-none @else rounded-tl-none @endif py-2 px-4 shadow-lg hover:shadow-xl transition-shadow duration-200">
                                             
                                             <!-- Resend Button (Only for Admin messages) -->
-                                            @if($response->user_id === Auth::id() && $response->user->role === 'admin' || $response->user->role === 'superadmin')
+                                            @if($response->user && in_array($response->user->role, ['admin', 'superadmin']))
                                             <div class="absolute -left-12 top-1/2 -translate-y-1/2 opacity-0 group-hover/bubble:opacity-100 transition-opacity duration-200">
                                                 <form action="{{ route('admin.permohonan-response.resend', $response) }}" method="POST">
                                                     @csrf
