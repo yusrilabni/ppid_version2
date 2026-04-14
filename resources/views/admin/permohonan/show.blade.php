@@ -692,18 +692,18 @@
                                                 <div
                                                     class="mt-4 pt-4 border-t @if ($response->user_id === Auth::id()) border-white/20 @else border-gray-300/30 @endif">
                                                     <a href="{{ $response->link }}" target="_blank"
-                                                        class="inline-flex items-center p-3 rounded-lg @if ($response->user_id === Auth::id()) bg-white/10 hover:bg-white/20 @else bg-gray-200/80 hover:bg-gray-300/80 @endif transition-colors duration-200 group">
+                                                        class="flex items-center p-3 rounded-lg @if ($response->user_id === Auth::id()) bg-white/10 hover:bg-white/20 @else bg-gray-200/80 hover:bg-gray-300/80 @endif transition-colors duration-200 group w-full">
                                                         <div
-                                                            class="h-8 w-8 rounded-md bg-gradient-to-r from-blue-100 to-indigo-100 flex items-center justify-center mr-3">
+                                                            class="h-8 w-8 rounded-md bg-gradient-to-r from-blue-100 to-indigo-100 flex items-center justify-center mr-3 flex-shrink-0">
                                                             <i class="fas fa-link text-blue-500 text-sm"></i>
                                                         </div>
-                                                        <div class="flex-1 min-w-0">
-                                                            <p class="text-sm truncate">{{ $response->link }}</p>
+                                                        <div class="flex-1 min-w-0 overflow-hidden">
+                                                            <p class="text-sm break-all leading-tight">{{ $response->link }}</p>
                                                             <p class="text-xs opacity-75 mt-1">Klik untuk membuka tautan
                                                             </p>
                                                         </div>
                                                         <i
-                                                            class="fas fa-external-link-alt text-blue-400 text-sm ml-3 group-hover:translate-x-1 transition-transform"></i>
+                                                            class="fas fa-external-link-alt text-blue-400 text-sm ml-3 group-hover:translate-x-1 transition-transform flex-shrink-0"></i>
                                                     </a>
                                                 </div>
                                             @endif
