@@ -36,12 +36,18 @@ class OrganizationController extends Controller
                 $units = $unitResponse->json();
             }
 
-            // Fetch Villages and group by Kecamatan
-            $villageResponse = Http::get('http://apps.sinjaikab.go.id/api/pegawai/get_wilayah?tipe=Desa');
-            if ($villageResponse->successful()) {
-                $villages = collect($villageResponse->json());
-                $villagesGrouped = $villages->groupBy('kecamatan_nama')->toArray();
-            }
+            // Fetch Villages (Desa)
+            $desaResponse = Http::get('http://apps.sinjaikab.go.id/api/pegawai/get_wilayah?tipe=Desa');
+            $desaData = $desaResponse->successful() ? $desaResponse->json() : [];
+
+            // Fetch Urban Villages (Kelurahan)
+            $kelurahanResponse = Http::get('http://apps.sinjaikab.go.id/api/pegawai/get_wilayah?tipe=Kelurahan');
+            $kelurahanData = $kelurahanResponse->successful() ? $kelurahanResponse->json() : [];
+
+            // Merge and Group by Kecamatan
+            $allWilayah = collect(array_merge($desaData, $kelurahanData));
+            $villagesGrouped = $allWilayah->sortBy('desa_nama')->groupBy('kecamatan_nama')->toArray();
+
         } catch (\Exception $e) {
             Log::error('Error fetching API data for organizations: ' . $e->getMessage());
         }

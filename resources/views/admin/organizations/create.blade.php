@@ -44,13 +44,13 @@
                         </optgroup>
                     @endif
 
-                    {{-- Kelompok Desa Berdasarkan Kecamatan --}}
+                    {{-- Kelompok Desa/Kelurahan Berdasarkan Kecamatan --}}
                     @if(!empty($villagesGrouped))
-                        @foreach($villagesGrouped as $kecamatan => $villages)
+                        @foreach($villagesGrouped as $kecamatan => $wilayahs)
                             <optgroup label="KECAMATAN {{ strtoupper($kecamatan) }}">
-                                @foreach($villages as $desa)
-                                    <option value="{{ $desa['desa_id'] }}" data-name="{{ $desa['desa_nama'] }}" data-type="unit" {{ old('unit_id') == $desa['desa_id'] ? 'selected' : '' }}>
-                                        Desa {{ $desa['desa_nama'] }}
+                                @foreach($wilayahs as $item)
+                                    <option value="{{ $item['desa_id'] }}" data-name="{{ $item['desa_tipe'] }} {{ $item['desa_nama'] }}" data-type="unit" {{ old('unit_id') == $item['desa_id'] ? 'selected' : '' }}>
+                                        {{ $item['desa_tipe'] }} {{ $item['desa_nama'] }}
                                     </option>
                                 @endforeach
                             </optgroup>
