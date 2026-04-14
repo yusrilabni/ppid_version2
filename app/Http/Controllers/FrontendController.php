@@ -158,8 +158,9 @@ class FrontendController extends Controller
         // --- END of Laporan Kinerja Logic ---
 
         $latestInformasis = Informasi::with(['user', 'organization'])->latest()->take(16)->get();
+        $unitMap = collect($this->getUnitData());
 
-        return view('frontend.home', compact('sliders', 'berita', 'galeri', 'frontendStats', 'rss_items', 'contactInfo', 'transitionDuration', 'tingkatKepuasan', 'rataRataWaktuRespon', 'tingkatPenyelesaian', 'latestInformasis', 'sliderAspectRatio', 'sliderAnimationType', 'ratedPermohonans', 'latestRatings'));
+        return view('frontend.home', compact('sliders', 'berita', 'galeri', 'frontendStats', 'rss_items', 'contactInfo', 'transitionDuration', 'tingkatKepuasan', 'rataRataWaktuRespon', 'tingkatPenyelesaian', 'latestInformasis', 'unitMap', 'sliderAspectRatio', 'sliderAnimationType', 'ratedPermohonans', 'latestRatings'));
     }
 
     public function allGaleri()
@@ -314,7 +315,7 @@ class FrontendController extends Controller
             $unitId = trim((string)$informasi->unit_id);
             $allUnits = $this->getUnitData();
             $unit = $allUnits->get($unitId);
-            $unitName = $unit['unit_nama'] ?? ($informasi->user->opd_name ?? 'PPID Kabupaten Sinjai');
+            $unitName = $unit['unit_nama'] ?? ($informasi->organization->name ?? ($informasi->user->opd_name ?? 'PPID Kabupaten Sinjai'));
         } elseif ($informasi->user && $informasi->user->opd_name) {
             $unitName = $informasi->user->opd_name;
         }

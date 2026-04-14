@@ -114,7 +114,10 @@
                             @foreach ($latestInformasis as $info)
                                 @php
                                     // Pre-calculate data for cleaner view
-                                    $unitName = $info->organization->name ?? ($info->user->opd_name ?? 'PPID Kabupaten Sinjai');
+                                    $unitId = trim((string)$info->unit_id);
+                                    $unit = $unitMap->get($unitId);
+                                    $unitName = $unit['unit_nama'] ?? ($info->organization->name ?? ($info->user->opd_name ?? 'PPID Kabupaten Sinjai'));
+                                    
                                     $uploaderName = 'Administrator';
                                     if ($info->user) {
                                         $user = $info->user;
