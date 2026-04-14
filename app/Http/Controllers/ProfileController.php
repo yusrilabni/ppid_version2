@@ -37,7 +37,7 @@ class ProfileController extends Controller
         if ($apiData && isset($apiData['unit_id'])) {
             foreach ($allUnits as $unit) {
                 if (isset($unit['unit_id']) && $unit['unit_id'] == $apiData['unit_id']) {
-                    $apiData['unit_nama'] = $unit['unit_nama'] ?? $apiData['unit_nama'] ?? 'Tidak Diketahui';
+                    $apiData['unit_nama'] = $unit['unit_nama'] ?? null;
                     break;
                 }
             }
