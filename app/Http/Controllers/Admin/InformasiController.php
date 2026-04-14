@@ -138,9 +138,9 @@ class InformasiController extends Controller
         $user = auth()->user();
         $unitId = $request->query('unit_id'); // Get unit_id from query
         
-        // Strip UID_ prefix if present to match database
-        if ($unitId && is_string($unitId) && str_starts_with($unitId, 'UID_')) {
-            $unitId = substr($unitId, 4);
+        // Decode Base64 unit_id if present to bypass WAF
+        if ($unitId && is_string($unitId) && str_starts_with($unitId, 'B64_')) {
+            $unitId = base64_decode(substr($unitId, 4));
         }
 
         $query = Informasi::whereIn('status', ['BERLAKU', 'aktif']);
@@ -260,9 +260,9 @@ class InformasiController extends Controller
 
                 if ($isSuperAdmin) {
                     $unitId = $request->unit_id;
-                    // Strip UID_ prefix if present
-                    if ($unitId && is_string($unitId) && str_starts_with($unitId, 'UID_')) {
-                        $unitId = substr($unitId, 4);
+                    // Decode Base64 unit_id if present to bypass WAF
+                    if ($unitId && is_string($unitId) && str_starts_with($unitId, 'B64_')) {
+                        $unitId = base64_decode(substr($unitId, 4));
                     }
                     $validatedData['unit_id'] = $unitId;
                     $validatedData['user_id'] = $user->id;
@@ -366,9 +366,9 @@ class InformasiController extends Controller
                 
                 if ($isSuperAdmin) {
                     $unitId = $request->unit_id;
-                    // Strip UID_ prefix if present
-                    if ($unitId && is_string($unitId) && str_starts_with($unitId, 'UID_')) {
-                        $unitId = substr($unitId, 4);
+                    // Decode Base64 unit_id if present to bypass WAF
+                    if ($unitId && is_string($unitId) && str_starts_with($unitId, 'B64_')) {
+                        $unitId = base64_decode(substr($unitId, 4));
                     }
                     $validatedData['unit_id'] = $unitId;
                     $validatedData['user_id'] = $user->id;

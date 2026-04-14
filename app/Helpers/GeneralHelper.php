@@ -168,9 +168,10 @@ class GeneralHelper
         // 1. Masukkan OPD
         if (!empty($cached['units'])) {
             foreach ($cached['units'] as $unit) {
-                $id = 'UID_' . preg_replace('/[^a-zA-Z0-9]/', '', (string)$unit['unit_id']);
-                $opdData[$id] = [
-                    'unit_id' => $id,
+                $cleanId = preg_replace('/[^a-zA-Z0-9]/', '', (string)$unit['unit_id']);
+                $encodedId = 'B64_' . base64_encode($cleanId);
+                $opdData[$encodedId] = [
+                    'unit_id' => $encodedId,
                     'unit_nama' => $unit['unit_nama'],
                     'type' => 'OPD'
                 ];
@@ -183,9 +184,10 @@ class GeneralHelper
             ksort($cached['villages_grouped']);
             foreach ($cached['villages_grouped'] as $kecamatan => $items) {
                 foreach ($items as $item) {
-                    $id = 'UID_' . preg_replace('/[^a-zA-Z0-9]/', '', (string)$item['desa_id']);
-                    $wilayahData[$id] = [
-                        'unit_id' => $id,
+                    $cleanId = preg_replace('/[^a-zA-Z0-9]/', '', (string)$item['desa_id']);
+                    $encodedId = 'B64_' . base64_encode($cleanId);
+                    $wilayahData[$encodedId] = [
+                        'unit_id' => $encodedId,
                         'unit_nama' => $item['desa_tipe'] . ' ' . $item['desa_nama'] . ' (Kec. ' . $kecamatan . ')',
                         'kecamatan' => $kecamatan,
                         'type' => 'WILAYAH'
