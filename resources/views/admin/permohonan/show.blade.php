@@ -3,6 +3,45 @@
 @section('title', 'Detail Permohonan Informasi')
 
 @section('content')
+    <!-- Success Notifications -->
+    @if (session('success'))
+        <div class="mb-8 animate-fade-in">
+            <div class="bg-white border-l-4 border-green-500 rounded-2xl shadow-xl overflow-hidden">
+                <div class="p-6">
+                    <div class="flex items-center">
+                        <div class="flex-shrink-0 h-12 w-12 bg-green-100 rounded-full flex items-center justify-center">
+                            <i class="fas fa-check-circle text-green-600 text-2xl"></i>
+                        </div>
+                        <div class="ml-4 flex-1">
+                            <p class="text-lg font-bold text-gray-900">{{ session('success') }}</p>
+                            @if(session('wa_url'))
+                                <p class="text-gray-600 mt-1 text-sm">Silakan teruskan balasan ini ke WhatsApp pemohon untuk memberikan notifikasi langsung.</p>
+                            @endif
+                        </div>
+                        @if(session('wa_url'))
+                            <div class="ml-6">
+                                <a href="{{ session('wa_url') }}" target="_blank"
+                                    class="inline-flex items-center px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg hover:shadow-green-200 transform hover:-translate-y-0.5 transition-all duration-300 text-sm">
+                                    <i class="fab fa-whatsapp mr-2 text-xl"></i>
+                                    Kirim ke WhatsApp
+                                </a>
+                            </div>
+                        @endif
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
+
+    @if (session('error'))
+        <div class="mb-8 animate-fade-in">
+            <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-2xl shadow-lg flex items-center">
+                <i class="fas fa-exclamation-circle text-red-500 text-2xl mr-4"></i>
+                <p class="text-red-700 font-semibold">{{ session('error') }}</p>
+            </div>
+        </div>
+    @endif
+
     <div class="max-w-6xl mx-auto">
         <!-- Header Section -->
         <div class="mb-8">
@@ -476,45 +515,6 @@
                     </div>
                 </div>
             </div>
-
-            <!-- Success Notifications -->
-            @if (session('success'))
-                <div class="mb-8 animate-fade-in">
-                    <div class="bg-white border-l-4 border-green-500 rounded-2xl shadow-xl overflow-hidden">
-                        <div class="p-6">
-                            <div class="flex items-center">
-                                <div class="flex-shrink-0 h-12 w-12 bg-green-100 rounded-full flex items-center justify-center">
-                                    <i class="fas fa-check-circle text-green-600 text-2xl"></i>
-                                </div>
-                                <div class="ml-4 flex-1">
-                                    <p class="text-lg font-bold text-gray-900">{{ session('success') }}</p>
-                                    @if(session('wa_url'))
-                                        <p class="text-gray-600 mt-1 text-sm">Silakan teruskan balasan ini ke WhatsApp pemohon untuk memberikan notifikasi langsung.</p>
-                                    @endif
-                                </div>
-                                @if(session('wa_url'))
-                                    <div class="ml-6">
-                                        <a href="{{ session('wa_url') }}" target="_blank"
-                                            class="inline-flex items-center px-6 py-3 bg-green-500 hover:bg-green-600 text-white font-bold rounded-xl shadow-lg hover:shadow-green-200 transform hover:-translate-y-0.5 transition-all duration-300 text-sm">
-                                            <i class="fab fa-whatsapp mr-2 text-xl"></i>
-                                            Kirim ke WhatsApp
-                                        </a>
-                                    </div>
-                                @endif
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            @endif
-
-            @if (session('error'))
-                <div class="mb-8 animate-fade-in">
-                    <div class="bg-red-50 border-l-4 border-red-500 p-6 rounded-2xl shadow-lg flex items-center">
-                        <i class="fas fa-exclamation-circle text-red-500 text-2xl mr-4"></i>
-                        <p class="text-red-700 font-semibold">{{ session('error') }}</p>
-                    </div>
-                </div>
-            @endif
 
             <!-- Chat/Response Section -->
             <div
