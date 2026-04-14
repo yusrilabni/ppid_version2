@@ -585,6 +585,61 @@
                             <p class="text-xs md:text-sm text-gray-600">Tingkat Penyelesaian Permohonan</p>
                         </div>
                     </div>
+
+                    {{-- Running Ticker: Latest Responses --}}
+                    @if(isset($latestResponses) && $latestResponses->count() > 0)
+                        <div class="mt-8 bg-white border border-gray-200 rounded-2xl shadow-sm overflow-hidden flex items-center">
+                            <div class="bg-blue-600 text-white px-4 py-3 font-bold text-xs md:text-sm whitespace-nowrap flex items-center gap-2 z-10 shadow-lg shrink-0">
+                                <span class="relative flex h-2 w-2">
+                                    <span class="animate-ping absolute inline-flex h-full w-full rounded-full bg-blue-100 opacity-75"></span>
+                                    <span class="relative inline-flex rounded-full h-2 w-2 bg-white"></span>
+                                </span>
+                                TANGGAPAN TERBARU
+                            </div>
+                            <div class="flex-1 overflow-hidden relative bg-gray-50/50 py-3">
+                                <div class="animate-marquee whitespace-nowrap flex items-center gap-12">
+                                    @foreach($latestResponses as $resp)
+                                        <div class="inline-flex items-center gap-3">
+                                            <div class="flex items-center gap-2">
+                                                <div class="w-6 h-6 rounded-full bg-blue-100 flex items-center justify-center text-[10px] font-bold text-blue-600 border border-blue-200">
+                                                    {{ strtoupper(substr($resp->user->name ?? 'A', 0, 1)) }}
+                                                </div>
+                                                <span class="font-bold text-gray-800 text-xs">{{ $resp->user->name ?? 'Admin' }}</span>
+                                            </div>
+                                            <span class="text-gray-400">|</span>
+                                            <span class="text-xs text-gray-600 italic">"{{ Str::limit($resp->message, 80) }}"</span>
+                                            <span class="text-[10px] text-gray-400 font-medium bg-white px-2 py-0.5 rounded-full border border-gray-100">
+                                                {{ $resp->created_at->diffForHumans() }}
+                                            </span>
+                                        </div>
+                                    @endforeach
+                                </div>
+                            </div>
+                        </div>
+                        <style>
+                            @keyframes marquee {
+                                0% { transform: translateX(0); }
+                                100% { transform: translateX(-50%); }
+                            }
+                            .animate-marquee {
+                                display: inline-flex;
+                                animation: marquee 40s linear infinite;
+                                width: max-content;
+                            }
+                            .animate-marquee:hover {
+                                animation-play-state: paused;
+                            }
+                        </style>
+                        {{-- Duplicate items for seamless loop if content is short --}}
+                        <script>
+                            document.addEventListener('DOMContentLoaded', function() {
+                                const marquee = document.querySelector('.animate-marquee');
+                                if (marquee) {
+                                    marquee.innerHTML += marquee.innerHTML;
+                                }
+                            });
+                        </script>
+                    @endif
                 </div>
             </div>
         </section>

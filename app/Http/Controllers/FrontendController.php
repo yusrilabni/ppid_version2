@@ -110,6 +110,12 @@ class FrontendController extends Controller
         $allPermohonans = \App\Models\PermohonanInformasi::all();
         $totalPermohonans = $allPermohonans->count();
 
+        // Ambil 10 Tanggapan Terbaru untuk Running Ticker
+        $latestResponses = \App\Models\PermohonanResponse::with(['user', 'permohonanInformasi'])
+            ->latest()
+            ->take(10)
+            ->get();
+
         // Ambil pemohon yang memberikan rating
         $ratedPermohonans = \App\Models\PermohonanInformasi::whereNotNull('rating')
             ->with('user')
@@ -145,7 +151,7 @@ class FrontendController extends Controller
 
         $latestInformasis = Informasi::with(['user', 'organization'])->latest()->take(16)->get();
 
-        return view('frontend.home', compact('sliders', 'berita', 'galeri', 'frontendStats', 'rss_items', 'contactInfo', 'transitionDuration', 'tingkatKepuasan', 'rataRataWaktuRespon', 'tingkatPenyelesaian', 'latestInformasis', 'sliderAspectRatio', 'sliderAnimationType', 'ratedPermohonans'));
+        return view('frontend.home', compact('sliders', 'berita', 'galeri', 'frontendStats', 'rss_items', 'contactInfo', 'transitionDuration', 'tingkatKepuasan', 'rataRataWaktuRespon', 'tingkatPenyelesaian', 'latestInformasis', 'sliderAspectRatio', 'sliderAnimationType', 'ratedPermohonans', 'latestResponses'));
     }
 
     public function allGaleri()
