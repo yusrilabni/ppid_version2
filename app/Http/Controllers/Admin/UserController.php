@@ -15,7 +15,8 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all();
-        return view('admin.users.index', compact('users'));
+        $unitMap = \App\Helpers\GeneralHelper::getUnitData();
+        return view('admin.users.index', compact('users', 'unitMap'));
     }
 
     /**
@@ -23,7 +24,8 @@ class UserController extends Controller
      */
     public function create()
     {
-        return view('admin.users.create');
+        $units = \App\Helpers\GeneralHelper::getEncodedUnitData();
+        return view('admin.users.create', compact('units'));
     }
 
     /**
@@ -35,14 +37,21 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
-            'role' => 'required|string|in:admin,user',
+            'role' => 'required|string|in:admin,user,superadmin',
+            'unit_id' => 'required_if:role,admin,superadmin|nullable|string',
         ]);
+
+        $unitId = $request->unit_id;
+        if ($unitId && str_starts_with($unitId, 'B64_')) {
+            $unitId = base64_decode(substr($unitId, 4));
+        }
 
         User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
             'role' => $request->role,
+            'unit_id' => $unitId,
         ]);
 
         return redirect()->route('admin.users.index')->with('success', 'User created successfully.');
@@ -53,7 +62,9 @@ class UserController extends Controller
      */
     public function edit(User $user)
     {
-        return view('admin.users.edit', compact('user'));
+        $units = \App\Helpers\GeneralHelper::getEncodedUnitData();
+        $currentUnitId = $user->unit_id ? 'B64_' . base64_encode($user->unit_id) : null;
+        return view('admin.users.edit', compact('user', 'units', 'currentUnitId'));
     }
 
     /**
@@ -65,12 +76,19 @@ class UserController extends Controller
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users,email,'.$user->id,
             'role' => 'required|string|in:admin,user,superadmin',
+            'unit_id' => 'required_if:role,admin,superadmin|nullable|string',
         ]);
+
+        $unitId = $request->unit_id;
+        if ($unitId && str_starts_with($unitId, 'B64_')) {
+            $unitId = base64_decode(substr($unitId, 4));
+        }
 
         $user->update([
             'name' => $request->name,
             'email' => $request->email,
             'role' => $request->role,
+            'unit_id' => $unitId,
         ]);
 
         return redirect()->route('admin.users.index')->with('success', 'User updated successfully.');

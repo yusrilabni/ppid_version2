@@ -26,7 +26,7 @@
             </div>
         @endif
 
-        <form action="{{ route('admin.users.store') }}" method="POST">
+        <form action="{{ route('admin.users.store') }}" method="POST" x-data="{ role: '{{ old('role', 'user') }}' }">
             @csrf
             <div class="mb-6">
                 <label for="name" class="block text-sm font-medium text-gray-700 mb-2">Name</label>
@@ -50,11 +50,23 @@
 
             <div class="mb-6">
                 <label for="role" class="block text-sm font-medium text-gray-700 mb-2">Role</label>
-                <select name="role" id="role" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition">
-                    <option value="user" @if(old('role') == 'user') selected @endif>User</option>
-                    <option value="admin" @if(old('role') == 'admin') selected @endif>Admin</option>
-                    <option value="superadmin" @if(old('role') == 'superadmin') selected @endif>Super Admin</option>
+                <select name="role" id="role" x-model="role" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition">
+                    <option value="user">User</option>
+                    <option value="admin">Admin</option>
+                    <option value="superadmin">Super Admin</option>
                 </select>
+            </div>
+
+            <div class="mb-6" x-show="role === 'admin' || role === 'superadmin'" x-transition>
+                <label for="unit_id" class="block text-sm font-medium text-gray-700 mb-2">Unit Kerja / OPD <span class="text-red-500">*</span></label>
+                <x-custom-select
+                    name="unit_id"
+                    :options="$units"
+                    :value="old('unit_id')"
+                    placeholder="Pilih Unit Kerja"
+                    :searchable="true"
+                />
+                <p class="mt-1 text-xs text-gray-500 italic">Wajib diisi jika role adalah Admin atau Super Admin.</p>
             </div>
 
             <div class="flex items-center space-x-4">
