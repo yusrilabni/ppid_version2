@@ -13,9 +13,6 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class DinasController extends Controller
 {
-    /**
-     * Display a list of units (OPD & Kecamatan) that have participated in uploading information.
-     */
     public function index()
     {
         $cached = GeneralHelper::syncExternalUnitsIfNeeded();
@@ -23,8 +20,9 @@ class DinasController extends Controller
         
         $opds = [];
         $kecamatans = [];
+        $villagesByKecamatan = [];
         
-        // Handle OPDs and Kecamatans (from cached units)
+        // 1. Ambil Data Dasar dari API (OPD & Kecamatan)
         if (!empty($cached['units'])) {
             foreach ($cached['units'] as $unit) {
                 $id = (string)$unit['unit_id'];
@@ -42,82 +40,43 @@ class DinasController extends Controller
                 
                 if ($org && $org->type === 'kecamatan') {
                     $kecamatans[$id] = $data;
-                    $kecamatans[$id]['villages'] = [];
                 } else {
                     $opds[$id] = $data;
                 }
             }
         }
         
-        // Handle Villages/Desa (from cached villages_grouped)
+        // 2. Ambil Data Desa/Kelurahan dan Kelompokkan Berdasarkan Kecamatan
         if (!empty($cached['villages_grouped'])) {
             foreach ($cached['villages_grouped'] as $kecName => $villages) {
-                // Pre-calculate potential kecamatan IDs for this group name
-                $targetKecId = null;
-                $trimmedKecName = trim(str_ireplace('Kecamatan', '', $kecName));
-                
-                foreach ($kecamatans as $id => $kec) {
-                    if (stripos($kec['name'], $trimmedKecName) !== false) {
-                        $targetKecId = $id;
-                        break;
-                    }
-                }
-
+                $villagesByKecamatan[$kecName] = [];
                 foreach ($villages as $village) {
                     $vId = (string)$village['desa_id'];
                     $vName = $village['desa_tipe'] . ' ' . $village['desa_nama'];
-                    
-                    // Coba cari organisasi berdasarkan remote_id
                     $vOrg = $organizations->get($vId);
                     
-                    // Fallback: Jika tidak ketemu by remote_id, coba cari by name slug
+                    // Fallback slug detection
                     if (!$vOrg) {
                         $potentialSlug = \Illuminate\Support\Str::slug($vName);
                         $vOrg = $organizations->where('slug', $potentialSlug)->first();
                     }
 
-                    $vData = [
+                    $villagesByKecamatan[$kecName][] = [
                         'unit_id' => $vId,
                         'name' => $vName,
                         'slug' => $vOrg ? $vOrg->slug : null,
-                        'type' => 'WILAYAH'
+                        'type' => $village['desa_tipe']
                     ];
-
-                    // Penentuan Grup Kecamatan
-                    $kecIdFromVillage = substr($vId, 0, 6);
-                    
-                    if (isset($kecamatans[$kecIdFromVillage])) {
-                        $kecamatans[$kecIdFromVillage]['villages'][] = $vData;
-                    } elseif ($targetKecId) {
-                        // Jika ID tidak cocok tapi nama Kecamatan grup dari API cocok dengan salah satu Kecamatan di list
-                        $kecamatans[$targetKecId]['villages'][] = $vData;
-                    } else {
-                        // Jika tetap tidak ketemu, masukkan ke 'Lainnya'
-                        if (!isset($kecamatans['other'])) {
-                            $kecamatans['other'] = [
-                                'name' => 'Wilayah Lainnya',
-                                'slug' => null,
-                                'address' => '',
-                                'villages' => []
-                            ];
-                        }
-                        $kecamatans['other']['villages'][] = $vData;
-                    }
                 }
             }
         }
 
-        // Sort OPDs by name
-        uasort($opds, function($a, $b) {
-            return strcasecmp($a['name'], $b['name']);
-        });
+        // Sort data
+        uasort($opds, fn($a, $b) => strcasecmp($a['name'], $b['name']));
+        uasort($kecamatans, fn($a, $b) => strcasecmp($a['name'], $b['name']));
+        ksort($villagesByKecamatan);
 
-        // Sort Kecamatans by name
-        uasort($kecamatans, function($a, $b) {
-            return strcasecmp($a['name'], $b['name']);
-        });
-
-        return view('frontend.opd.list_dip', compact('opds', 'kecamatans'));
+        return view('frontend.opd.list_dip', compact('opds', 'kecamatans', 'villagesByKecamatan'));
     }
 
     /**

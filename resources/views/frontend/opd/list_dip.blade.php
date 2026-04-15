@@ -3,30 +3,27 @@
 @section('title', 'DIP Unit - Daftar Informasi Publik')
 
 @section('content')
-<div class="container mx-auto py-8 px-4">
+<div class="container mx-auto py-12 px-4">
     <div class="max-w-7xl mx-auto">
         <x-breadcrumbs :breadcrumbs="[
             ['title' => 'Beranda', 'url' => route('home'), 'icon' => 'fas fa-house'],
             ['title' => 'DIP Unit', 'url' => '', 'icon' => 'fas fa-university']
         ]" />
 
-        <div class="mb-12 text-center">
-            <h1 class="text-4xl font-extrabold text-gray-900 mb-4">Daftar Informasi Publik (DIP) Unit</h1>
-            <p class="text-lg text-gray-600 max-w-3xl mx-auto">Pilih unit kerja di bawah ini untuk melihat Daftar Informasi Publik yang dikelola oleh masing-masing OPD, Kecamatan, Desa, dan Kelurahan.</p>
+        <div class="mb-16 text-center">
+            <h1 class="text-4xl md:text-5xl font-black text-gray-900 mb-6 tracking-tight">Daftar Informasi Publik Unit</h1>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">Akses Daftar Informasi Publik (DIP) secara transparan dari seluruh tingkatan unit kerja di Kabupaten Sinjai.</p>
         </div>
 
-        <!-- Section OPD (Dinas & Badan) -->
-        <div class="mb-20">
-            <div class="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
-                <div class="flex items-center">
-                    <div class="bg-blue-600 w-3 h-10 rounded-full mr-4 shadow-lg shadow-blue-200"></div>
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-800">Organisasi Perangkat Daerah (OPD)</h2>
-                        <p class="text-sm text-gray-500">Dinas, Badan, dan Kantor Lingkup Pemerintah Kabupaten Sinjai</p>
-                    </div>
+        <!-- 1. BAGIAN DINAS & BADAN (OPD) -->
+        <section class="mb-24">
+            <div class="flex items-center gap-4 mb-10 border-b border-gray-100 pb-6">
+                <div class="w-14 h-14 bg-blue-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-blue-200">
+                    <i class="fas fa-building text-2xl"></i>
                 </div>
-                <div class="hidden md:block bg-blue-50 text-blue-700 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-                    {{ count($opds) }} Unit
+                <div>
+                    <h2 class="text-3xl font-black text-gray-800 uppercase tracking-tight">Dinas & Badan (OPD)</h2>
+                    <p class="text-blue-600 font-bold text-sm">Organisasi Perangkat Daerah Pusat</p>
                 </div>
             </div>
             
@@ -35,80 +32,83 @@
                     @include('frontend.opd._unit_card', ['unit' => $opd, 'icon' => 'fa-building', 'color' => 'blue'])
                 @endforeach
             </div>
-        </div>
+        </section>
 
-        <!-- Section Kecamatan -->
-        <div>
-            <div class="flex items-center justify-between mb-8 border-b border-gray-100 pb-4">
-                <div class="flex items-center">
-                    <div class="bg-indigo-600 w-3 h-10 rounded-full mr-4 shadow-lg shadow-indigo-200"></div>
-                    <div>
-                        <h2 class="text-2xl font-bold text-gray-800">Wilayah Kecamatan</h2>
-                        <p class="text-sm text-gray-500">Pusat pemerintahan wilayah kecamatan dan induk data Desa/Kelurahan</p>
-                    </div>
+        <!-- 2. BAGIAN KANTOR KECAMATAN -->
+        <section class="mb-24">
+            <div class="flex items-center gap-4 mb-10 border-b border-gray-100 pb-6">
+                <div class="w-14 h-14 bg-indigo-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-indigo-200">
+                    <i class="fas fa-landmark text-2xl"></i>
                 </div>
-                <div class="hidden md:block bg-indigo-50 text-indigo-700 px-4 py-1 rounded-full text-xs font-bold uppercase tracking-wider">
-                    {{ count($kecamatans) }} Kecamatan
+                <div>
+                    <h2 class="text-3xl font-black text-gray-800 uppercase tracking-tight">Kantor Kecamatan</h2>
+                    <p class="text-indigo-600 font-bold text-sm">Pusat Pemerintahan Wilayah Kecamatan</p>
+                </div>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
+                @foreach ($kecamatans as $kec)
+                    @include('frontend.opd._unit_card', ['unit' => $kec, 'icon' => 'fa-landmark', 'color' => 'indigo'])
+                @endforeach
+            </div>
+        </section>
+
+        <!-- 3. BAGIAN DESA & KELURAHAN -->
+        <section>
+            <div class="flex items-center gap-4 mb-12 border-b border-gray-100 pb-6">
+                <div class="w-14 h-14 bg-emerald-600 rounded-2xl flex items-center justify-center text-white shadow-xl shadow-emerald-200">
+                    <i class="fas fa-map-marked-alt text-2xl"></i>
+                </div>
+                <div>
+                    <h2 class="text-3xl font-black text-gray-800 uppercase tracking-tight">Desa & Kelurahan</h2>
+                    <p class="text-emerald-600 font-bold text-sm">Unit Kerja Tingkat Wilayah Desa/Kelurahan</p>
                 </div>
             </div>
 
-            <div class="space-y-16">
-                @foreach ($kecamatans as $kec)
-                    <div class="bg-white rounded-[2.5rem] p-8 md:p-10 border border-gray-100 shadow-xl shadow-gray-100/50">
-                        <div class="flex flex-col md:flex-row md:items-center justify-between mb-10 gap-6">
-                            <div class="flex items-center">
-                                <div class="w-16 h-16 bg-indigo-100 rounded-2xl flex items-center justify-center mr-5 text-indigo-600 shadow-inner">
-                                    <i class="fas fa-landmark text-3xl"></i>
-                                </div>
-                                <div>
-                                    <h3 class="text-2xl font-black text-gray-900 tracking-tight">{{ $kec['name'] }}</h3>
-                                    <div class="flex items-center mt-1 text-indigo-600 font-semibold text-sm">
-                                        <i class="fas fa-info-circle mr-2"></i>
-                                        <span>Menampilkan data gabungan Kecamatan & {{ count($kec['villages']) }} Desa/Kelurahan</span>
+            <div class="space-y-20">
+                @foreach ($villagesByKecamatan as $kecName => $villages)
+                    <div class="relative">
+                        <!-- Sub-header Kecamatan -->
+                        <div class="sticky top-20 z-20 mb-8">
+                            <div class="bg-white/80 backdrop-blur-md border border-gray-100 inline-flex items-center px-6 py-3 rounded-2xl shadow-lg">
+                                <span class="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mr-3">Wilayah</span>
+                                <h3 class="text-xl font-black text-emerald-700 uppercase tracking-tight">Kecamatan {{ $kecName }}</h3>
+                                <span class="ml-4 bg-emerald-100 text-emerald-700 px-3 py-0.5 rounded-full text-[10px] font-black uppercase">{{ count($villages) }} Unit</span>
+                            </div>
+                        </div>
+
+                        <!-- Grid Desa -->
+                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+                            @foreach ($villages as $village)
+                                <div class="group bg-white p-6 rounded-[2rem] border border-gray-100 shadow-sm hover:shadow-2xl hover:border-emerald-100 transition-all duration-500 flex flex-col justify-between min-h-[180px] relative overflow-hidden transform hover:-translate-y-2">
+                                    <!-- Background Pattern -->
+                                    <div class="absolute -right-4 -bottom-4 opacity-[0.03] group-hover:opacity-[0.08] transition-opacity duration-500">
+                                        <i class="fas fa-map-marker-alt text-8xl"></i>
                                     </div>
-                                </div>
-                            </div>
-                            
-                            @if($kec['slug'])
-                                <a href="{{ route('opd.dip.show', $kec['slug']) }}" class="inline-flex items-center justify-center bg-indigo-600 hover:bg-indigo-700 text-white font-bold py-3.5 px-8 rounded-2xl transition-all duration-300 shadow-lg shadow-indigo-200 transform hover:scale-105 active:scale-95">
-                                    <i class="fas fa-file-contract mr-3 text-lg"></i> LIHAT DIP KECAMATAN
-                                </a>
-                            @else
-                                <span class="bg-gray-100 text-gray-400 font-bold py-3 px-8 rounded-2xl italic">Belum Terdaftar</span>
-                            @endif
-                        </div>
 
-                        <div class="relative mb-6">
-                            <div class="absolute inset-0 flex items-center" aria-hidden="true">
-                                <div class="w-full border-t border-gray-100"></div>
-                            </div>
-                            <div class="relative flex justify-start">
-                                <span class="pr-4 bg-white text-xs font-black uppercase tracking-widest text-gray-400">Daftar Desa & Kelurahan</span>
-                            </div>
-                        </div>
-
-                        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
-                            @foreach ($kec['villages'] as $village)
-                                <div class="group bg-gray-50 hover:bg-white p-5 rounded-2xl border border-transparent hover:border-indigo-100 shadow-sm hover:shadow-xl transition-all duration-300 flex flex-col justify-between min-h-[140px] transform hover:-translate-y-1">
-                                    <div class="flex justify-between items-start mb-4">
-                                        <div class="w-10 h-10 bg-white group-hover:bg-indigo-50 rounded-lg flex items-center justify-center text-gray-400 group-hover:text-indigo-600 transition-colors duration-300">
-                                            <i class="fas fa-map-marker-alt"></i>
+                                    <div class="relative z-10">
+                                        <div class="flex justify-between items-start mb-4">
+                                            <div class="w-12 h-12 bg-gray-50 group-hover:bg-emerald-50 rounded-2xl flex items-center justify-center text-gray-400 group-hover:text-emerald-600 transition-all duration-500 shadow-inner">
+                                                <i class="fas fa-house-chimney text-xl"></i>
+                                            </div>
+                                            <span class="text-[10px] font-black uppercase tracking-widest bg-gray-100 group-hover:bg-emerald-100 text-gray-500 group-hover:text-emerald-700 px-3 py-1 rounded-full transition-colors duration-500">
+                                                {{ $village['type'] }}
+                                            </span>
                                         </div>
-                                        <span class="text-[10px] font-black uppercase tracking-tighter bg-gray-200 group-hover:bg-indigo-100 text-gray-500 group-hover:text-indigo-600 px-2 py-0.5 rounded transition-colors duration-300">
-                                            {{ $village['type'] == 'WILAYAH' ? 'Desa/Kel' : $village['type'] }}
-                                        </span>
+                                        
+                                        <h4 class="text-lg font-black text-gray-800 group-hover:text-emerald-900 transition-colors duration-500 leading-tight mb-4">
+                                            {{ str_ireplace(['Desa ', 'Kelurahan '], '', $village['name']) }}
+                                        </h4>
                                     </div>
                                     
-                                    <div>
-                                        <h4 class="text-base font-bold text-gray-800 group-hover:text-indigo-900 transition-colors duration-300 mb-3">{{ $village['name'] }}</h4>
-                                        
+                                    <div class="relative z-10 mt-auto">
                                         @if($village['slug'])
-                                            <a href="{{ route('opd.dip.show', $village['slug']) }}" class="inline-flex items-center text-xs font-bold text-blue-600 hover:text-blue-800 tracking-wide">
-                                                BUKA DIP <i class="fas fa-arrow-right ml-2 group-hover:translate-x-1 transition-transform"></i>
+                                            <a href="{{ route('opd.dip.show', $village['slug']) }}" class="inline-flex items-center justify-center w-full bg-emerald-50 group-hover:bg-emerald-600 text-emerald-700 group-hover:text-white font-black text-xs py-3 rounded-xl transition-all duration-500 uppercase tracking-widest gap-2 shadow-sm group-hover:shadow-emerald-200">
+                                                BUKA DIP <i class="fas fa-circle-arrow-right text-sm"></i>
                                             </a>
                                         @else
-                                            <div class="flex items-center text-[10px] text-gray-400 italic font-medium">
-                                                <i class="fas fa-hourglass-start mr-1.5"></i> Belum ada data
+                                            <div class="flex items-center justify-center w-full bg-gray-50 text-gray-400 font-bold text-[10px] py-3 rounded-xl uppercase tracking-widest border border-dashed border-gray-200">
+                                                <i class="fas fa-hourglass-start mr-2"></i> Belum Ada Data
                                             </div>
                                         @endif
                                     </div>
@@ -118,7 +118,7 @@
                     </div>
                 @endforeach
             </div>
-        </div>
+        </section>
     </div>
 </div>
 
