@@ -97,7 +97,7 @@
                                         </div>
                                         
                                         <h4 class="text-lg font-black text-gray-800 group-hover:text-emerald-900 transition-colors duration-500 leading-tight mb-4">
-                                            {{ str_ireplace(['Desa ', 'Kelurahan '], '', $village['name']) }}
+                                            {{ $village['name'] }}
                                         </h4>
                                     </div>
                                     

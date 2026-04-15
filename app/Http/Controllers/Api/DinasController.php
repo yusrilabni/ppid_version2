@@ -129,15 +129,22 @@ class DinasController extends Controller
             ->pluck('tahun');
 
         // Get information
-        $informasiTahunIni = Informasi::whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])
+        $informasiTahunIniRaw = Informasi::whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])
             ->where('tahun', $year)
             ->where(function($query) use ($unitFilter) {
                 $unitFilter($query);
             })
-            ->get()
-            ->groupBy(['category', 'jenis_dokumen']);
+            ->get();
 
         $unitData = collect($this->getUnitData());
+
+        // Map names before grouping to ensure accuracy
+        $informasiTahunIniRaw->each(function($item) use ($unitData) {
+            $item->unit_display_name = $unitData->get($item->unit_id)['unit_nama'] ?? 'Unit Tidak Terdaftar';
+        });
+
+        // Group by Category -> Jenis Dokumen -> Unit Name
+        $informasiTahunIni = $informasiTahunIniRaw->groupBy(['category', 'jenis_dokumen', 'unit_display_name']);
         $unitName = $unitData->get($remoteId)['unit_nama'] ?? $organization->name;
 
         return view('frontend.opd.dip', [
@@ -187,15 +194,22 @@ class DinasController extends Controller
         })->max('tahun') ?: date('Y'));
         
         // Get information
-        $informasiTahunIni = Informasi::whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])
+        $informasiTahunIniRaw = Informasi::whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])
             ->where('tahun', $year)
             ->where(function($query) use ($unitFilter) {
                 $unitFilter($query);
             })
-            ->get()
-            ->groupBy(['category', 'jenis_dokumen']);
+            ->get();
 
         $unitData = collect($this->getUnitData());
+
+        // Map names before grouping to ensure accuracy
+        $informasiTahunIniRaw->each(function($item) use ($unitData) {
+            $item->unit_display_name = $unitData->get($item->unit_id)['unit_nama'] ?? 'Unit Tidak Terdaftar';
+        });
+
+        // Group by Category -> Jenis Dokumen -> Unit Name
+        $informasiTahunIni = $informasiTahunIniRaw->groupBy(['category', 'jenis_dokumen', 'unit_display_name']);
         $unitName = $unitData->get($remoteId)['unit_nama'] ?? $organization->name;
 
         $data = [

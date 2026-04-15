@@ -86,14 +86,30 @@
                                     
                                     @php $char = 'a'; @endphp
                                     <div class="space-y-10 pl-2">
-                                        @foreach($informasiTahunIni->get($key) as $jenisDokumen => $informasiList)
+                                        @foreach($informasiTahunIni->get($key) as $jenisDokumen => $groupedByUnit)
                                             <div class="bg-gray-50/50 rounded-3xl p-6 md:p-8 border border-gray-100">
                                                 <h4 class="text-lg font-bold text-indigo-700 mb-6 flex items-start">
                                                     <span class="bg-indigo-600 text-white w-7 h-7 rounded-xl flex items-center justify-center text-xs font-black mr-4 flex-shrink-0 shadow-md shadow-indigo-100">{{ $char++ }}</span>
                                                     <span class="pt-0.5">{{ $jenisDokumen ?: 'Dokumen Lainnya' }}</span>
                                                 </h4>
-                                                <div class="overflow-x-auto rounded-2xl border border-gray-200 shadow-sm bg-white">
-                                                    @include('frontend.pages.dip._informasi_table', ['informasiList' => $informasiList])
+
+                                                <div class="space-y-8">
+                                                    @foreach($groupedByUnit as $originUnitName => $informasiList)
+                                                        <div class="relative">
+                                                            <!-- Unit Origin Label -->
+                                                            <div class="flex items-center mb-4 gap-3">
+                                                                <div class="h-px flex-grow bg-gray-200"></div>
+                                                                <span class="px-4 py-1.5 bg-white border border-gray-200 rounded-full text-[10px] font-black text-gray-500 uppercase tracking-widest shadow-sm">
+                                                                    <i class="fas fa-university mr-2 text-indigo-400"></i> Unit: {{ $originUnitName }}
+                                                                </span>
+                                                                <div class="h-px flex-grow bg-gray-200"></div>
+                                                            </div>
+
+                                                            <div class="overflow-x-auto rounded-2xl border border-gray-200 shadow-sm bg-white">
+                                                                @include('frontend.pages.dip._informasi_table', ['informasiList' => $informasiList])
+                                                            </div>
+                                                        </div>
+                                                    @endforeach
                                                 </div>
                                             </div>
                                         @endforeach
