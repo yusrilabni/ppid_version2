@@ -125,14 +125,16 @@ class DinasController extends Controller
      */
     public function opdDip(Request $request, Organization $organization)
     {
-        $remoteId = $organization->remote_id;
+        $remoteId = (string)$organization->remote_id;
         $isKecamatan = $organization->type === 'kecamatan';
         
-        // Determine search closure for unit IDs
+        // Logika Filter: Jika kecamatan, ambil ID dia sendiri DAN semua ID desa yang diawali ID kecamatan tsb
         $unitFilter = function($query) use ($remoteId, $isKecamatan) {
             if ($isKecamatan) {
-                $query->where('unit_id', $remoteId)
-                      ->orWhere('unit_id', 'like', $remoteId . '%');
+                $query->where(function($q) use ($remoteId) {
+                    $q->where('unit_id', $remoteId)
+                      ->orWhere('unit_id', 'LIKE', $remoteId . '%');
+                });
             } else {
                 $query->where('unit_id', $remoteId);
             }
@@ -151,9 +153,8 @@ class DinasController extends Controller
             ->orderBy('tahun', 'desc')
             ->pluck('tahun');
 
-        // Get information
+        // Get information - Hapus sementara filter status_keterbukaan untuk memastikan data muncul
         $informasiTahunIni = Informasi::whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])
-            ->where('status_keterbukaan', 'Terbuka')
             ->where('tahun', $year)
             ->where(function($query) use ($unitFilter) {
                 $unitFilter($query);
@@ -183,13 +184,15 @@ class DinasController extends Controller
             abort(403, 'Hanya Admin yang dapat mengekspor data ini.');
         }
 
-        $remoteId = $organization->remote_id;
+        $remoteId = (string)$organization->remote_id;
         $isKecamatan = $organization->type === 'kecamatan';
         
         $unitFilter = function($query) use ($remoteId, $isKecamatan) {
             if ($isKecamatan) {
-                $query->where('unit_id', $remoteId)
-                      ->orWhere('unit_id', 'like', $remoteId . '%');
+                $query->where(function($q) use ($remoteId) {
+                    $q->where('unit_id', $remoteId)
+                      ->orWhere('unit_id', 'LIKE', $remoteId . '%');
+                });
             } else {
                 $query->where('unit_id', $remoteId);
             }
@@ -201,7 +204,6 @@ class DinasController extends Controller
         
         // Get information
         $informasiTahunIni = Informasi::whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])
-            ->where('status_keterbukaan', 'Terbuka')
             ->where('tahun', $year)
             ->where(function($query) use ($unitFilter) {
                 $unitFilter($query);
