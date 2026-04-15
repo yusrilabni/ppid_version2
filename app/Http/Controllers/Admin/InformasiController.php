@@ -73,13 +73,37 @@ class InformasiController extends Controller
             $viewData['units'] = $allUnits;
             $viewData['villagesGrouped'] = $allUnitsCached['villages_grouped'] ?? [];
         } else {
-            $apiUserData = \App\Models\User::getDataFromApi($user->nip);
-            $userUnitId = null;
+            // Prioritaskan unit_id dari tabel users (untuk Admin Desa/Manual)
+            $userUnitId = $user->unit_id;
             $userUnitName = 'Unit Tidak Diketahui';
-            if ($apiUserData && isset($apiUserData['unit_id'])) {
-                $userUnitId = $apiUserData['unit_id'];
-                $userUnitName = $unitMap->get($userUnitId)['unit_nama'] ?? 'Unit Tidak Diketahui';
+
+            // Jika tidak ada di tabel users, coba tarik dari API (fallback)
+            if (!$userUnitId && $user->nip) {
+                $apiUserData = \App\Models\User::getDataFromApi($user->nip);
+                if ($apiUserData && isset($apiUserData['unit_id'])) {
+                    $userUnitId = $apiUserData['unit_id'];
+                }
             }
+
+            // Encode ID ke Base64 agar cocok dengan daftar $allUnits yang di-encode
+            if ($userUnitId) {
+                $encodedId = 'B64_' . base64_encode($userUnitId);
+                $unitInfo = $unitMap->get($encodedId);
+                
+                if ($unitInfo) {
+                    $userUnitId = $encodedId;
+                    $userUnitName = $unitInfo['unit_nama'];
+                } else {
+                    // Jika tidak ketemu di map, coba cari di data asli tanpa encode dulu
+                    $rawUnits = GeneralHelper::getUnitData();
+                    $rawUnitInfo = $rawUnits->get($userUnitId);
+                    if ($rawUnitInfo) {
+                        $userUnitId = $encodedId;
+                        $userUnitName = $rawUnitInfo['unit_nama'];
+                    }
+                }
+            }
+
             $viewData['userUnitId'] = $userUnitId;
             $viewData['userUnitName'] = $userUnitName;
         }
@@ -128,8 +152,25 @@ class InformasiController extends Controller
                 $viewData['currentUnitId'] = 'B64_' . base64_encode($informasi->unit_id);
             }
         } else {
-            $viewData['userUnitId'] = $informasi->unit_id;
-            $viewData['userUnitName'] = $unitMap->get($informasi->unit_id)['unit_nama'] ?? 'Unit Tidak Diketahui';
+            $userUnitId = $informasi->unit_id ?: $user->unit_id;
+            $userUnitName = 'Unit Tidak Diketahui';
+            
+            if ($userUnitId) {
+                $encodedId = 'B64_' . base64_encode($userUnitId);
+                $unitInfo = $unitMap->get($encodedId);
+                if ($unitInfo) {
+                    $userUnitName = $unitInfo['unit_nama'];
+                } else {
+                    $rawUnits = GeneralHelper::getUnitData();
+                    $rawUnitInfo = $rawUnits->get($userUnitId);
+                    if ($rawUnitInfo) {
+                        $userUnitName = $rawUnitInfo['unit_nama'];
+                    }
+                }
+            }
+            
+            $viewData['userUnitId'] = $userUnitId;
+            $viewData['userUnitName'] = $userUnitName;
         }
 
         return view('informasi-crud.edit', $viewData);
