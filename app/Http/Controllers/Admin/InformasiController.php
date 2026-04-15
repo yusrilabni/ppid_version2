@@ -187,40 +187,45 @@ class InformasiController extends Controller
     public function checkSimilarity(Request $request)
     {
         $title = $request->query('title');
+        if (!$title || strlen($title) < 5) {
+            return response()->json([]);
+        }
+
         $user = auth()->user();
-        $targetUnit = $request->query('target_unit'); // Gunakan target_unit untuk menghindari WAF
+        $targetUnit = $request->query('target_unit'); 
         
         $query = Informasi::whereIn('status', ['BERLAKU', 'aktif']);
 
         if ($user->isSuperAdmin()) {
-            // Super admin's search is scoped by the selected target_unit from the form
             if (!empty($targetUnit)) {
                 $query->where('unit_id', $targetUnit);
             } else {
-                // If super admin doesn't provide a target_unit, no check is performed.
                 return response()->json([]);
             }
         } else {
-            // Regular admin's search is scoped by their own unit_id
             $userUnitId = $user->unit_id;
             if (empty($userUnitId) && !empty($user->nip)) {
                 $apiData = User::getDataFromApi($user->nip);
                 if ($apiData && !empty($apiData['unit_id'])) {
                     $userUnitId = $apiData['unit_id'];
-                    // We don't save the user here as it's a GET request.
-                    // The unit_id will be saved when the user submits the form (store/update).
                 }
             }
             $query->where('unit_id', $userUnitId);
         }
 
-        $activeInformasis = $query->get();
+        // Optimasi: Gunakan database untuk filter awal berdasarkan kecocokan kata kunci
+        // Agar tidak me-load seluruh data unit kerja yang mungkin sangat banyak
+        $words = explode(' ', trim($title));
+        if (count($words) > 0) {
+            $firstWord = $words[0];
+            if (strlen($firstWord) >= 3) {
+                $query->where('title', 'LIKE', '%' . $firstWord . '%');
+            }
+        }
+
+        $activeInformasis = $query->limit(100)->get();
         
         $similar_documents = [];
-
-        if ($activeInformasis->isEmpty()) {
-            return response()->json([]);
-        }
 
         foreach ($activeInformasis as $informasi) {
             $similarity = 0;
