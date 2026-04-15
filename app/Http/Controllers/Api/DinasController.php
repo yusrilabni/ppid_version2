@@ -52,16 +52,6 @@ class DinasController extends Controller
         // Handle Villages/Desa (from cached villages_grouped)
         if (!empty($cached['villages_grouped'])) {
             foreach ($cached['villages_grouped'] as $kecName => $villages) {
-                // Find which kecamatan unit this belongs to
-                $kecId = null;
-                foreach ($kecamatans as $id => $kec) {
-                    // Try to match kecamatan name
-                    if (stripos($kec['name'], trim($kecName)) !== false) {
-                        $kecId = $id;
-                        break;
-                    }
-                }
-                
                 foreach ($villages as $village) {
                     $vId = (string)$village['desa_id'];
                     $vName = $village['desa_tipe'] . ' ' . $village['desa_nama'];
@@ -73,13 +63,44 @@ class DinasController extends Controller
                         'slug' => $vOrg ? $vOrg->slug : null,
                         'type' => 'WILAYAH'
                     ];
+
+                    // Temukan kecamatan berdasarkan 6 digit pertama dari ID Desa
+                    // Contoh Desa: 7307012001 -> Kecamatan: 730701
+                    $kecIdFromVillage = substr($vId, 0, 6);
                     
-                    if ($kecId) {
-                        $kecamatans[$kecId]['villages'][] = $vData;
+                    if (isset($kecamatans[$kecIdFromVillage])) {
+                        $kecamatans[$kecIdFromVillage]['villages'][] = $vData;
+                    } else {
+                        // Fallback: Cari berdasarkan nama jika ID tidak cocok
+                        $foundByKecName = false;
+                        foreach ($kecamatans as $kId => $kec) {
+                            if (stripos($kec['name'], trim($kecName)) !== false) {
+                                $kecamatans[$kId]['villages'][] = $vData;
+                                $foundByKecName = true;
+                                break;
+                            }
+                        }
+                        
+                        // Jika tetap tidak ketemu, masukkan ke 'Lainnya' atau buat grup baru
+                        if (!$foundByKecName) {
+                            $kecamatans['other']['name'] = 'Wilayah Lainnya';
+                            $kecamatans['other']['slug'] = null;
+                            $kecamatans['other']['villages'][] = $vData;
+                        }
                     }
                 }
             }
         }
+
+        // Sort OPDs by name
+        uasort($opds, function($a, $b) {
+            return strcasecmp($a['name'], $b['name']);
+        });
+
+        // Sort Kecamatans by name
+        uasort($kecamatans, function($a, $b) {
+            return strcasecmp($a['name'], $b['name']);
+        });
 
         return view('frontend.opd.list_dip', compact('opds', 'kecamatans'));
     }

@@ -34,13 +34,13 @@ class ViewServiceProvider extends ServiceProvider
 
             $dipSubMenu = [];
             
-            // Add DIP Unit as the first item
-            $dipSubMenu[] = ['title' => 'DIP Unit', 'url' => url('/dipunit'), 'icon' => 'university'];
-
-            // Add the last 3 years
+            // Add the last 3 years first
             foreach ($dipYears as $year) {
                 $dipSubMenu[] = ['title' => "DIP Tahun $year", 'url' => route('dip.show', $year), 'icon' => 'calendar-alt'];
             }
+
+            // Add DIP Unit as the last item
+            $dipSubMenu[] = ['title' => 'DIP Unit', 'url' => url('/dipunit'), 'icon' => 'university'];
 
             // Find the DIP menu item and inject the children
             foreach ($menuConfig as &$menuItem) {
