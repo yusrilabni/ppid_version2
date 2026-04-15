@@ -126,9 +126,11 @@ class DinasController extends Controller
     public function opdDip(Request $request, Organization $organization)
     {
         $remoteId = (string)$organization->remote_id;
-        $isKecamatan = $organization->type === 'kecamatan';
+        // Deteksi kecamatan lebih fleksibel (via type atau nama)
+        $isKecamatan = $organization->type === 'kecamatan' || stripos($organization->name, 'Kecamatan') !== false;
         
-        // Logika Filter: Jika kecamatan, ambil ID dia sendiri DAN semua ID desa yang diawali ID kecamatan tsb
+        \Illuminate\Support\Facades\Log::info("Checking DIP for: " . $organization->name . " | ID: " . $remoteId . " | IsKecamatan: " . ($isKecamatan ? 'Yes' : 'No'));
+
         $unitFilter = function($query) use ($remoteId, $isKecamatan) {
             if ($isKecamatan) {
                 $query->where(function($q) use ($remoteId) {
@@ -139,6 +141,10 @@ class DinasController extends Controller
                 $query->where('unit_id', $remoteId);
             }
         };
+
+        // DEBUG: Cek total data tanpa filter apapun
+        $totalData = Informasi::where(function($query) use ($unitFilter) { $unitFilter($query); })->count();
+        \Illuminate\Support\Facades\Log::info("Total documents found for this unit (all years/status): " . $totalData);
 
         $year = $request->get('year', Informasi::where(function($query) use ($unitFilter) {
             $unitFilter($query);
@@ -153,7 +159,7 @@ class DinasController extends Controller
             ->orderBy('tahun', 'desc')
             ->pluck('tahun');
 
-        // Get information - Hapus sementara filter status_keterbukaan untuk memastikan data muncul
+        // Get information
         $informasiTahunIni = Informasi::whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])
             ->where('tahun', $year)
             ->where(function($query) use ($unitFilter) {
@@ -185,7 +191,7 @@ class DinasController extends Controller
         }
 
         $remoteId = (string)$organization->remote_id;
-        $isKecamatan = $organization->type === 'kecamatan';
+        $isKecamatan = $organization->type === 'kecamatan' || stripos($organization->name, 'Kecamatan') !== false;
         
         $unitFilter = function($query) use ($remoteId, $isKecamatan) {
             if ($isKecamatan) {
