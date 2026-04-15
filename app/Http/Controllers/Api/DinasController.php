@@ -52,11 +52,30 @@ class DinasController extends Controller
         // Handle Villages/Desa (from cached villages_grouped)
         if (!empty($cached['villages_grouped'])) {
             foreach ($cached['villages_grouped'] as $kecName => $villages) {
+                // Pre-calculate potential kecamatan IDs for this group name
+                $targetKecId = null;
+                $trimmedKecName = trim(str_ireplace('Kecamatan', '', $kecName));
+                
+                foreach ($kecamatans as $id => $kec) {
+                    if (stripos($kec['name'], $trimmedKecName) !== false) {
+                        $targetKecId = $id;
+                        break;
+                    }
+                }
+
                 foreach ($villages as $village) {
                     $vId = (string)$village['desa_id'];
                     $vName = $village['desa_tipe'] . ' ' . $village['desa_nama'];
+                    
+                    // Coba cari organisasi berdasarkan remote_id
                     $vOrg = $organizations->get($vId);
                     
+                    // Fallback: Jika tidak ketemu by remote_id, coba cari by name slug
+                    if (!$vOrg) {
+                        $potentialSlug = \Illuminate\Support\Str::slug($vName);
+                        $vOrg = $organizations->where('slug', $potentialSlug)->first();
+                    }
+
                     $vData = [
                         'unit_id' => $vId,
                         'name' => $vName,
@@ -64,29 +83,25 @@ class DinasController extends Controller
                         'type' => 'WILAYAH'
                     ];
 
-                    // Temukan kecamatan berdasarkan 6 digit pertama dari ID Desa
-                    // Contoh Desa: 7307012001 -> Kecamatan: 730701
+                    // Penentuan Grup Kecamatan
                     $kecIdFromVillage = substr($vId, 0, 6);
                     
                     if (isset($kecamatans[$kecIdFromVillage])) {
                         $kecamatans[$kecIdFromVillage]['villages'][] = $vData;
+                    } elseif ($targetKecId) {
+                        // Jika ID tidak cocok tapi nama Kecamatan grup dari API cocok dengan salah satu Kecamatan di list
+                        $kecamatans[$targetKecId]['villages'][] = $vData;
                     } else {
-                        // Fallback: Cari berdasarkan nama jika ID tidak cocok
-                        $foundByKecName = false;
-                        foreach ($kecamatans as $kId => $kec) {
-                            if (stripos($kec['name'], trim($kecName)) !== false) {
-                                $kecamatans[$kId]['villages'][] = $vData;
-                                $foundByKecName = true;
-                                break;
-                            }
+                        // Jika tetap tidak ketemu, masukkan ke 'Lainnya'
+                        if (!isset($kecamatans['other'])) {
+                            $kecamatans['other'] = [
+                                'name' => 'Wilayah Lainnya',
+                                'slug' => null,
+                                'address' => '',
+                                'villages' => []
+                            ];
                         }
-                        
-                        // Jika tetap tidak ketemu, masukkan ke 'Lainnya' atau buat grup baru
-                        if (!$foundByKecName) {
-                            $kecamatans['other']['name'] = 'Wilayah Lainnya';
-                            $kecamatans['other']['slug'] = null;
-                            $kecamatans['other']['villages'][] = $vData;
-                        }
+                        $kecamatans['other']['villages'][] = $vData;
                     }
                 }
             }
