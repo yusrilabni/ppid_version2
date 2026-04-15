@@ -38,7 +38,10 @@ class DinasController extends Controller
                     'website_url' => $org ? $org->website_url : null,
                 ];
                 
-                if ($org && $org->type === 'kecamatan') {
+                // Deteksi kecamatan lebih fleksibel (via type atau nama)
+                $isKecUnit = ($org && $org->type === 'kecamatan') || stripos($unit['unit_nama'], 'Kecamatan') !== false;
+                
+                if ($isKecUnit) {
                     $kecamatans[$id] = $data;
                 } else {
                     $opds[$id] = $data;
