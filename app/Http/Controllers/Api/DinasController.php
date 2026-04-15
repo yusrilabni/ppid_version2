@@ -138,9 +138,11 @@ class DinasController extends Controller
 
         $unitData = collect($this->getUnitData());
 
-        // Map names before grouping to ensure accuracy
+        // Map names before grouping to ensure accuracy and clean names
         $informasiTahunIniRaw->each(function($item) use ($unitData) {
-            $item->unit_display_name = $unitData->get($item->unit_id)['unit_nama'] ?? 'Unit Tidak Terdaftar';
+            $rawName = $unitData->get($item->unit_id)['unit_nama'] ?? 'Unit Tidak Terdaftar';
+            // Bersihkan nama dari "(Kec. ...)" agar tidak redundan
+            $item->unit_display_name = trim(preg_replace('/\s*\(Kec\..*?\)\s*/i', '', $rawName));
         });
 
         // Group by Category -> Jenis Dokumen -> Unit Name
@@ -203,9 +205,11 @@ class DinasController extends Controller
 
         $unitData = collect($this->getUnitData());
 
-        // Map names before grouping to ensure accuracy
+        // Map names before grouping to ensure accuracy and clean names
         $informasiTahunIniRaw->each(function($item) use ($unitData) {
-            $item->unit_display_name = $unitData->get($item->unit_id)['unit_nama'] ?? 'Unit Tidak Terdaftar';
+            $rawName = $unitData->get($item->unit_id)['unit_nama'] ?? 'Unit Tidak Terdaftar';
+            // Bersihkan nama dari "(Kec. ...)" agar tidak redundan
+            $item->unit_display_name = trim(preg_replace('/\s*\(Kec\..*?\)\s*/i', '', $rawName));
         });
 
         // Group by Category -> Jenis Dokumen -> Unit Name
