@@ -85,20 +85,20 @@ class InformasiController extends Controller
                 }
             }
 
-            // Encode ID ke Base64 agar cocok dengan daftar $allUnits yang di-encode
+            // Seleksi encoding: hanya encode jika 6 digit (Dinas/Kecamatan)
             if ($userUnitId) {
-                $encodedId = 'B64_' . base64_encode($userUnitId);
-                $unitInfo = $unitMap->get($encodedId);
+                $rawId = (string)$userUnitId;
+                $processedId = (strlen($rawId) === 6) ? 'B64_' . base64_encode($rawId) : $rawId;
                 
+                $unitInfo = $unitMap->get($processedId);
                 if ($unitInfo) {
-                    $userUnitId = $encodedId;
+                    $userUnitId = $processedId;
                     $userUnitName = $unitInfo['unit_nama'];
                 } else {
-                    // Jika tidak ketemu di map, coba cari di data asli tanpa encode dulu
                     $rawUnits = GeneralHelper::getUnitData();
-                    $rawUnitInfo = $rawUnits->get($userUnitId);
+                    $rawUnitInfo = $rawUnits->get($rawId);
                     if ($rawUnitInfo) {
-                        $userUnitId = $encodedId;
+                        $userUnitId = $processedId;
                         $userUnitName = $rawUnitInfo['unit_nama'];
                     }
                 }
@@ -149,27 +149,30 @@ class InformasiController extends Controller
             $viewData['units'] = $allUnits;
             $viewData['villagesGrouped'] = $allUnitsCached['villages_grouped'] ?? [];
             if ($informasi->unit_id) {
-                $viewData['currentUnitId'] = 'B64_' . base64_encode($informasi->unit_id);
+                $rawId = (string)$informasi->unit_id;
+                $viewData['currentUnitId'] = (strlen($rawId) === 6) ? 'B64_' . base64_encode($rawId) : $rawId;
             }
         } else {
-            $userUnitId = $informasi->unit_id ?: $user->unit_id;
+            $rawId = (string)($informasi->unit_id ?: $user->unit_id);
             $userUnitName = 'Unit Tidak Diketahui';
             
-            if ($userUnitId) {
-                $encodedId = 'B64_' . base64_encode($userUnitId);
-                $unitInfo = $unitMap->get($encodedId);
+            if ($rawId) {
+                $processedId = (strlen($rawId) === 6) ? 'B64_' . base64_encode($rawId) : $rawId;
+                $unitInfo = $unitMap->get($processedId);
                 if ($unitInfo) {
                     $userUnitName = $unitInfo['unit_nama'];
                 } else {
                     $rawUnits = GeneralHelper::getUnitData();
-                    $rawUnitInfo = $rawUnits->get($userUnitId);
+                    $rawUnitInfo = $rawUnits->get($rawId);
                     if ($rawUnitInfo) {
                         $userUnitName = $rawUnitInfo['unit_nama'];
                     }
                 }
+                $viewData['userUnitId'] = $processedId;
+            } else {
+                $viewData['userUnitId'] = null;
             }
             
-            $viewData['userUnitId'] = $userUnitId;
             $viewData['userUnitName'] = $userUnitName;
         }
 

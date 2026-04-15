@@ -216,7 +216,11 @@ class GeneralHelper
     {
         $units = self::getUnitData();
         return $units->map(function($unit) {
-            $unit['unit_id'] = 'B64_' . base64_encode($unit['unit_id']);
+            // Hanya encode jika panjang ID adalah 6 (Dinas/Kecamatan)
+            // ID Desa (10 digit) dibiarkan RAW agar tidak menghasilkan padding '==' yang memicu WAF 403
+            if (strlen((string)$unit['unit_id']) === 6) {
+                $unit['unit_id'] = 'B64_' . base64_encode($unit['unit_id']);
+            }
             return $unit;
         });
     }
