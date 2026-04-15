@@ -26,8 +26,8 @@ return [
         ],
     ],
     [
-        'title' => 'DIP',
-        'url' => '#',
+        'title' => 'DIP Unit',
+        'url' => '/dipunit',
         'icon' => 'book',
         'children' => [],
     ],

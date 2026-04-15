@@ -14,29 +14,74 @@ use Maatwebsite\Excel\Facades\Excel;
 class DinasController extends Controller
 {
     /**
-     * Display a list of OPDs that have participated in uploading information.
+     * Display a list of units (OPD & Kecamatan) that have participated in uploading information.
      */
     public function index()
     {
-        // Fetch all organizations
-        $organizations = Organization::with('strukturOrganisasi.informasi')
-            ->get();
-
-        $unitData = collect($this->getUnitData());
-
-        // Map API data to organizations
-        $organizations->each(function ($organization) use ($unitData) {
-            $matchingUnit = $unitData->get($organization->remote_id);
-            if ($matchingUnit) {
-                $organization->api_address = (empty($matchingUnit['unit_alamat']) || $matchingUnit['unit_alamat'] === '0') 
-                    ? 'Alamat belum ditambahkan' 
-                    : $matchingUnit['unit_alamat'];
-            } else {
-                $organization->api_address = 'Alamat belum ditambahkan';
+        $cached = GeneralHelper::syncExternalUnitsIfNeeded();
+        $organizations = Organization::all()->keyBy('remote_id');
+        
+        $opds = [];
+        $kecamatans = [];
+        
+        // Handle OPDs and Kecamatans (from cached units)
+        if (!empty($cached['units'])) {
+            foreach ($cached['units'] as $unit) {
+                $id = (string)$unit['unit_id'];
+                $org = $organizations->get($id);
+                
+                $data = [
+                    'unit_id' => $id,
+                    'name' => $unit['unit_nama'],
+                    'slug' => $org ? $org->slug : null,
+                    'address' => (empty($unit['unit_alamat']) || $unit['unit_alamat'] === '0') 
+                        ? 'Alamat belum ditambahkan' 
+                        : $unit['unit_alamat'],
+                    'website_url' => $org ? $org->website_url : null,
+                ];
+                
+                if ($org && $org->type === 'kecamatan') {
+                    $kecamatans[$id] = $data;
+                    $kecamatans[$id]['villages'] = [];
+                } else {
+                    $opds[$id] = $data;
+                }
             }
-        });
+        }
+        
+        // Handle Villages/Desa (from cached villages_grouped)
+        if (!empty($cached['villages_grouped'])) {
+            foreach ($cached['villages_grouped'] as $kecName => $villages) {
+                // Find which kecamatan unit this belongs to
+                $kecId = null;
+                foreach ($kecamatans as $id => $kec) {
+                    // Try to match kecamatan name
+                    if (stripos($kec['name'], trim($kecName)) !== false) {
+                        $kecId = $id;
+                        break;
+                    }
+                }
+                
+                foreach ($villages as $village) {
+                    $vId = (string)$village['desa_id'];
+                    $vName = $village['desa_tipe'] . ' ' . $village['desa_nama'];
+                    $vOrg = $organizations->get($vId);
+                    
+                    $vData = [
+                        'unit_id' => $vId,
+                        'name' => $vName,
+                        'slug' => $vOrg ? $vOrg->slug : null,
+                        'type' => 'WILAYAH'
+                    ];
+                    
+                    if ($kecId) {
+                        $kecamatans[$kecId]['villages'][] = $vData;
+                    }
+                }
+            }
+        }
 
-        return view('frontend.opd.list_dip', compact('organizations'));
+        return view('frontend.opd.list_dip', compact('opds', 'kecamatans'));
     }
 
     /**
@@ -44,25 +89,38 @@ class DinasController extends Controller
      */
     public function opdDip(Request $request, Organization $organization)
     {
-        $year = $request->get('year', Informasi::where('unit_id', $organization->remote_id)->max('tahun') ?: date('Y'));
+        $remoteId = $organization->remote_id;
+        $isKecamatan = $organization->type === 'kecamatan';
         
-        // Get available years for this OPD
-        $availableYears = Informasi::where('unit_id', $organization->remote_id)
+        // Determine search closure for unit IDs
+        $unitFilter = function($query) use ($remoteId, $isKecamatan) {
+            if ($isKecamatan) {
+                $query->where('unit_id', $remoteId)
+                      ->orWhere('unit_id', 'like', $remoteId . '%');
+            } else {
+                $query->where('unit_id', $remoteId);
+            }
+        };
+
+        $year = $request->get('year', Informasi::where($unitFilter)->max('tahun') ?: date('Y'));
+        
+        // Get available years
+        $availableYears = Informasi::where($unitFilter)
             ->whereNotNull('tahun')
             ->distinct()
             ->orderBy('tahun', 'desc')
             ->pluck('tahun');
 
-        // Get information for this OPD and year
-        $informasiTahunIni = Informasi::where('unit_id', $organization->remote_id)
-            ->where('tahun', $year)
-            ->whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])
+        // Get information
+        $informasiTahunIni = Informasi::whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])
             ->where('status_keterbukaan', 'Terbuka')
+            ->where('tahun', $year)
+            ->where($unitFilter)
             ->get()
             ->groupBy(['category', 'jenis_dokumen']);
 
         $unitData = collect($this->getUnitData());
-        $unitName = $unitData->get($organization->remote_id)['unit_nama'] ?? $organization->name;
+        $unitName = $unitData->get($remoteId)['unit_nama'] ?? $organization->name;
 
         return view('frontend.opd.dip', [
             'organization' => $organization,
@@ -83,18 +141,30 @@ class DinasController extends Controller
             abort(403, 'Hanya Admin yang dapat mengekspor data ini.');
         }
 
-        $year = $request->get('year', Informasi::where('unit_id', $organization->remote_id)->max('tahun') ?: date('Y'));
+        $remoteId = $organization->remote_id;
+        $isKecamatan = $organization->type === 'kecamatan';
         
-        // Get information for this OPD and year
-        $informasiTahunIni = Informasi::where('unit_id', $organization->remote_id)
-            ->where('tahun', $year)
-            ->whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])
+        $unitFilter = function($query) use ($remoteId, $isKecamatan) {
+            if ($isKecamatan) {
+                $query->where('unit_id', $remoteId)
+                      ->orWhere('unit_id', 'like', $remoteId . '%');
+            } else {
+                $query->where('unit_id', $remoteId);
+            }
+        };
+
+        $year = $request->get('year', Informasi::where($unitFilter)->max('tahun') ?: date('Y'));
+        
+        // Get information
+        $informasiTahunIni = Informasi::whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])
             ->where('status_keterbukaan', 'Terbuka')
+            ->where('tahun', $year)
+            ->where($unitFilter)
             ->get()
             ->groupBy(['category', 'jenis_dokumen']);
 
         $unitData = collect($this->getUnitData());
-        $unitName = $unitData->get($organization->remote_id)['unit_nama'] ?? $organization->name;
+        $unitName = $unitData->get($remoteId)['unit_nama'] ?? $organization->name;
 
         $data = [
             'year' => $year,

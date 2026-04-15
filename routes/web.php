@@ -12,10 +12,10 @@ use App\Http\Controllers\Frontend\DIPController;
 use App\Http\Controllers\Frontend\LhkpnController;
 use App\Http\Controllers\Frontend\ExtraToolsController;
 
-// Proxy route for Dinas
-Route::get('/dinas', [DinasController::class, 'index'])->name('dinas.index');
-Route::get('/dinas/dip/{organization:slug}', [DinasController::class, 'opdDip'])->name('opd.dip.show');
-Route::get('/dinas/dip/{organization:slug}/export', [DinasController::class, 'export'])->name('opd.dip.export');
+// Proxy route for DIP Unit
+Route::get('/dipunit', [DinasController::class, 'index'])->name('dipunit.index');
+Route::get('/dipunit/dip/{organization:slug}', [DinasController::class, 'opdDip'])->name('opd.dip.show');
+Route::get('/dipunit/dip/{organization:slug}/export', [DinasController::class, 'export'])->name('opd.dip.export');
 
 // RSS Feed & Widget Routes
 Route::get('/rss-feed', [ExtraToolsController::class, 'rssIndex'])->name('extra.rss');
