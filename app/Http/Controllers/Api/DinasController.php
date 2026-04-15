@@ -138,10 +138,14 @@ class DinasController extends Controller
             }
         };
 
-        $year = $request->get('year', Informasi::where($unitFilter)->max('tahun') ?: date('Y'));
+        $year = $request->get('year', Informasi::where(function($query) use ($unitFilter) {
+            $unitFilter($query);
+        })->max('tahun') ?: date('Y'));
         
         // Get available years
-        $availableYears = Informasi::where($unitFilter)
+        $availableYears = Informasi::where(function($query) use ($unitFilter) {
+            $unitFilter($query);
+        })
             ->whereNotNull('tahun')
             ->distinct()
             ->orderBy('tahun', 'desc')
@@ -151,7 +155,9 @@ class DinasController extends Controller
         $informasiTahunIni = Informasi::whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])
             ->where('status_keterbukaan', 'Terbuka')
             ->where('tahun', $year)
-            ->where($unitFilter)
+            ->where(function($query) use ($unitFilter) {
+                $unitFilter($query);
+            })
             ->get()
             ->groupBy(['category', 'jenis_dokumen']);
 
@@ -189,13 +195,17 @@ class DinasController extends Controller
             }
         };
 
-        $year = $request->get('year', Informasi::where($unitFilter)->max('tahun') ?: date('Y'));
+        $year = $request->get('year', Informasi::where(function($query) use ($unitFilter) {
+            $unitFilter($query);
+        })->max('tahun') ?: date('Y'));
         
         // Get information
         $informasiTahunIni = Informasi::whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])
             ->where('status_keterbukaan', 'Terbuka')
             ->where('tahun', $year)
-            ->where($unitFilter)
+            ->where(function($query) use ($unitFilter) {
+                $unitFilter($query);
+            })
             ->get()
             ->groupBy(['category', 'jenis_dokumen']);
 
