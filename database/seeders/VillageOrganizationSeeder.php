@@ -34,14 +34,22 @@ class VillageOrganizationSeeder extends Seeder
             foreach ($allWilayah as $item) {
                 $id = (string)$item['desa_id'];
                 $nama = trim($item['desa_tipe'] . ' ' . $item['desa_nama']);
+                $kecamatan = trim($item['kecamatan_nama']);
                 
-                // Gunakan updateOrCreate agar tidak duplikat
+                // Buat slug unik (jika ada nama sama, tambahkan nama kecamatan)
+                $slug = Str::slug($nama);
+                $existingBySlug = Organization::where('slug', $slug)->where('remote_id', '!=', $id)->first();
+                if ($existingBySlug) {
+                    $slug = Str::slug($nama . ' ' . $kecamatan);
+                }
+
+                // Gunakan updateOrCreate agar tidak duplikat berdasarkan remote_id
                 Organization::updateOrCreate(
                     ['remote_id' => $id],
                     [
                         'name' => $nama,
-                        'slug' => Str::slug($nama),
-                        'type' => 'unit', // Desa/Kelurahan dikategorikan sebagai unit
+                        'slug' => $slug,
+                        'type' => 'unit',
                         'status' => 'active',
                         'unit_id' => $id,
                         'remote_id' => $id,
