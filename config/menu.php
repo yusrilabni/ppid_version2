@@ -10,6 +10,7 @@ return [
             ['title' => 'Wakil Bupati', 'url' => '/profil/wakil-bupati', 'icon' => 'user-tie'],
             ['title' => 'Sekretaris Daerah', 'url' => '/profil/sekretaris-daerah', 'icon' => 'building'],
             ['title' => 'Pejabat Daerah', 'url' => '/profil/pejabat-daerah', 'icon' => 'user-tie'],
+            ['title' => 'Unit Lokal', 'url' => '/profil/unit-lokal', 'icon' => 'map-marked-alt'],
             ['title' => 'PPID', 'url' => '/profil/ppid', 'icon' => 'info-circle'],
             ['title' => 'Tentang OPD', 'url' => '/profil/tentang-opd', 'icon' => 'building'],
         ],

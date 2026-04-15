@@ -139,6 +139,7 @@ Route::get('/profil/bupati', fn() => app(\App\Http\Controllers\OfficialProfileCo
 Route::get('/profil/wakil-bupati', fn() => app(\App\Http\Controllers\OfficialProfileController::class)->show('wakil-bupati-sinjai'))->name('official.wakil-bupati');
 Route::get('/profil/sekretaris-daerah', fn() => app(\App\Http\Controllers\OfficialProfileController::class)->show('sekretaris-daerah-sinjai'))->name('official.sekretaris-daerah');
 Route::get('/profil/pejabat-daerah', [\App\Http\Controllers\OfficialProfileController::class, 'listKepalaOpd'])->name('official.pejabat-daerah');
+Route::get('/profil/unit-lokal', [\App\Http\Controllers\UnitLokalController::class, 'index'])->name('official.unit-lokal');
 Route::get('/profil/{slug}', [\App\Http\Controllers\OfficialProfileController::class, 'show'])->name('official.profile.show');
 
 // PBJ & Standar Layanan
