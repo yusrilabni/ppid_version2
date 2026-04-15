@@ -8,8 +8,7 @@
         <div class="mb-6">
             <x-breadcrumbs :breadcrumbs="[
                 ['title' => 'Beranda', 'url' => route('home'), 'icon' => 'fas fa-home'],
-                ['title' => 'DIP OPD', 'url' => route('dinas.index'), 'icon' => 'fas fa-building'],
-                ['title' => $unitName, 'url' => '#', 'icon' => 'fas fa-file-alt'],
+                ['title' => 'DIP Unit', 'url' => route('dipunit.index'), 'icon' => 'fas fa-university'],                ['title' => $unitName, 'url' => '#', 'icon' => 'fas fa-file-alt'],
             ]" />
         </div>
 
@@ -21,7 +20,7 @@
                 <div class="relative z-10">
                     <div class="flex flex-col md:flex-row md:items-end justify-between gap-6">
                         <div>
-                            <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-white/20">DIP Organisasi Perangkat Daerah</span>
+                            <span class="inline-block px-3 py-1 bg-white/20 backdrop-blur-md rounded-full text-xs font-bold uppercase tracking-wider mb-4 border border-white/20">Daftar Informasi Publik Unit</span>
                             <h1 class="text-3xl md:text-4xl font-extrabold leading-tight mb-2">{{ $unitName }}</h1>
                             <p class="text-blue-100 text-lg md:text-xl font-medium opacity-90">Tahun Anggaran {{ $year }}</p>
                         </div>
@@ -63,8 +62,8 @@
                         </div>
                         <h3 class="text-xl font-bold text-gray-900 mb-2">Data Tidak Ditemukan</h3>
                         <p class="text-gray-500">Belum ada Daftar Informasi Publik (DIP) untuk tahun {{ $year }} pada OPD ini.</p>
-                        <a href="{{ route('dinas.index') }}" class="inline-flex items-center mt-6 text-blue-600 font-bold hover:underline">
-                            <i class="fas fa-arrow-left mr-2"></i> Kembali ke Daftar OPD
+                        <a href="{{ route('dipunit.index') }}" class="inline-flex items-center mt-6 text-blue-600 font-bold hover:underline">
+                            <i class="fas fa-arrow-left mr-2"></i> Kembali ke Daftar Unit
                         </a>
                     </div>
                 @else

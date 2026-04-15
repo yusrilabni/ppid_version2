@@ -32,12 +32,15 @@ class ViewServiceProvider extends ServiceProvider
                 return Informasi::whereNotNull('tahun')->select('tahun')->distinct()->orderBy('tahun', 'desc')->take(3)->pluck('tahun');
             });
 
-            $dipSubMenu = $dipYears->map(function ($year) {
-                return ['title' => "DIP Tahun $year", 'url' => route('dip.show', $year), 'icon' => 'calendar-alt'];
-            })->toArray();
+            $dipSubMenu = [];
+            
+            // Add DIP Unit as the first item
+            $dipSubMenu[] = ['title' => 'DIP Unit', 'url' => url('/dipunit'), 'icon' => 'university'];
 
-            // Add OPD sub-menu item
-            $dipSubMenu[] = ['title' => 'DIP OPD', 'url' => url('/dinas'), 'icon' => 'building'];
+            // Add the last 3 years
+            foreach ($dipYears as $year) {
+                $dipSubMenu[] = ['title' => "DIP Tahun $year", 'url' => route('dip.show', $year), 'icon' => 'calendar-alt'];
+            }
 
             // Find the DIP menu item and inject the children
             foreach ($menuConfig as &$menuItem) {
