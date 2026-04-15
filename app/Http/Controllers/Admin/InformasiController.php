@@ -149,30 +149,35 @@ class InformasiController extends Controller
             $viewData['units'] = $allUnits;
             $viewData['villagesGrouped'] = $allUnitsCached['villages_grouped'] ?? [];
             if ($informasi->unit_id) {
-                $rawId = (string)$informasi->unit_id;
-                $viewData['currentUnitId'] = (strlen($rawId) === 6) ? 'B64_' . base64_encode($rawId) : $rawId;
+                $viewData['currentUnitId'] = $informasi->unit_id;
             }
         } else {
-            $rawId = (string)($informasi->unit_id ?: $user->unit_id);
+            // Gunakan ID asli (RAW) tanpa encode karena terbukti ID panjang (Desa) berhasil tanpa encode.
+            // Kita akan mengganti nama parameter di form agar lolos WAF.
+            $userUnitId = $informasi->unit_id ?: $user->unit_id;
             $userUnitName = 'Unit Tidak Diketahui';
-            
-            if ($rawId) {
-                $processedId = (strlen($rawId) === 6) ? 'B64_' . base64_encode($rawId) : $rawId;
-                $unitInfo = $unitMap->get($processedId);
+
+            if (!$userUnitId && $user->nip) {
+                $apiUserData = \App\Models\User::getDataFromApi($user->nip);
+                if ($apiUserData && isset($apiUserData['unit_id'])) {
+                    $userUnitId = $apiUserData['unit_id'];
+                }
+            }
+
+            if ($userUnitId) {
+                $unitInfo = $unitMap->get($userUnitId);
                 if ($unitInfo) {
                     $userUnitName = $unitInfo['unit_nama'];
                 } else {
                     $rawUnits = GeneralHelper::getUnitData();
-                    $rawUnitInfo = $rawUnits->get($rawId);
+                    $rawUnitInfo = $rawUnits->get($userUnitId);
                     if ($rawUnitInfo) {
                         $userUnitName = $rawUnitInfo['unit_nama'];
                     }
                 }
-                $viewData['userUnitId'] = $processedId;
-            } else {
-                $viewData['userUnitId'] = null;
             }
-            
+
+            $viewData['userUnitId'] = $userUnitId;
             $viewData['userUnitName'] = $userUnitName;
         }
 
@@ -183,21 +188,16 @@ class InformasiController extends Controller
     {
         $title = $request->query('title');
         $user = auth()->user();
-        $unitId = $request->query('unit_id'); // Get unit_id from query
+        $targetUnit = $request->query('target_unit'); // Gunakan target_unit untuk menghindari WAF
         
-        // Decode Base64 unit_id if present to bypass WAF
-        if ($unitId && is_string($unitId) && str_starts_with($unitId, 'B64_')) {
-            $unitId = base64_decode(substr($unitId, 4));
-        }
-
         $query = Informasi::whereIn('status', ['BERLAKU', 'aktif']);
 
         if ($user->isSuperAdmin()) {
-            // Super admin's search is scoped by the selected unit_id from the form
-            if (!empty($unitId)) {
-                $query->where('unit_id', $unitId);
+            // Super admin's search is scoped by the selected target_unit from the form
+            if (!empty($targetUnit)) {
+                $query->where('unit_id', $targetUnit);
             } else {
-                // If super admin doesn't provide a unit_id, no check is performed.
+                // If super admin doesn't provide a target_unit, no check is performed.
                 return response()->json([]);
             }
         } else {
@@ -256,7 +256,7 @@ class InformasiController extends Controller
         ];
 
         if ($isSuperAdmin) {
-            $validationRules['unit_id'] = 'required|string';
+            $validationRules['target_unit'] = 'required|string';
         }
 
         if ($request->input('file_type') === 'url') {
@@ -306,12 +306,7 @@ class InformasiController extends Controller
                 $validatedData['status'] = $request->status;
 
                 if ($isSuperAdmin) {
-                    $unitId = $request->unit_id;
-                    // Decode Base64 unit_id if present to bypass WAF
-                    if ($unitId && is_string($unitId) && str_starts_with($unitId, 'B64_')) {
-                        $unitId = base64_decode(substr($unitId, 4));
-                    }
-                    $validatedData['unit_id'] = $unitId;
+                    $validatedData['unit_id'] = $request->target_unit;
                     $validatedData['user_id'] = $user->id;
                 } else {
                     // Ensure the user has a unit_id, fetch from API if not present
@@ -359,7 +354,7 @@ class InformasiController extends Controller
         ];
 
         if ($isSuperAdmin) {
-            $validationRules['unit_id'] = 'required|string';
+            $validationRules['target_unit'] = 'required|string';
         }
 
         if ($request->input('file_type') === 'url') {
@@ -412,12 +407,7 @@ class InformasiController extends Controller
                 $validatedData['status'] = $request->status;
                 
                 if ($isSuperAdmin) {
-                    $unitId = $request->unit_id;
-                    // Decode Base64 unit_id if present to bypass WAF
-                    if ($unitId && is_string($unitId) && str_starts_with($unitId, 'B64_')) {
-                        $unitId = base64_decode(substr($unitId, 4));
-                    }
-                    $validatedData['unit_id'] = $unitId;
+                    $validatedData['unit_id'] = $request->target_unit;
                     $validatedData['user_id'] = $user->id;
                 } else {
                     // Ensure the user has a unit_id, fetch from API if not present

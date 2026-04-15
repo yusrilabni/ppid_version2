@@ -87,11 +87,11 @@
                             </div>
                             @if ($isSuperAdmin)
                                 <div>
-                                    <label for="unit_id" class="block text-gray-700 text-sm font-semibold mb-2">Unit Kerja <span class="text-red-500">*</span></label>
+                                    <label for="target_unit" class="block text-gray-700 text-sm font-semibold mb-2">Unit Kerja <span class="text-red-500">*</span></label>
                                     <x-custom-select
-                                        name="unit_id"
+                                        name="target_unit"
                                         :options="$units"
-                                        :value="old('unit_id', $currentUnitId ?? $informasi->unit_id)"
+                                        :value="old('target_unit', $currentUnitId ?? $informasi->unit_id)"
                                         placeholder="Pilih Unit Kerja"
                                         :searchable="true"
                                         required="true"
@@ -100,7 +100,7 @@
                                 <div>
                                     <label class="block text-gray-700 text-sm font-semibold mb-2">Unit Kerja</label>
                                     <input type="text" class="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed" value="{{ $userUnitName }}" readonly>
-                                    <input type="hidden" name="unit_id" value="{{ $userUnitId }}">
+                                    <input type="hidden" name="target_unit" value="{{ $userUnitId }}">
                                 </div>
                             @endif
                             <div>

@@ -87,11 +87,11 @@
                             </div>
                             @if ($isSuperAdmin)
                                 <div>
-                                    <label for="unit_id" class="block text-gray-700 text-sm font-semibold mb-2">Unit Kerja <span class="text-red-500">*</span></label>
+                                    <label for="target_unit" class="block text-gray-700 text-sm font-semibold mb-2">Unit Kerja <span class="text-red-500">*</span></label>
                                     <x-custom-select 
-                                        name="unit_id" 
+                                        name="target_unit" 
                                         :options="$units" 
-                                        :value="old('unit_id')"
+                                        :value="old('target_unit')"
                                         placeholder="Pilih Unit Kerja"
                                         :searchable="true"
                                         required="true"
@@ -101,7 +101,7 @@
                                 <div>
                                     <label class="block text-gray-700 text-sm font-semibold mb-2">Unit Kerja</label>
                                     <input type="text" class="w-full px-4 py-3 border border-gray-200 rounded-lg bg-gray-50 text-gray-600 cursor-not-allowed" value="{{ $userUnitName }}" readonly>
-                                    <input type="hidden" name="unit_id" value="{{ $userUnitId }}">
+                                    <input type="hidden" name="target_unit" value="{{ $userUnitId }}">
                                 </div>
                             @endif
                             <div>
@@ -252,10 +252,10 @@
             let url = `{{ route('admin.informasi.check_similarity') }}?title=${title}`;
             const isSuperAdmin = @json($isSuperAdmin);
 
-            if (isSuperAdmin) {
-                const unitIdInput = document.getElementById('unit_id');
+            if ($isSuperAdmin) {
+                const unitIdInput = document.getElementsByName('target_unit')[0];
                 if (unitIdInput) {
-                    url += `&unit_id=${encodeURIComponent(unitIdInput.value)}`;
+                    url += `&target_unit=${encodeURIComponent(unitIdInput.value)}`;
                 }
             }
 

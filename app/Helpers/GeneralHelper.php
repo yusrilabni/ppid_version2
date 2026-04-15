@@ -214,14 +214,8 @@ class GeneralHelper
      */
     public static function getEncodedUnitData()
     {
-        $units = self::getUnitData();
-        return $units->map(function($unit) {
-            // Hanya encode jika panjang ID adalah 6 (Dinas/Kecamatan)
-            // ID Desa (10 digit) dibiarkan RAW agar tidak menghasilkan padding '==' yang memicu WAF 403
-            if (strlen((string)$unit['unit_id']) === 6) {
-                $unit['unit_id'] = 'B64_' . base64_encode($unit['unit_id']);
-            }
-            return $unit;
-        });
+        // Berhenti menggunakan Encode karena ID Desa yang panjang pun sudah berhasil tanpa encode.
+        // Kita akan menggunakan nama parameter yang berbeda di form untuk menghindari WAF 403.
+        return self::getUnitData();
     }
 }
