@@ -132,10 +132,12 @@ class DinasController extends Controller
         $childUnitIds = [$remoteId];
 
         if ($isKecamatan) {
-            $trimmedKecName = trim(str_ireplace('Kecamatan', '', $organization->name));
             if (!empty($cached['villages_grouped'])) {
                 foreach ($cached['villages_grouped'] as $groupName => $villages) {
-                    if (stripos($groupName, $trimmedKecName) !== false) {
+                    // Cari apakah nama grup (Bulupoddo) ada di dalam nama organisasi (Kantor Kecamatan Bulupoddo)
+                    // atau sebaliknya.
+                    if (stripos($organization->name, trim($groupName)) !== false || stripos($groupName, trim($organization->name)) !== false) {
+                        \Illuminate\Support\Facades\Log::info("Match found for Kecamatan: " . $groupName);
                         foreach ($villages as $v) {
                             $childUnitIds[] = (string)$v['desa_id'];
                         }
@@ -144,6 +146,8 @@ class DinasController extends Controller
                 }
             }
         }
+
+        \Illuminate\Support\Facades\Log::info("Unit IDs to search: " . implode(', ', $childUnitIds));
 
         $unitFilter = function($query) use ($childUnitIds) {
             $query->whereIn('unit_id', $childUnitIds);
@@ -200,10 +204,9 @@ class DinasController extends Controller
         $childUnitIds = [$remoteId];
 
         if ($isKecamatan) {
-            $trimmedKecName = trim(str_ireplace('Kecamatan', '', $organization->name));
             if (!empty($cached['villages_grouped'])) {
                 foreach ($cached['villages_grouped'] as $groupName => $villages) {
-                    if (stripos($groupName, $trimmedKecName) !== false) {
+                    if (stripos($organization->name, trim($groupName)) !== false || stripos($groupName, trim($organization->name)) !== false) {
                         foreach ($villages as $v) {
                             $childUnitIds[] = (string)$v['desa_id'];
                         }
