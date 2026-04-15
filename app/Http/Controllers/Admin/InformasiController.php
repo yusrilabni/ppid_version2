@@ -187,13 +187,13 @@ class InformasiController extends Controller
     public function checkSimilarity(Request $request)
     {
         try {
-            $title = $request->query('title');
+            $title = $request->input('title');
             if (!$title || strlen($title) < 5) {
                 return response()->json([]);
             }
 
             $user = auth()->user();
-            $targetUnit = $request->query('target_unit'); 
+            $targetUnit = $request->input('target_unit'); 
             
             \Log::info("Checking similarity for User: {$user->id}, Unit: {$targetUnit}, Title: {$title}");
 

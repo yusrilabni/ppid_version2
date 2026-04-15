@@ -248,18 +248,22 @@
             this.disabled = true;
             this.textContent = 'Mengecek...';
 
-            const title = encodeURIComponent(titleInput.value);
-            let url = `{{ route('admin.informasi.check_similarity') }}?title=${title}`;
+            const title = titleInput.value;
+            const url = `{{ route('admin.informasi.check_similarity') }}`;
             const isSuperAdmin = @json($isSuperAdmin);
+            
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('_token', '{{ csrf_token() }}');
 
-            if ($isSuperAdmin) {
+            if (isSuperAdmin) {
                 const unitIdInput = document.getElementsByName('target_unit')[0];
                 if (unitIdInput) {
-                    url += `&target_unit=${encodeURIComponent(unitIdInput.value)}`;
+                    formData.append('target_unit', unitIdInput.value);
                 }
             }
 
-            if (titleInput.value.length < 5) {
+            if (title.length < 5) {
                 alert('Judul informasi harus memiliki minimal 5 karakter.');
                 this.disabled = false;
                 this.textContent = 'Check Informasi';
@@ -267,10 +271,10 @@
             }
 
             fetch(url, {
-                method: 'GET',
+                method: 'POST',
+                body: formData,
                 headers: {
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'Accept': 'application/json'
                 }
             })
             .then(response => {
