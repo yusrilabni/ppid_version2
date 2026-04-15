@@ -25,7 +25,9 @@ class UnitLokalController extends Controller
         $query = Official::with(['organization', 'position']);
         
         $user = auth()->user();
-        if (!$user || !$user->isAdmin()) {
+        if ($user && $user->isAdmin()) {
+            $query->whereIn('status', ['active', 'draft']);
+        } else {
             $query->where('status', 'active');
         }
 
