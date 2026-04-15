@@ -30,16 +30,11 @@ return [
         'url' => '#',
         'icon' => 'book',
         'children' => [
+            ['title' => 'DIP Unit', 'url' => '/dipunit', 'icon' => 'university'],
             ['title' => 'DIP ' . date('Y'), 'url' => '/dip/' . date('Y'), 'icon' => 'file-alt'],
             ['title' => 'DIP ' . (date('Y') - 1), 'url' => '/dip/' . (date('Y') - 1), 'icon' => 'file-alt'],
             ['title' => 'DIP ' . (date('Y') - 2), 'url' => '/dip/' . (date('Y') - 2), 'icon' => 'file-alt'],
         ],
-    ],
-    [
-        'title' => 'DIP Unit',
-        'url' => '/dipunit',
-        'icon' => 'university',
-        'children' => [],
     ],
     [
         'title' => 'Standar Layanan',
