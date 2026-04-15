@@ -126,25 +126,28 @@ class DinasController extends Controller
     public function opdDip(Request $request, Organization $organization)
     {
         $remoteId = (string)$organization->remote_id;
-        // Deteksi kecamatan lebih fleksibel (via type atau nama)
         $isKecamatan = $organization->type === 'kecamatan' || stripos($organization->name, 'Kecamatan') !== false;
         
-        \Illuminate\Support\Facades\Log::info("Checking DIP for: " . $organization->name . " | ID: " . $remoteId . " | IsKecamatan: " . ($isKecamatan ? 'Yes' : 'No'));
+        $cached = GeneralHelper::syncExternalUnitsIfNeeded();
+        $childUnitIds = [$remoteId];
 
-        $unitFilter = function($query) use ($remoteId, $isKecamatan) {
-            if ($isKecamatan) {
-                $query->where(function($q) use ($remoteId) {
-                    $q->where('unit_id', $remoteId)
-                      ->orWhere('unit_id', 'LIKE', $remoteId . '%');
-                });
-            } else {
-                $query->where('unit_id', $remoteId);
+        if ($isKecamatan) {
+            $trimmedKecName = trim(str_ireplace('Kecamatan', '', $organization->name));
+            if (!empty($cached['villages_grouped'])) {
+                foreach ($cached['villages_grouped'] as $groupName => $villages) {
+                    if (stripos($groupName, $trimmedKecName) !== false) {
+                        foreach ($villages as $v) {
+                            $childUnitIds[] = (string)$v['desa_id'];
+                        }
+                        break;
+                    }
+                }
             }
-        };
+        }
 
-        // DEBUG: Cek total data tanpa filter apapun
-        $totalData = Informasi::where(function($query) use ($unitFilter) { $unitFilter($query); })->count();
-        \Illuminate\Support\Facades\Log::info("Total documents found for this unit (all years/status): " . $totalData);
+        $unitFilter = function($query) use ($childUnitIds) {
+            $query->whereIn('unit_id', $childUnitIds);
+        };
 
         $year = $request->get('year', Informasi::where(function($query) use ($unitFilter) {
             $unitFilter($query);
@@ -193,15 +196,25 @@ class DinasController extends Controller
         $remoteId = (string)$organization->remote_id;
         $isKecamatan = $organization->type === 'kecamatan' || stripos($organization->name, 'Kecamatan') !== false;
         
-        $unitFilter = function($query) use ($remoteId, $isKecamatan) {
-            if ($isKecamatan) {
-                $query->where(function($q) use ($remoteId) {
-                    $q->where('unit_id', $remoteId)
-                      ->orWhere('unit_id', 'LIKE', $remoteId . '%');
-                });
-            } else {
-                $query->where('unit_id', $remoteId);
+        $cached = GeneralHelper::syncExternalUnitsIfNeeded();
+        $childUnitIds = [$remoteId];
+
+        if ($isKecamatan) {
+            $trimmedKecName = trim(str_ireplace('Kecamatan', '', $organization->name));
+            if (!empty($cached['villages_grouped'])) {
+                foreach ($cached['villages_grouped'] as $groupName => $villages) {
+                    if (stripos($groupName, $trimmedKecName) !== false) {
+                        foreach ($villages as $v) {
+                            $childUnitIds[] = (string)$v['desa_id'];
+                        }
+                        break;
+                    }
+                }
             }
+        }
+
+        $unitFilter = function($query) use ($childUnitIds) {
+            $query->whereIn('unit_id', $childUnitIds);
         };
 
         $year = $request->get('year', Informasi::where(function($query) use ($unitFilter) {
