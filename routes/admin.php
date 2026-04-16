@@ -39,6 +39,7 @@ Route::middleware(['auth', 'verified', \App\Http\Middleware\SuperadminMiddleware
     Route::resource('surveys.sections', \App\Http\Controllers\Admin\SurveySectionController::class)->shallow();
     Route::resource('profil-ppid', ProfilPpidController::class);
     Route::resource('surveys.questions', SurveyQuestionController::class)->shallow();
+    Route::get('surveys/{survey}/responses/export', [SurveyResponseController::class, 'export'])->name('surveys.responses.export');
     Route::resource('surveys.responses', SurveyResponseController::class)->only(['index', 'show']);
 
     // Additional Settings

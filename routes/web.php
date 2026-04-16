@@ -106,26 +106,7 @@ Route::prefix('admin')->name('admin.')->group(function () {
     });
 
     Route::middleware(['auth', 'verified', \App\Http\Middleware\SuperadminMiddleware::class])->group(function () {
-        Route::get('dashboard', [App\Http\Controllers\Admin\DashboardController::class, 'index'])->name('dashboard');
-        Route::resource('sliders', App\Http\Controllers\Admin\SliderController::class);
-        Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
-        Route::resource('galeri', \App\Http\Controllers\Admin\GaleriController::class);
-        Route::resource('informasi', \App\Http\Controllers\Admin\InformasiController::class);
-        Route::resource('standar-layanan', \App\Http\Controllers\Admin\SubStandarLayananController::class);
-        Route::resource('laporan', \App\Http\Controllers\Admin\LaporanController::class);
-        Route::resource('statistik', \App\Http\Controllers\Admin\StatistikController::class);
-        Route::resource('organizations', \App\Http\Controllers\Admin\OrganizationController::class);
-        Route::resource('officials', \App\Http\Controllers\Admin\OfficialController::class);
-        Route::resource('surveys', App\Http\Controllers\Admin\SurveyController::class);
-        Route::resource('profil-ppid', App\Http\Controllers\Admin\ProfilPpidController::class);
-        Route::resource('pbj-questions', \App\Http\Controllers\Admin\PbjQuestionController::class);
-        Route::resource('permohonan-informasi', \App\Http\Controllers\Admin\PermohonanInformasiController::class);
-        
-        Route::get('slider-settings', [App\Http\Controllers\Admin\AdminSettingController::class, 'showSliderSettings'])->name('slider-settings.show');
-        Route::post('slider-settings', [App\Http\Controllers\Admin\AdminSettingController::class, 'updateSliderSettings'])->name('slider-settings.update');
-        Route::get('lhkpn', [\App\Http\Controllers\Admin\LhkpnController::class, 'index'])->name('lhkpn.index');
-        
-        // Load all other routes from admin.php
+        // Load all routes from admin.php
         require __DIR__ . '/admin.php';
     });
 });
