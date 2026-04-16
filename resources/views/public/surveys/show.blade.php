@@ -47,17 +47,19 @@
 @endpush
 
 @section('content')
-    <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-8 px-4 sm:px-6 lg:px-8">
+    <div class="min-h-screen bg-gradient-to-br from-blue-50 to-indigo-50 py-4 md:py-8 px-2 md:px-8">
         <div class="max-w-5xl mx-auto">
-            <x-breadcrumbs :breadcrumbs="[
-                ['title' => 'Beranda', 'url' => route('home'), 'icon' => 'fas fa-home'],
-                [
-                    'title' => 'Survei',
-                    'url' => route('page.show', ['page' => 'laporan', 'subpage' => 'survei']),
-                    'icon' => 'fas fa-chart-bar',
-                ],
-                ['title' => $survey->title, 'url' => '#', 'icon' => 'fas fa-clipboard-check'],
-            ]" />
+            <div class="px-2 md:px-0">
+                <x-breadcrumbs :breadcrumbs="[
+                    ['title' => 'Beranda', 'url' => route('home'), 'icon' => 'fas fa-home'],
+                    [
+                        'title' => 'Survei',
+                        'url' => route('page.show', ['page' => 'laporan', 'subpage' => 'survei']),
+                        'icon' => 'fas fa-chart-bar',
+                    ],
+                    ['title' => Str::limit($survey->title, 20), 'url' => '#', 'icon' => 'fas fa-clipboard-check'],
+                ]" />
+            </div>
 
             @php
                 $pages = collect();
@@ -100,18 +102,18 @@
                 }
             @endphp
 
-            <div class="mt-10">
+            <div class="mt-6 md:mt-10">
                 {{-- Main Header --}}
-                <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-8 text-white shadow-2xl mb-8">
+                <div class="bg-gradient-to-r from-blue-600 to-indigo-700 rounded-2xl p-6 md:p-8 text-white shadow-xl mb-6 md:mb-8">
                     <div class="flex flex-col items-center text-center">
-                        <div class="bg-white/20 backdrop-blur-sm rounded-full p-4 mb-6">
-                            <i class="fas fa-poll-h text-4xl"></i>
+                        <div class="bg-white/20 backdrop-blur-sm rounded-full p-3 mb-4 md:mb-6">
+                            <i class="fas fa-poll-h text-3xl md:text-4xl"></i>
                         </div>
-                        <h1 class="text-3xl md:text-4xl font-bold mb-4">{{ $survey->title }}</h1>
-                        <p class="text-xl text-blue-100 opacity-90 max-w-3xl">{{ $survey->description }}</p>
+                        <h1 class="text-2xl md:text-4xl font-bold mb-3 leading-tight">{{ $survey->title }}</h1>
+                        <p class="text-base md:text-xl text-blue-100 opacity-90 max-w-3xl">{{ $survey->description }}</p>
 
-                        <div class="mt-6">
-                            <div class="bg-white/20 backdrop-blur-sm rounded-full px-6 py-3">
+                        <div class="mt-4 md:mt-6">
+                            <div class="bg-white/20 backdrop-blur-sm rounded-full px-4 py-2 text-sm md:text-base">
                                 <i class="fas fa-question-circle mr-2"></i>
                                 <span class="font-semibold">{{ $totalQuestions }} Pertanyaan</span>
                             </div>
@@ -119,25 +121,24 @@
                     </div>
                 </div>
 
-                <div class="bg-white rounded-2xl shadow-2xl overflow-hidden" x-data="surveyProgress({{ $survey->id }}, {{ $totalQuestions }}, {{ $pages->count() }})"
+                <div class="bg-white rounded-2xl shadow-xl overflow-hidden" x-data="surveyProgress({{ $survey->id }}, {{ $totalQuestions }}, {{ $pages->count() }})"
                     x-init="init()">
 
                     {{-- Progress Bar --}}
-                    <div class="px-8 pt-8">
-                        <div class="mb-4 flex justify-between items-center">
-                            <h2 class="text-2xl font-bold text-gray-800">
-                                <i class="fas fa-bars-progress mr-3 text-blue-600"></i>
-                                Progress Survei
+                    <div class="px-4 md:px-8 pt-6 md:pt-8">
+                        <div class="mb-3 flex justify-between items-center">
+                            <h2 class="text-lg md:text-2xl font-bold text-gray-800">
+                                <i class="fas fa-bars-progress mr-2 text-blue-600"></i>
+                                Progress
                             </h2>
-                            <span class="text-2xl font-bold text-blue-600" x-text="progress + '%'"></span>
+                            <span class="text-xl md:text-2xl font-bold text-blue-600" x-text="progress + '%'"></span>
                         </div>
-                        <div class="w-full bg-gray-200 rounded-full h-3">
-                            <div class="progress-fill h-3 rounded-full bg-gradient-to-r from-green-400 to-blue-500"
+                        <div class="w-full bg-gray-200 rounded-full h-2 md:h-3">
+                            <div class="progress-fill h-2 md:h-3 rounded-full bg-gradient-to-r from-green-400 to-blue-500"
                                 :style="{ width: progress + '%' }"></div>
                         </div>
-                        <div class="flex justify-between items-center mt-2 text-sm text-gray-600">
-                            <span>Telah dijawab: <span class="font-bold" x-text="answeredQuestions"></span> dari
-                                {{ $totalQuestions }}</span>
+                        <div class="flex justify-between items-center mt-2 text-[10px] md:text-sm text-gray-600">
+                            <span>Selesai: <span class="font-bold" x-text="answeredQuestions"></span> / {{ $totalQuestions }}</span>
                             <span x-text="progress + '% selesai'"></span>
                         </div>
                     </div>
@@ -153,39 +154,37 @@
                             <div x-show="step === {{ $stepNumber }}" data-step="{{ $stepNumber }}"
                                 x-transition:enter="transition ease-out duration-300"
                                 x-transition:enter-start="opacity-0 transform -translate-x-4"
-                                x-transition:enter-end="opacity-100 transform translate-x-0" class="p-8">
+                                x-transition:enter-end="opacity-100 transform translate-x-0" class="p-4 md:p-8">
 
                                 {{-- Page Header --}}
                                 <div
-                                    class="mb-10 bg-gradient-to-r from-blue-50 to-indigo-50 p-8 rounded-2xl border border-blue-100 shadow-lg">
-                                    <div class="flex items-center mb-6">
+                                    class="mb-6 md:mb-10 bg-gradient-to-r from-blue-50 to-indigo-50 p-5 md:p-8 rounded-2xl border border-blue-100 shadow-md">
+                                    <div class="flex items-center mb-4 md:mb-6">
                                         <div
-                                            class="bg-gradient-to-br from-blue-600 to-indigo-700 w-16 h-16 rounded-xl flex items-center justify-center mr-6 shadow-lg">
-                                            <i class="{{ $page['icon'] ?? 'fas fa-list-alt' }} text-white text-2xl"></i>
+                                            class="bg-gradient-to-br from-blue-600 to-indigo-700 w-12 h-12 md:w-16 md:h-16 rounded-xl flex items-center justify-center mr-4 md:mr-6 shadow-lg">
+                                            <i class="{{ $page['icon'] ?? 'fas fa-list-alt' }} text-white text-xl md:text-2xl"></i>
                                         </div>
                                         <div>
-                                            <h2 class="text-3xl font-bold text-gray-900 mb-2">
+                                            <h2 class="text-xl md:text-3xl font-bold text-gray-900 mb-1 leading-tight">
                                                 @if ($page['id'] === 'general')
-                                                    {{ $survey->title }}
+                                                    {{ Str::limit($survey->title, 40) }}
                                                 @else
                                                     {{ $page['title'] }}
                                                 @endif
                                             </h2>
-                                            <div class="flex items-center text-lg text-gray-700">
-                                                <i class="fas fa-layer-group mr-3"></i>
-                                                <span>Bagian {{ $stepNumber }} dari {{ $pages->count() }}</span>
+                                            <div class="flex items-center text-sm md:text-lg text-gray-700 font-medium">
+                                                <i class="fas fa-layer-group mr-2"></i>
+                                                <span>Bagian {{ $stepNumber }} / {{ $pages->count() }}</span>
                                             </div>
                                         </div>
                                     </div>
 
                                     @if (($page['id'] === 'general' && $survey->description) || ($page['id'] !== 'general' && $page['description']))
-                                        <div class="mt-6 description-box p-6 rounded-xl">
+                                        <div class="mt-4 description-box p-4 md:p-6 rounded-xl">
                                             <div class="flex items-start">
-                                                <i class="fas fa-info-circle text-blue-500 text-2xl mr-4 mt-1"></i>
+                                                <i class="fas fa-info-circle text-blue-500 text-lg md:text-2xl mr-3 mt-1"></i>
                                                 <div>
-                                                    <h3 class="text-lg font-semibold text-gray-800 mb-2">Deskripsi Bagian:
-                                                    </h3>
-                                                    <p class="text-gray-700 text-lg leading-relaxed">
+                                                    <p class="text-sm md:text-lg text-gray-700 leading-relaxed">
                                                         {{ $page['id'] === 'general' ? $survey->description : $page['description'] }}
                                                     </p>
                                                 </div>
@@ -195,56 +194,52 @@
                                 </div>
 
                                 {{-- Questions --}}
-                                <div class="space-y-10">
+                                <div class="space-y-6 md:space-y-10">
                                     @forelse ($page['questions'] as $question)
                                         <div
-                                            class="question-card bg-white rounded-2xl border-2 border-gray-100 p-8 shadow-lg">
-                                            <div class="flex items-start">
-                                                <div class="flex-shrink-0 mr-6">
+                                            class="question-card bg-white rounded-2xl border border-gray-100 p-5 md:p-8 shadow-md">
+                                            <div class="flex flex-col md:flex-row items-start">
+                                                <div class="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
                                                     <div
-                                                        class="w-12 h-12 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center shadow-md">
+                                                        class="w-10 h-10 md:w-12 md:h-12 rounded-full bg-gradient-to-r from-blue-500 to-indigo-600 flex items-center justify-center shadow-md">
                                                         <span
-                                                            class="text-white font-bold text-xl">{{ $loop->iteration }}</span>
+                                                            class="text-white font-bold text-lg md:text-xl">{{ $loop->iteration }}</span>
                                                     </div>
                                                 </div>
-                                                <div class="flex-grow">
-                                                    <label class="block mb-6">
+                                                <div class="flex-grow w-full">
+                                                    <label class="block mb-4 md:mb-6">
                                                         <div
-                                                            class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4">
-                                                            <span class="text-xl font-bold text-gray-900">
+                                                            class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3">
+                                                            <span class="text-lg md:text-xl font-bold text-gray-900 leading-snug">
                                                                 {{ $question->question_text }}
                                                             </span>
                                                             @if ($question->is_required)
                                                                 <span
-                                                                    class="bg-gradient-to-r from-red-500 to-pink-600 text-white text-lg font-bold px-5 py-2 rounded-full shadow-md flex items-center justify-center min-w-max">
-                                                                    <i class="fas fa-exclamation-circle mr-2"></i>
-                                                                    WAJIB DIISI
+                                                                    class="bg-red-50 text-red-600 text-xs md:text-sm font-black px-3 py-1 rounded-full border border-red-100 flex items-center justify-center w-max">
+                                                                    <i class="fas fa-exclamation-circle mr-1.5"></i>
+                                                                    WAJIB
                                                                 </span>
                                                             @endif
                                                         </div>
                                                         @if ($question->description)
                                                             <div
-                                                                class="mt-4 p-4 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg">
+                                                                class="mt-3 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg">
                                                                 <div class="flex items-start">
                                                                     <i
-                                                                        class="fas fa-lightbulb text-yellow-500 text-xl mr-3 mt-1"></i>
-                                                                    <div>
-                                                                        <h4 class="font-semibold text-gray-800 mb-1">
-                                                                            Petunjuk:</h4>
-                                                                        <p class="text-gray-700">
-                                                                            {{ $question->description }}</p>
-                                                                    </div>
+                                                                        class="fas fa-lightbulb text-yellow-500 text-base mr-2 mt-0.5"></i>
+                                                                    <p class="text-xs md:text-sm text-gray-700 italic">
+                                                                        {{ $question->description }}</p>
                                                                 </div>
                                                             </div>
                                                         @endif
                                                     </label>
 
-                                                    <div class="mt-6">
+                                                    <div class="mt-4 md:mt-6">
                                                         @if ($question->question_type === 'Isian Singkat')
                                                             <div class="relative">
                                                                 <input type="text" name="answers[{{ $question->id }}]"
-                                                                    class="text-input w-full px-5 py-4 text-lg border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200"
-                                                                    placeholder="Tulis jawaban Anda di sini..."
+                                                                    class="text-input w-full px-4 py-3 md:px-5 md:py-4 text-base md:text-lg border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200"
+                                                                    placeholder="Tulis jawaban..."
                                                                     {{ $question->is_required ? 'required' : '' }}
                                                                     autocomplete="off"
                                                                     x-on:input="handleInputChange($event)">
@@ -252,8 +247,8 @@
                                                         @elseif ($question->question_type === 'Email')
                                                             <div class="relative">
                                                                 <input type="email" name="answers[{{ $question->id }}]"
-                                                                    class="text-input w-full px-5 py-4 text-lg border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200"
-                                                                    placeholder="Tulis alamat email Anda di sini..."
+                                                                    class="text-input w-full px-4 py-3 md:px-5 md:py-4 text-base md:text-lg border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200"
+                                                                    placeholder="Alamat email..."
                                                                     {{ $question->is_required ? 'required' : '' }}
                                                                     autocomplete="email"
                                                                     x-on:input="handleInputChange($event)">
@@ -261,68 +256,67 @@
                                                         @elseif ($question->question_type === 'Numeric')
                                                             <div class="relative">
                                                                 <input type="number" name="answers[{{ $question->id }}]"
-                                                                    class="text-input w-full px-5 py-4 text-lg border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200"
-                                                                    placeholder="Masukkan angka..."
+                                                                    class="text-input w-full px-4 py-3 md:px-5 md:py-4 text-base md:text-lg border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200"
+                                                                    placeholder="Angka..."
                                                                     {{ $question->is_required ? 'required' : '' }}
                                                                     x-on:input="handleInputChange($event)">
                                                             </div>
                                                         @elseif ($question->question_type === 'Url')
                                                             <div class="relative">
                                                                 <input type="url" name="answers[{{ $question->id }}]"
-                                                                    class="text-input w-full px-5 py-4 text-lg border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200"
-                                                                    placeholder="https://example.com"
+                                                                    class="text-input w-full px-4 py-3 md:px-5 md:py-4 text-base md:text-lg border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200"
+                                                                    placeholder="https://..."
                                                                     {{ $question->is_required ? 'required' : '' }}
                                                                     autocomplete="url"
                                                                     x-on:input="handleInputChange($event)">
                                                             </div>
                                                         @elseif ($question->question_type === 'Isian Panjang')
                                                             <div class="relative">
-                                                                <textarea name="answers[{{ $question->id }}]" rows="6"
-                                                                    class="custom-textarea text-input w-full px-5 py-4 text-lg border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200"
-                                                                    placeholder="Jelaskan jawaban Anda secara detail..." {{ $question->is_required ? 'required' : '' }}
+                                                                <textarea name="answers[{{ $question->id }}]" rows="4"
+                                                                    class="custom-textarea text-input w-full px-4 py-3 md:px-5 md:py-4 text-base md:text-lg border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 transition-all duration-200"
+                                                                    placeholder="Penjelasan detail..." {{ $question->is_required ? 'required' : '' }}
                                                                     x-on:input="handleInputChange($event)"></textarea>
                                                             </div>
                                                         @elseif (in_array($question->question_type, ['Pilihan Ganda', 'Pilihan Ganda (Berbobot)']))
-                                                            <div class="space-y-3">
+                                                            <div class="grid grid-cols-1 gap-3">
                                                                 @foreach ($question->options->sortBy('order') as $option)
                                                                     <label
-                                                                        class="option-item flex items-center p-5 rounded-xl border-2 border-gray-100 hover:border-blue-300 hover:bg-blue-50 cursor-pointer transition-all duration-200"
+                                                                        class="option-item flex items-center p-4 md:p-5 rounded-xl border-2 border-gray-50 hover:border-blue-300 hover:bg-blue-50 cursor-pointer transition-all duration-200"
                                                                         onclick="selectRadioOption(this)">
                                                                         <input type="radio"
                                                                             name="answers[{{ $question->id }}]"
                                                                             value="{{ $option->id }}"
-                                                                            class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 mr-4"
+                                                                            class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 mr-3 md:mr-4"
                                                                             {{ $question->is_required ? 'required' : '' }}
                                                                             x-on:change="handleInputChange($event)">
                                                                         <span
-                                                                            class="text-gray-800 text-lg flex-grow">{{ $option->option_text }}</span>
+                                                                            class="text-gray-800 text-base md:text-lg flex-grow">{{ $option->option_text }}</span>
                                                                     </label>
                                                                 @endforeach
                                                             </div>
                                                         @elseif ($question->question_type === 'Checkbox')
-                                                            <div class="space-y-3">
+                                                            <div class="grid grid-cols-1 gap-3">
                                                                 @foreach ($question->options->sortBy('order') as $option)
                                                                     <label
-                                                                        class="checkbox-item flex items-center p-5 rounded-xl border-2 border-gray-100 hover:border-green-300 hover:bg-green-50 cursor-pointer transition-all duration-200"
+                                                                        class="checkbox-item flex items-center p-4 md:p-5 rounded-xl border-2 border-gray-50 hover:border-green-300 hover:bg-green-50 cursor-pointer transition-all duration-200"
                                                                         onclick="toggleCheckboxOption(this)">
                                                                         <input type="checkbox"
                                                                             name="answers[{{ $question->id }}][]"
                                                                             value="{{ $option->id }}"
-                                                                            class="h-5 w-5 rounded text-green-600 focus:ring-green-500 border-gray-300 mr-4"
+                                                                            class="h-5 w-5 rounded text-green-600 focus:ring-green-500 border-gray-300 mr-3 md:mr-4"
                                                                             x-on:change="handleInputChange($event)">
                                                                         <span
-                                                                            class="text-gray-800 text-lg flex-grow">{{ $option->option_text }}</span>
+                                                                            class="text-gray-800 text-base md:text-lg flex-grow">{{ $option->option_text }}</span>
                                                                     </label>
                                                                 @endforeach
                                                             </div>
                                                         @elseif ($question->question_type === 'Dropdown')
                                                             <div class="relative">
                                                                 <select name="answers[{{ $question->id }}]"
-                                                                    class="text-input w-full px-5 py-4 text-lg border-2 border-gray-300 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 appearance-none bg-white transition-all duration-200 pr-12"
+                                                                    class="text-input w-full px-4 py-3 md:px-5 md:py-4 text-base md:text-lg border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 appearance-none bg-white transition-all duration-200 pr-12"
                                                                     {{ $question->is_required ? 'required' : '' }}
                                                                     x-on:change="handleInputChange($event)">
-                                                                    <option value="" class="text-gray-400">-- Pilih
-                                                                        salah satu opsi --</option>
+                                                                    <option value="" class="text-gray-400">-- Pilih --</option>
                                                                     @foreach ($question->options->sortBy('order') as $option)
                                                                         <option value="{{ $option->id }}"
                                                                             class="text-gray-800">
@@ -330,15 +324,15 @@
                                                                     @endforeach
                                                                 </select>
                                                                 <div
-                                                                    class="absolute inset-y-0 right-0 flex items-center px-5 pointer-events-none">
+                                                                    class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none">
                                                                     <i
-                                                                        class="fas fa-chevron-down text-gray-500 text-xl"></i>
+                                                                        class="fas fa-chevron-down text-gray-400 text-lg"></i>
                                                                 </div>
                                                             </div>
                                                         @elseif ($question->question_type === 'Skala Kepuasan')
                                                             <div
-                                                                class="bg-gradient-to-r from-red-50 via-yellow-50 to-green-50 p-8 rounded-2xl border-2 border-gray-100">
-                                                                <div class="grid grid-cols-4 gap-6 mb-8">
+                                                                class="bg-gradient-to-r from-red-50 via-yellow-50 to-green-50 p-4 md:p-8 rounded-2xl border-2 border-gray-50">
+                                                                <div class="grid grid-cols-4 gap-2 md:gap-6 mb-6 md:mb-8">
                                                                     @php
                                                                         $labels = [
                                                                             'Tidak Puas',
@@ -359,29 +353,29 @@
                                                                             <input type="radio"
                                                                                 name="answers[{{ $question->id }}]"
                                                                                 value="{{ $i + 1 }}"
-                                                                                class="h-5 w-5 mb-3"
+                                                                                class="h-4 w-4 md:h-5 md:w-5 mb-2 md:mb-3"
                                                                                 {{ $question->is_required ? 'required' : '' }}
                                                                                 x-on:change="handleInputChange($event)">
                                                                             <div
-                                                                                class="{{ $colors[$i] }} text-white w-20 h-20 rounded-full flex items-center justify-center mb-3 shadow-lg transition-all duration-200 hover:scale-110">
+                                                                                class="{{ $colors[$i] }} text-white w-12 h-12 md:w-20 md:h-20 rounded-full flex items-center justify-center mb-2 md:mb-3 shadow-lg transition-all duration-200 hover:scale-110">
                                                                                 <span
-                                                                                    class="font-bold text-2xl">{{ $i + 1 }}</span>
+                                                                                    class="font-bold text-base md:text-2xl">{{ $i + 1 }}</span>
                                                                             </div>
                                                                             <span
-                                                                                class="mt-2 text-center font-medium text-gray-700">
+                                                                                class="text-[8px] md:text-sm text-center font-bold text-gray-700 uppercase tracking-tighter">
                                                                                 {{ $labels[$i] }}
                                                                             </span>
                                                                         </label>
                                                                     @endfor
                                                                 </div>
-                                                                <div class="flex justify-between text-lg font-bold px-4">
+                                                                <div class="flex justify-between text-xs md:text-lg font-black px-2 md:px-4 uppercase tracking-wider">
                                                                     <span class="text-red-600 flex items-center">
-                                                                        <i class="fas fa-face-frown-open mr-2"></i>
-                                                                        Tidak Puas
+                                                                        <i class="fas fa-face-frown-open mr-1.5 md:mr-2"></i>
+                                                                        Sangat Kurang
                                                                     </span>
                                                                     <span class="text-green-600 flex items-center">
-                                                                        <i class="fas fa-face-grin-stars mr-2"></i>
-                                                                        Sangat Puas
+                                                                        <i class="fas fa-face-grin-stars mr-1.5 md:mr-2"></i>
+                                                                        Sangat Baik
                                                                     </span>
                                                                 </div>
                                                             </div>
@@ -392,10 +386,9 @@
                                         </div>
                                     @empty
                                         <div
-                                            class="text-center py-16 bg-gradient-to-r from-gray-50 to-white rounded-2xl border-3 border-dashed border-gray-300">
-                                            <i class="fas fa-inbox text-6xl text-gray-300 mb-6"></i>
-                                            <p class="text-gray-500 text-2xl mb-4">Tidak ada pertanyaan di bagian ini</p>
-                                            <p class="text-gray-400 text-xl">Silakan lanjutkan ke bagian berikutnya</p>
+                                            class="text-center py-10 md:py-16 bg-gray-50 rounded-2xl border-2 border-dashed border-gray-200">
+                                            <i class="fas fa-inbox text-4xl text-gray-300 mb-4"></i>
+                                            <p class="text-gray-500 text-lg">Tidak ada pertanyaan</p>
                                         </div>
                                     @endforelse
                                 </div>
@@ -403,41 +396,33 @@
                         @endforeach
 
                         {{-- Navigation Buttons --}}
-                        <div class="sticky bottom-0 bg-white border-t-2 border-gray-200 px-8 py-6 shadow-2xl mt-10">
-                            <div class="flex justify-between items-center">
+                        <div class="sticky bottom-0 bg-white/95 backdrop-blur-md border-t border-gray-100 px-4 md:px-8 py-4 md:py-6 shadow-2xl z-30">
+                            <div class="flex justify-between items-center max-w-5xl mx-auto">
                                 <button type="button" x-show="step > 1" x-on:click="prevStep()"
-                                    class="group flex items-center px-8 py-4 bg-gradient-to-r from-gray-100 to-gray-50 hover:from-gray-200 hover:to-gray-100 text-gray-800 font-bold rounded-2xl transition-all duration-200 transform hover:-translate-x-2 shadow-lg hover:shadow-xl">
-                                    <i
-                                        class="fas fa-arrow-left mr-4 text-xl group-hover:-translate-x-2 transition-transform"></i>
-                                    <span class="text-lg">Kembali</span>
+                                    class="group flex items-center px-4 py-3 md:px-8 md:py-4 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-xl transition-all duration-200 transform active:scale-95 shadow-md">
+                                    <i class="fas fa-arrow-left mr-2 md:mr-4 text-base md:text-xl"></i>
+                                    <span class="text-sm md:text-lg">Kembali</span>
                                 </button>
                                 <div x-show="step === 1"></div>
 
                                 <div class="text-center">
-                                    <div class="text-gray-700 font-medium">
-                                        <span class="text-blue-600 font-bold" x-text="step"></span> dari
-                                        {{ $pages->count() }} Bagian
-                                    </div>
-                                    <div class="text-sm text-gray-500 mt-1">
-                                        <span class="text-green-600 font-bold" x-text="answeredQuestions"></span> dari
-                                        {{ $totalQuestions }} pertanyaan terjawab
+                                    <div class="text-[10px] md:text-sm text-gray-500 font-black uppercase tracking-[0.2em]">
+                                        Bagian <span class="text-blue-600" x-text="step"></span> / {{ $pages->count() }}
                                     </div>
                                 </div>
 
                                 <template x-if="step < totalSteps">
                                     <button type="button" x-on:click="nextStep()"
-                                        class="group flex items-center px-10 py-4 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-200 transform hover:translate-x-2">
-                                        <span class="text-lg">Lanjutkan</span>
-                                        <i
-                                            class="fas fa-arrow-right ml-4 text-xl group-hover:translate-x-2 transition-transform"></i>
+                                        class="group flex items-center px-5 py-3 md:px-10 md:py-4 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg transition-all duration-200 transform active:scale-95">
+                                        <span class="text-sm md:text-lg">Lanjut</span>
+                                        <i class="fas fa-arrow-right ml-2 md:mr-4 text-base md:text-xl"></i>
                                     </button>
                                 </template>
 
                                 <button type="submit" x-show="step === totalSteps"
-                                    class="group flex items-center px-10 py-4 bg-gradient-to-r from-green-600 to-emerald-700 hover:from-green-700 hover:to-emerald-800 text-white font-bold rounded-2xl shadow-xl hover:shadow-2xl transition-all duration-200 transform hover:scale-105">
-                                    <i
-                                        class="fas fa-paper-plane mr-4 text-xl group-hover:rotate-12 transition-transform"></i>
-                                    <span class="text-lg">Kirim Survei</span>
+                                    class="group flex items-center px-5 py-3 md:px-10 md:py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-lg transition-all duration-200 transform active:scale-95">
+                                    <i class="fas fa-paper-plane mr-2 md:mr-4 text-base md:text-xl"></i>
+                                    <span class="text-sm md:text-lg">Kirim</span>
                                 </button>
                             </div>
                         </div>
