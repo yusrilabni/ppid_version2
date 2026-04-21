@@ -4,19 +4,19 @@
         <!-- Tinggi navbar tetap sama -->
         <div class="flex justify-between h-16 items-center">
             <!-- Logo Section - Diperbesar dengan transform scale -->
-            <div class="flex items-center flex-shrink-0 pl-4 md:pl-6">
+            <div class="flex items-center flex-shrink-0 pl-4 xl:pl-6">
                 <a href="{{ route('home') }}" class="flex-shrink-0 flex items-center group relative">
                     <!-- Logo diperbesar dengan transform scale -->
                     <div
-                        class="transform origin-left scale-[1.4] md:scale-150 group-hover:scale-[1.5] md:group-hover:scale-[1.6] transition-transform duration-300">
-                        <img class="w-auto h-16 md:h-20" src="{{ asset('storage/logo/ppid.webp') }}"
+                        class="transform origin-left scale-[1.4] xl:scale-150 group-hover:scale-[1.5] xl:group-hover:scale-[1.6] transition-transform duration-300">
+                        <img class="w-auto h-16 xl:h-20" src="{{ asset('storage/logo/ppid.webp') }}"
                             alt="PPID" onerror="this.onerror=null; this.src='{{ asset('storage/logo/ppid.png') }}'">
                     </div>
                 </a>
             </div>
 
             <!-- Menu & Search Container (Desktop) -->
-            <div class="hidden lg:flex flex-1 justify-center mx-4 min-w-0">
+            <div class="hidden xl:flex flex-1 justify-center mx-4 min-w-0">
                 <div class="relative bg-blue-50/50 rounded-2xl border border-blue-100 transition-all duration-500 ease-in-out h-12 flex items-center px-2"
                      :class="searchOpen ? 'w-full max-w-2xl shadow-inner bg-white border-blue-200' : 'w-auto max-w-full'">
                     
@@ -109,13 +109,13 @@
             </div>
 
             <!-- Login/User Dropdown & Mobile Menu Button -->
-            <div class="flex items-center flex-shrink-0 pr-4 md:pr-6 space-x-2">
+            <div class="flex items-center flex-shrink-0 pr-4 xl:pr-6 space-x-2">
                 @guest
                     @php
                         $loginMenu = collect($menus)->firstWhere('title', 'Login');
                     @endphp
                     @if ($loginMenu)
-                        <div class="hidden md:block">
+                        <div class="hidden xl:block">
                             <a href="{{ route('login') }}"
                                 class="flex items-center bg-gradient-to-r from-blue-600 to-blue-700 hover:from-blue-700 hover:to-blue-800 text-white px-6 py-2 rounded-lg text-sm font-medium transition-all duration-300 shadow-md hover:shadow-lg transform hover:scale-105">
                                 <i class="fas fa-sign-in-alt mr-2"></i>
@@ -127,7 +127,7 @@
 
                 @auth
                     <!-- Authenticated User Dropdown -->
-                    <div class="hidden md:relative md:flex items-center" x-data="{ open: false }">
+                    <div class="hidden xl:relative xl:flex items-center" x-data="{ open: false }">
                         <button @click="open = !open"
                             class="flex items-center space-x-2 bg-blue-50 rounded-full p-1 pr-3 hover:bg-blue-100 transition-colors focus:outline-none">
                             @php
@@ -191,7 +191,7 @@
                     </div>
                 @endauth
 
-                <div class="md:hidden">
+                <div class="xl:hidden">
                     <button @click="open = !open; activeSubMenu = null" class="text-gray-700 hover:text-blue-600 focus:outline-none">
                         <svg class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                             <path :class="{ 'hidden': open, 'inline-flex': !open }" class="inline-flex"
@@ -208,7 +208,7 @@
     </div>
 
     <!-- Mobile Menu -->
-    <div x-show="open" class="md:hidden" x-cloak>
+    <div x-show="open" class="xl:hidden" x-cloak>
         <!-- Mobile Search -->
         <div class="px-4 pt-2 pb-3">
             <form action="{{ route('frontend.informasi.search') }}" method="GET" class="relative">
