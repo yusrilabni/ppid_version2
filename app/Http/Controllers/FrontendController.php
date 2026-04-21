@@ -308,6 +308,24 @@ class FrontendController extends Controller
     public function detailBySlug($slug)
     {
         $informasi = Informasi::with('official.position')->where('slug', $slug)->firstOrFail();
+        
+        // If this is an official profile, redirect directly to the official's profile page
+        if ($informasi->official) {
+            $official = $informasi->official;
+            $positionSlug = $official->position->slug ?? '';
+
+            switch ($positionSlug) {
+                case 'bupati-sinjai':
+                    return redirect()->route('official.bupati');
+                case 'wakil-bupati-sinjai':
+                    return redirect()->route('official.wakil-bupati');
+                case 'sekretaris-daerah-sinjai':
+                    return redirect()->route('official.sekretaris-daerah');
+                default:
+                    return redirect()->route('official.profile.show', $official->slug);
+            }
+        }
+
         $informasi->increment('views_count');
 
         $unitName = '-';
@@ -321,25 +339,7 @@ class FrontendController extends Controller
         }
         
         $officialProfileUrl = null;
-        if ($informasi->official) {
-            $official = $informasi->official;
-            $positionSlug = $official->position->slug ?? '';
-
-            switch ($positionSlug) {
-                case 'bupati-sinjai':
-                    $officialProfileUrl = route('official.bupati');
-                    break;
-                case 'wakil-bupati-sinjai':
-                    $officialProfileUrl = route('official.wakil-bupati');
-                    break;
-                case 'sekretaris-daerah-sinjai':
-                    $officialProfileUrl = route('official.sekretaris-daerah');
-                    break;
-                default:
-                    $officialProfileUrl = route('official.profile.show', $official->slug);
-                    break;
-            }
-        }
+        // (Removing previous logic here as it's now handled by the redirect above)
 
         $previousParams = session('previous_informasi_params');
 

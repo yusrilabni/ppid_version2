@@ -175,7 +175,18 @@
                                 <td class="px-6 py-4">
                                     @php
                                         $primaryLink = route('frontend.informasi.detail', $informasi->slug);
-                                        if (!$informasi->file && $informasi->url) {
+                                        
+                                        // Priority 1: Official Profile Link
+                                        if ($informasi->official) {
+                                            $official = $informasi->official;
+                                            $posSlug = $official->position->slug ?? '';
+                                            if ($posSlug === 'bupati-sinjai') $primaryLink = route('official.bupati');
+                                            elseif ($posSlug === 'wakil-bupati-sinjai') $primaryLink = route('official.wakil-bupati');
+                                            elseif ($posSlug === 'sekretaris-daerah-sinjai') $primaryLink = route('official.sekretaris-daerah');
+                                            else $primaryLink = route('official.profile.show', $official->slug);
+                                        }
+                                        // Priority 2: External URL (only if not an official profile)
+                                        elseif (!$informasi->file && $informasi->url) {
                                             $primaryLink = route('frontend.informasi.visit-url', $informasi->id);
                                         }
                                     @endphp
@@ -221,8 +232,8 @@
                                 </td>
                                 <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
                                     <div class="flex items-center gap-2">
-                                        {{-- Always show View Detail button --}}
-                                        <a href="{{ route('frontend.informasi.detail', $informasi->slug) }}" class="text-blue-600 bg-blue-50 hover:bg-blue-100 p-2 rounded transition-colors" title="Lihat Detail">
+                                        {{-- Always show View Detail button, but with direct profile link if applicable --}}
+                                        <a href="{{ $primaryLink }}" class="text-blue-600 bg-blue-50 hover:bg-blue-100 p-2 rounded transition-colors" title="Lihat Detail">
                                             <i class="fas fa-eye"></i>
                                         </a>
 
@@ -281,7 +292,20 @@
                             @endif
                         </div>
                         
-                        <a href="{{ route('frontend.informasi.detail', $informasi->slug) }}" class="block mb-2">
+                        @php
+                            $primaryLink = route('frontend.informasi.detail', $informasi->slug);
+                            if ($informasi->official) {
+                                $official = $informasi->official;
+                                $posSlug = $official->position->slug ?? '';
+                                if ($posSlug === 'bupati-sinjai') $primaryLink = route('official.bupati');
+                                elseif ($posSlug === 'wakil-bupati-sinjai') $primaryLink = route('official.wakil-bupati');
+                                elseif ($posSlug === 'sekretaris-daerah-sinjai') $primaryLink = route('official.sekretaris-daerah');
+                                else $primaryLink = route('official.profile.show', $official->slug);
+                            } elseif (!$informasi->file && $informasi->url) {
+                                $primaryLink = route('frontend.informasi.visit-url', $informasi->id);
+                            }
+                        @endphp
+                        <a href="{{ $primaryLink }}" class="block mb-2">
                             <h3 class="text-sm font-bold text-gray-900 leading-tight mb-1 break-words">{{ $informasi->title }}</h3>
                             <p class="text-xs text-gray-500 line-clamp-2 leading-relaxed break-words">{{ $informasi->deskripsi }}</p>
                         </a>
@@ -294,7 +318,7 @@
                             </div>
                             
                             <div class="flex items-center gap-1.5">
-                                <a href="{{ route('frontend.informasi.detail', $informasi->slug) }}" class="p-2 text-blue-600 bg-blue-50 rounded-md" title="Lihat Detail">
+                                <a href="{{ $primaryLink }}" class="p-2 text-blue-600 bg-blue-50 rounded-md" title="Lihat Detail">
                                     <i class="fas fa-eye text-sm"></i>
                                 </a>
                                 @if($informasi->url)
