@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\OfficialController;
 use App\Http\Controllers\Api\InformasiController;
 use App\Http\Controllers\Api\LaporanController;
+use App\Http\Controllers\Api\PermohonanInformasiController;
 use App\Http\Controllers\Api\SliderController;
 use App\Http\Controllers\Api\GaleriController;
 use App\Http\Controllers\Api\StatistikController;
@@ -32,6 +33,10 @@ Route::prefix('v1')->group(function () {
     // Informasi Publik & Laporan
     Route::get('/informasi', [InformasiController::class, 'index']);
     Route::get('/laporan', [LaporanController::class, 'index']);
+
+    // Permohonan Informasi (Formulir via Android)
+    Route::post('/permohonan', [PermohonanInformasiController::class, 'store']);
+    Route::get('/permohonan/status/{code}', [PermohonanInformasiController::class, 'checkStatus']);
     
     // Visual & Identitas
     Route::get('/sliders', [SliderController::class, 'index']);
