@@ -21,10 +21,10 @@ class HomeController extends Controller
             // 1. Sliders
             $sliders = Slider::latest()->take(5)->get() ?: [];
 
-            // 2. Berita RSS (DITAMBAHKAN TIMEOUT 3 DETIK AGAR TIDAK LOADING TERUS)
+            // 2. Berita RSS (Timeout diperpanjang ke 10 detik agar lebih stabil)
             $rss_items = [];
             try {
-                $response = Http::timeout(3)->get('https://humas.sinjaikab.go.id/v1/rss-widget/index.php');
+                $response = Http::timeout(10)->get('https://humas.sinjaikab.go.id/v1/rss-widget/index.php');
                 if ($response->successful()) {
                     $rss_data = $response->json();
                     if (is_array($rss_data)) {
@@ -40,39 +40,43 @@ class HomeController extends Controller
                     }
                 }
             } catch (\Exception $e) {
-                \Log::warning("RSS Fetch Timeout/Failed: " . $e->getMessage());
+                \Log::warning("RSS Fetch failed: " . $e->getMessage());
             }
 
             // 3. Galeri
             $galeri = Galeri::latest()->take(10)->get() ?: [];
 
-            // 4. Statistik Lengkap
+            // 4. Statistik Lengkap (Safe calculation)
             $unitData = GeneralHelper::getUnitData();
+            $avgRating = PermohonanInformasi::whereNotNull('rating')->avg('rating') ?: 0;
+            
             $stats = [
                 'total_informasi' => Informasi::whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])->count(),
                 'total_permohonan' => PermohonanInformasi::count(),
-                'tingkat_kepuasan' => round(PermohonanInformasi::whereNotNull('rating')->avg('rating') / 5 * 100) ?: 0,
-                'total_opd' => count($unitData),
+                'tingkat_kepuasan' => round(($avgRating / 5) * 100),
+                'total_opd' => $unitData ? count($unitData) : 0,
                 'total_pejabat' => Official::where('status', 'active')->count(),
             ];
 
-            // 5. Ticker Rating
+            // 5. Ticker Rating (Hanya yang ada komentar)
             $latestRatings = PermohonanInformasi::whereNotNull('rating')
                 ->whereNotNull('rating_comment')
                 ->orderBy('updated_at', 'desc')
                 ->take(10)
-                ->get(['nama_pemohon', 'rating', 'rating_comment']);
+                ->get(['nama_pemohon', 'rating', 'rating_comment']) ?: [];
 
             // 6. Dokumen Terbaru
             $latestInformasi = Informasi::whereIn('status', ['AKTIF', 'BERLAKU'])
                 ->orderBy('tanggal_upload', 'desc')
                 ->take(5)
-                ->get()
-                ->map(function($item) use ($unitData) {
-                    $unit = $unitData->get((string)$item->unit_id);
-                    $item->organization_name = $unit['unit_nama'] ?? 'Unit Kerja';
-                    return $item;
-                });
+                ->get();
+            
+            $formattedLatest = [];
+            foreach($latestInformasi as $item) {
+                $unit = $unitData ? $unitData->get((string)$item->unit_id) : null;
+                $item->organization_name = $unit['unit_nama'] ?? 'Unit Kerja';
+                $formattedLatest[] = $item;
+            }
 
             return response()->json([
                 'success' => true,
@@ -82,7 +86,7 @@ class HomeController extends Controller
                     'gallery' => $galeri,
                     'statistics' => $stats,
                     'ticker' => $latestRatings,
-                    'latest_informasi' => $latestInformasi,
+                    'latest_informasi' => $formattedLatest,
                     'contact' => [
                         'alamat' => 'Jl. Persatuan Raya No. 5, Sinjai',
                         'email' => 'ppid@sinjaikab.go.id',
@@ -92,7 +96,11 @@ class HomeController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
+            \Log::error("API Home Error: " . $e->getMessage());
+            return response()->json([
+                'success' => false, 
+                'error' => $e->getMessage()
+            ], 500);
         }
     }
 }
