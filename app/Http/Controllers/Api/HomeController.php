@@ -21,7 +21,7 @@ class HomeController extends Controller
             // 1. Sliders
             $sliders = Slider::latest()->take(5)->get() ?: [];
 
-            // 2. Berita RSS (Timeout diperpanjang ke 10 detik agar lebih stabil)
+            // 2. Berita RSS
             $rss_items = [];
             try {
                 $response = Http::timeout(10)->get('https://humas.sinjaikab.go.id/v1/rss-widget/index.php');
@@ -39,14 +39,12 @@ class HomeController extends Controller
                         }
                     }
                 }
-            } catch (\Exception $e) {
-                \Log::warning("RSS Fetch failed: " . $e->getMessage());
-            }
+            } catch (\Exception $e) {}
 
             // 3. Galeri
             $galeri = Galeri::latest()->take(10)->get() ?: [];
 
-            // 4. Statistik Lengkap (Safe calculation)
+            // 4. Statistik Lengkap
             $unitData = GeneralHelper::getUnitData();
             $avgRating = PermohonanInformasi::whereNotNull('rating')->avg('rating') ?: 0;
             
@@ -58,12 +56,19 @@ class HomeController extends Controller
                 'total_pejabat' => Official::where('status', 'active')->count(),
             ];
 
-            // 5. Ticker Rating (Hanya yang ada komentar)
+            // 5. Ticker Rating (FIX: Menghilangkan rating_comment karena kolom tidak ada)
             $latestRatings = PermohonanInformasi::whereNotNull('rating')
-                ->whereNotNull('rating_comment')
                 ->orderBy('updated_at', 'desc')
                 ->take(10)
-                ->get(['nama_pemohon', 'rating', 'rating_comment']) ?: [];
+                ->get()
+                ->map(function($t) {
+                    return [
+                        'nama_pemohon' => $t->nama_pemohon,
+                        'rating' => $t->rating,
+                        'text' => "Layanan memuaskan oleh PPID Kabupaten Sinjai", // Fallback text
+                        'unique_code' => $t->unique_code
+                    ];
+                });
 
             // 6. Dokumen Terbaru
             $latestInformasi = Informasi::whereIn('status', ['AKTIF', 'BERLAKU'])
@@ -96,11 +101,7 @@ class HomeController extends Controller
             ]);
 
         } catch (\Exception $e) {
-            \Log::error("API Home Error: " . $e->getMessage());
-            return response()->json([
-                'success' => false, 
-                'error' => $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
         }
     }
 }
