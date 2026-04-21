@@ -294,18 +294,20 @@
                 </div>
                 <div class="mt-3 space-y-1">
                     <a href="{{ route('profile.edit') }}"
-                        class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">Your
-                        Profile</a>
+                        class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+                        {{ __('Profile') }}
+                    </a>
                     @if (Auth::user()->role === 'superadmin')
                         <a href="{{ url('/admin/dashboard') }}"
-                            class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">Admin
-                            Dashboard</a>
+                            class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
+                            {{ __('Admin Dashboard') }}
+                        </a>
                     @endif
                     <form method="POST" action="{{ route('logout') }}">
                         @csrf
                         <button type="submit"
                             class="w-full text-left block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
-                            Sign out
+                            {{ __('Logout') }}
                         </button>
                     </form>
                 </div>
