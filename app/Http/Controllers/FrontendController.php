@@ -713,22 +713,18 @@ class FrontendController extends Controller
         // Get all published reports, sorted by year descending
         $laporans = \App\Models\Laporan::where('published', true)
                                     ->orderBy('tahun', 'desc')
-                                    ->get();
-        
-        // Group by year and transform for the view
-        $groupedLaporans = $laporans->groupBy('tahun')->map(function($yearGroup) {
-            return $yearGroup->map(function($laporan) {
-                $laporan->encoded_id = strtoupper(base_convert(($laporan->id + 100000000) * 7, 10, 36));
-                return $laporan;
-            });
-        });
+                                    ->get()
+                                    ->map(function($laporan) {
+                                        $laporan->encoded_id = strtoupper(base_convert(($laporan->id + 100000000) * 7, 10, 36));
+                                        return $laporan;
+                                    });
 
         $breadcrumbs = [
             ['title' => 'Beranda', 'url' => route('home'), 'icon' => 'fas fa-home'],
             ['title' => 'Laporan PPID', 'url' => '#', 'icon' => 'fas fa-file-alt'],
         ];
 
-        return view('frontend.pages.laporan.ppid', compact('groupedLaporans', 'breadcrumbs'));
+        return view('frontend.pages.laporan.ppid', compact('laporans', 'breadcrumbs'));
     }
 
     public function previewLaporan($token)
