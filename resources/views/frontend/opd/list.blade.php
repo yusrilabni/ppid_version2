@@ -39,10 +39,14 @@
                                         $iconClass = 'fa-landmark';
                                         $colorClass = 'bg-indigo-600';
                                         $shadowClass = 'shadow-indigo-200';
-                                    } elseif ($groupName === 'Wilayah Desa & Kelurahan') {
-                                        $iconClass = 'fa-map-marked-alt';
+                                    } elseif ($groupName === 'Wilayah Kelurahan') {
+                                        $iconClass = 'fa-city';
                                         $colorClass = 'bg-emerald-600';
                                         $shadowClass = 'shadow-emerald-200';
+                                    } elseif ($groupName === 'Wilayah Desa') {
+                                        $iconClass = 'fa-map-marked-alt';
+                                        $colorClass = 'bg-teal-600';
+                                        $shadowClass = 'shadow-teal-200';
                                     } elseif ($groupName === 'Sekretariat & Bagian' || $groupName === 'Lembaga Lainnya') {
                                         $iconClass = 'fa-folder-tree';
                                         $colorClass = 'bg-amber-600';

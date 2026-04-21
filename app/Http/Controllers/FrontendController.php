@@ -491,7 +491,8 @@ class FrontendController extends Controller
         $groupedOrganizations = [
             'Organisasi Perangkat Daerah' => [],
             'Wilayah Kecamatan' => [],
-            'Wilayah Desa & Kelurahan' => [],
+            'Wilayah Kelurahan' => [],
+            'Wilayah Desa' => [],
             'Lembaga Lainnya' => []
         ];
 
@@ -522,8 +523,10 @@ class FrontendController extends Controller
 
             // Grouping Logic
             $name = $organization->name;
-            if (stripos($name, 'Desa') !== false || stripos($name, 'Kelurahan') !== false) {
-                $groupedOrganizations['Wilayah Desa & Kelurahan'][] = $organization;
+            if (stripos($name, 'Kelurahan') !== false) {
+                $groupedOrganizations['Wilayah Kelurahan'][] = $organization;
+            } elseif (stripos($name, 'Desa') !== false) {
+                $groupedOrganizations['Wilayah Desa'][] = $organization;
             } elseif (stripos($name, 'Kecamatan') !== false) {
                 $groupedOrganizations['Wilayah Kecamatan'][] = $organization;
             } elseif (
