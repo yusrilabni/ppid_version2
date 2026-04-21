@@ -44,6 +44,10 @@
                                         $colorClass = 'bg-emerald-600';
                                         $shadowClass = 'shadow-emerald-200';
                                     } elseif ($groupName === 'Sekretariat & Bagian' || $groupName === 'Lembaga Lainnya') {
+                                        $iconClass = 'fa-folder-tree';
+                                        $colorClass = 'bg-amber-600';
+                                        $shadowClass = 'shadow-amber-200';
+                                    }
                                 @endphp
                                 <div class="w-12 h-12 {{ $colorClass }} rounded-2xl flex items-center justify-center text-white mr-5 shadow-lg {{ $shadowClass }}">
                                     <i class="fas {{ $iconClass }} text-xl"></i>
