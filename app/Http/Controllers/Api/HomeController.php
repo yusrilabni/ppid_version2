@@ -21,10 +21,10 @@ class HomeController extends Controller
             // 1. Sliders
             $sliders = Slider::latest()->take(5)->get() ?: [];
 
-            // 2. Berita RSS
+            // 2. Berita RSS (DITAMBAHKAN TIMEOUT 3 DETIK AGAR TIDAK LOADING TERUS)
             $rss_items = [];
             try {
-                $response = Http::get('https://humas.sinjaikab.go.id/v1/rss-widget/index.php');
+                $response = Http::timeout(3)->get('https://humas.sinjaikab.go.id/v1/rss-widget/index.php');
                 if ($response->successful()) {
                     $rss_data = $response->json();
                     if (is_array($rss_data)) {
@@ -39,32 +39,29 @@ class HomeController extends Controller
                         }
                     }
                 }
-            } catch (\Exception $e) {}
+            } catch (\Exception $e) {
+                \Log::warning("RSS Fetch Timeout/Failed: " . $e->getMessage());
+            }
 
             // 3. Galeri
-            $galeri = Galeri::latest()->take(10)->get();
+            $galeri = Galeri::latest()->take(10)->get() ?: [];
 
-            // 4. Statistik Lengkap (Sync dengan Web)
-            $allPermohonans = PermohonanInformasi::all();
-            $totalPermohonans = $allPermohonans->count();
-            $averageRating = PermohonanInformasi::whereNotNull('rating')->avg('rating');
-            
+            // 4. Statistik Lengkap
             $unitData = GeneralHelper::getUnitData();
-            
             $stats = [
-                'total_informasi' => Informasi::whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])->count(), // Ditambah ARSIP agar angka cocok
-                'total_permohonan' => $totalPermohonans,
-                'tingkat_kepuasan' => $averageRating !== null ? round(($averageRating / 5) * 100) : 0,
+                'total_informasi' => Informasi::whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])->count(),
+                'total_permohonan' => PermohonanInformasi::count(),
+                'tingkat_kepuasan' => round(PermohonanInformasi::whereNotNull('rating')->avg('rating') / 5 * 100) ?: 0,
                 'total_opd' => count($unitData),
                 'total_pejabat' => Official::where('status', 'active')->count(),
             ];
 
-            // 5. Permohonan Selesai & Dinilai (Untuk Running Ticker)
+            // 5. Ticker Rating
             $latestRatings = PermohonanInformasi::whereNotNull('rating')
                 ->whereNotNull('rating_comment')
                 ->orderBy('updated_at', 'desc')
                 ->take(10)
-                ->get(['nama_pemohon', 'rating', 'rating_comment', 'unique_code']);
+                ->get(['nama_pemohon', 'rating', 'rating_comment']);
 
             // 6. Dokumen Terbaru
             $latestInformasi = Informasi::whereIn('status', ['AKTIF', 'BERLAKU'])
@@ -79,7 +76,6 @@ class HomeController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Data Beranda Android Sinkron',
                 'data' => [
                     'sliders' => $sliders,
                     'news' => $rss_items,
