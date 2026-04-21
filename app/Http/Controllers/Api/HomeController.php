@@ -8,7 +8,7 @@ use App\Models\Informasi;
 use App\Models\Official;
 use App\Models\Laporan;
 use App\Models\Galeri;
-use App\Models\Contact;
+use App\Models\PermohonanInformasi;
 use App\Helpers\GeneralHelper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Http;
@@ -18,14 +18,13 @@ class HomeController extends Controller
     public function index(): JsonResponse
     {
         try {
-            // 1. Ambil Sliders
+            // 1. Sliders
             $sliders = Slider::latest()->take(5)->get() ?: [];
 
-            // 2. Ambil Berita dari RSS Humas Sinjai
-            $api_url = 'https://humas.sinjaikab.go.id/v1/rss-widget/index.php';
+            // 2. Berita RSS
             $rss_items = [];
             try {
-                $response = Http::get($api_url);
+                $response = Http::get('https://humas.sinjaikab.go.id/v1/rss-widget/index.php');
                 if ($response->successful()) {
                     $rss_data = $response->json();
                     if (is_array($rss_data)) {
@@ -40,48 +39,64 @@ class HomeController extends Controller
                         }
                     }
                 }
-            } catch (\Exception $e) {
-                \Log::error('API Error: RSS fetch failed: ' . $e->getMessage());
-            }
+            } catch (\Exception $e) {}
 
-            // 3. Ambil Galeri
-            $galeri = Galeri::latest()->take(8)->get();
+            // 3. Galeri
+            $galeri = Galeri::latest()->take(10)->get();
 
-            // 4. Ambil Statistik
+            // 4. Statistik Lengkap (Sync dengan Web)
+            $allPermohonans = PermohonanInformasi::all();
+            $totalPermohonans = $allPermohonans->count();
+            $averageRating = PermohonanInformasi::whereNotNull('rating')->avg('rating');
+            
             $unitData = GeneralHelper::getUnitData();
+            
             $stats = [
-                'total_informasi' => Informasi::whereIn('status', ['AKTIF', 'BERLAKU'])->count() ?: 0,
-                'total_pejabat' => Official::where('status', 'active')->count() ?: 0,
-                'total_opd' => $unitData ? count($unitData) : 0,
-                'total_laporan' => Laporan::where('published', true)->count() ?: 0,
+                'total_informasi' => Informasi::whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])->count(), // Ditambah ARSIP agar angka cocok
+                'total_permohonan' => $totalPermohonans,
+                'tingkat_kepuasan' => $averageRating !== null ? round(($averageRating / 5) * 100) : 0,
+                'total_opd' => count($unitData),
+                'total_pejabat' => Official::where('status', 'active')->count(),
             ];
 
-            // 5. Ambil Kontak & Alamat
-            $contact = [
-                'alamat' => 'Jl. Persatuan Raya No. 5, Sinjai',
-                'email' => 'ppid@sinjaikab.go.id',
-                'telepon' => '08123456789',
-                'website' => 'https://ppidkab.sinjaikab.go.id'
-            ];
+            // 5. Permohonan Selesai & Dinilai (Untuk Running Ticker)
+            $latestRatings = PermohonanInformasi::whereNotNull('rating')
+                ->whereNotNull('rating_comment')
+                ->orderBy('updated_at', 'desc')
+                ->take(10)
+                ->get(['nama_pemohon', 'rating', 'rating_comment', 'unique_code']);
+
+            // 6. Dokumen Terbaru
+            $latestInformasi = Informasi::whereIn('status', ['AKTIF', 'BERLAKU'])
+                ->orderBy('tanggal_upload', 'desc')
+                ->take(5)
+                ->get()
+                ->map(function($item) use ($unitData) {
+                    $unit = $unitData->get((string)$item->unit_id);
+                    $item->organization_name = $unit['unit_nama'] ?? 'Unit Kerja';
+                    return $item;
+                });
 
             return response()->json([
                 'success' => true,
-                'message' => 'Data Beranda Android berhasil diperbarui',
+                'message' => 'Data Beranda Android Sinkron',
                 'data' => [
                     'sliders' => $sliders,
                     'news' => $rss_items,
                     'gallery' => $galeri,
                     'statistics' => $stats,
-                    'contact' => $contact
+                    'ticker' => $latestRatings,
+                    'latest_informasi' => $latestInformasi,
+                    'contact' => [
+                        'alamat' => 'Jl. Persatuan Raya No. 5, Sinjai',
+                        'email' => 'ppid@sinjaikab.go.id',
+                        'telepon' => '08123456789'
+                    ]
                 ]
             ]);
 
         } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal mengambil data beranda',
-                'error' => $e->getMessage()
-            ], 500);
+            return response()->json(['success' => false, 'error' => $e->getMessage()], 500);
         }
     }
 }
