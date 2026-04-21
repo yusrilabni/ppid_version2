@@ -171,6 +171,7 @@ class GeneralHelper
                 $opdData[$id] = [
                     'unit_id' => $id,
                     'unit_nama' => $unit['unit_nama'],
+                    'unit_alamat' => $unit['unit_alamat'] ?? 'Alamat belum ditambahkan',
                     'type' => 'OPD'
                 ];
             }
@@ -186,6 +187,7 @@ class GeneralHelper
                     $wilayahData[$id] = [
                         'unit_id' => $id,
                         'unit_nama' => $item['desa_tipe'] . ' ' . $item['desa_nama'] . ' (Kec. ' . $kecamatan . ')',
+                        'unit_alamat' => 'Kabupaten Sinjai, Sulawesi Selatan',
                         'kecamatan' => $kecamatan,
                         'type' => 'WILAYAH'
                     ];

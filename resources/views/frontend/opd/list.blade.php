@@ -39,11 +39,11 @@
                                         $iconClass = 'fa-landmark';
                                         $colorClass = 'bg-indigo-600';
                                         $shadowClass = 'shadow-indigo-200';
-                                    } elseif ($groupName === 'Sekretariat & Bagian') {
-                                        $iconClass = 'fa-folder-tree';
-                                        $colorClass = 'bg-amber-600';
-                                        $shadowClass = 'shadow-amber-200';
-                                    }
+                                    } elseif ($groupName === 'Wilayah Desa & Kelurahan') {
+                                        $iconClass = 'fa-map-marked-alt';
+                                        $colorClass = 'bg-emerald-600';
+                                        $shadowClass = 'shadow-emerald-200';
+                                    } elseif ($groupName === 'Sekretariat & Bagian' || $groupName === 'Lembaga Lainnya') {
                                 @endphp
                                 <div class="w-12 h-12 {{ $colorClass }} rounded-2xl flex items-center justify-center text-white mr-5 shadow-lg {{ $shadowClass }}">
                                     <i class="fas {{ $iconClass }} text-xl"></i>

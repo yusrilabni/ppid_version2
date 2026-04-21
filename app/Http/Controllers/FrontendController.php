@@ -490,14 +490,15 @@ class FrontendController extends Controller
         // Map API address and Group Organizations
         $groupedOrganizations = [
             'Organisasi Perangkat Daerah' => [],
-            'Sekretariat & Bagian' => [],
             'Wilayah Kecamatan' => [],
+            'Wilayah Desa & Kelurahan' => [],
             'Lembaga Lainnya' => []
         ];
 
         $organizations->each(function ($organization) use ($unitData, &$groupedOrganizations) {
             $matchingUnit = $unitData->get($organization->remote_id);
             if ($matchingUnit) {
+                // Check if unit_alamat from API is explicitly '0', null, or empty
                 if (empty($matchingUnit['unit_alamat']) || $matchingUnit['unit_alamat'] === '0') {
                     $organization->api_address = 'Alamat belum ditambahkan';
                 } else {
@@ -509,11 +510,11 @@ class FrontendController extends Controller
 
             // Grouping Logic
             $name = $organization->name;
-            if (stripos($name, 'Kecamatan') !== false) {
+            if (stripos($name, 'Desa') !== false || stripos($name, 'Kelurahan') !== false) {
+                $groupedOrganizations['Wilayah Desa & Kelurahan'][] = $organization;
+            } elseif (stripos($name, 'Kecamatan') !== false) {
                 $groupedOrganizations['Wilayah Kecamatan'][] = $organization;
-            } elseif (stripos($name, 'Bagian') !== false || stripos($name, 'Sekretariat') !== false) {
-                $groupedOrganizations['Sekretariat & Bagian'][] = $organization;
-            } elseif (stripos($name, 'Dinas') !== false || stripos($name, 'Badan') !== false || stripos($name, 'Kantor') !== false) {
+            } elseif (stripos($name, 'Dinas') !== false || stripos($name, 'Badan') !== false || stripos($name, 'Kantor') !== false || stripos($name, 'Bagian') !== false || stripos($name, 'Sekretariat') !== false) {
                 $groupedOrganizations['Organisasi Perangkat Daerah'][] = $organization;
             } else {
                 $groupedOrganizations['Lembaga Lainnya'][] = $organization;
