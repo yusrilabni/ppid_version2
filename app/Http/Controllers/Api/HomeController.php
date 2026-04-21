@@ -45,7 +45,7 @@ class HomeController extends Controller
             // 3. Galeri
             $galeri = Galeri::latest()->take(10)->get() ?: [];
 
-            // 4. Statistik & Laporan Kinerja
+            // 4. Statistik (Sync Web)
             $allPermohonans = PermohonanInformasi::all();
             $totalPermohonans = $allPermohonans->count();
             $averageRating = PermohonanInformasi::whereNotNull('rating')->avg('rating') ?: 0;
@@ -70,7 +70,7 @@ class HomeController extends Controller
                 'total_pejabat' => Official::where('status', 'active')->count(),
             ];
 
-            // 5. Ticker Rating (FIX: Tidak memanggil kolom rating_comment yang tidak ada)
+            // 5. Ticker Rating
             $latestRatings = PermohonanInformasi::whereNotNull('rating')
                 ->orderBy('updated_at', 'desc')
                 ->take(10)
@@ -79,16 +79,15 @@ class HomeController extends Controller
                     return [
                         'nama_pemohon' => $t->nama_pemohon,
                         'rating' => $t->rating,
-                        // Gunakan detail_informasi sebagai teks ulasan
                         'text' => $t->detail_informasi ? substr(strip_tags($t->detail_informasi), 0, 80) . '...' : 'Layanan Memuaskan',
                         'time' => Carbon::parse($t->updated_at)->diffForHumans()
                     ];
                 });
 
-            // 6. Dokumen Terbaru
+            // 6. Dokumen Terbaru (LIMIT 5 SESUAI PERMINTAAN)
             $latestInformasi = Informasi::whereIn('status', ['AKTIF', 'BERLAKU'])
                 ->orderBy('tanggal_upload', 'desc')
-                ->take(8)
+                ->take(5)
                 ->get()
                 ->map(function($item) use ($unitData) {
                     $unit = $unitData->get((string)$item->unit_id);
