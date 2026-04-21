@@ -24,6 +24,9 @@ use App\Http\Controllers\Api\HealthController;
 
 Route::prefix('v1')->group(function () {
     
+    // API Paket Lengkap untuk Beranda Android
+    Route::get('/home', [App\Http\Controllers\Api\HomeController::class, 'index']);
+    
     // --- PUBLIC ROUTES (Tanpa Login) ---
     
     // Data Organisasi & Pimpinan (Jantung Metadata Android)
