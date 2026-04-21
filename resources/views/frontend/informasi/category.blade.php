@@ -245,14 +245,20 @@
                                             <i class="fas fa-eye"></i>
                                         </a>
 
-                                        @if($informasi->url)
-                                            <a href="{{ route('frontend.informasi.visit-url', $informasi->id) }}" target="_blank" class="text-green-600 bg-green-50 hover:bg-green-100 p-2 rounded transition-colors" title="Buka Tautan Luar">
-                                                <i class="fas fa-external-link-alt"></i>
-                                            </a>
-                                        @elseif($informasi->file)
-                                            <a href="{{ route('frontend.informasi.download', $informasi->id) }}" target="_blank" class="text-green-600 bg-green-50 hover:bg-green-100 p-2 rounded transition-colors" title="Unduh File">
-                                                <i class="fas fa-download"></i>
-                                            </a>
+                                        @php
+                                            $isProfile = $informasi->official || (strpos($informasi->content, 'struktur_organisasi_') === 0);
+                                        @endphp
+
+                                        @if(!$isProfile)
+                                            @if($informasi->url)
+                                                <a href="{{ route('frontend.informasi.visit-url', $informasi->id) }}" target="_blank" class="text-green-600 bg-green-50 hover:bg-green-100 p-2 rounded transition-colors" title="Buka Tautan Luar">
+                                                    <i class="fas fa-external-link-alt"></i>
+                                                </a>
+                                            @elseif($informasi->file)
+                                                <a href="{{ route('frontend.informasi.download', $informasi->id) }}" target="_blank" class="text-green-600 bg-green-50 hover:bg-green-100 p-2 rounded transition-colors" title="Unduh File">
+                                                    <i class="fas fa-download"></i>
+                                                </a>
+                                            @endif
                                         @endif
                                         @can('update', $informasi)
                                             <a href="{{ route('informasi-crud.edit', $informasi) }}" class="text-yellow-600 bg-yellow-50 hover:bg-yellow-100 p-2 rounded transition-colors" title="Edit">
@@ -337,14 +343,21 @@
                                 <a href="{{ $primaryLink }}" class="p-2 text-blue-600 bg-blue-50 rounded-md" title="Lihat Detail">
                                     <i class="fas fa-eye text-sm"></i>
                                 </a>
-                                @if($informasi->url)
-                                    <a href="{{ route('frontend.informasi.visit-url', $informasi->id) }}" target="_blank" class="p-2 text-green-600 bg-green-50 rounded-md" title="Buka Tautan">
-                                        <i class="fas fa-external-link-alt text-sm"></i>
-                                    </a>
-                                @elseif($informasi->file)
-                                    <a href="{{ route('frontend.informasi.download', $informasi->id) }}" target="_blank" class="p-2 text-green-600 bg-green-50 rounded-md" title="Unduh File">
-                                        <i class="fas fa-download text-sm"></i>
-                                    </a>
+
+                                @php
+                                    $isProfile = $informasi->official || (strpos($informasi->content, 'struktur_organisasi_') === 0);
+                                @endphp
+
+                                @if(!$isProfile)
+                                    @if($informasi->url)
+                                        <a href="{{ route('frontend.informasi.visit-url', $informasi->id) }}" target="_blank" class="p-2 text-green-600 bg-green-50 rounded-md" title="Buka Tautan">
+                                            <i class="fas fa-external-link-alt text-sm"></i>
+                                        </a>
+                                    @elseif($informasi->file)
+                                        <a href="{{ route('frontend.informasi.download', $informasi->id) }}" target="_blank" class="p-2 text-green-600 bg-green-50 rounded-md" title="Unduh File">
+                                            <i class="fas fa-download text-sm"></i>
+                                        </a>
+                                    @endif
                                 @endif
                                 @can('update', $informasi)
                                     <a href="{{ route('informasi-crud.edit', $informasi) }}" class="p-2 text-yellow-600 bg-yellow-50 rounded-md">
