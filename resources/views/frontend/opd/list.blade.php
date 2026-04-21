@@ -91,7 +91,7 @@
 
                                         <div class="space-y-3">
                                             <a href="{{ route('opd.detail', $organization) }}" class="inline-flex items-center justify-center w-full bg-blue-600 text-white font-black text-xs py-4 rounded-2xl transition-all duration-500 uppercase tracking-widest gap-2 shadow-lg shadow-blue-100 group-hover:shadow-blue-200">
-                                                <i class="fas fa-sitemap mr-1"></i> Struktur Organisasi
+                                                <i class="fas fa-sitemap mr-1"></i> Struktur & Website
                                             </a>
 
                                             @auth
