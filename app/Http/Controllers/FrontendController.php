@@ -496,6 +496,11 @@ class FrontendController extends Controller
         ];
 
         $organizations->each(function ($organization) use ($unitData, &$groupedOrganizations) {
+            // Exclude Government card
+            if (stripos($organization->name, 'PEMERINTAH DAERAH KABUPATEN SINJAI') !== false) {
+                return;
+            }
+
             $matchingUnit = $unitData->get($organization->remote_id);
             if ($matchingUnit) {
                 // Check if unit_alamat from API is explicitly '0', null, or empty
@@ -508,13 +513,29 @@ class FrontendController extends Controller
                 $organization->api_address = 'Alamat belum ditambahkan';
             }
 
+            // Specific Address Overrides based on User Request
+            if (stripos($organization->name, 'Inspektorat') !== false) {
+                $organization->api_address = 'Tanassang, Kel. Alehanuae, Kec. Sinjai Utara, Kab. Sinjai, Prov. Sulawesi Selatan. Kode Pos 92616';
+            } elseif (stripos($organization->name, 'Satuan Polisi Pamong Praja') !== false) {
+                $organization->api_address = 'Lingk. Tanassang Kel. Alehanuae Kec. Sinjai Utara Kab. Sinjai Telp. (0482) 23305 Kode Pos 92611';
+            }
+
             // Grouping Logic
             $name = $organization->name;
             if (stripos($name, 'Desa') !== false || stripos($name, 'Kelurahan') !== false) {
                 $groupedOrganizations['Wilayah Desa & Kelurahan'][] = $organization;
             } elseif (stripos($name, 'Kecamatan') !== false) {
                 $groupedOrganizations['Wilayah Kecamatan'][] = $organization;
-            } elseif (stripos($name, 'Dinas') !== false || stripos($name, 'Badan') !== false || stripos($name, 'Kantor') !== false || stripos($name, 'Bagian') !== false || stripos($name, 'Sekretariat') !== false) {
+            } elseif (
+                stripos($name, 'Dinas') !== false || 
+                stripos($name, 'Badan') !== false || 
+                stripos($name, 'Kantor') !== false || 
+                stripos($name, 'Bagian') !== false || 
+                stripos($name, 'Sekretariat') !== false ||
+                stripos($name, 'Satuan') !== false ||
+                stripos($name, 'Inspektorat') !== false ||
+                stripos($name, 'Rumah Sakit') !== false
+            ) {
                 $groupedOrganizations['Organisasi Perangkat Daerah'][] = $organization;
             } else {
                 $groupedOrganizations['Lembaga Lainnya'][] = $organization;
