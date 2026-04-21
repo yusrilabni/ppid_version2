@@ -9,6 +9,7 @@ use App\Models\Official;
 use App\Models\Laporan;
 use App\Models\Galeri;
 use App\Models\PermohonanInformasi;
+use App\Models\SurveyResponse;
 use App\Helpers\GeneralHelper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Support\Facades\Http;
@@ -44,20 +45,22 @@ class HomeController extends Controller
             // 3. Galeri
             $galeri = Galeri::latest()->take(10)->get() ?: [];
 
-            // 4. Statistik Lengkap
+            // 4. Statistik Lengkap (MENGIKUTI WEB)
             $unitData = GeneralHelper::getUnitData();
             $avgRating = PermohonanInformasi::whereNotNull('rating')->avg('rating') ?: 0;
             
             $stats = [
                 'total_informasi' => Informasi::whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])->count(),
                 'total_permohonan' => PermohonanInformasi::count(),
+                'total_survey' => SurveyResponse::count(), // Tambah IKM
                 'tingkat_kepuasan' => round(($avgRating / 5) * 100),
-                'total_opd' => $unitData ? count($unitData) : 0,
+                'total_opd' => count($unitData),
                 'total_pejabat' => Official::where('status', 'active')->count(),
             ];
 
-            // 5. Ticker Rating (FIX: Menghilangkan rating_comment karena kolom tidak ada)
+            // 5. Ticker Rating (Ulasan Pemohon)
             $latestRatings = PermohonanInformasi::whereNotNull('rating')
+                ->whereNotNull('rating_comment')
                 ->orderBy('updated_at', 'desc')
                 ->take(10)
                 ->get()
@@ -65,33 +68,31 @@ class HomeController extends Controller
                     return [
                         'nama_pemohon' => $t->nama_pemohon,
                         'rating' => $t->rating,
-                        'text' => "Layanan memuaskan oleh PPID Kabupaten Sinjai", // Fallback text
-                        'unique_code' => $t->unique_code
+                        'text' => $t->rating_comment,
+                        'time' => $t->updated_at->diffForHumans()
                     ];
                 });
 
             // 6. Dokumen Terbaru
-            $latestInformasi = Informasi::whereIn('status', ['AKTIF', 'BERLAKU'])
+            $latestInformasi = Informasi::with('organization')->whereIn('status', ['AKTIF', 'BERLAKU'])
                 ->orderBy('tanggal_upload', 'desc')
-                ->take(5)
-                ->get();
-            
-            $formattedLatest = [];
-            foreach($latestInformasi as $item) {
-                $unit = $unitData ? $unitData->get((string)$item->unit_id) : null;
-                $item->organization_name = $unit['unit_nama'] ?? 'Unit Kerja';
-                $formattedLatest[] = $item;
-            }
+                ->take(8)
+                ->get()
+                ->map(function($item) use ($unitData) {
+                    $unit = $unitData->get((string)$item->unit_id);
+                    $item->organization_name = $unit['unit_nama'] ?? 'Unit Kerja';
+                    return $item;
+                });
 
             return response()->json([
                 'success' => true,
                 'data' => [
                     'sliders' => $sliders,
+                    'latest_informasi' => $latestInformasi,
                     'news' => $rss_items,
                     'gallery' => $galeri,
                     'statistics' => $stats,
                     'ticker' => $latestRatings,
-                    'latest_informasi' => $formattedLatest,
                     'contact' => [
                         'alamat' => 'Jl. Persatuan Raya No. 5, Sinjai',
                         'email' => 'ppid@sinjaikab.go.id',
