@@ -45,19 +45,18 @@ class HomeController extends Controller
             // 3. Galeri
             $galeri = Galeri::latest()->take(10)->get() ?: [];
 
-            // 4. Statistik & Laporan Kinerja (FULL SYNC WEB)
+            // 4. Statistik & Laporan Kinerja
             $allPermohonans = PermohonanInformasi::all();
             $totalPermohonans = $allPermohonans->count();
             $averageRating = PermohonanInformasi::whereNotNull('rating')->avg('rating') ?: 0;
             
-            // Hitung Rata-rata Waktu Respon
             $completedPermohonans = $allPermohonans->where('status_permohonan', 'selesai');
             $completedCount = $completedPermohonans->count();
             $totalDays = 0;
             foreach ($completedPermohonans as $p) {
                 $totalDays += max(1, Carbon::parse($p->updated_at)->diffInDays(Carbon::parse($p->created_at)));
             }
-            $avgResponse = $completedCount > 0 ? round($totalDays / $completedCount) : 0;
+            $avgResponse = $completedCount > 0 ? round($totalDays / $completedCount) : 1;
 
             $unitData = GeneralHelper::getUnitData();
             
@@ -66,14 +65,13 @@ class HomeController extends Controller
                 'total_permohonan' => $totalPermohonans,
                 'total_survey' => SurveyResponse::count(),
                 'tingkat_kepuasan' => round(($averageRating / 5) * 100),
-                'rata_rata_respon' => $avgResponse ?: 1,
+                'rata_rata_respon' => $avgResponse,
                 'tingkat_penyelesaian' => $totalPermohonans > 0 ? round(($completedCount / $totalPermohonans) * 100) : 0,
                 'total_pejabat' => Official::where('status', 'active')->count(),
             ];
 
-            // 5. Ticker Rating (Ulasan Pemohon)
+            // 5. Ticker Rating (FIX: Tidak memanggil kolom rating_comment yang tidak ada)
             $latestRatings = PermohonanInformasi::whereNotNull('rating')
-                ->whereNotNull('rating_comment')
                 ->orderBy('updated_at', 'desc')
                 ->take(10)
                 ->get()
@@ -81,7 +79,8 @@ class HomeController extends Controller
                     return [
                         'nama_pemohon' => $t->nama_pemohon,
                         'rating' => $t->rating,
-                        'text' => $t->rating_comment,
+                        // Gunakan detail_informasi sebagai teks ulasan
+                        'text' => $t->detail_informasi ? substr(strip_tags($t->detail_informasi), 0, 80) . '...' : 'Layanan Memuaskan',
                         'time' => Carbon::parse($t->updated_at)->diffForHumans()
                     ];
                 });
