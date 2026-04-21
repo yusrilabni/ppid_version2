@@ -710,12 +710,17 @@ class FrontendController extends Controller
 
     public function laporanPpid()
     {
-        $laporans = \App\Models\Laporan::latest()->paginate(12);
+        // Get all published reports, sorted by year descending
+        $laporans = \App\Models\Laporan::where('published', true)
+                                    ->orderBy('tahun', 'desc')
+                                    ->get();
         
-        // Add a temporary encoded_id attribute to each laporan
-        $laporans->getCollection()->transform(function ($laporan) {
-            $laporan->encoded_id = strtoupper(base_convert(($laporan->id + 100000000) * 7, 10, 36));
-            return $laporan;
+        // Group by year and transform for the view
+        $groupedLaporans = $laporans->groupBy('tahun')->map(function($yearGroup) {
+            return $yearGroup->map(function($laporan) {
+                $laporan->encoded_id = strtoupper(base_convert(($laporan->id + 100000000) * 7, 10, 36));
+                return $laporan;
+            });
         });
 
         $breadcrumbs = [
@@ -723,7 +728,7 @@ class FrontendController extends Controller
             ['title' => 'Laporan PPID', 'url' => '#', 'icon' => 'fas fa-file-alt'],
         ];
 
-        return view('frontend.pages.laporan.ppid', compact('laporans', 'breadcrumbs'));
+        return view('frontend.pages.laporan.ppid', compact('groupedLaporans', 'breadcrumbs'));
     }
 
     public function previewLaporan($token)
