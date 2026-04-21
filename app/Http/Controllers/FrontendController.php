@@ -307,9 +307,9 @@ class FrontendController extends Controller
 
     public function detailBySlug($slug)
     {
-        $informasi = Informasi::with('official.position')->where('slug', $slug)->firstOrFail();
+        $informasi = Informasi::with(['official.position', 'organization'])->where('slug', $slug)->firstOrFail();
         
-        // If this is an official profile, redirect directly to the official's profile page
+        // 1. If this is an official profile, redirect directly to the official's profile page
         if ($informasi->official) {
             $official = $informasi->official;
             $positionSlug = $official->position->slug ?? '';
@@ -323,6 +323,15 @@ class FrontendController extends Controller
                     return redirect()->route('official.sekretaris-daerah');
                 default:
                     return redirect()->route('official.profile.show', $official->slug);
+            }
+        }
+
+        // 2. If this is an organization profile (Struktur Organisasi), redirect to the OPD detail page
+        if (strpos($informasi->content, 'struktur_organisasi_') === 0) {
+            $orgId = str_replace('struktur_organisasi_', '', $informasi->content);
+            $organization = \App\Models\Organization::find($orgId);
+            if ($organization) {
+                return redirect()->route('opd.detail', $organization->slug);
             }
         }
 

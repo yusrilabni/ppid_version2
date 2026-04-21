@@ -185,7 +185,15 @@
                                             elseif ($posSlug === 'sekretaris-daerah-sinjai') $primaryLink = route('official.sekretaris-daerah');
                                             else $primaryLink = route('official.profile.show', $official->slug);
                                         }
-                                        // Priority 2: External URL (only if not an official profile)
+                                        // Priority 2: Organization Profile Link (Struktur Organisasi)
+                                        elseif (strpos($informasi->content, 'struktur_organisasi_') === 0) {
+                                            $orgId = str_replace('struktur_organisasi_', '', $informasi->content);
+                                            $organization = \App\Models\Organization::find($orgId);
+                                            if ($organization) {
+                                                $primaryLink = route('opd.detail', $organization->slug);
+                                            }
+                                        }
+                                        // Priority 3: External URL (only if not an official/org profile)
                                         elseif (!$informasi->file && $informasi->url) {
                                             $primaryLink = route('frontend.informasi.visit-url', $informasi->id);
                                         }
@@ -301,7 +309,15 @@
                                 elseif ($posSlug === 'wakil-bupati-sinjai') $primaryLink = route('official.wakil-bupati');
                                 elseif ($posSlug === 'sekretaris-daerah-sinjai') $primaryLink = route('official.sekretaris-daerah');
                                 else $primaryLink = route('official.profile.show', $official->slug);
-                            } elseif (!$informasi->file && $informasi->url) {
+                            } 
+                            elseif (strpos($informasi->content, 'struktur_organisasi_') === 0) {
+                                $orgId = str_replace('struktur_organisasi_', '', $informasi->content);
+                                $organization = \App\Models\Organization::find($orgId);
+                                if ($organization) {
+                                    $primaryLink = route('opd.detail', $organization->slug);
+                                }
+                            }
+                            elseif (!$informasi->file && $informasi->url) {
                                 $primaryLink = route('frontend.informasi.visit-url', $informasi->id);
                             }
                         @endphp
