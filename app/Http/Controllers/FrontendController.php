@@ -476,24 +476,47 @@ class FrontendController extends Controller
         }
 
         // Fetch unit data from API
-        $unitData = collect($this->getUnitData()); // Ensure it's a Collection
+        $unitData = collect($this->getUnitData());
 
-        // Map API address to organizations
-        $organizations->each(function ($organization) use ($unitData) {
+        // Map API address and Group Organizations
+        $groupedOrganizations = [
+            'Organisasi Perangkat Daerah' => [],
+            'Sekretariat & Bagian' => [],
+            'Wilayah Kecamatan' => [],
+            'Lembaga Lainnya' => []
+        ];
+
+        $organizations->each(function ($organization) use ($unitData, &$groupedOrganizations) {
             $matchingUnit = $unitData->get($organization->remote_id);
             if ($matchingUnit) {
-                // Check if unit_alamat is explicitly '0', null, or empty
                 if (empty($matchingUnit['unit_alamat']) || $matchingUnit['unit_alamat'] === '0') {
                     $organization->api_address = 'Alamat belum ditambahkan';
                 } else {
                     $organization->api_address = $matchingUnit['unit_alamat'];
                 }
             } else {
-                $organization->api_address = 'Alamat belum ditambahkan'; // Default if no match
+                $organization->api_address = 'Alamat belum ditambahkan';
+            }
+
+            // Grouping Logic
+            $name = $organization->name;
+            if (stripos($name, 'Kecamatan') !== false) {
+                $groupedOrganizations['Wilayah Kecamatan'][] = $organization;
+            } elseif (stripos($name, 'Bagian') !== false || stripos($name, 'Sekretariat') !== false) {
+                $groupedOrganizations['Sekretariat & Bagian'][] = $organization;
+            } elseif (stripos($name, 'Dinas') !== false || stripos($name, 'Badan') !== false || stripos($name, 'Kantor') !== false) {
+                $groupedOrganizations['Organisasi Perangkat Daerah'][] = $organization;
+            } else {
+                $groupedOrganizations['Lembaga Lainnya'][] = $organization;
             }
         });
 
-        return view('frontend.opd.list', compact('organizations', 'user', 'api_unit_id'));
+        // Remove empty groups
+        $groupedOrganizations = array_filter($groupedOrganizations, function($group) {
+            return count($group) > 0;
+        });
+
+        return view('frontend.opd.list', compact('groupedOrganizations', 'user', 'api_unit_id'));
     }
 
     public function opdDetail(\App\Models\Organization $organization)
