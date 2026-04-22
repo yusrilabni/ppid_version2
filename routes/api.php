@@ -31,6 +31,7 @@ Route::prefix('v1')->group(function () {
     // --- PUBLIC ROUTES (Tanpa Login) ---
     
     // Data Organisasi & Pimpinan (Jantung Metadata Android)
+    Route::get('/profile', [ProfileController::class, 'index']);
     Route::get('/berita', [BeritaController::class, 'index']);
     Route::get('/berita/{slug}', [BeritaController::class, 'show']);
     Route::get('/officials', [OfficialController::class, 'index']);
