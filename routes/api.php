@@ -4,7 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Import Controllers
-use App\Http\Controllers\Api\OfficialController;
+use App\\Http\\Controllers\\Api\\OfficialController;
+use App\\Http\\Controllers\\Api\\BeritaController;
 use App\Http\Controllers\Api\InformasiController;
 use App\Http\Controllers\Api\LaporanController;
 use App\Http\Controllers\Api\PermohonanInformasiController;
@@ -30,6 +31,8 @@ Route::prefix('v1')->group(function () {
     // --- PUBLIC ROUTES (Tanpa Login) ---
     
     // Data Organisasi & Pimpinan (Jantung Metadata Android)
+    Route::get('/berita', [BeritaController::class, 'index']);
+    Route::get('/berita/{slug}', [BeritaController::class, 'show']);
     Route::get('/officials', [OfficialController::class, 'index']);
     Route::get('/officials/{slug}', [OfficialController::class, 'show']);
     
