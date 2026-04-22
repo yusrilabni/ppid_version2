@@ -4,8 +4,8 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Import Controllers
-use App\\Http\\Controllers\\Api\\OfficialController;
-use App\\Http\\Controllers\\Api\\BeritaController;
+use App\Http\\Controllers\\Api\\OfficialController;
+use App\Http\\Controllers\\Api\\BeritaController;
 use App\Http\Controllers\Api\InformasiController;
 use App\Http\Controllers\Api\LaporanController;
 use App\Http\Controllers\Api\PermohonanInformasiController;
