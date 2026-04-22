@@ -4,8 +4,9 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Import Controllers
-use App\Http\\Controllers\\Api\\OfficialController;
-use App\Http\\Controllers\\Api\\BeritaController;
+use App\Http\Controllers\Api\OfficialController;
+use App\Http\Controllers\Api\BeritaController;
+use App\Http\Controllers\Api\ProfileController;
 use App\Http\Controllers\Api\InformasiController;
 use App\Http\Controllers\Api\LaporanController;
 use App\Http\Controllers\Api\PermohonanInformasiController;
@@ -23,54 +24,54 @@ use App\Http\Controllers\Api\HealthController;
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('v1')->group(function () {
-    
+Route::prefix("v1")->group(function () {
+
     // API Paket Lengkap untuk Beranda Android
-    Route::get('/home', [App\Http\Controllers\Api\HomeController::class, 'index']);
-    
+    Route::get("/home", [App\Http\Controllers\Api\HomeController::class, "index"]);
+
     // --- PUBLIC ROUTES (Tanpa Login) ---
-    
+
     // Data Organisasi & Pimpinan (Jantung Metadata Android)
-    Route::get('/profile', [ProfileController::class, 'index']);
-    Route::get('/berita', [BeritaController::class, 'index']);
-    Route::get('/berita/{slug}', [BeritaController::class, 'show']);
-    Route::get('/officials', [OfficialController::class, 'index']);
-    Route::get('/officials/{slug}', [OfficialController::class, 'show']);
-    
+    Route::get("/profile", [ProfileController::class, "index"]);
+    Route::get("/berita", [BeritaController::class, "index"]);
+    Route::get("/berita/{slug}", [BeritaController::class, "show"]);
+    Route::get("/officials", [OfficialController::class, "index"]);
+    Route::get("/officials/{slug}", [OfficialController::class, "show"]);
+
     // Informasi Publik & Laporan
-    Route::get('/informasi', [InformasiController::class, 'index']);
-    Route::get('/laporan', [LaporanController::class, 'index']);
+    Route::get("/informasi", [InformasiController::class, "index"]);
+    Route::get("/laporan", [LaporanController::class, "index"]);
 
     // Permohonan Informasi (Formulir via Android)
-    Route::post('/permohonan', [PermohonanInformasiController::class, 'store']);
-    Route::get('/permohonan/status/{code}', [PermohonanInformasiController::class, 'checkStatus']);
-    
+    Route::post("/permohonan", [PermohonanInformasiController::class, "store"]);
+    Route::get("/permohonan/status/{code}", [PermohonanInformasiController::class, "checkStatus"]);
+
     // Visual & Identitas
-    Route::get('/sliders', [SliderController::class, 'index']);
-    Route::get('/galeri', [GaleriController::class, 'index']);
-    Route::get('/menu', [MenuController::class, 'index']);
-    
+    Route::get("/sliders", [SliderController::class, "index"]);
+    Route::get("/galeri", [GaleriController::class, "index"]);
+    Route::get("/menu", [MenuController::class, "index"]);
+
     // Statistik & Sistem
-    Route::get('/statistik', [StatistikController::class, 'index']);
-    Route::get('/health', [HealthController::class, 'index']);
-    
+    Route::get("/statistik", [StatistikController::class, "index"]);
+    Route::get("/health", [HealthController::class, "index"]);
+
     // Auth & Kontak
-    Route::post('/login', [LoginController::class, 'login']);
-    Route::post('/contact', [ContactController::class, 'store']);
+    Route::post("/login", [LoginController::class, "login"]);
+    Route::post("/contact", [ContactController::class, "store"]);
 
     // --- PROTECTED ROUTES (Perlu Token Sanctum) ---
-    
-    Route::middleware('auth:sanctum')->group(function () {
-        Route::get('/user', function (Request $request) {
+
+    Route::middleware("auth:sanctum")->group(function () {
+        Route::get("/user", function (Request $request) {
             return $request->user();
         });
-        
+
         // Contoh rute untuk mengunggah data dari Android
-        Route::post('/informasi/upload', [InformasiController::class, 'store']);
-        Route::post('/laporan/upload', [LaporanController::class, 'store']);
+        Route::post("/informasi/upload", [InformasiController::class, "store"]);
+        Route::post("/laporan/upload", [LaporanController::class, "store"]);
     });
 });
 
-// Fallback rute lama (jika masih ada yang pakai, agar tidak langsung error)
-Route::get('/health', [HealthController::class, 'index']);
-Route::post('/telegram/webhook', [\App\Http\Controllers\Api\TelegramWebhookController::class, 'handle']);
+// Fallback rute lama
+Route::get("/health", [HealthController::class, "index"]);
+Route::post("/telegram/webhook", [\App\Http\Controllers\Api\TelegramWebhookController::class, "handle"]);
