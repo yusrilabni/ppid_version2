@@ -20,18 +20,23 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('my-structure', [\App\Http\Controllers\Admin\StrukturOrganisasiController::class, 'myStructure'])->name('my-structure.manage');
     Route::post('my-structure', [\App\Http\Controllers\Admin\StrukturOrganisasiController::class, 'updateMyStructure'])->name('my-structure.update');
     
-    // RUTE DARURAT: Bersihkan Cache Rute via URL
-    // Akses: https://ppidkab.sinjaikab.go.id/v2/admin/clear-route-cache
-    Route::get('clear-route-cache', function() {
+    // RUTE PEMBERSIH TOTAL (Jalankan jika masih error)
+    Route::get('clear-all-cache', function() {
         \Illuminate\Support\Facades\Artisan::call('route:clear');
-        return "Route cache cleared successfully!";
+        \Illuminate\Support\Facades\Artisan::call('view:clear');
+        \Illuminate\Support\Facades\Artisan::call('config:clear');
+        return "Semua cache (Route, View, Config) telah dibersihkan!";
     });
 });
 
 // GRUP ADMIN & SUPERADMIN
 Route::middleware(['auth', 'verified', AdminMiddleware::class])->group(function () {
     
-    // RUTE UNIQUE (Bypass 405 & WAF)
+    // JALAN PINTAS: Daftarkan URL yang tersangkut di cache agar tetap bisa upload
+    Route::post('informasi-crud/save', [\App\Http\Controllers\Admin\InformasiController::class, 'store']);
+    Route::post('informasi-crud/update/{informasi}', [\App\Http\Controllers\Admin\InformasiController::class, 'update']);
+    
+    // RUTE RESMI (Sesuai kode terbaru)
     Route::post('proses-tambah-informasi', [\App\Http\Controllers\Admin\InformasiController::class, 'store'])->name('admin.informasi.stealth_store');
     Route::post('proses-update-informasi/{informasi}', [\App\Http\Controllers\Admin\InformasiController::class, 'update'])->name('admin.informasi.stealth_update');
     Route::post('proses-cek-judul', [\App\Http\Controllers\Admin\InformasiController::class, 'checkSimilarity'])->name('admin.informasi.check_similarity');
