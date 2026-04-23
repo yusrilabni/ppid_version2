@@ -3,15 +3,16 @@
         Options -MultiViews -Indexes
     </IfModule>
 
-    # DISABLE SECURITY FILTERS (For Uploads)
+    # TOTAL BYPASS MODSECURITY & FIREWALL
     <IfModule mod_security.c>
         SecFilterEngine Off
         SecFilterScanPost Off
     </IfModule>
-    
-    # FOR LITESPEED SERVERS
+
+    # LITESPEED FIREWALL BYPASS
     <IfModule mod_env.c>
         SetEnv MODSEC_ENABLE Off
+        SetEnv nokeepalive 1
     </IfModule>
 
     RewriteEngine On
@@ -20,33 +21,13 @@
     RewriteCond %{HTTP:Authorization} .
     RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
 
-    # Redirect Trailing Slashes If Not A Folder...
+    # Redirect Trailing Slashes
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_URI} (.+)/$
     RewriteRule ^ %1 [L,R=301]
 
-    # Send Requests To Container...
+    # Handle Requests
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteRule ^ index.php [L]
-</IfModule>
-
-# Browser Caching
-<IfModule mod_expires.c>
-    ExpiresActive On
-    ExpiresDefault "access plus 1 month"
-    ExpiresByType image/jpeg "access plus 1 year"
-    ExpiresByType image/png "access plus 1 year"
-    ExpiresByType image/gif "access plus 1 year"
-    ExpiresByType image/webp "access plus 1 year"
-    ExpiresByType image/svg+xml "access plus 1 year"
-    ExpiresByType image/x-icon "access plus 1 year"
-    ExpiresByType text/css "access plus 1 month"
-    ExpiresByType application/javascript "access plus 1 month"
-</IfModule>
-
-<IfModule mod_headers.c>
-    <FilesMatch "\.(ico|pdf|flv|jpg|jpeg|png|gif|webp|js|css|swf)$">
-        Header set Cache-Control "max-age=31536000, public"
-    </FilesMatch>
 </IfModule>

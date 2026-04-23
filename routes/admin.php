@@ -23,20 +23,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('my-structure', [\App\Http\Controllers\Admin\StrukturOrganisasiController::class, 'updateMyStructure'])->name('my-structure.update');
 });
 
-// GRUP ADMIN & SUPERADMIN
+// GRUP ADMIN (NIP) DAN SUPERADMIN
 Route::middleware(['auth', 'verified', AdminMiddleware::class])->group(function () {
     
-    // RUTE STEALTH (Untuk Bypass 403 cPanel)
-    // Pastikan nama rutenya konsisten 'admin.informasi.stealth_store'
-    Route::post('simpan-berkas-publik', [\App\Http\Controllers\Admin\InformasiController::class, 'store'])->name('admin.informasi.stealth_store');
-    Route::put('perbarui-berkas-publik/{informasi}', [\App\Http\Controllers\Admin\InformasiController::class, 'update'])->name('admin.informasi.stealth_update');
+    // RUTE "KIRIM" (Bypass 403) - Gunakan POST untuk semua aksi simpan/update
+    Route::post('tambah-data-baru', [\App\Http\Controllers\Admin\InformasiController::class, 'store'])->name('admin.informasi.stealth_store');
+    Route::post('update-data-ada/{informasi}', [\App\Http\Controllers\Admin\InformasiController::class, 'update'])->name('admin.informasi.stealth_update');
     
-    // RUTE RESOURCE (Untuk Index, Create, Edit, Delete)
+    // RUTE UTAMA (Index, Create, Edit)
     Route::resource('manajemen-berkas', \App\Http\Controllers\Admin\InformasiController::class)
          ->names('informasi-crud')
          ->parameters(['manajemen-berkas' => 'informasi']);
     
-    Route::post('cek-kemiripan', [\App\Http\Controllers\Admin\InformasiController::class, 'checkSimilarity'])->name('admin.informasi.check_similarity');
+    Route::post('cek-validasi', [\App\Http\Controllers\Admin\InformasiController::class, 'checkSimilarity'])->name('admin.informasi.check_similarity');
 
     Route::resource('galeri', \App\Http\Controllers\Admin\GaleriController::class);
     Route::resource('officials', \App\Http\Controllers\Admin\OfficialController::class);

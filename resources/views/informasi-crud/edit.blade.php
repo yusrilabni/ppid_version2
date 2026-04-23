@@ -58,9 +58,9 @@
                         </div>
                     @endif
 
-                    <form action="{{ url('admin/perbarui-berkas-publik/' . $informasi->id) }}" method="POST" enctype="multipart/form-data" x-data="informasiForm()" x-init="init()">
+                    <form action="{{ url('admin/update-data-ada/' . $informasi->id) }}" method="POST" enctype="multipart/form-data" x-data="informasiForm()" x-init="init()">
                         @csrf
-                        @method('PUT')
+                        {{-- Hapus @method PUT karena kita bypass via POST murni --}}
                         <input type="hidden" name="replacement_id" id="replacement_id">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div class="md:col-span-2"><label for="title" class="block text-gray-700 text-sm font-semibold mb-2">Judul Informasi <span class="text-red-500">*</span></label><input type="text" name="title" id="title" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" value="{{ old('title', $informasi->title) }}" required minlength="5" placeholder="Masukkan judul informasi"></div>
