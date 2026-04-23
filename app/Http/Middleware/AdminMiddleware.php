@@ -22,10 +22,10 @@ class AdminMiddleware
         }
 
         $user = auth()->user();
-        Log::info('AdminMiddleware: User authenticated. NIP: ' . $user->nip . ', Role: ' . $user->role);
+        Log::info('AdminMiddleware: User authenticated. NIP: ' . $user->nip . ', Role: ' . $user->role . ', AdminUnit: ' . ($user->admin_unit ? 'Yes' : 'No'));
 
-        if ($user->role !== 'superadmin' && $user->role !== 'admin') {
-            \Log::warning('AdminMiddleware: User ' . $user->nip . ' is not an admin or superadmin. Role: ' . $user->role);
+        if (!$user->isAdmin()) {
+            \Log::warning('AdminMiddleware: User ' . $user->nip . ' is not an admin or superadmin.');
             abort(403, 'Unauthorized action.');
         }
 

@@ -194,7 +194,7 @@ class User extends Authenticatable
      */
     public function isSuperAdmin()
     {
-        // Jika role-nya superadmin ATAU admin_kabupaten bernilai 1, maka dia Superadmin
+        // Superadmin jika role-nya 'superadmin' ATAU flag admin_kabupaten dari API bernilai 1
         return $this->role === 'superadmin' || $this->admin_kabupaten == 1;
     }
 
@@ -203,7 +203,8 @@ class User extends Authenticatable
      */
     public function isAdmin()
     {
-        return in_array($this->role, ['admin', 'superadmin']);
+        // Admin jika dia Superadmin ATAU role-nya 'admin' ATAU flag admin_unit dari API bernilai true
+        return $this->isSuperAdmin() || $this->role === 'admin' || $this->admin_unit == true;
     }
 
     /**

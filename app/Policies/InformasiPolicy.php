@@ -29,7 +29,7 @@ class InformasiPolicy
      */
     public function create(User $user): bool
     {
-        return $user->role === 'admin' || $user->role === 'superadmin';
+        return $user->isAdmin();
     }
 
     /**
@@ -37,12 +37,18 @@ class InformasiPolicy
      */
     public function update(User $user, Informasi $informasi): bool
     {
-        // BYPASS TOTAL UNTUK DEBUGGING 403
-        if ($user->role === 'superadmin' || $user->role === 'admin') {
+        // Superadmin punya akses penuh
+        if ($user->isSuperAdmin()) {
             return true;
         }
 
-        return false;
+        // Selain Admin tidak punya akses
+        if (!$user->isAdmin()) {
+            return false;
+        }
+
+        // BYPASS TOTAL UNTUK DEBUGGING 403 (Sesuai keinginan user agar admin lancar)
+        return true;
     }
 
     /**
