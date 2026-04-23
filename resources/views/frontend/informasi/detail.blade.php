@@ -222,6 +222,16 @@
                                 </div>
 
                                 <div class="flex items-start gap-4">
+                                    <div class="w-10 h-10 bg-orange-50 rounded-xl flex items-center justify-center shrink-0">
+                                        <i class="fas fa-file-signature text-orange-600 text-sm"></i>
+                                    </div>
+                                    <div>
+                                        <p class="text-[10px] font-black text-gray-400 uppercase mb-1">Jenis Dokumen</p>
+                                        <p class="text-sm font-bold text-gray-800 leading-tight">{{ $informasi->jenis_dokumen ?: 'Informasi Publik' }}</p>
+                                    </div>
+                                </div>
+
+                                <div class="flex items-start gap-4">
                                     <div class="w-10 h-10 bg-emerald-50 rounded-xl flex items-center justify-center shrink-0">
                                         <i class="fas fa-user-check text-emerald-600 text-sm"></i>
                                     </div>
@@ -312,6 +322,17 @@
                     <div class="min-w-0">
                         <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Unit Kerja</p>
                         <p class="text-sm font-bold text-slate-800 leading-tight break-words">{{ $unitName }}</p>
+                    </div>
+                </div>
+
+                <!-- Jenis Dokumen -->
+                <div class="flex items-start gap-4 p-4 bg-gray-50 rounded-2xl border border-gray-100">
+                    <div class="w-10 h-10 bg-orange-500 text-white rounded-xl flex items-center justify-center shrink-0 shadow-lg shadow-orange-100">
+                        <i class="fas fa-file-signature text-sm"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest mb-1">Jenis Dokumen</p>
+                        <p class="text-sm font-bold text-slate-800 leading-tight">{{ $informasi->jenis_dokumen ?: 'Informasi Publik' }}</p>
                     </div>
                 </div>
 
