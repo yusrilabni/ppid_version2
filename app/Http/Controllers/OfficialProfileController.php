@@ -128,7 +128,12 @@ class OfficialProfileController extends Controller
         }
 
         $query = Official::where('position_id', $position->id)
-                         ->with(['position', 'organization']);
+                         ->with(['position', 'organization'])
+                         ->whereHas('organization', function($q) {
+                             $q->whereIn('type', ['opd', 'kecamatan'])
+                               ->where('name', 'not like', 'Desa %')
+                               ->where('name', 'not like', 'Kelurahan %');
+                         });
 
         $user = \Illuminate\Support\Facades\Auth::user();
         if (!$user || ($user && !$user->isAdmin())) { 
