@@ -72,4 +72,44 @@ class InformasiController extends Controller
             ], 500);
         }
     }
+
+    /**
+     * Ambil detail informasi berdasarkan slug atau ID.
+     */
+    public function show($slug): JsonResponse
+    {
+        try {
+            $item = Informasi::with(['user', 'official.position'])
+                ->where('slug', $slug)
+                ->orWhere('id', $slug)
+                ->firstOrFail();
+
+            $item->increment('views_count');
+
+            $unitData = GeneralHelper::getUnitData();
+            $unit = $unitData->get((string)$item->unit_id);
+            $item->organization_name = $unit['unit_nama'] ?? 'Unit Tidak Terdaftar';
+            
+            if ($item->file) {
+                $item->file_url = url('storage/' . $item->file);
+            }
+
+            // Fallback nama pengunggah jika user_id NULL
+            if (!$item->user) {
+                $item->uploader_name = 'Admin PPID ' . $item->organization_name;
+            } else {
+                $item->uploader_name = $item->user->name;
+            }
+
+            return response()->json([
+                'success' => true,
+                'data' => $item
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'error' => 'Dokumen tidak ditemukan'
+            ], 404);
+        }
+    }
 }

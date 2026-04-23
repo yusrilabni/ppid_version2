@@ -35,6 +35,7 @@ Route::prefix('v1')->group(function () {
 
     // Informasi Publik & Laporan
     Route::get('/informasi', [InformasiController::class, 'index']);
+    Route::get('/informasi/{slug}', [InformasiController::class, 'show']);
     Route::get('/laporan', [LaporanController::class, 'index']);
 
     // Permohonan Informasi (Formulir via Android)
