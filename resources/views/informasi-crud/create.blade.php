@@ -174,7 +174,12 @@
                                     </div>
                                 </div>
                             </div>
-                            <div id="urlField" class="mb-6" style="display: none;"><label for="url" class="block text-gray-700 text-sm font-semibold mb-2">Link File (untuk file > 5MB)</label><input type="url" name="url" id="url" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" placeholder="https://contoh.com/file.pdf"><p class="text-gray-500 text-xs mt-2">Gunakan ini jika file Anda lebih dari 5MB dan tidak bisa diupload</p></div>
+                            <div id="urlField" class="mb-6" style="display: none;">
+                                <label for="url_raw" class="block text-gray-700 text-sm font-semibold mb-2">Link File (untuk file > 5MB)</label>
+                                <input type="url" id="url_raw" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" placeholder="https://contoh.com/file.pdf">
+                                <input type="hidden" name="url" id="url_hidden">
+                                <p class="text-gray-500 text-xs mt-2">Gunakan ini jika file Anda lebih dari 5MB dan tidak bisa diupload</p>
+                            </div>
                         </div>
                         <div class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
                             <a href="{{ route('frontend.informasi.category', $categorySlug) }}" class="px-6 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition duration-200">Batal</a>
@@ -301,8 +306,24 @@
             submitButton.style.display = 'inline-block';
         });
         
+        function prepareUrl() {
+            const urlRaw = document.getElementById('url_raw');
+            const urlHidden = document.getElementById('url_hidden');
+            const fileTypeInput = document.querySelector('input[name="file_type"]:checked');
+            
+            if (fileTypeInput && fileTypeInput.value === 'url' && urlRaw && urlRaw.value) {
+                // Encode to Base64 and add prefix to identify it in controller
+                urlHidden.value = 'B64_' + btoa(urlRaw.value);
+            }
+        }
+
         submitFromModalButton.addEventListener('click', function() {
+            prepareUrl();
             form.submit();
+        });
+
+        form.addEventListener('submit', function() {
+            prepareUrl();
         });
 
         cancelButton.addEventListener('click', function () {

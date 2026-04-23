@@ -286,7 +286,7 @@ class InformasiController extends Controller
             }
 
             if ($request->file_type === 'url') {
-                $validationRules['url'] = 'required|url';
+                $validationRules['url'] = 'required|string';
             } else {
                 $validationRules['file'] = 'required|file|max:5120'; // Increase to 5MB for testing
             }
@@ -311,7 +311,11 @@ class InformasiController extends Controller
             if ($request->file_type === 'upload' && $request->hasFile('file')) {
                 $dataToSave['file'] = $request->file('file')->store('files', 'public');
             } else {
-                $dataToSave['url'] = $request->url;
+                $url = $request->url;
+                if (str_starts_with($url, 'B64_')) {
+                    $url = base64_decode(substr($url, 4));
+                }
+                $dataToSave['url'] = $url;
             }
 
             Informasi::create($dataToSave);
@@ -348,7 +352,7 @@ class InformasiController extends Controller
         }
 
         if ($request->input('file_type') === 'url') {
-            $validationRules['url'] = 'required|url';
+            $validationRules['url'] = 'required|string';
         } else {
             $validationRules['file'] = 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,png|max:2048';
         }
@@ -387,7 +391,12 @@ class InformasiController extends Controller
                         Storage::disk('public')->delete($informasi->file);
                     }
                     $dataToUpdate['file'] = null;
-                    $dataToUpdate['url'] = $validatedData['url'];
+                    
+                    $url = $validatedData['url'];
+                    if (str_starts_with($url, 'B64_')) {
+                        $url = base64_decode(substr($url, 4));
+                    }
+                    $dataToUpdate['url'] = $url;
                 } else {
                     if ($request->hasFile('file')) {
                         if ($informasi->file) {
