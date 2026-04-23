@@ -72,7 +72,18 @@
                             </div>
                             <div>
                                 <label class="block text-gray-700 text-sm font-semibold mb-2">Jabatan</label>
-                                <input type="text" value="{{ $official->position->name ?? '' }}" disabled class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed">
+                                @php
+                                    $displayPosition = $official->position->name ?? '';
+                                    if (strtolower($displayPosition) === 'kepala opd' && $official->organization) {
+                                        $orgNameLower = strtolower($official->organization->name);
+                                        if (str_contains($orgNameLower, 'desa')) {
+                                            $displayPosition = 'Kepala Desa';
+                                        } elseif (str_contains($orgNameLower, 'kelurahan')) {
+                                            $displayPosition = 'Lurah';
+                                        }
+                                    }
+                                @endphp
+                                <input type="text" value="{{ $displayPosition }}" disabled class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed">
                             </div>
                             <div>
                                 <label class="block text-gray-700 text-sm font-semibold mb-2">OPD</label>
