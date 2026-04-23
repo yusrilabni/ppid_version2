@@ -17,18 +17,35 @@ class InformasiController extends Controller
     {
         try {
             $query = Informasi::with('official.position')
-                // Tampilkan semua: AKTIF, BERLAKU, dan ARSIP sesuai permintaan
                 ->whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP']);
 
-            if ($request->has('category')) {
+            // Pencarian Umum (Judul, Kategori, Dinas)
+            if ($request->has('q')) {
+                $search = $request->get('q');
+                $query->where(function($q) use ($search) {
+                    $q->where('title', 'LIKE', '%' . $search . '%')
+                      ->orWhere('category', 'LIKE', '%' . $search . '%')
+                      ->orWhereHas('official.organization', function($org) use ($search) {
+                          $org->where('name', 'LIKE', '%' . $search . '%');
+                      });
+                });
+            }
+
+            // Filter Kategori
+            if ($request->has('category') && $request->get('category') !== 'Semua') {
                 $query->where('category', $request->get('category'));
             }
 
-            if ($request->has('q')) {
-                $query->where('title', 'LIKE', '%' . $request->get('q') . '%');
+            // Filter Status
+            if ($request->has('status') && $request->get('status') !== 'Semua') {
+                $query->where('status', $request->get('status'));
             }
 
-            // Paginasi: default 10 item per halaman
+            // Filter Tanggal (jika ada)
+            if ($request->has('date')) {
+                $query->whereDate('tanggal_upload', $request->get('date'));
+            }
+
             $perPage = $request->get('per_page', 10);
             $informasi = $query->orderBy('tanggal_upload', 'desc')->paginate($perPage);
 
@@ -37,7 +54,7 @@ class InformasiController extends Controller
             $informasi->getCollection()->transform(function ($item) use ($unitData) {
                 $unit = $unitData->get((string)$item->unit_id);
                 $item->organization_name = $unit['unit_nama'] ?? 'Unit Tidak Terdaftar';
-                $item->organization_address = $unit['unit_alamat'] ?? 'Alamat belum ditambahkan';
+                // ... rest of mapping
                 if ($item->file) {
                     $item->file_url = url('storage/' . $item->file);
                 }
@@ -46,7 +63,6 @@ class InformasiController extends Controller
 
             return response()->json([
                 'success' => true,
-                'message' => 'Data DIP berhasil diambil',
                 'data' => $informasi
             ]);
         } catch (\Exception $e) {
