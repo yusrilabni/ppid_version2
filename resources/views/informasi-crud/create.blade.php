@@ -12,9 +12,9 @@
     <div class="container mx-auto py-8 px-4">
         <div class="max-w-4xl mx-auto">
             @if ($selectedCategory)
-                <x-breadcrumbs :breadcrumbs="[['title' => 'Beranda', 'url' => route('home'), 'icon' => 'fas fa-home'],['title' => $selectedCategory, 'url' => route('frontend.informasi.category', $categorySlug), 'icon' => $categoryIcon],['title' => 'Tambah Informasi', 'url' => request()->fullUrl(), 'icon' => 'fas fa-plus-circle'],]" />
+                <x-breadcrumbs :breadcrumbs="[['title' => 'Beranda', 'url' => route('home'), 'icon' => 'fas fa-home'],['title' => $selectedCategory, 'url' => route('frontend.informasi.category', $categorySlug), 'icon' => 'fas fa-file-alt'],['title' => 'Tambah Informasi', 'url' => '#', 'icon' => 'fas fa-plus-circle'],]" />
             @else
-                <x-breadcrumbs :breadcrumbs="[['title' => 'Beranda', 'url' => route('home'), 'icon' => 'fas fa-home'],['title' => 'Tambah Informasi', 'url' => request()->fullUrl(), 'icon' => 'fas fa-plus-circle'],]" />
+                <x-breadcrumbs :breadcrumbs="[['title' => 'Beranda', 'url' => route('home'), 'icon' => 'fas fa-home'],['title' => 'Tambah Informasi', 'url' => '#', 'icon' => 'fas fa-plus-circle'],]" />
             @endif
 
             <div class="bg-white rounded-xl shadow-lg overflow-hidden">
@@ -59,13 +59,15 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('admin.informasi.stealth_store') }}" method="POST" enctype="multipart/form-data" x-data="informasiForm()" x-init="init()">
+                    {{-- BYPASS TOTAL: Gunakan URL Statis agar tidak RouteNotFound --}}
+                    <form action="/v2/admin/informasi-crud/save" method="POST" enctype="multipart/form-data" x-data="informasiForm()" x-init="init()">
                         @csrf
                         <input type="hidden" name="replacement_id" id="replacement_id">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div class="md:col-span-2"><label for="title" class="block text-gray-700 text-sm font-semibold mb-2">Judul Informasi <span class="text-red-500">*</span></label><input type="text" name="title" id="title" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" value="{{ old('title') }}" required minlength="5" placeholder="Masukkan judul informasi"></div>
                             <div class="md:col-span-2"><label for="doc_desc" class="block text-gray-700 text-sm font-semibold mb-2">Deskripsi Singkat</label><textarea name="doc_desc" id="doc_desc" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" placeholder="Deskripsi singkat tentang informasi ini">{{ old('doc_desc') }}</textarea></div>        
-                            <div class="md:col-span-2"><label for="doc_content" class="block text-gray-700 text-sm font-semibold mb-2">Konten Informasi Lengkap</label><textarea name="doc_content" id="doc_content" rows="6" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" placeholder="Konten lengkap informasi publik">{{ old('doc_content') }}</textarea></div>                            @php
+                            <div class="md:col-span-2"><label for="doc_content" class="block text-gray-700 text-sm font-semibold mb-2">Konten Informasi Lengkap</label><textarea name="doc_content" id="doc_content" rows="6" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" placeholder="Konten lengkap informasi publik">{{ old('doc_content') }}</textarea></div>
+                            @php
                                 $categories = [
                                     ['value' => 'Informasi Berkala', 'label' => 'Informasi Berkala'],
                                     ['value' => 'Informasi Setiap Saat', 'label' => 'Informasi Setiap Saat'],
@@ -158,24 +160,24 @@
                                 <label class="inline-flex items-center"><input type="radio" name="file_type" value="url" class="form-radio h-4 w-4 text-blue-600" x-on:change="toggleFileInput()"><span class="ml-2 text-gray-700">Link File</span></label>
                             </div>
                             <div id="uploadField" class="mb-6">
-    <label for="file" class="block text-gray-700 text-sm font-semibold mb-2">Upload File</label>
-    <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors duration-200" id="fileDropZone">
-        <div class="flex flex-col items-center justify-center">
-            <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3" id="fileIcon"></i>
-            <p class="text-gray-600 mb-2">Pilih file untuk diupload</p>
-            <p class="text-gray-500 text-sm mb-3">Format: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG (Max 2MB)</p>
-            <input type="file" name="file" id="file" class="hidden" onchange="validateFile(this)">
-            <label for="file" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg cursor-pointer transition duration-200">Pilih File</label>
-            <p id="fileErrorMessage" class="mt-2 text-red-500 text-sm hidden"></p>
-            <div id="fileNameDisplay" class="mt-3 text-sm hidden"></div>
-            <div id="fileSizeDisplay" class="text-xs hidden"></div>
-        </div>
-    </div>
-</div>
-                            <div id="urlField" class="mb-6" style="display: none;"><label for="url" class="block text-gray-700 text-sm font-semibold mb-2">Link File (untuk file > 2MB)</label><input type="url" name="url" id="url" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" placeholder="https://contoh.com/file.pdf"><p class="text-gray-500 text-xs mt-2">Gunakan ini jika file Anda lebih dari 2MB dan tidak bisa diupload</p></div>
+                                <label for="file" class="block text-gray-700 text-sm font-semibold mb-2">Upload File</label>
+                                <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors duration-200" id="fileDropZone">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3" id="fileIcon"></i>
+                                        <p class="text-gray-600 mb-2">Pilih file untuk diupload</p>
+                                        <p class="text-gray-500 text-sm mb-3">Format: PDF, DOC, DOCX, XLS, XLSX, JPG, PNG (Max 5MB)</p>
+                                        <input type="file" name="file" id="file" class="hidden" onchange="validateFile(this)">
+                                        <label for="file" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg cursor-pointer transition duration-200">Pilih File</label>
+                                        <p id="fileErrorMessage" class="mt-2 text-red-500 text-sm hidden"></p>
+                                        <div id="fileNameDisplay" class="mt-3 text-sm hidden"></div>
+                                        <div id="fileSizeDisplay" class="text-xs hidden"></div>
+                                    </div>
+                                </div>
+                            </div>
+                            <div id="urlField" class="mb-6" style="display: none;"><label for="url" class="block text-gray-700 text-sm font-semibold mb-2">Link File (untuk file > 5MB)</label><input type="url" name="url" id="url" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" placeholder="https://contoh.com/file.pdf"><p class="text-gray-500 text-xs mt-2">Gunakan ini jika file Anda lebih dari 5MB dan tidak bisa diupload</p></div>
                         </div>
                         <div class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
-                            <a href="{{ $categorySlug ? route('frontend.informasi.category', $categorySlug) : route('informasi-crud.index') }}" class="px-6 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition duration-200">Batal</a>
+                            <a href="{{ route('frontend.informasi.category', $categorySlug) }}" class="px-6 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition duration-200">Batal</a>
                             <button type="button" id="check-similarity-btn" x-show="status === 'BERLAKU'" class="px-6 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-medium rounded-lg transition duration-200">Check Informasi</button>
                             <button type="submit" id="submit-btn" x-show="status === 'ARSIP'" style="display: none;" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200">Simpan Informasi</button>
                         </div>
@@ -224,14 +226,6 @@
 @push('scripts')
 <script>
     document.addEventListener('DOMContentLoaded', function () {
-        if (@json($show_pedoman_modal ?? false)) {
-            setTimeout(() => {
-                if (window.Alpine && window.Alpine.store('pedomanModal')) {
-                    window.Alpine.store('pedomanModal').show();
-                }
-            }, 100);
-        }
-
         const form = document.querySelector('form');
         const checkButton = document.getElementById('check-similarity-btn');
         const submitButton = document.getElementById('submit-btn');
@@ -248,18 +242,16 @@
             this.textContent = 'Mengecek...';
 
             const title = titleInput.value;
-            const url = `{{ route('admin.informasi.check_similarity') }}`;
-            const isSuperAdmin = @json($isSuperAdmin);
+            // Gunakan URL statis untuk similarity check juga jika perlu
+            const url = "/v2/admin/informasi-crud/cek-validasi"; 
             
             const formData = new FormData();
             formData.append('title', title);
             formData.append('_token', '{{ csrf_token() }}');
 
-            if (isSuperAdmin) {
-                const unitIdInput = document.getElementsByName('target_unit')[0];
-                if (unitIdInput) {
-                    formData.append('target_unit', unitIdInput.value);
-                }
+            const unitIdInput = document.getElementsByName('target_unit')[0];
+            if (unitIdInput) {
+                formData.append('target_unit', unitIdInput.value);
             }
 
             if (title.length < 5) {
@@ -272,17 +264,9 @@
             fetch(url, {
                 method: 'POST',
                 body: formData,
-                headers: {
-                    'Accept': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                }
+                headers: { 'Accept': 'application/json' }
             })
-            .then(response => {
-                if (!response.ok) {
-                    throw new Error('Network response was not ok');
-                }
-                return response.json();
-            })
+            .then(response => response.json())
             .then(data => {
                 checkButton.disabled = false;
                 checkButton.textContent = 'Check Informasi';
@@ -297,14 +281,14 @@
                     });
                     modal.classList.remove('hidden');
                 } else {
-                    alert('Tidak ada dokumen serupa yang ditemukan. Anda dapat menyimpan informasi ini.');
+                    alert('Tidak ada dokumen serupa. Anda dapat menyimpan.');
                     checkButton.style.display = 'none';
                     submitButton.style.display = 'inline-block';
                 }
             })
             .catch(error => {
-                console.error('Error checking similarity:', error);
-                alert('Terjadi kesalahan saat memeriksa kemiripan dokumen.');
+                console.error('Error:', error);
+                alert('Terjadi kesalahan koneksi.');
                 checkButton.disabled = false;
                 checkButton.textContent = 'Check Informasi';
             });
@@ -313,22 +297,15 @@
         confirmButton.addEventListener('click', function () {
             replacementIdInput.value = similarDocumentsSelect.value;
             modal.classList.add('hidden');
-            
-            // Hide check button, show submit button as per user request
             checkButton.style.display = 'none';
             submitButton.style.display = 'inline-block';
-            
-            // Do NOT submit the form immediately.
         });
         
         submitFromModalButton.addEventListener('click', function() {
-            replacementIdInput.value = '';
-            modal.classList.add('hidden');
             form.submit();
         });
 
         cancelButton.addEventListener('click', function () {
-            replacementIdInput.value = '';
             modal.classList.add('hidden');
             checkButton.style.display = 'none';
             submitButton.style.display = 'inline-block';
@@ -337,137 +314,29 @@
 
     function informasiForm() {
         return {
-            category: '{{ old('category', $selectedCategory) }}',
-            tahun: '{{ old('tahun', date('Y-m-d')) }}',
-            fileInput: 'upload',
             status: '{{ old('status', 'BERLAKU') }}',
-            
             init() {
-                this.toggleFileInput();
                 this.$watch('status', (value) => {
-                    const checkButton = document.getElementById('check-similarity-btn');
-                    const submitButton = document.getElementById('submit-btn');
-                    if (value === 'BERLAKU') {
-                        checkButton.style.display = 'inline-block';
-                        submitButton.style.display = 'none';
-                    } else {
-                        checkButton.style.display = 'none';
-                        submitButton.style.display = 'inline-block';
-                    }
+                    const cb = document.getElementById('check-similarity-btn');
+                    const sb = document.getElementById('submit-btn');
+                    if (value === 'BERLAKU') { cb.style.display = 'inline-block'; sb.style.display = 'none'; }
+                    else { cb.style.display = 'none'; sb.style.display = 'inline-block'; }
                 });
             },
-            
             toggleFileInput() {
-                this.fileInput = document.querySelector('input[name="file_type"]:checked').value;
-                const uploadField = document.getElementById('uploadField');
-                const urlField = document.getElementById('urlField');
-
-                if (this.fileInput === 'url') {
-                    uploadField.style.display = 'none';
-                    urlField.style.display = 'block';
-                } else {
-                    uploadField.style.display = 'block';
-                    urlField.style.display = 'none';
-                }
+                const type = document.querySelector('input[name="file_type"]:checked').value;
+                document.getElementById('uploadField').style.display = type === 'url' ? 'none' : 'block';
+                document.getElementById('urlField').style.display = type === 'url' ? 'block' : 'none';
             }
         }
     }
 
     function validateFile(input) {
         const file = input.files[0];
-        const fileNameDisplay = document.getElementById('fileNameDisplay');
-        const fileSizeDisplay = document.getElementById('fileSizeDisplay');
-        const fileIcon = document.getElementById('fileIcon');
-        const fileErrorMessage = document.getElementById('fileErrorMessage');
-
-        // Clear previous error messages
-        fileErrorMessage.textContent = '';
-        fileErrorMessage.classList.add('hidden');
-        
-        // Reset icon to default state before processing
-        fileIcon.classList.remove('fa-check-circle', 'fa-times-circle', 'text-green-500', 'text-red-500');
-        fileIcon.classList.add('fa-cloud-upload-alt', 'text-gray-400');
-
-
-        if (file) {
-            const fileSize = file.size;
-            const fileName = file.name;
-            const maxFileSize = 2 * 1024 * 1024; // 2MB
-
-            if (fileSize > maxFileSize) {
-                fileErrorMessage.textContent = 'Ukuran file melebihi batas maksimal 2MB. Silakan pilih file yang lebih kecil atau gunakan opsi Link File.';
-                fileErrorMessage.classList.remove('hidden');
-                input.value = ''; // Clear the file input
-                fileNameDisplay.textContent = '';
-                fileNameDisplay.classList.add('hidden');
-                fileSizeDisplay.textContent = '';
-                fileSizeDisplay.classList.add('hidden');
-                // Change icon to show error
-                fileIcon.classList.remove('fa-cloud-upload-alt', 'text-gray-400');
-                fileIcon.classList.add('fa-times-circle', 'text-red-500');
-                return;
-            }
-            
-            // Display file info with green color
-            fileNameDisplay.textContent = `File: ${fileName}`;
-            fileSizeDisplay.textContent = `Ukuran: ${(fileSize / 1024).toFixed(2)} KB`;
-            
-            fileNameDisplay.classList.remove('hidden');
-            fileSizeDisplay.classList.remove('hidden');
-            fileNameDisplay.classList.add('text-green-600');
-            fileSizeDisplay.classList.add('text-green-600');
-
-
-            // Change icon to show success
-            fileIcon.classList.remove('fa-cloud-upload-alt', 'text-gray-400');
-            fileIcon.classList.add('fa-check-circle', 'text-green-500');
-        } else {
-            // No file selected or selection cancelled, reset everything to default
-            fileNameDisplay.textContent = '';
-            fileNameDisplay.classList.add('hidden');
-            fileSizeDisplay.textContent = '';
-            fileSizeDisplay.classList.add('hidden');
-            
-            fileNameDisplay.classList.remove('text-green-600');
-            fileSizeDisplay.classList.remove('text-green-600');
-
-            // Icon is already reset at the top of the function
+        if (file && file.size > 5 * 1024 * 1024) {
+            alert('Maksimal 5MB!');
+            input.value = '';
         }
     }
-
-    function updateJenisDokumenDescription(select) {
-        const selectedOption = select.options[select.selectedIndex];
-        const descContainer = document.getElementById('jenis_dokumen_desc');
-        if (selectedOption && selectedOption.dataset.desc) {
-            descContainer.textContent = "Contoh: " + selectedOption.dataset.desc;
-        } else {
-            descContainer.textContent = "";
-        }
-    }
-
-    function handleJenisDokumenFocus(select) {
-        Array.from(select.options).forEach(opt => {
-            if (opt.value && opt.dataset.desc) {
-                opt.text = opt.value + " (" + opt.dataset.desc + ")";
-            }
-        });
-    }
-
-    function handleJenisDokumenBlur(select) {
-        Array.from(select.options).forEach(opt => {
-            if (opt.selected) {
-                opt.text = opt.value;
-            }
-        });
-    }
-
-    // Initialize description on page load
-    document.addEventListener('DOMContentLoaded', function() {
-        const jenisDokumenSelect = document.getElementById('jenis_dokumen');
-        if (jenisDokumenSelect) {
-            handleJenisDokumenBlur(jenisDokumenSelect);
-            updateJenisDokumenDescription(jenisDokumenSelect);
-        }
-    });
 </script>
 @endpush
