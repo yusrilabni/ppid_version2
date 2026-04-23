@@ -72,7 +72,7 @@ class HomeController extends Controller
                         return [
                             'nama_pemohon' => $t->nama_pemohon,
                             'rating' => $t->rating,
-                            'text' => $t->detail_informasi ? substr(strip_tags($t->detail_informasi), 0, 100) : 'Layanan Memuaskan',
+                            'text' => $t->detail_informasi ? preg_replace('/\s+/', ' ', trim(strip_tags($t->detail_informasi))) : 'Layanan Memuaskan',
                         ];
                     }),
                     'contact' => [
