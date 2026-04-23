@@ -128,12 +128,7 @@ class OfficialProfileController extends Controller
         }
 
         $query = Official::where('position_id', $position->id)
-                         ->with(['position', 'organization'])
-                         ->whereHas('organization', function($q) {
-                             $q->whereIn('type', ['opd', 'kecamatan'])
-                               ->where('name', 'not like', 'Desa %')
-                               ->where('name', 'not like', 'Kelurahan %');
-                         });
+                         ->with(['position', 'organization']);
 
         $user = \Illuminate\Support\Facades\Auth::user();
         if (!$user || ($user && !$user->isAdmin())) { 
@@ -145,11 +140,17 @@ class OfficialProfileController extends Controller
         
         $kepalaOpds = $kepalaOpdsRaw->groupBy(function($official) {
             $orgNameLower = strtolower($official->organization->name ?? '');
-            if (str_contains($orgNameLower, 'kecamatan')) {
-                return 'eselon3';
+
+            // Mengabaikan Desa dan Kelurahan dari daftar ini agar hanya Eselon 2 & 3
+            if (str_contains($orgNameLower, 'desa ') || str_contains($orgNameLower, 'kelurahan ')) {
+                return null;
             }
-            return 'eselon2';
-        });
+
+            if (str_contains($orgNameLower, 'kecamatan')) {
+                return 'eselon3'; // Camat
+            }
+            return 'eselon2'; // Kepala Dinas / Badan / Inspektur
+        })->filter(); // Menghapus key yang bernilai null dari koleksi
         
         $menus = config('menu');
         $icon = 'user-tie'; // default icon
