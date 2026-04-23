@@ -100,15 +100,8 @@ Route::get('/informasi/visit-url/{id}', [FrontendController::class, 'visitUrl'])
 
 // Admin Resources
 Route::prefix('admin')->name('admin.')->group(function () {
-    Route::middleware(['auth', 'verified'])->group(function () {
-        Route::get('my-structure', [\App\Http\Controllers\Admin\StrukturOrganisasiController::class, 'myStructure'])->name('my-structure.manage');
-        Route::post('my-structure', [\App\Http\Controllers\Admin\StrukturOrganisasiController::class, 'updateMyStructure'])->name('my-structure.update');
-    });
-
-    Route::middleware(['auth', 'verified', \App\Http\Middleware\SuperadminMiddleware::class])->group(function () {
-        // Load all routes from admin.php
-        require __DIR__ . '/admin.php';
-    });
+    // Load all routes from admin.php (Middleware is handled inside that file)
+    require __DIR__ . '/admin.php';
 });
 
 // Profil & OPD Pages
