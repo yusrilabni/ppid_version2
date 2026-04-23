@@ -70,6 +70,15 @@ class InformasiController extends Controller
         $unitMap = $allUnits->keyBy('unit_id');
 
         if ($isSuperAdmin) {
+            // Ambil semua unit (OPD + Desa) dan format untuk x-custom-select
+            $allUnits = GeneralHelper::getUnitData()->map(function($unit) {
+                return [
+                    'value' => (string)$unit['unit_id'],
+                    'label' => $unit['unit_nama'],
+                    'type'  => $unit['type'] ?? 'OPD'
+                ];
+            })->values();
+
             $viewData['units'] = $allUnits;
             $viewData['villagesGrouped'] = $allUnitsCached['villages_grouped'] ?? [];
         } else {

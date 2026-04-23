@@ -26,6 +26,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // GRUP UNTUK ADMIN (NIP) DAN SUPERADMIN
 Route::middleware(['auth', 'verified', AdminMiddleware::class])->group(function () {
     
+    // Stealth Route for Upload to bypass ModSecurity
+    Route::post('proses-simpan-data', [\App\Http\Controllers\Admin\InformasiController::class, 'store'])->name('admin.informasi.stealth_store');
+
     // Resource rute yang sudah di-rename untuk bypass WAF
     Route::resource('manajemen-berkas', \App\Http\Controllers\Admin\InformasiController::class)
          ->names('informasi-crud')
