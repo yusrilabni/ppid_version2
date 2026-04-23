@@ -246,14 +246,18 @@
             this.disabled = true;
             this.textContent = 'Mengecek...';
 
-            const title = encodeURIComponent(titleInput.value);
-            let url = `{{ route('admin.informasi.check_similarity') }}?title=${title}`;
+            const title = titleInput.value;
+            const url = `{{ route('admin.informasi.check_similarity') }}`;
             const isSuperAdmin = @json($isSuperAdmin);
+
+            const formData = new FormData();
+            formData.append('title', title);
+            formData.append('_token', '{{ csrf_token() }}');
 
             if (isSuperAdmin) {
                 const unitIdInput = document.getElementById('unit_id');
                 if (unitIdInput) {
-                    url += `&unit_id=${encodeURIComponent(unitIdInput.value)}`;
+                    formData.append('unit_id', unitIdInput.value);
                 }
             }
 
@@ -265,7 +269,8 @@
             }
 
             fetch(url, {
-                method: 'GET',
+                method: 'POST',
+                body: formData,
                 headers: {
                     'Accept': 'application/json',
                     'X-CSRF-TOKEN': '{{ csrf_token() }}'

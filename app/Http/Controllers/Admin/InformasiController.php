@@ -258,101 +258,75 @@ class InformasiController extends Controller
 
     public function store(Request $request)
     {
-        Log::info('Store Informari Attempt', ['user' => auth()->user()->nip]);
-        
-        $user = Auth::user();
-        
-        // KRUSIAL: Pastikan unit_id tersedia sebelum proses berlanjut
-        if (empty($user->unit_id) && !empty($user->nip)) {
-            $apiData = User::getDataFromApi($user->nip);
-            if ($apiData && !empty($apiData['unit_id'])) {
-                $user->unit_id = $apiData['unit_id'];
-                $user->save(); 
-                Log::info('User unit_id synced from API', ['unit_id' => $user->unit_id]);
-            }
-        }
-
-        $isSuperAdmin = $user->isSuperAdmin();
-
-        $validationRules = [
-            'title' => 'required|string|min:5|max:255',
-            'doc_desc' => 'nullable|string|max:65535',
-            'doc_content' => 'nullable|string',
-            'category' => ['required', 'string', 'in:Informasi Berkala,Informasi Setiap Saat,Informasi Serta Merta,Informasi Dikecualikan'],
-            'jenis_dokumen' => 'nullable|string',
-            'tahun' => 'required|date',
-            'status' => 'required|string|in:BERLAKU,ARSIP',
-            'file_type' => 'required|in:upload,url',
-            'replacement_id' => 'nullable|integer|exists:informasis,id'
-        ];
-
-        if ($isSuperAdmin) {
-            $validationRules['target_unit'] = 'required|string';
-        }
-
-        if ($request->input('file_type') === 'url') {
-            $validationRules['url'] = 'required|url';
-        } else {
-            $validationRules['file'] = 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,png|max:2048';
-        }
-        
-        $validatedData = $request->validate($validationRules);
+        \Log::info('STORE_START: ' . auth()->user()->nip . ' attempting upload.');
         
         try {
-            DB::transaction(function () use ($request, $validatedData, $user, $isSuperAdmin) {
-                // Map back to database columns
-                $dataToSave = [
-                    'title' => $validatedData['title'],
-                    'deskripsi' => $validatedData['doc_desc'],
-                    'content' => $validatedData['doc_content'],
-                    'category' => $validatedData['category'],
-                    'jenis_dokumen' => $validatedData['jenis_dokumen'],
-                    'tahun' => $validatedData['tahun'],
-                    'status' => $validatedData['status'],
-                    'file_type' => $validatedData['file_type'],
-                ];
+            $user = Auth::user();
+            \Log::info('USER_DATA: ', ['role' => $user->role, 'unit' => $user->unit_id]);
 
-                // ... logic archive ...
-                if ($request->filled('replacement_id')) {
-                    $informasiToArchive = Informasi::find($request->replacement_id);
-                    if ($informasiToArchive) {
-                        if ($user->cannot('update', $informasiToArchive)) {
-                            throw new AuthorizationException('Anda tidak diizinkan mengubah dokumen unit lain.');
-                        }
-                        $informasiToArchive->status = 'ARSIP';
-                        $informasiToArchive->save();
-                    }
+            // Sync unit_id if missing
+            if (empty($user->unit_id) && !empty($user->nip)) {
+                $apiData = User::getDataFromApi($user->nip);
+                if ($apiData && !empty($apiData['unit_id'])) {
+                    $user->unit_id = $apiData['unit_id'];
+                    $user->save();
+                    \Log::info('UNIT_SYNCED: ' . $user->unit_id);
                 }
+            }
 
-                $tanggal_dokumen = Carbon::parse($validatedData['tahun']);
-                
-                if ($request->input('file_type') === 'upload' && $request->hasFile('file')) {
-                    $dataToSave['file'] = $this->storeFileWithCompression($request->file('file'));
-                    $dataToSave['url'] = null;
-                } else {
-                    $dataToSave['url'] = $validatedData['url'] ?? null;
-                    $dataToSave['file'] = null;
-                }
+            $validationRules = [
+                'title' => 'required|string|min:5|max:255',
+                'doc_desc' => 'nullable|string',
+                'doc_content' => 'nullable|string',
+                'category' => 'required|string',
+                'tahun' => 'required',
+                'status' => 'required|string',
+                'file_type' => 'required',
+            ];
 
-                $dataToSave['tanggal_upload'] = $tanggal_dokumen->toDateString();
-                $dataToSave['tahun'] = $tanggal_dokumen->format('Y');
-                $dataToSave['user_id'] = $user->id;
-                $dataToSave['unit_id'] = $isSuperAdmin ? $request->target_unit : $user->unit_id;
+            if ($user->isSuperAdmin()) {
+                $validationRules['target_unit'] = 'required';
+            }
 
-                if (!$dataToSave['unit_id']) {
-                    throw new \Exception("Gagal menentukan Unit ID. Silakan hubungi Superadmin.");
-                }
+            if ($request->file_type === 'url') {
+                $validationRules['url'] = 'required|url';
+            } else {
+                $validationRules['file'] = 'required|file|max:5120'; // Increase to 5MB for testing
+            }
 
-                Informasi::create($dataToSave);
-            });
+            \Log::info('VALIDATION_START');
+            $validatedData = $request->validate($validationRules);
+            \Log::info('VALIDATION_SUCCESS');
+
+            $dataToSave = [
+                'title' => $validatedData['title'],
+                'deskripsi' => $request->doc_desc,
+                'content' => $request->doc_content,
+                'category' => $validatedData['category'],
+                'jenis_dokumen' => $request->jenis_dokumen,
+                'tahun' => Carbon::parse($validatedData['tahun'])->format('Y'),
+                'tanggal_upload' => Carbon::parse($validatedData['tahun'])->toDateString(),
+                'status' => $validatedData['status'],
+                'user_id' => $user->id,
+                'unit_id' => $user->isSuperAdmin() ? $request->target_unit : $user->unit_id,
+            ];
+
+            if ($request->file_type === 'upload' && $request->hasFile('file')) {
+                $dataToSave['file'] = $request->file('file')->store('files', 'public');
+            } else {
+                $dataToSave['url'] = $request->url;
+            }
+
+            Informasi::create($dataToSave);
+            \Log::info('STORE_COMPLETE');
+
+            return redirect()->route('frontend.informasi.category', ['category' => Str::slug(str_replace('Informasi ', '', $dataToSave['category']))])
+                ->with('success', 'Data berhasil disimpan.');
+
         } catch (\Exception $e) {
-            Log::error('Store Informasi Failed', ['error' => $e->getMessage()]);
-            return redirect()->back()->withInput()->with('error', $e->getMessage());
+            \Log::error('STORE_FAILED: ' . $e->getMessage());
+            return redirect()->back()->withInput()->with('error', 'Gagal menyimpan: ' . $e->getMessage());
         }
-
-        Cache::forget('dip_years');
-        return redirect()->route('frontend.informasi.category', ['category' => Str::slug(str_replace('Informasi ', '', $validatedData['category']))])
-            ->with('success', 'Data berhasil disimpan.');
     }
     
     public function update(Request $request, Informasi $informasi)
