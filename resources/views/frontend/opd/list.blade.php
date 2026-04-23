@@ -11,7 +11,7 @@
         ]" />
 
         <div class="mb-16 text-center mt-8">
-            <h1 class="text-4xl md:text-5xl font-black text-gray-900 mb-6 tracking-tight">Profil Pimpinan & Organisasi Daerah</h1>
+            <h1 class="text-4xl md:text-5xl font-black text-gray-900 mb-6 tracking-tight">Daftar Organisasi & Wilayah Daerah</h1>
             <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">Daftar OPD, Kecamatan, Desa, dan Kelurahan yang bertugas di wilayah Kabupaten Sinjai.</p>
         </div>
 
