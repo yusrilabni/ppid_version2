@@ -4,8 +4,6 @@ use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Admin\DashboardController;
 use App\Http\Controllers\Admin\SliderController;
 use App\Http\Controllers\Admin\SurveyController;
-use App\Http\Controllers\Admin\SurveyQuestionController;
-use App\Http\Controllers\Admin\SurveyResponseController;
 use App\Http\Controllers\Admin\AdminSettingController;
 use App\Http\Controllers\Admin\ProfilPpidController;
 use App\Http\Controllers\Admin\PermohonanInformasiController;
@@ -23,19 +21,19 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::post('my-structure', [\App\Http\Controllers\Admin\StrukturOrganisasiController::class, 'updateMyStructure'])->name('my-structure.update');
 });
 
-// GRUP ADMIN (NIP) DAN SUPERADMIN
+// GRUP ADMIN & SUPERADMIN
 Route::middleware(['auth', 'verified', AdminMiddleware::class])->group(function () {
     
-    // RUTE "KIRIM" (Bypass 403) - Gunakan POST untuk semua aksi simpan/update
-    Route::post('tambah-data-baru', [\App\Http\Controllers\Admin\InformasiController::class, 'store'])->name('admin.informasi.stealth_store');
-    Route::post('update-data-ada/{informasi}', [\App\Http\Controllers\Admin\InformasiController::class, 'update'])->name('admin.informasi.stealth_update');
+    // RUTE STORE & UPDATE (Gunakan Nama yang Jelas)
+    Route::post('informasi-crud/save', [\App\Http\Controllers\Admin\InformasiController::class, 'store'])->name('admin.informasi.stealth_store');
+    Route::post('informasi-crud/update/{informasi}', [\App\Http\Controllers\Admin\InformasiController::class, 'update'])->name('admin.informasi.stealth_update');
     
-    // RUTE UTAMA (Index, Create, Edit)
+    // RUTE RESOURCE
     Route::resource('manajemen-berkas', \App\Http\Controllers\Admin\InformasiController::class)
          ->names('informasi-crud')
          ->parameters(['manajemen-berkas' => 'informasi']);
     
-    Route::post('cek-validasi', [\App\Http\Controllers\Admin\InformasiController::class, 'checkSimilarity'])->name('admin.informasi.check_similarity');
+    Route::post('cek-validasi-data', [\App\Http\Controllers\Admin\InformasiController::class, 'checkSimilarity'])->name('admin.informasi.check_similarity');
 
     Route::resource('galeri', \App\Http\Controllers\Admin\GaleriController::class);
     Route::resource('officials', \App\Http\Controllers\Admin\OfficialController::class);
@@ -48,7 +46,7 @@ Route::middleware(['auth', 'verified', AdminMiddleware::class])->group(function 
     Route::resource('permohonan-informasi', PermohonanInformasiController::class);
 });
 
-// KHUSUS SUPERADMIN
+// KHUSUS SUPERADMIN (Berdasarkan Role 'superadmin')
 Route::middleware(['auth', 'verified', SuperadminMiddleware::class])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class);

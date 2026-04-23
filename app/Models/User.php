@@ -194,7 +194,8 @@ class User extends Authenticatable
      */
     public function isSuperAdmin()
     {
-        return $this->role === 'superadmin';
+        // Jika role-nya superadmin ATAU admin_kabupaten bernilai 1, maka dia Superadmin
+        return $this->role === 'superadmin' || $this->admin_kabupaten == 1;
     }
 
     /**
