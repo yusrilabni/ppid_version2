@@ -110,24 +110,52 @@
                                     }
 
                                     $isPdf = $fileUrl && $fileExtension === 'pdf';
-                                    $isImage = $fileUrl && in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif', 'webp']);
+                                    $isImage = $fileUrl && in_array($fileExtension, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp']);
                                     $isOffice = $fileUrl && in_array($fileExtension, ['doc', 'docx', 'xls', 'xlsx', 'ppt', 'pptx']);
+                                    $isGoogleDrive = $fileUrl && str_contains($fileUrl, 'drive.google.com');
+                                    
+                                    // Handle Google Drive Preview Link
+                                    $previewUrl = $fileUrl;
+                                    if ($isGoogleDrive) {
+                                        if (str_contains($fileUrl, '/view')) {
+                                            $previewUrl = str_replace('/view', '/preview', $fileUrl);
+                                        }
+                                    }
                                 @endphp
 
                                 @if($fileUrl)
-                                    @if($isPdf)
-                                        <div class="rounded-3xl overflow-hidden border border-gray-100 shadow-inner bg-gray-50 h-[400px] sm:h-[600px] relative">
-                                            <iframe src="{{ $fileUrl }}" class="w-full h-full border-0"></iframe>
-                                        </div>
-                                    @elseif($isImage)
-                                        <div class="rounded-3xl overflow-hidden border border-gray-100 p-2 sm:p-4 bg-gray-50 flex justify-center">
-                                            <img src="{{ $fileUrl }}" alt="Preview" class="max-w-full h-auto rounded-2xl shadow-xl">
-                                        </div>
-                                    @elseif($isOffice && $informasi->url)
-                                        <div class="rounded-3xl overflow-hidden border border-gray-100 shadow-inner bg-gray-50 h-[400px] sm:h-[600px] relative">
-                                            <iframe src="https://view.officeapps.live.com/op/view.aspx?src={{ urlencode($fileUrl) }}" class="w-full h-full border-0"></iframe>
-                                        </div>
-                                    @endif
+                                    <div class="mb-8">
+                                        @if($isPdf)
+                                            <div class="rounded-3xl overflow-hidden border border-gray-100 shadow-2xl bg-gray-100 h-[500px] sm:h-[800px] relative group/preview">
+                                                <iframe src="{{ $fileUrl }}#toolbar=0" class="w-full h-full border-0"></iframe>
+                                                <div class="absolute top-4 right-4 opacity-0 group-hover/preview:opacity-100 transition-opacity">
+                                                    <a href="{{ $fileUrl }}" target="_blank" class="bg-white/90 backdrop-blur px-4 py-2 rounded-xl shadow-lg text-xs font-bold text-blue-600 flex items-center">
+                                                        <i class="fas fa-expand mr-2"></i> LAYAR PENUH
+                                                    </a>
+                                                </div>
+                                            </div>
+                                        @elseif($isImage)
+                                            <div class="rounded-3xl overflow-hidden border border-gray-100 p-2 sm:p-4 bg-gray-50 flex justify-center shadow-inner">
+                                                <img src="{{ $fileUrl }}" alt="Preview" class="max-w-full h-auto rounded-2xl shadow-2xl border-4 border-white">
+                                            </div>
+                                        @elseif($isGoogleDrive)
+                                            <div class="rounded-3xl overflow-hidden border border-gray-100 shadow-2xl bg-gray-100 h-[500px] sm:h-[800px] relative">
+                                                <iframe src="{{ $previewUrl }}" class="w-full h-full border-0" allow="autoplay"></iframe>
+                                            </div>
+                                        @elseif($isOffice)
+                                            <div class="rounded-3xl overflow-hidden border border-gray-100 shadow-2xl bg-gray-100 h-[500px] sm:h-[800px] relative">
+                                                <iframe src="https://docs.google.com/viewer?url={{ urlencode($fileUrl) }}&embedded=true" class="w-full h-full border-0"></iframe>
+                                            </div>
+                                        @else
+                                            <div class="p-10 sm:p-16 bg-gradient-to-br from-gray-50 to-slate-100 border-2 border-dashed border-gray-200 rounded-[2.5rem] text-center">
+                                                <div class="w-20 h-20 bg-white rounded-3xl flex items-center justify-center mx-auto mb-6 shadow-xl shadow-slate-200">
+                                                    <i class="fas fa-link text-3xl text-blue-500"></i>
+                                                </div>
+                                                <h3 class="text-xl font-black text-slate-800 mb-2">Pratinjau Tidak Tersedia</h3>
+                                                <p class="text-sm text-slate-500 max-w-xs mx-auto leading-relaxed">Dokumen ini merupakan tautan eksternal yang memerlukan akses langsung ke situs penyedia.</p>
+                                            </div>
+                                        @endif
+                                    </div>
 
                                     <div class="mt-8 flex flex-col sm:flex-row gap-4">
                                         @if($informasi->url)
