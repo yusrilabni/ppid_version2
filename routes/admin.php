@@ -32,6 +32,9 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // GRUP ADMIN & SUPERADMIN
 Route::middleware(['auth', 'verified', AdminMiddleware::class])->group(function () {
     
+    // DASHBOARD SEKARANG BISA DIAKSES ADMIN & SUPERADMIN
+    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
+
     // JALAN PINTAS: Daftarkan URL yang tersangkut di cache agar tetap bisa upload
     Route::post('informasi-crud/save', [\App\Http\Controllers\Admin\InformasiController::class, 'store']);
     Route::post('informasi-crud/update/{informasi}', [\App\Http\Controllers\Admin\InformasiController::class, 'update']);
@@ -59,7 +62,6 @@ Route::middleware(['auth', 'verified', AdminMiddleware::class])->group(function 
 
 // KHUSUS SUPERADMIN
 Route::middleware(['auth', 'verified', SuperadminMiddleware::class])->group(function () {
-    Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
     Route::resource('sliders', SliderController::class);
     Route::resource('profil-ppid', ProfilPpidController::class);

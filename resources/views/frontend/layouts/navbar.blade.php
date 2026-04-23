@@ -167,7 +167,7 @@
                                         <p class="text-xs text-gray-500">{{ Auth::user()->email }}</p>
                                     @endif
                                 </div>
-                                @if (Auth::user()->role === 'superadmin')
+                                @if (Auth::user()->isAdmin())
                                     <a href="{{ url('/admin/dashboard') }}"
                                         class="flex items-center px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">
                                         <i class="fas fa-tachometer-alt w-5 mr-3 text-gray-400"></i>
@@ -297,7 +297,7 @@
                         class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
                         {{ __('Profile') }}
                     </a>
-                    @if (Auth::user()->role === 'superadmin')
+                    @if (Auth::user()->isAdmin())
                         <a href="{{ url('/admin/dashboard') }}"
                             class="block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
                             {{ __('Admin Dashboard') }}
