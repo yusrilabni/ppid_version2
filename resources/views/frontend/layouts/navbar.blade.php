@@ -179,7 +179,7 @@
                                     <i class="fas fa-user-circle w-5 mr-3 text-gray-400"></i> {{ __('Profile') }}
                                 </a>
                                 <div class="border-t border-gray-100"></div>
-                                <form method="POST" action="{{ route('logout') }}">
+                                <form method="POST" action="{{ route('logout') }}" onsubmit="this.querySelector('button').disabled = true; this.querySelector('button').classList.add('opacity-50');">
                                     @csrf
                                     <button type="submit"
                                         class="flex items-center w-full text-left px-4 py-2 text-sm text-red-600 hover:bg-red-50">
@@ -303,7 +303,7 @@
                             {{ __('Admin Dashboard') }}
                         </a>
                     @endif
-                    <form method="POST" action="{{ route('logout') }}">
+                    <form method="POST" action="{{ route('logout') }}" onsubmit="this.querySelector('button').disabled = true; this.querySelector('button').classList.add('opacity-50');">
                         @csrf
                         <button type="submit"
                             class="w-full text-left block px-4 py-2 text-base font-medium text-gray-500 hover:text-gray-800 hover:bg-gray-100">
