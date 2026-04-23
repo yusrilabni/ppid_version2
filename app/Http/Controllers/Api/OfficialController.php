@@ -46,7 +46,19 @@ class OfficialController extends Controller
                 $pos = strtolower($item->position->name ?? '');
                 $org = strtolower($item->organization->name ?? '');
 
-                // Penentuan Bobot Hirarki & Kategori
+                // 1. Logika Penamaan Jabatan Dinamis (Agar lebih akurat seperti di Web)
+                if ($pos === 'kepala opd') {
+                    if (str_contains($org, 'dinas')) $item->display_position = 'Kepala ' . ucwords($org);
+                    elseif (str_contains($org, 'badan')) $item->display_position = 'Kepala ' . ucwords($org);
+                    elseif (str_contains($org, 'inspektorat')) $item->display_position = 'Inspektur';
+                    elseif (str_contains($org, 'sekretariat dprd')) $item->display_position = 'Sekretaris DPRD';
+                    elseif (str_contains($org, 'kecamatan')) $item->display_position = 'Camat ' . str_ireplace('Kecamatan ', '', ucwords($org));
+                    else $item->display_position = $item->position->name;
+                } else {
+                    $item->display_position = $item->position->name;
+                }
+
+                // 2. Penentuan Bobot Hirarki & Kategori (Sesuai Aturan Eselon)
                 if (str_contains($pos, 'bupati') && !str_contains($pos, 'wakil')) {
                     $item->h_rank = 1;
                     $item->category = 'Pimpinan Daerah';
@@ -56,32 +68,24 @@ class OfficialController extends Controller
                 } elseif (str_contains($pos, 'sekretaris daerah') || $pos == 'sekda') {
                     $item->h_rank = 3;
                     $item->category = 'Pimpinan Daerah';
-                } elseif (str_contains($pos, 'staf ahli')) {
+                } 
+                // ESELON II: Staf Ahli, Asisten, Inspektur, Kadis, Kaban, Sekwan
+                elseif (str_contains($pos, 'staf ahli') || str_contains($pos, 'asisten') || str_contains($pos, 'inspektur') || 
+                        str_contains($pos, 'kepala dinas') || str_contains($pos, 'kepala badan') || 
+                        str_contains($pos, 'sekretaris dprd') || (str_contains($pos, 'kepala opd') && !str_contains($org, 'kecamatan'))) {
                     $item->h_rank = 4;
                     $item->category = 'Eselon II';
-                } elseif (str_contains($pos, 'asisten i') || str_contains($pos, 'asisten 1')) {
+                } 
+                // ESELON III: Camat
+                elseif (str_contains($pos, 'camat') || (str_contains($pos, 'kepala opd') && str_contains($org, 'kecamatan'))) {
                     $item->h_rank = 5;
-                    $item->category = 'Eselon II';
-                } elseif (str_contains($pos, 'asisten ii') || str_contains($pos, 'asisten 2')) {
-                    $item->h_rank = 6;
-                    $item->category = 'Eselon II';
-                } elseif (str_contains($pos, 'asisten iii') || str_contains($pos, 'asisten 3')) {
-                    $item->h_rank = 7;
-                    $item->category = 'Eselon II';
-                } elseif (str_contains($pos, 'inspektur')) {
-                    $item->h_rank = 8;
-                    $item->category = 'Eselon II';
-                } elseif (str_contains($pos, 'kepala dinas') || str_contains($pos, 'kepala badan') || str_contains($pos, 'kaban') || str_contains($pos, 'kadis')) {
-                    $item->h_rank = 9;
-                    $item->category = 'Eselon II';
-                } elseif (str_contains($pos, 'camat')) {
-                    $item->h_rank = 10;
                     $item->category = 'Eselon III';
-                } elseif (str_contains($pos, 'lurah')) {
-                    $item->h_rank = 11;
+                } 
+                elseif (str_contains($pos, 'lurah')) {
+                    $item->h_rank = 6;
                     $item->category = 'Lurah';
                 } elseif (str_contains($pos, 'kepala desa') || str_contains($pos, 'kades')) {
-                    $item->h_rank = 12;
+                    $item->h_rank = 7;
                     $item->category = 'Kepala Desa';
                 } else {
                     $item->h_rank = 99;
