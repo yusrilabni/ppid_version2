@@ -815,16 +815,29 @@ class FrontendController extends Controller
             abort(403, 'Anda harus login untuk mengakses halaman ini.');
         }
 
-        $api_unit_id = null;
-        if ($user->nip) {
+        $hasAccess = false;
+
+        // 1. Superadmin selalu punya akses
+        if ($user->isSuperAdmin()) {
+            $hasAccess = true;
+        }
+
+        // 2. Cek Unit ID Lokal
+        if (!$hasAccess && $user->unit_id && isset($official->organization) && (string)$user->unit_id === (string)$official->organization->remote_id) {
+            $hasAccess = true;
+        }
+
+        // 3. Cek Unit ID dari API (Fallback)
+        if (!$hasAccess && $user->nip) {
             $apiData = \App\Models\User::getDataFromApi($user->nip);
-            if (isset($apiData['unit_id'])) {
-                $api_unit_id = $apiData['unit_id'];
+            $api_unit_id = $apiData['unit_id'] ?? null;
+            if (!is_null($api_unit_id) && isset($official->organization) && (string)$api_unit_id === (string)$official->organization->remote_id) {
+                $hasAccess = true;
             }
         }
         
-        if (is_null($api_unit_id) || !isset($official->organization) || (string)$api_unit_id !== (string)$official->organization->remote_id) {
-            abort(403, 'Anda tidak memiliki akses untuk mengelola pimpinan ini.');
+        if (!$hasAccess) {
+            abort(403, 'Anda tidak memiliki akses untuk mengelola pimpinan ini. Akses hanya diberikan kepada Superadmin atau Admin Unit Kerja yang bersangkutan.');
         }
 
         return view('frontend.profil.edit-pimpinan', compact('official'));
@@ -838,15 +851,28 @@ class FrontendController extends Controller
             abort(403, 'Anda harus login untuk mengakses halaman ini.');
         }
 
-        $api_unit_id = null;
-        if ($user->nip) {
+        $hasAccess = false;
+
+        // 1. Superadmin
+        if ($user->isSuperAdmin()) {
+            $hasAccess = true;
+        }
+
+        // 2. Cek Unit ID Lokal
+        if (!$hasAccess && $user->unit_id && isset($official->organization) && (string)$user->unit_id === (string)$official->organization->remote_id) {
+            $hasAccess = true;
+        }
+
+        // 3. Cek Unit ID dari API
+        if (!$hasAccess && $user->nip) {
             $apiData = \App\Models\User::getDataFromApi($user->nip);
-            if (isset($apiData['unit_id'])) {
-                $api_unit_id = $apiData['unit_id'];
+            $api_unit_id = $apiData['unit_id'] ?? null;
+            if (!is_null($api_unit_id) && isset($official->organization) && (string)$api_unit_id === (string)$official->organization->remote_id) {
+                $hasAccess = true;
             }
         }
         
-        if (is_null($api_unit_id) || !isset($official->organization) || (string)$api_unit_id !== (string)$official->organization->remote_id) {
+        if (!$hasAccess) {
             abort(403, 'Anda tidak memiliki akses untuk mengelola pimpinan ini.');
         }
 
