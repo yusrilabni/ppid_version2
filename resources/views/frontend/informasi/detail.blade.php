@@ -71,9 +71,6 @@
                                         <span class="w-1 h-6 bg-blue-600 rounded-full mr-3"></span>
                                         Ringkasan
                                     </h2>
-                                    <button onclick="readDocumentContent()" class="text-blue-600 hover:text-blue-700 font-bold text-xs flex items-center">
-                                        <i class="fas fa-volume-up mr-2"></i> DENGARKAN
-                                    </button>
                                 </div>
                                 <div id="doc-description" class="text-gray-600 leading-relaxed text-base sm:text-lg bg-slate-50 p-6 rounded-3xl border border-slate-100 italic">
                                     {{ $informasi->deskripsi ?: 'Tidak ada deskripsi tersedia.' }}
@@ -373,29 +370,11 @@
 
             <!-- Footer Action -->
             <div class="p-6 space-y-3">
-                <button 
-                    onclick="readDocumentContent()" 
-                    class="w-full py-4 bg-indigo-600 text-white font-black rounded-2xl shadow-lg shadow-indigo-100 text-[10px] tracking-widest flex items-center justify-center gap-2"
-                >
-                    <i class="fas fa-headphones"></i> DENGARKAN
-                </button>
-                <button @click="sideMenuOpen = false" class="w-full py-4 bg-slate-100 text-slate-600 font-black rounded-2xl text-[10px] tracking-widest">
+                <button @click="sideMenuOpen = false" class="w-full py-4 bg-slate-900 text-white font-black rounded-2xl text-[10px] tracking-widest shadow-xl">
                     KEMBALI KE BACAAN
                 </button>
             </div>
         </div>
     </div>
 </div>
-
-<script>
-    function readDocumentContent() {
-        const title = "{{ $informasi->title }}";
-        const description = document.getElementById('doc-description').innerText;
-        const contentElement = document.getElementById('doc-full-content');
-        let fullContent = "";
-        if (contentElement) { fullContent = contentElement.innerText; }
-        const textToRead = `Judul: ${title}. Deskripsi: ${description}. ${fullContent ? 'Informasi Lengkap: ' + fullContent : ''}`;
-        window.dispatchEvent(new CustomEvent('accessibility:read-content', { detail: { content: textToRead } }));
-    }
-</script>
 @endsection
