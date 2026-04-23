@@ -136,6 +136,7 @@ class User extends Authenticatable
             'jabatan_atasan_id' => $apiData['jabatan_atasan_id'] ?? null,
             'admin_unit' => $apiData['admin_unit'] ?? false,
             'login_type' => 'nip',
+            'email_verified_at' => now(), // PAKSA VERIFIED SETIAP SYNC
         ];
 
         if (!$user) {

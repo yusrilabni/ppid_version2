@@ -16,7 +16,7 @@ use App\Http\Middleware\SuperadminMiddleware;
 |--------------------------------------------------------------------------
 */
 
-Route::middleware(['auth', 'verified'])->group(function () {
+Route::middleware(['auth'])->group(function () {
     Route::get('my-structure', [\App\Http\Controllers\Admin\StrukturOrganisasiController::class, 'myStructure'])->name('my-structure.manage');
     Route::post('my-structure', [\App\Http\Controllers\Admin\StrukturOrganisasiController::class, 'updateMyStructure'])->name('my-structure.update');
     
@@ -30,7 +30,7 @@ Route::middleware(['auth', 'verified'])->group(function () {
 });
 
 // GRUP ADMIN & SUPERADMIN
-Route::middleware(['auth', 'verified', AdminMiddleware::class])->group(function () {
+Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     
     // DASHBOARD SEKARANG BISA DIAKSES ADMIN & SUPERADMIN
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
@@ -61,7 +61,7 @@ Route::middleware(['auth', 'verified', AdminMiddleware::class])->group(function 
 });
 
 // KHUSUS SUPERADMIN
-Route::middleware(['auth', 'verified', SuperadminMiddleware::class])->group(function () {
+Route::middleware(['auth', SuperadminMiddleware::class])->group(function () {
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
     Route::resource('sliders', SliderController::class);
     Route::resource('profil-ppid', ProfilPpidController::class);
