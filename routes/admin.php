@@ -19,16 +19,22 @@ use App\Http\Middleware\SuperadminMiddleware;
 Route::middleware(['auth', 'verified'])->group(function () {
     Route::get('my-structure', [\App\Http\Controllers\Admin\StrukturOrganisasiController::class, 'myStructure'])->name('my-structure.manage');
     Route::post('my-structure', [\App\Http\Controllers\Admin\StrukturOrganisasiController::class, 'updateMyStructure'])->name('my-structure.update');
+    
+    // RUTE DARURAT: Bersihkan Cache Rute via URL
+    // Akses: https://ppidkab.sinjaikab.go.id/v2/admin/clear-route-cache
+    Route::get('clear-route-cache', function() {
+        \Illuminate\Support\Facades\Artisan::call('route:clear');
+        return "Route cache cleared successfully!";
+    });
 });
 
 // GRUP ADMIN & SUPERADMIN
 Route::middleware(['auth', 'verified', AdminMiddleware::class])->group(function () {
     
-    // RUTE MANUAL UNTUK BYPASS CACHE & WAF
-    // Penting: Taruh di atas resource agar tidak ter-overwrite
-    Route::post('informasi-crud/save', [\App\Http\Controllers\Admin\InformasiController::class, 'store'])->name('admin.informasi.stealth_store');
-    Route::post('informasi-crud/update/{informasi}', [\App\Http\Controllers\Admin\InformasiController::class, 'update'])->name('admin.informasi.stealth_update');
-    Route::post('informasi-crud/cek-validasi', [\App\Http\Controllers\Admin\InformasiController::class, 'checkSimilarity'])->name('admin.informasi.check_similarity');
+    // RUTE UNIQUE (Bypass 405 & WAF)
+    Route::post('proses-tambah-informasi', [\App\Http\Controllers\Admin\InformasiController::class, 'store'])->name('admin.informasi.stealth_store');
+    Route::post('proses-update-informasi/{informasi}', [\App\Http\Controllers\Admin\InformasiController::class, 'update'])->name('admin.informasi.stealth_update');
+    Route::post('proses-cek-judul', [\App\Http\Controllers\Admin\InformasiController::class, 'checkSimilarity'])->name('admin.informasi.check_similarity');
 
     // RUTE RESOURCE
     Route::resource('informasi-crud', \App\Http\Controllers\Admin\InformasiController::class)

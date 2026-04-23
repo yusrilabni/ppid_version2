@@ -58,7 +58,7 @@
                         </div>
                     @endif
 
-                    <form action="./../update/{{ $informasi->id }}" method="POST" enctype="multipart/form-data" x-data="informasiForm()" x-init="init()">
+                    <form action="{{ route('admin.informasi.stealth_update', $informasi) }}" method="POST" enctype="multipart/form-data" x-data="informasiForm()" x-init="init()">
                         @csrf
                         {{-- Hapus @method PUT karena kita bypass via POST murni --}}
                         <input type="hidden" name="replacement_id" id="replacement_id">
