@@ -75,7 +75,7 @@
                                             @php
                                                 // Cari Pejabat Terkait (Kepala Dinas/Badan/Camat)
                                                 // Kita asumsikan pimpinan pertama adalah pimpinan utama
-                                                $leader = \App\Models\Official::where('unit_id', $organization->unit_id)
+                                                $leader = \App\Models\Official::where('organization_id', $organization->id)
                                                     ->where('status', 'active')
                                                     ->first();
                                             @endphp
