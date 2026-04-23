@@ -34,7 +34,22 @@ class OfficialController extends Controller
                 });
             }
 
-            $officials = $query->orderBy('full_name', 'asc')->get();
+            // HIRARKI: Urutkan berdasarkan Jabatan (Bupati -> Wakil -> Sekda -> dst)
+            $officials = $query->get()->map(function($item) {
+                // Tambahkan FULL URL untuk foto agar muncul di Android
+                $item->photo_url = $item->photo ? url('storage/' . $item->photo) : null;
+                
+                // Berikan bobot hirarki (makin kecil makin atas)
+                $name = strtolower($item->position->name);
+                if (str_contains($name, 'bupati') && !str_contains($name, 'wakil')) $item->hierarchy = 1;
+                elseif (str_contains($name, 'wakil bupati')) $item->hierarchy = 2;
+                elseif (str_contains($name, 'sekretaris daerah') || str_contains($name, 'sekda')) $item->hierarchy = 3;
+                elseif (str_contains($name, 'asisten')) $item->hierarchy = 4;
+                elseif (str_contains($name, 'kepala dinas') || str_contains($name, 'kepala badan')) $item->hierarchy = 5;
+                else $item->hierarchy = 99;
+
+                return $item;
+            })->sortBy('hierarchy')->values();
 
             return response()->json([
                 'success' => true,

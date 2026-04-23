@@ -45,8 +45,8 @@ export default function PejabatScreen() {
     <View style={styles.card}>
       <View style={styles.cardHeader}>
         <View style={styles.avatarContainer}>
-            {item.photo ? (
-                <Image source={{ uri: `https://ppidkab.sinjaikab.go.id/storage/${item.photo}` }} style={styles.avatar} />
+            {item.photo_url ? (
+                <Image source={{ uri: item.photo_url }} style={styles.avatar} />
             ) : (
                 <View style={[styles.avatar, styles.avatarPlaceholder]}>
                     <Users size={24} color="#94a3b8" />
