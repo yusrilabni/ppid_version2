@@ -92,10 +92,19 @@ class OfficialController extends Controller
                 'awards', 
                 'trainingHistories',
                 'organizationalHistories',
-                'lhkpns'
+                'lhkpns',
+                'children' // Tambahkan relasi anak
             ])
             ->where('slug', $slug)
+            ->orWhere('id', $slug)
             ->firstOrFail();
+
+            // Pastikan URL Foto Absolut
+            if ($official->photo) {
+                $official->photo_url = url('storage/' . $official->photo);
+            } else {
+                $official->photo_url = null;
+            }
 
             return response()->json([
                 'success' => true,
