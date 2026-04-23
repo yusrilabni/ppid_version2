@@ -47,10 +47,10 @@ class OfficialController extends Controller
                 $org = strtolower($item->organization->name ?? '');
 
                 // 1. Logika Penamaan Jabatan Dinamis (Agar lebih akurat seperti di Web)
-                if ($pos === 'kepala opd') {
+                if (str_contains($pos, 'kepala opd') || str_contains($pos, 'pimpinan')) {
                     if (str_contains($org, 'dinas')) $item->display_position = 'Kepala ' . ucwords($org);
                     elseif (str_contains($org, 'badan')) $item->display_position = 'Kepala ' . ucwords($org);
-                    elseif (str_contains($org, 'inspektorat')) $item->display_position = 'Inspektur';
+                    elseif (str_contains($org, 'inspektorat')) $item->display_position = 'Inspektur Kabupaten Sinjai';
                     elseif (str_contains($org, 'sekretariat dprd')) $item->display_position = 'Sekretaris DPRD';
                     elseif (str_contains($org, 'kecamatan')) $item->display_position = 'Camat ' . str_ireplace('Kecamatan ', '', ucwords($org));
                     else $item->display_position = $item->position->name;
@@ -69,22 +69,29 @@ class OfficialController extends Controller
                     $item->h_rank = 3;
                     $item->category = 'Pimpinan Daerah';
                 } 
-                // ESELON II: Staf Ahli, Asisten, Inspektur, Kadis, Kaban, Sekwan
-                elseif (str_contains($pos, 'staf ahli') || str_contains($pos, 'asisten') || str_contains($pos, 'inspektur') || 
-                        str_contains($pos, 'kepala dinas') || str_contains($pos, 'kepala badan') || 
-                        str_contains($pos, 'sekretaris dprd') || (str_contains($pos, 'kepala opd') && !str_contains($org, 'kecamatan'))) {
+                // ESELON II: Staf Ahli, Asisten, Inspektur, Kadis, Kaban, Sekwan, Kepala OPD (bukan camat)
+                elseif (
+                    str_contains($pos, 'staf ahli') || 
+                    str_contains($pos, 'asisten') || 
+                    str_contains($pos, 'inspektur') || 
+                    str_contains($pos, 'kadis') || 
+                    str_contains($pos, 'kaban') || 
+                    str_contains($org, 'dinas') || 
+                    str_contains($org, 'badan') || 
+                    (str_contains($pos, 'kepala opd') && !str_contains($org, 'kecamatan'))
+                ) {
                     $item->h_rank = 4;
                     $item->category = 'Eselon II';
                 } 
                 // ESELON III: Camat
-                elseif (str_contains($pos, 'camat') || (str_contains($pos, 'kepala opd') && str_contains($org, 'kecamatan'))) {
+                elseif (str_contains($pos, 'camat') || str_contains($org, 'kecamatan')) {
                     $item->h_rank = 5;
                     $item->category = 'Eselon III';
                 } 
-                elseif (str_contains($pos, 'lurah')) {
+                elseif (str_contains($pos, 'lurah') || str_contains($org, 'kelurahan')) {
                     $item->h_rank = 6;
                     $item->category = 'Lurah';
-                } elseif (str_contains($pos, 'kepala desa') || str_contains($pos, 'kades')) {
+                } elseif (str_contains($pos, 'kades') || str_contains($pos, 'kepala desa') || str_contains($org, 'desa')) {
                     $item->h_rank = 7;
                     $item->category = 'Kepala Desa';
                 } else {
