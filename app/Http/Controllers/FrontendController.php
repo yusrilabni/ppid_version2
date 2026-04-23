@@ -1049,6 +1049,12 @@ class FrontendController extends Controller
             $informasi->save();
         });
 
+        // Tentukan rute redirect berdasarkan jenis organisasi
+        $orgName = strtolower($official->organization->name ?? '');
+        if (str_contains($orgName, 'desa ') || str_contains($orgName, 'kelurahan ')) {
+            return redirect()->route('official.unit-lokal')->with('success', 'Profil pimpinan berhasil diperbarui.');
+        }
+
         return redirect()->route('official.pejabat-daerah')->with('success', 'Profil pimpinan berhasil diperbarui.');
     }
 
