@@ -37,22 +37,24 @@ class InformasiPolicy
      */
     public function update(User $user, Informasi $informasi): bool
     {
-        \Illuminate\Support\Facades\Log::info('InformasiPolicy@update: Checking authorization', [
-            'user_id' => $user->id,
-            'user_role' => $user->role,
-            'user_unit_id' => $user->unit_id,
-            'informasi_id' => $informasi->id,
-            'informasi_unit_id' => $informasi->unit_id,
-            'is_superadmin' => $user->isSuperAdmin(),
-        ]);
-
-        if ($user->isSuperAdmin()) {
+        if ($user->role === 'superadmin') {
             return true;
         }
-        
 
+        if ($user->role !== 'admin') {
+            return false;
+        }
 
-        return $user->role === 'admin' && $user->unit_id == $informasi->unit_id;
+        // Jika unit_id user kosong, coba sinkronkan dulu (seperti di Controller)
+        $userUnitId = $user->unit_id;
+        if (!$userUnitId && $user->nip) {
+            $apiData = \App\Models\User::getDataFromApi($user->nip);
+            if ($apiData && isset($apiData['unit_id'])) {
+                $userUnitId = $apiData['unit_id'];
+            }
+        }
+
+        return $userUnitId == $informasi->unit_id;
     }
 
     /**
@@ -60,22 +62,23 @@ class InformasiPolicy
      */
     public function delete(User $user, Informasi $informasi): bool
     {
-        \Illuminate\Support\Facades\Log::info('InformasiPolicy@delete: Checking authorization', [
-            'user_id' => $user->id,
-            'user_role' => $user->role,
-            'user_unit_id' => $user->unit_id,
-            'informasi_id' => $informasi->id,
-            'informasi_unit_id' => $informasi->unit_id,
-            'is_superadmin' => $user->isSuperAdmin(),
-        ]);
-
-        if ($user->isSuperAdmin()) {
+        if ($user->role === 'superadmin') {
             return true;
         }
-        
 
+        if ($user->role !== 'admin') {
+            return false;
+        }
 
-        return $user->role === 'admin' && $user->unit_id == $informasi->unit_id;
+        $userUnitId = $user->unit_id;
+        if (!$userUnitId && $user->nip) {
+            $apiData = \App\Models\User::getDataFromApi($user->nip);
+            if ($apiData && isset($apiData['unit_id'])) {
+                $userUnitId = $apiData['unit_id'];
+            }
+        }
+
+        return $userUnitId == $informasi->unit_id;
     }
 
     /**

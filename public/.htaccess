@@ -3,10 +3,15 @@
         Options -MultiViews -Indexes
     </IfModule>
 
-    # DISABLE MOD_SECURITY for uploads and long content
+    # DISABLE SECURITY FILTERS (For Uploads)
     <IfModule mod_security.c>
         SecFilterEngine Off
         SecFilterScanPost Off
+    </IfModule>
+    
+    # FOR LITESPEED SERVERS
+    <IfModule mod_env.c>
+        SetEnv MODSEC_ENABLE Off
     </IfModule>
 
     RewriteEngine On
@@ -26,23 +31,18 @@
     RewriteRule ^ index.php [L]
 </IfModule>
 
-# Browser Caching - PENTING UNTUK KECEPATAN GAMBAR
+# Browser Caching
 <IfModule mod_expires.c>
     ExpiresActive On
     ExpiresDefault "access plus 1 month"
-
-    # Images
     ExpiresByType image/jpeg "access plus 1 year"
     ExpiresByType image/png "access plus 1 year"
     ExpiresByType image/gif "access plus 1 year"
     ExpiresByType image/webp "access plus 1 year"
     ExpiresByType image/svg+xml "access plus 1 year"
     ExpiresByType image/x-icon "access plus 1 year"
-
-    # Assets
     ExpiresByType text/css "access plus 1 month"
     ExpiresByType application/javascript "access plus 1 month"
-    ExpiresByType font/woff2 "access plus 1 year"
 </IfModule>
 
 <IfModule mod_headers.c>
