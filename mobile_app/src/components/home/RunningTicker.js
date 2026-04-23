@@ -11,7 +11,6 @@ const WadahKecil = memo(({ item, id }) => (
     <User size={12} color="#60a5fa" strokeWidth={2.5} />
     <Text style={styles.namaText}>{item.nama_pemohon}:</Text>
     
-    {/* Teks ulasan dipaksa satu baris (sebaris semua) */}
     <Text style={styles.ulasanText} numberOfLines={1}>
       "{item.text}"
     </Text>
@@ -22,7 +21,6 @@ const WadahKecil = memo(({ item, id }) => (
       ))}
     </View>
 
-    {/* Jarak antar wadah kecil */}
     <View style={{ width: 80 }} />
   </View>
 ));
@@ -40,7 +38,6 @@ const WadahBesar = ({ data, onLayout, prefix }) => (
         id={`${prefix}-${index}`} 
       />
     ))}
-    {/* Jarak ekstra di akhir wadah besar agar loop tidak bertabrakan */}
     <View style={{ width: 150 }} />
   </View>
 );
@@ -55,8 +52,6 @@ export default function RunningTicker({ ticker }) {
     if (trackWidth > 0) {
       const startRunning = () => {
         scrollX.setValue(0);
-        
-        // Durasi disesuaikan dengan panjang "Wadah Besar"
         const duration = trackWidth * 35; 
 
         Animated.loop(
@@ -68,31 +63,26 @@ export default function RunningTicker({ ticker }) {
           })
         ).start();
       };
-
       startRunning();
     }
   }, [trackWidth, ticker.length]);
 
   return (
     <LinearGradient colors={['#1e293b', '#0f172a']} style={styles.container}>
-      {/* Label Statis */}
       <View style={styles.label}>
         <MessageSquare size={10} color="#fff" strokeWidth={3} />
         <Text style={styles.labelText}>ULASAN</Text>
       </View>
 
       <View style={styles.viewport}>
-        {/* 3. RUNNING TICKER: Memanggil "Wadah Besar" berulang kali */}
         <Animated.View
           style={[styles.animator, { transform: [{ translateX: scrollX }] }]}
         >
-          {/* Wadah Besar Utama (Set A) */}
           <WadahBesar 
             prefix="A" 
             data={ticker} 
             onLayout={(e) => setTrackWidth(e.nativeEvent.layout.width)} 
           />
-          {/* Wadah Besar Duplikat (Set B) untuk loop tanpa putus */}
           <WadahBesar 
             prefix="B" 
             data={ticker} 
@@ -104,54 +94,18 @@ export default function RunningTicker({ ticker }) {
 }
 
 const styles = StyleSheet.create({
-  container: { 
-    marginVertical: 15, 
-    paddingVertical: 12, 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    overflow: 'hidden' 
-  },
+  container: { marginVertical: 15, paddingVertical: 12, flexDirection: 'row', alignItems: 'center', overflow: 'hidden' },
   label: {
-    backgroundColor: '#2563eb', 
-    paddingHorizontal: 12, 
-    paddingVertical: 6,
-    borderRadius: 20, 
-    flexDirection: 'row', 
-    alignItems: 'center', 
-    gap: 5,
-    marginLeft: 15, 
-    marginRight: 15, 
-    elevation: 10, 
-    zIndex: 100
+    backgroundColor: '#2563eb', paddingHorizontal: 12, paddingVertical: 6,
+    borderRadius: 20, flexDirection: 'row', alignItems: 'center', gap: 5,
+    marginLeft: 15, marginRight: 15, elevation: 10, zIndex: 100
   },
   labelText: { color: '#fff', fontSize: 9, fontWeight: '900' },
   viewport: { flex: 1, overflow: 'hidden' },
-
-  animator: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-
-  // Style Wadah Besar (Rel Panjang)
-  wadahBesar: {
-    flexDirection: 'row',
-    alignItems: 'center',
-  },
-
-  // Style Wadah Kecil (Satu Ulasan)
-  wadahKecil: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 10,
-    flexShrink: 0 // Agar tidak menciut
-  },
-
+  animator: { flexDirection: 'row', alignItems: 'center' },
+  wadahBesar: { flexDirection: 'row', alignItems: 'center' },
+  wadahKecil: { flexDirection: 'row', alignItems: 'center', gap: 10, flexShrink: 0 },
   namaText: { color: '#fff', fontSize: 11, fontWeight: '900' },
-  ulasanText: { 
-    color: 'rgba(255,255,255,0.8)', 
-    fontSize: 11, 
-    fontWeight: '600', 
-    fontStyle: 'italic' 
-  },
+  ulasanText: { color: 'rgba(255,255,255,0.8)', fontSize: 11, fontWeight: '600', fontStyle: 'italic' },
   bintangRow: { flexDirection: 'row', gap: 2, alignItems: 'center' }
 });
