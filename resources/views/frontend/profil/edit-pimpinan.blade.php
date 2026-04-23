@@ -44,7 +44,7 @@
                             
                             @if($official->photo)
                                 <div class="mb-4 text-center">
-                                    <img src="{{ Storage::url($official->photo) }}" alt="Foto Profil Saat Ini" class="w-32 h-32 object-cover rounded-xl shadow-md border-2 border-blue-100 mx-auto">
+                                    <img src="{{ asset('storage/' . $official->photo) }}" alt="Foto Profil Saat Ini" class="w-32 h-32 object-cover rounded-xl shadow-md border-2 border-blue-100 mx-auto">
                                     <p class="text-gray-500 text-[10px] mt-2 font-bold uppercase tracking-wider">Foto Saat Ini</p>
                                 </div>
                             @endif
