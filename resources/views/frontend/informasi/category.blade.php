@@ -193,9 +193,9 @@
                                                 $primaryLink = route('opd.detail', $organization->slug);
                                             }
                                         }
-                                        // Priority 3: External URL (only if not an official/org profile)
-                                        elseif (!$informasi->file && $informasi->url) {
-                                            $primaryLink = route('frontend.informasi.visit-url', $informasi->id);
+                                        // Priority 3: Halaman Detail (termasuk yang menggunakan URL Luar agar mampir ke detail dulu)
+                                        else {
+                                            $primaryLink = route('frontend.informasi.detail', $informasi->slug);
                                         }
                                     @endphp
                                     <a href="{{ $primaryLink }}" class="text-sm font-semibold text-gray-900 hover:text-blue-700">
@@ -323,8 +323,9 @@
                                     $primaryLink = route('opd.detail', $organization->slug);
                                 }
                             }
-                            elseif (!$informasi->file && $informasi->url) {
-                                $primaryLink = route('frontend.informasi.visit-url', $informasi->id);
+                            // Default: Halaman Detail
+                            else {
+                                $primaryLink = route('frontend.informasi.detail', $informasi->slug);
                             }
                         @endphp
                         <a href="{{ $primaryLink }}" class="block mb-2">
