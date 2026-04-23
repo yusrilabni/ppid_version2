@@ -58,7 +58,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('informasi-crud.update', $informasi) }}" method="POST" enctype="multipart/form-data" x-data="informasiForm()" x-init="init()">
+                    <form action="{{ url('admin/perbarui-berkas-publik/' . $informasi->id) }}" method="POST" enctype="multipart/form-data" x-data="informasiForm()" x-init="init()">
                         @csrf
                         @method('PUT')
                         <input type="hidden" name="replacement_id" id="replacement_id">
