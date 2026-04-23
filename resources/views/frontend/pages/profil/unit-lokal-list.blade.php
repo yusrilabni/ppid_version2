@@ -123,7 +123,7 @@
                                                 @endphp
 
                                                 @if ($canManage)
-                                                    <a href="{{ route('pimpinan.edit-public', ['official' => $official->id]) }}" class="inline-flex items-center justify-center w-full bg-indigo-600 text-white font-black text-xs py-4 rounded-2xl transition-all duration-500 uppercase tracking-widest gap-2 shadow-lg shadow-indigo-100 hover:bg-indigo-700">
+                                                    <a href="{{ route('pimpinan.edit-public', ['official' => $official->id]) }}" class="inline-flex items-center justify-center w-full bg-amber-500 text-white font-black text-xs py-4 rounded-2xl transition-all duration-500 uppercase tracking-widest gap-2 shadow-lg shadow-amber-100 hover:bg-amber-600">
                                                         <i class="fas fa-pencil-alt text-xs"></i> Kelola Pimpinan
                                                     </a>
                                                 @else
