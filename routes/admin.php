@@ -24,16 +24,16 @@ Route::middleware(['auth', 'verified'])->group(function () {
 // GRUP ADMIN & SUPERADMIN
 Route::middleware(['auth', 'verified', AdminMiddleware::class])->group(function () {
     
-    // RUTE STORE & UPDATE (Gunakan Nama yang Jelas)
+    // RUTE MANUAL UNTUK BYPASS CACHE & WAF
+    // Penting: Taruh di atas resource agar tidak ter-overwrite
     Route::post('informasi-crud/save', [\App\Http\Controllers\Admin\InformasiController::class, 'store'])->name('admin.informasi.stealth_store');
     Route::post('informasi-crud/update/{informasi}', [\App\Http\Controllers\Admin\InformasiController::class, 'update'])->name('admin.informasi.stealth_update');
-    
+    Route::post('informasi-crud/cek-validasi', [\App\Http\Controllers\Admin\InformasiController::class, 'checkSimilarity'])->name('admin.informasi.check_similarity');
+
     // RUTE RESOURCE
-    Route::resource('manajemen-berkas', \App\Http\Controllers\Admin\InformasiController::class)
+    Route::resource('informasi-crud', \App\Http\Controllers\Admin\InformasiController::class)
          ->names('informasi-crud')
-         ->parameters(['manajemen-berkas' => 'informasi']);
-    
-    Route::post('cek-validasi-data', [\App\Http\Controllers\Admin\InformasiController::class, 'checkSimilarity'])->name('admin.informasi.check_similarity');
+         ->parameters(['informasi-crud' => 'informasi']);
 
     Route::resource('galeri', \App\Http\Controllers\Admin\GaleriController::class);
     Route::resource('officials', \App\Http\Controllers\Admin\OfficialController::class);
@@ -46,7 +46,7 @@ Route::middleware(['auth', 'verified', AdminMiddleware::class])->group(function 
     Route::resource('permohonan-informasi', PermohonanInformasiController::class);
 });
 
-// KHUSUS SUPERADMIN (Berdasarkan Role 'superadmin')
+// KHUSUS SUPERADMIN
 Route::middleware(['auth', 'verified', SuperadminMiddleware::class])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class);

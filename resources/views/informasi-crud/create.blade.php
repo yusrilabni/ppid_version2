@@ -59,7 +59,7 @@
                         </div>
                     @endif
 
-                    <form action="{{ route('admin.informasi.stealth_store') }}" method="POST" enctype="multipart/form-data" x-data="informasiForm()" x-init="init()">
+                    <form action="./../save" method="POST" enctype="multipart/form-data" x-data="informasiForm()" x-init="init()">
                         @csrf
                         <input type="hidden" name="replacement_id" id="replacement_id">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
