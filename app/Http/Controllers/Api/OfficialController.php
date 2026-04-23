@@ -46,20 +46,47 @@ class OfficialController extends Controller
                 $pos = strtolower($item->position->name ?? '');
                 $org = strtolower($item->organization->name ?? '');
 
-                // Penentuan Bobot Hirarki (Makin Kecil Makin Atas)
-                if (str_contains($pos, 'bupati') && !str_contains($pos, 'wakil')) $item->h_rank = 1;
-                elseif (str_contains($pos, 'wakil bupati')) $item->h_rank = 2;
-                elseif (str_contains($pos, 'sekretaris daerah') || $pos == 'sekda') $item->h_rank = 3;
-                elseif (str_contains($pos, 'staf ahli')) $item->h_rank = 4;
-                elseif (str_contains($pos, 'asisten i') || str_contains($pos, 'asisten 1')) $item->h_rank = 5;
-                elseif (str_contains($pos, 'asisten ii') || str_contains($pos, 'asisten 2')) $item->h_rank = 6;
-                elseif (str_contains($pos, 'asisten iii') || str_contains($pos, 'asisten 3')) $item->h_rank = 7;
-                elseif (str_contains($pos, 'inspektur')) $item->h_rank = 8;
-                elseif (str_contains($pos, 'kepala dinas') || str_contains($pos, 'kepala badan') || str_contains($pos, 'kaban') || str_contains($pos, 'kadis')) $item->h_rank = 9;
-                elseif (str_contains($pos, 'camat')) $item->h_rank = 10;
-                elseif (str_contains($pos, 'lurah')) $item->h_rank = 11;
-                elseif (str_contains($pos, 'kepala desa') || str_contains($pos, 'kades')) $item->h_rank = 12;
-                else $item->h_rank = 99;
+                // Penentuan Bobot Hirarki & Kategori
+                if (str_contains($pos, 'bupati') && !str_contains($pos, 'wakil')) {
+                    $item->h_rank = 1;
+                    $item->category = 'Pimpinan Daerah';
+                } elseif (str_contains($pos, 'wakil bupati')) {
+                    $item->h_rank = 2;
+                    $item->category = 'Pimpinan Daerah';
+                } elseif (str_contains($pos, 'sekretaris daerah') || $pos == 'sekda') {
+                    $item->h_rank = 3;
+                    $item->category = 'Pimpinan Daerah';
+                } elseif (str_contains($pos, 'staf ahli')) {
+                    $item->h_rank = 4;
+                    $item->category = 'Eselon II';
+                } elseif (str_contains($pos, 'asisten i') || str_contains($pos, 'asisten 1')) {
+                    $item->h_rank = 5;
+                    $item->category = 'Eselon II';
+                } elseif (str_contains($pos, 'asisten ii') || str_contains($pos, 'asisten 2')) {
+                    $item->h_rank = 6;
+                    $item->category = 'Eselon II';
+                } elseif (str_contains($pos, 'asisten iii') || str_contains($pos, 'asisten 3')) {
+                    $item->h_rank = 7;
+                    $item->category = 'Eselon II';
+                } elseif (str_contains($pos, 'inspektur')) {
+                    $item->h_rank = 8;
+                    $item->category = 'Eselon II';
+                } elseif (str_contains($pos, 'kepala dinas') || str_contains($pos, 'kepala badan') || str_contains($pos, 'kaban') || str_contains($pos, 'kadis')) {
+                    $item->h_rank = 9;
+                    $item->category = 'Eselon II';
+                } elseif (str_contains($pos, 'camat')) {
+                    $item->h_rank = 10;
+                    $item->category = 'Eselon III';
+                } elseif (str_contains($pos, 'lurah')) {
+                    $item->h_rank = 11;
+                    $item->category = 'Lurah';
+                } elseif (str_contains($pos, 'kepala desa') || str_contains($pos, 'kades')) {
+                    $item->h_rank = 12;
+                    $item->category = 'Kepala Desa';
+                } else {
+                    $item->h_rank = 99;
+                    $item->category = 'Pejabat Lainnya';
+                }
 
                 return $item;
             })->sortBy('h_rank')->values();
