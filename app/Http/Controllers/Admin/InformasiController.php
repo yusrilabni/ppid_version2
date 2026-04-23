@@ -249,8 +249,20 @@ class InformasiController extends Controller
 
     public function store(Request $request)
     {
-        Log::info('store method entered.');
+        Log::info('Store Informari Attempt', ['user' => auth()->user()->nip]);
+        
         $user = Auth::user();
+        
+        // KRUSIAL: Pastikan unit_id tersedia sebelum proses berlanjut
+        if (empty($user->unit_id) && !empty($user->nip)) {
+            $apiData = User::getDataFromApi($user->nip);
+            if ($apiData && !empty($apiData['unit_id'])) {
+                $user->unit_id = $apiData['unit_id'];
+                $user->save(); 
+                Log::info('User unit_id synced from API', ['unit_id' => $user->unit_id]);
+            }
+        }
+
         $isSuperAdmin = $user->isSuperAdmin();
 
         $validationRules = [
@@ -275,24 +287,17 @@ class InformasiController extends Controller
             $validationRules['file'] = 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,png|max:2048';
         }
         
-        $validatedData = $request->validate($validationRules, [
-            'file.max' => 'Ukuran file maksimal 2MB. Silakan gunakan link file untuk file yang lebih besar.'
-        ]);
+        $validatedData = $request->validate($validationRules);
         
         try {
             DB::transaction(function () use ($request, $validatedData, $user, $isSuperAdmin) {
-                Log::info('Entering store transaction.');
+                // ... logic archive ...
                 if ($request->filled('replacement_id')) {
-                    Log::info('Replacement ID found: ' . $request->replacement_id);
                     $informasiToArchive = Informasi::find($request->replacement_id);
                     if ($informasiToArchive) {
-                        Log::info('Document to archive found: ' . $informasiToArchive->id . ' | Unit ID: ' . $informasiToArchive->unit_id);
-                        Log::info('Checking authorization for user ' . $user->id . ' (Unit ID: ' . $user->unit_id . ') to update document.');
                         if ($user->cannot('update', $informasiToArchive)) {
-                            Log::warning('User is NOT authorized to update document ' . $informasiToArchive->id);
-                            throw new AuthorizationException('Anda tidak diizinkan untuk mengubah dokumen milik unit kerja lain.');
+                            throw new AuthorizationException('Anda tidak diizinkan mengubah dokumen unit lain.');
                         }
-                        Log::info('User is authorized. Archiving document ' . $informasiToArchive->id);
                         $informasiToArchive->status = 'ARSIP';
                         $informasiToArchive->save();
                     }
@@ -300,50 +305,30 @@ class InformasiController extends Controller
 
                 $tanggal_dokumen = Carbon::parse($validatedData['tahun']);
                 
-                if ($request->input('file_type') === 'url') {
-                    $validatedData['file'] = null;
-                } else {
-                    if ($request->hasFile('file')) {
-                        $file = $request->file('file');
-                        $filePath = $this->storeFileWithCompression($file);
-                        $validatedData['file'] = $filePath;
-                    }
+                if ($request->input('file_type') === 'upload' && $request->hasFile('file')) {
+                    $validatedData['file'] = $this->storeFileWithCompression($request->file('file'));
                     $validatedData['url'] = null;
                 }
 
                 $validatedData['tanggal_upload'] = $tanggal_dokumen->toDateString();
                 $validatedData['tahun'] = $tanggal_dokumen->format('Y');
-                $validatedData['status'] = $request->status;
+                $validatedData['user_id'] = $user->id;
+                $validatedData['unit_id'] = $isSuperAdmin ? $request->target_unit : $user->unit_id;
 
-                if ($isSuperAdmin) {
-                    $validatedData['unit_id'] = $request->target_unit;
-                    $validatedData['user_id'] = $user->id;
-                } else {
-                    // Ensure the user has a unit_id, fetch from API if not present
-                    if (empty($user->unit_id) && !empty($user->nip)) {
-                        $apiData = User::getDataFromApi($user->nip);
-                        if ($apiData && !empty($apiData['unit_id'])) {
-                            $user->unit_id = $apiData['unit_id'];
-                            $user->save(); // Save the updated unit_id to the user
-                        }
-                    }
-                    $validatedData['user_id'] = $user->id;
-                    $validatedData['unit_id'] = $user->unit_id;
+                if (!$validatedData['unit_id']) {
+                    throw new \Exception("Gagal menentukan Unit ID. Silakan hubungi Superadmin.");
                 }
 
                 Informasi::create($validatedData);
             });
-        } catch (AuthorizationException $e) {
-            $categorySlug = \Illuminate\Support\Str::slug(str_replace('Informasi ', '', $request->input('category')));
-            return redirect()->route('informasi-crud.create', ['category' => $categorySlug])
-                ->withInput($request->input())
-                ->with('error', $e->getMessage());
+        } catch (\Exception $e) {
+            Log::error('Store Informasi Failed', ['error' => $e->getMessage()]);
+            return redirect()->back()->withInput()->with('error', $e->getMessage());
         }
 
         Cache::forget('dip_years');
-
-        $slug = \Illuminate\Support\Str::slug(str_replace('Informasi ', '', $validatedData['category']));
-        return redirect()->route('frontend.informasi.category', ['category' => $slug])->with('success', '"' . $validatedData['title'] . '" berhasil ditambahkan.');
+        return redirect()->route('frontend.informasi.category', ['category' => Str::slug(str_replace('Informasi ', '', $validatedData['category']))])
+            ->with('success', 'Data berhasil disimpan.');
     }
     
     public function update(Request $request, Informasi $informasi)
