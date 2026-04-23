@@ -62,7 +62,7 @@
                             <!-- Officials Grid -->
                             <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
                                 @foreach($group['items'] as $official)
-                                    <div class="group bg-white rounded-[2.5rem] shadow-md hover:shadow-2xl border border-gray-100 overflow-hidden flex flex-col transition-all duration-500 hover:-translate-y-2 relative">
+                                    <div class="group h-full bg-white rounded-[2.5rem] shadow-md hover:shadow-2xl border border-gray-100 overflow-hidden flex flex-col transition-all duration-500 hover:-translate-y-2 relative">
                                         <!-- Decorative background -->
                                         <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-br from-{{ $group['color'] }}-50 to-white opacity-50"></div>
                                         
@@ -91,11 +91,13 @@
                                                 </div>
                                             </div>
 
-                                            <a href="{{ route('official.profile.show', ['slug' => $official->slug ?? '']) }}" class="text-xl md:text-2xl font-black text-gray-900 mb-2 hover:text-{{ $group['color'] }}-600 transition-colors leading-tight">
-                                                {{ $official->full_name }}
-                                            </a>
+                                            <div class="min-h-[4rem] flex items-center justify-center mb-2">
+                                                <a href="{{ route('official.profile.show', ['slug' => $official->slug ?? '']) }}" class="text-xl md:text-2xl font-black text-gray-900 hover:text-{{ $group['color'] }}-600 transition-colors leading-tight line-clamp-2">
+                                                    {{ $official->full_name }}
+                                                </a>
+                                            </div>
                                             
-                                            <div class="mb-4">
+                                            <div class="mb-6 min-h-[3rem] flex items-start justify-center">
                                                 @php
                                                     $jabatan_asli = $official->position->name; 
                                                     $jabatan_tampilan = $jabatan_asli;
@@ -137,43 +139,46 @@
                                                         $jabatan_tampilan = $prefix . '. ' . $jabatan_tampilan;
                                                     }
                                                 @endphp
-                                                <span class="px-4 py-1.5 bg-{{ $group['color'] }}-50 text-{{ $group['color'] }}-700 text-[10px] font-black uppercase tracking-widest rounded-full border border-{{ $group['color'] }}-100">
+                                                <span class="px-4 py-1.5 bg-{{ $group['color'] }}-50 text-{{ $group['color'] }}-700 text-[10px] font-black uppercase tracking-widest rounded-full border border-{{ $group['color'] }}-100 text-center">
                                                     {{ $jabatan_tampilan }}
                                                 </span>
                                             </div>
 
-                                            <div class="flex items-center text-gray-500 font-bold text-sm mb-6 bg-gray-50 px-5 py-2 rounded-2xl border border-gray-100 max-w-full">
-                                                <i class="fas fa-landmark mr-2 text-{{ $group['color'] }}-400 flex-shrink-0"></i>
-                                                <span class="truncate">{{ $official->organization->name ?? 'N/A' }}</span>
-                                            </div>
+                                            <!-- Bottom Section pushed to bottom -->
+                                            <div class="mt-auto w-full">
+                                                <div class="flex items-center justify-center text-gray-500 font-bold text-sm mb-6 bg-gray-50 px-5 py-2 rounded-2xl border border-gray-100 w-full">
+                                                    <i class="fas fa-landmark mr-2 text-{{ $group['color'] }}-400 flex-shrink-0"></i>
+                                                    <span class="truncate">{{ $official->organization->name ?? 'N/A' }}</span>
+                                                </div>
 
-                                            <div class="space-y-3 w-full">
-                                                @auth
-                                                    @php
-                                                        $canManage = false;
-                                                        if ($user->isSuperAdmin()) {
-                                                            $canManage = true;
-                                                        } elseif (isset($api_unit_id) && isset($official->organization) && (string)$api_unit_id === (string)$official->organization->remote_id) {
-                                                            $canManage = true;
-                                                        } elseif (isset($official->organization) && (string)$user->unit_id === (string)$official->organization->remote_id) {
-                                                            $canManage = true;
-                                                        }
-                                                    @endphp
+                                                <div class="space-y-3 w-full">
+                                                    @auth
+                                                        @php
+                                                            $canManage = false;
+                                                            if ($user->isSuperAdmin()) {
+                                                                $canManage = true;
+                                                            } elseif (isset($api_unit_id) && isset($official->organization) && (string)$api_unit_id === (string)$official->organization->remote_id) {
+                                                                $canManage = true;
+                                                            } elseif (isset($official->organization) && (string)$user->unit_id === (string)$official->organization->remote_id) {
+                                                                $canManage = true;
+                                                            }
+                                                        @endphp
 
-                                                    @if ($canManage)
-                                                        <a href="{{ route('pimpinan.edit-public', $official) }}" class="inline-flex items-center justify-center w-full bg-amber-500 text-white font-black text-xs py-4 rounded-2xl transition-all duration-500 uppercase tracking-widest gap-2 shadow-lg shadow-amber-100 hover:bg-amber-600">
-                                                            <i class="fas fa-pencil-alt text-xs"></i> Kelola Pimpinan
-                                                        </a>
+                                                        @if ($canManage)
+                                                            <a href="{{ route('pimpinan.edit-public', $official) }}" class="inline-flex items-center justify-center w-full bg-amber-500 text-white font-black text-xs py-4 rounded-2xl transition-all duration-500 uppercase tracking-widest gap-2 shadow-lg shadow-amber-100 hover:bg-amber-600">
+                                                                <i class="fas fa-pencil-alt text-xs"></i> Kelola Pimpinan
+                                                            </a>
+                                                        @else
+                                                            <a href="{{ route('official.profile.show', ['slug' => $official->slug ?? '']) }}" class="inline-flex items-center justify-center w-full bg-{{ $group['color'] }}-600 text-white font-black text-xs py-4 rounded-2xl transition-all duration-500 uppercase tracking-widest gap-2 shadow-lg shadow-{{ $group['color'] }}-100">
+                                                                Profil Lengkap <i class="fas fa-arrow-right text-sm"></i>
+                                                            </a>
+                                                        @endif
                                                     @else
                                                         <a href="{{ route('official.profile.show', ['slug' => $official->slug ?? '']) }}" class="inline-flex items-center justify-center w-full bg-{{ $group['color'] }}-600 text-white font-black text-xs py-4 rounded-2xl transition-all duration-500 uppercase tracking-widest gap-2 shadow-lg shadow-{{ $group['color'] }}-100">
                                                             Profil Lengkap <i class="fas fa-arrow-right text-sm"></i>
                                                         </a>
-                                                    @endif
-                                                @else
-                                                    <a href="{{ route('official.profile.show', ['slug' => $official->slug ?? '']) }}" class="inline-flex items-center justify-center w-full bg-{{ $group['color'] }}-600 text-white font-black text-xs py-4 rounded-2xl transition-all duration-500 uppercase tracking-widest gap-2 shadow-lg shadow-{{ $group['color'] }}-100">
-                                                        Profil Lengkap <i class="fas fa-arrow-right text-sm"></i>
-                                                    </a>
-                                                @endauth
+                                                    @endauth
+                                                </div>
                                             </div>
                                         </div>
                                     </div>

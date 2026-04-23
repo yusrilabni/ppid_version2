@@ -54,7 +54,7 @@
                         <!-- Officials Grid -->
                         <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8 md:gap-10">
                             @foreach($group['officials'] as $official)
-                                <div class="group bg-white rounded-[2.5rem] shadow-md hover:shadow-2xl border border-gray-100 overflow-hidden flex flex-col transition-all duration-500 hover:-translate-y-2 relative">
+                                <div class="group h-full bg-white rounded-[2.5rem] shadow-md hover:shadow-2xl border border-gray-100 overflow-hidden flex flex-col transition-all duration-500 hover:-translate-y-2 relative">
                                     <!-- Decorative background -->
                                     <div class="absolute top-0 left-0 w-full h-32 bg-gradient-to-br from-indigo-50 to-white opacity-50"></div>
                                     
@@ -83,11 +83,13 @@
                                             </div>
                                         </div>
 
-                                        <a href="{{ route('official.profile.show', ['slug' => $official->slug ?? '']) }}" class="text-xl md:text-2xl font-black text-gray-900 mb-2 hover:text-indigo-600 transition-colors leading-tight">
-                                            {{ $official->full_name }}
-                                        </a>
+                                        <div class="min-h-[4rem] flex items-center justify-center mb-2">
+                                            <a href="{{ route('official.profile.show', ['slug' => $official->slug ?? '']) }}" class="text-xl md:text-2xl font-black text-gray-900 hover:text-indigo-600 transition-colors leading-tight line-clamp-2">
+                                                {{ $official->full_name }}
+                                            </a>
+                                        </div>
                                         
-                                        <div class="mb-4">
+                                        <div class="mb-4 min-h-[2.5rem] flex items-start justify-center">
                                             @php
                                                 $orgName = $official->organization->name ?? '';
                                                 $isDesa = stripos($orgName, 'Desa') !== false;
@@ -103,39 +105,42 @@
                                             </span>
                                         </div>
 
-                                        <div class="flex items-center text-gray-500 font-bold text-sm mb-6 bg-gray-50 px-5 py-2 rounded-2xl border border-gray-100">
-                                            <i class="fas fa-map-marker-alt mr-2 text-indigo-400"></i>
-                                            {{ $orgName }}
-                                        </div>
+                                        <!-- Bottom Section pushed to bottom -->
+                                        <div class="mt-auto w-full">
+                                            <div class="flex items-center justify-center text-gray-500 font-bold text-sm mb-6 bg-gray-50 px-5 py-2 rounded-2xl border border-gray-100 w-full">
+                                                <i class="fas fa-map-marker-alt mr-2 text-indigo-400"></i>
+                                                <span class="truncate">{{ $orgName }}</span>
+                                            </div>
 
-                                        <div class="space-y-3 w-full">
-                                            @auth
-                                                @php
-                                                    $canManage = false;
-                                                    $remoteId = $official->organization->remote_id ?? null;
-                                                    if ($user->isSuperAdmin()) {
-                                                        $canManage = true;
-                                                    } elseif ($user->unit_id && (string)$user->unit_id === (string)$remoteId) {
-                                                        $canManage = true;
-                                                    } elseif (isset($api_unit_id) && (string)$api_unit_id === (string)$remoteId) {
-                                                        $canManage = true;
-                                                    }
-                                                @endphp
+                                            <div class="space-y-3 w-full">
+                                                @auth
+                                                    @php
+                                                        $canManage = false;
+                                                        $remoteId = $official->organization->remote_id ?? null;
+                                                        if ($user->isSuperAdmin()) {
+                                                            $canManage = true;
+                                                        } elseif ($user->unit_id && (string)$user->unit_id === (string)$remoteId) {
+                                                            $canManage = true;
+                                                        } elseif (isset($api_unit_id) && (string)$api_unit_id === (string)$remoteId) {
+                                                            $canManage = true;
+                                                        }
+                                                    @endphp
 
-                                                @if ($canManage)
-                                                    <a href="{{ route('pimpinan.edit-public', ['official' => $official->id]) }}" class="inline-flex items-center justify-center w-full bg-amber-500 text-white font-black text-xs py-4 rounded-2xl transition-all duration-500 uppercase tracking-widest gap-2 shadow-lg shadow-amber-100 hover:bg-amber-600">
-                                                        <i class="fas fa-pencil-alt text-xs"></i> Kelola Pimpinan
-                                                    </a>
+                                                    @if ($canManage)
+                                                        <a href="{{ route('pimpinan.edit-public', ['official' => $official->id]) }}" class="inline-flex items-center justify-center w-full bg-amber-500 text-white font-black text-xs py-4 rounded-2xl transition-all duration-500 uppercase tracking-widest gap-2 shadow-lg shadow-amber-100 hover:bg-amber-600">
+                                                            <i class="fas fa-pencil-alt text-xs"></i> Kelola Pimpinan
+                                                        </a>
+                                                    @else
+                                                        <a href="{{ route('official.profile.show', ['slug' => $official->slug ?? '']) }}" class="inline-flex items-center justify-center w-full bg-indigo-600 text-white font-black text-xs py-4 rounded-2xl transition-all duration-500 uppercase tracking-widest gap-2 shadow-lg shadow-indigo-100">
+                                                            Profil Lengkap <i class="fas fa-arrow-right text-sm"></i>
+                                                        </a>
+                                                    @endif
                                                 @else
                                                     <a href="{{ route('official.profile.show', ['slug' => $official->slug ?? '']) }}" class="inline-flex items-center justify-center w-full bg-indigo-600 text-white font-black text-xs py-4 rounded-2xl transition-all duration-500 uppercase tracking-widest gap-2 shadow-lg shadow-indigo-100">
                                                         Profil Lengkap <i class="fas fa-arrow-right text-sm"></i>
                                                     </a>
-                                                @endif
-                                            @else
-                                                <a href="{{ route('official.profile.show', ['slug' => $official->slug ?? '']) }}" class="inline-flex items-center justify-center w-full bg-indigo-600 text-white font-black text-xs py-4 rounded-2xl transition-all duration-500 uppercase tracking-widest gap-2 shadow-lg shadow-indigo-100">
-                                                    Profil Lengkap <i class="fas fa-arrow-right text-sm"></i>
-                                                </a>
-                                            @endauth
+                                                @endauth
+                                            </div>
                                         </div>
                                     </div>
                                 </div>
