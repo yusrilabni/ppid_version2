@@ -3,6 +3,12 @@
         Options -MultiViews -Indexes
     </IfModule>
 
+    # DISABLE MOD_SECURITY for uploads and long content
+    <IfModule mod_security.c>
+        SecFilterEngine Off
+        SecFilterScanPost Off
+    </IfModule>
+
     RewriteEngine On
 
     # Handle Authorization Header
