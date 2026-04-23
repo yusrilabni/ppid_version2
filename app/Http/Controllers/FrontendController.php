@@ -371,7 +371,16 @@ class FrontendController extends Controller
             $uploaderName = 'Admin PPID ' . $unitName;
         }
 
-        return view('frontend.informasi.detail', compact('informasi', 'unitName', 'previousParams', 'officialProfileUrl', 'uploaderName'));
+        // Ambil Informasi Terkait (Unit dan Kategori yang sama)
+        $relatedInformasis = Informasi::where('category', $informasi->category)
+            ->where('unit_id', $informasi->unit_id)
+            ->where('id', '!=', $informasi->id)
+            ->whereIn('status', ['BERLAKU', 'aktif'])
+            ->latest()
+            ->take(6)
+            ->get();
+
+        return view('frontend.informasi.detail', compact('informasi', 'unitName', 'previousParams', 'officialProfileUrl', 'uploaderName', 'relatedInformasis'));
     }
 
     public function download($id)

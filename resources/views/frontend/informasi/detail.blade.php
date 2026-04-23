@@ -175,6 +175,31 @@
                                     </div>
                                 @endif
                             </div>
+
+                            <!-- Related Documents from Same Unit -->
+                            @if($relatedInformasis->isNotEmpty())
+                            <div class="mt-16 pt-12 border-t border-gray-100">
+                                <h2 class="text-xl font-bold text-gray-900 flex items-center mb-8">
+                                    <span class="w-1 h-6 bg-blue-600 rounded-full mr-3"></span>
+                                    Dokumen Terkait dari Unit Ini
+                                </h2>
+                                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                                    @foreach($relatedInformasis as $related)
+                                        <a href="{{ route('frontend.informasi.detail', $related->slug) }}" class="group flex items-center p-4 bg-gray-50 hover:bg-white border border-transparent hover:border-blue-100 rounded-2xl transition-all duration-300 shadow-sm hover:shadow-md">
+                                            <div class="w-10 h-10 bg-white group-hover:bg-blue-600 text-blue-600 group-hover:text-white rounded-xl flex items-center justify-center shrink-0 transition-colors duration-300">
+                                                <i class="fas fa-file-alt text-sm"></i>
+                                            </div>
+                                            <div class="ml-4 min-w-0">
+                                                <p class="text-sm font-bold text-gray-800 truncate group-hover:text-blue-600 transition-colors">{{ $related->title }}</p>
+                                                <p class="text-[10px] text-gray-400 font-bold uppercase tracking-widest mt-0.5">{{ \Carbon\Carbon::parse($related->tanggal_upload)->format('d M Y') }}</p>
+                                            </div>
+                                            <i class="fas fa-chevron-right ml-auto text-gray-300 group-hover:text-blue-600 text-[10px] transition-all group-hover:translate-x-1"></i>
+                                        </a>
+                                    @endforeach
+                                </div>
+                            </div>
+                            @endif
+
                         </div>
                     </div>
                 </div>
