@@ -71,31 +71,21 @@
                                 @error('full_name') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
                             </div>
                             <div>
-                                <label class="block text-gray-700 text-sm font-semibold mb-2">Jabatan *</label>
+                                <label class="block text-gray-700 text-sm font-semibold mb-2">Jabatan</label>
                                 @php
-                                    $selectedPositionId = old('position_id', $official->position_id);
-                                    
-                                    // Logika Auto-set jika masih default 'Kepala OPD' dan dia adalah organisasi Desa/Kelurahan
-                                    if ($official->position && $official->position->slug === 'kepala-opd' && !old('position_id')) {
+                                    $displayPosition = $official->position->name ?? '';
+                                    if ($official->position && in_array($official->position->slug, ['kepala-opd', 'kepala-desa', 'lurah'])) {
                                         $orgNameLower = strtolower($official->organization->name ?? '');
                                         if (str_contains($orgNameLower, 'desa')) {
-                                            $selectedPositionId = $positions->where('slug', 'kepala-desa')->first()->id ?? $selectedPositionId;
+                                            $displayPosition = 'Kepala Desa';
                                         } elseif (str_contains($orgNameLower, 'kelurahan')) {
-                                            $selectedPositionId = $positions->where('slug', 'lurah')->first()->id ?? $selectedPositionId;
+                                            $displayPosition = 'Lurah';
+                                        } else {
+                                            $displayPosition = 'Kepala OPD';
                                         }
                                     }
-
-                                    $positionOptions = $positions->map(fn($p) => ['value' => $p->id, 'label' => $p->name])->toArray();
                                 @endphp
-                                <x-custom-select 
-                                    name="position_id" 
-                                    :options="$positionOptions" 
-                                    :value="$selectedPositionId"
-                                    placeholder="Pilih Jabatan"
-                                    :searchable="true"
-                                    required="true"
-                                />
-                                @error('position_id') <p class="mt-1 text-sm text-red-600">{{ $message }}</p> @enderror
+                                <input type="text" value="{{ $displayPosition }}" disabled class="w-full px-4 py-3 border border-gray-300 rounded-lg bg-gray-100 cursor-not-allowed">
                             </div>
                             <div>
                                 <label class="block text-gray-700 text-sm font-semibold mb-2">OPD</label>

@@ -891,7 +891,6 @@ class FrontendController extends Controller
 
         $request->validate([
             'full_name' => 'required|string|max:255',
-            'position_id' => 'required|exists:positions,id',
             'jenis_kelamin' => 'nullable|string|in:Laki-laki,Perempuan',
             'birth_place' => 'nullable|string|max:255',
             'birth_date' => 'nullable|date',
@@ -929,9 +928,27 @@ class FrontendController extends Controller
                 $counter++;
             }
 
+            // Logika Kunci Jabatan Otomatis
+            $positionId = $official->position_id;
+            if ($official->position && in_array($official->position->slug, ['kepala-opd', 'kepala-desa', 'lurah'])) {
+                $orgNameLower = strtolower($official->organization->name ?? '');
+                $targetSlug = 'kepala-opd';
+                
+                if (str_contains($orgNameLower, 'desa')) {
+                    $targetSlug = 'kepala-desa';
+                } elseif (str_contains($orgNameLower, 'kelurahan')) {
+                    $targetSlug = 'lurah';
+                }
+                
+                $targetPosition = \App\Models\Position::where('slug', $targetSlug)->first();
+                if ($targetPosition) {
+                    $positionId = $targetPosition->id;
+                }
+            }
+
             $official->update([
                 'full_name' => $request->full_name,
-                'position_id' => $request->position_id,
+                'position_id' => $positionId,
                 'jenis_kelamin' => $request->jenis_kelamin,
                 'birth_place' => $request->birth_place,
                 'birth_date' => $request->birth_date,
