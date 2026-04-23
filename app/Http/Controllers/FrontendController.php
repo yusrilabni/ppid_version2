@@ -489,12 +489,9 @@ class FrontendController extends Controller
 
         // Group Organizations based on new requirements
         $groupedOrganizations = [
-            'Dinas' => [],
-            'Badan' => [],
+            'OPD' => [],
             'Kecamatan' => [],
-            'Desa' => [],
-            'Kelurahan' => [],
-            'Lembaga Lainnya' => []
+            'Wilayah (Desa & Kelurahan)' => []
         ];
 
         $organizations->each(function ($organization) use ($unitData, &$groupedOrganizations) {
@@ -504,21 +501,29 @@ class FrontendController extends Controller
             $name = $organization->name;
             $matchingUnit = $unitData->get($organization->remote_id);
             $organization->api_address = $matchingUnit['unit_alamat'] ?? 'Alamat belum ditambahkan';
+            $kecamatanName = $matchingUnit['kecamatan'] ?? null;
 
-            if (stripos($name, 'Dinas') !== false) {
-                $groupedOrganizations['Dinas'][] = $organization;
-            } elseif (stripos($name, 'Badan') !== false) {
-                $groupedOrganizations['Badan'][] = $organization;
+            if (stripos($name, 'Dinas') !== false || stripos($name, 'Badan') !== false) {
+                $groupedOrganizations['OPD'][] = $organization;
             } elseif (stripos($name, 'Kecamatan') !== false) {
                 $groupedOrganizations['Kecamatan'][] = $organization;
-            } elseif (stripos($name, 'Desa') !== false) {
-                $groupedOrganizations['Desa'][] = $organization;
-            } elseif (stripos($name, 'Kelurahan') !== false) {
-                $groupedOrganizations['Kelurahan'][] = $organization;
+            } elseif (stripos($name, 'Desa') !== false || stripos($name, 'Kelurahan') !== false) {
+                $kecKey = $kecamatanName ?? 'Lainnya';
+                if (!isset($groupedOrganizations['Wilayah (Desa & Kelurahan)'][$kecKey])) {
+                    $groupedOrganizations['Wilayah (Desa & Kelurahan)'][$kecKey] = [];
+                }
+                $groupedOrganizations['Wilayah (Desa & Kelurahan)'][$kecKey][] = $organization;
             } else {
-                $groupedOrganizations['Lembaga Lainnya'][] = $organization;
+                // Lembaga Lainnya masuk ke OPD
+                $groupedOrganizations['OPD'][] = $organization;
             }
         });
+
+        // Urutkan Wilayah berdasarkan Nama Kecamatan
+        if (!empty($groupedOrganizations['Wilayah (Desa & Kelurahan)'])) {
+            ksort($groupedOrganizations['Wilayah (Desa & Kelurahan)']);
+        }
+
         $groupedOrganizations = array_filter($groupedOrganizations, fn($group) => count($group) > 0);
 
         return view('frontend.opd.list', compact('groupedOrganizations', 'user', 'api_unit_id'));
