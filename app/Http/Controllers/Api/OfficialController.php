@@ -34,22 +34,35 @@ class OfficialController extends Controller
                 });
             }
 
-            // HIRARKI: Urutkan berdasarkan Jabatan (Bupati -> Wakil -> Sekda -> dst)
+            // HIRARKI MENDETAIL: Urutkan berdasarkan aturan protokol pemerintah
             $officials = $query->get()->map(function($item) {
-                // Tambahkan FULL URL untuk foto agar muncul di Android
-                $item->photo_url = $item->photo ? url('storage/' . $item->photo) : null;
+                // Pastikan URL Foto Absolut dan Bersih
+                if ($item->photo) {
+                    $item->photo_url = url('storage/' . $item->photo);
+                } else {
+                    $item->photo_url = null;
+                }
                 
-                // Berikan bobot hirarki (makin kecil makin atas)
-                $name = strtolower($item->position->name);
-                if (str_contains($name, 'bupati') && !str_contains($name, 'wakil')) $item->hierarchy = 1;
-                elseif (str_contains($name, 'wakil bupati')) $item->hierarchy = 2;
-                elseif (str_contains($name, 'sekretaris daerah') || str_contains($name, 'sekda')) $item->hierarchy = 3;
-                elseif (str_contains($name, 'asisten')) $item->hierarchy = 4;
-                elseif (str_contains($name, 'kepala dinas') || str_contains($name, 'kepala badan')) $item->hierarchy = 5;
-                else $item->hierarchy = 99;
+                $pos = strtolower($item->position->name ?? '');
+                $org = strtolower($item->organization->name ?? '');
+
+                // Penentuan Bobot Hirarki (Makin Kecil Makin Atas)
+                if (str_contains($pos, 'bupati') && !str_contains($pos, 'wakil')) $item->h_rank = 1;
+                elseif (str_contains($pos, 'wakil bupati')) $item->h_rank = 2;
+                elseif (str_contains($pos, 'sekretaris daerah') || $pos == 'sekda') $item->h_rank = 3;
+                elseif (str_contains($pos, 'staf ahli')) $item->h_rank = 4;
+                elseif (str_contains($pos, 'asisten i') || str_contains($pos, 'asisten 1')) $item->h_rank = 5;
+                elseif (str_contains($pos, 'asisten ii') || str_contains($pos, 'asisten 2')) $item->h_rank = 6;
+                elseif (str_contains($pos, 'asisten iii') || str_contains($pos, 'asisten 3')) $item->h_rank = 7;
+                elseif (str_contains($pos, 'inspektur')) $item->h_rank = 8;
+                elseif (str_contains($pos, 'kepala dinas') || str_contains($pos, 'kepala badan') || str_contains($pos, 'kaban') || str_contains($pos, 'kadis')) $item->h_rank = 9;
+                elseif (str_contains($pos, 'camat')) $item->h_rank = 10;
+                elseif (str_contains($pos, 'lurah')) $item->h_rank = 11;
+                elseif (str_contains($pos, 'kepala desa') || str_contains($pos, 'kades')) $item->h_rank = 12;
+                else $item->h_rank = 99;
 
                 return $item;
-            })->sortBy('hierarchy')->values();
+            })->sortBy('h_rank')->values();
 
             return response()->json([
                 'success' => true,
