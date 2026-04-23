@@ -267,8 +267,8 @@ class InformasiController extends Controller
 
         $validationRules = [
             'title' => 'required|string|min:5|max:255',
-            'deskripsi' => 'nullable|string|max:65535',
-            'content' => 'nullable|string',
+            'doc_desc' => 'nullable|string|max:65535',
+            'doc_content' => 'nullable|string',
             'category' => ['required', 'string', 'in:Informasi Berkala,Informasi Setiap Saat,Informasi Serta Merta,Informasi Dikecualikan'],
             'jenis_dokumen' => 'nullable|string',
             'tahun' => 'required|date',
@@ -291,6 +291,18 @@ class InformasiController extends Controller
         
         try {
             DB::transaction(function () use ($request, $validatedData, $user, $isSuperAdmin) {
+                // Map back to database columns
+                $dataToSave = [
+                    'title' => $validatedData['title'],
+                    'deskripsi' => $validatedData['doc_desc'],
+                    'content' => $validatedData['doc_content'],
+                    'category' => $validatedData['category'],
+                    'jenis_dokumen' => $validatedData['jenis_dokumen'],
+                    'tahun' => $validatedData['tahun'],
+                    'status' => $validatedData['status'],
+                    'file_type' => $validatedData['file_type'],
+                ];
+
                 // ... logic archive ...
                 if ($request->filled('replacement_id')) {
                     $informasiToArchive = Informasi::find($request->replacement_id);
@@ -306,20 +318,23 @@ class InformasiController extends Controller
                 $tanggal_dokumen = Carbon::parse($validatedData['tahun']);
                 
                 if ($request->input('file_type') === 'upload' && $request->hasFile('file')) {
-                    $validatedData['file'] = $this->storeFileWithCompression($request->file('file'));
-                    $validatedData['url'] = null;
+                    $dataToSave['file'] = $this->storeFileWithCompression($request->file('file'));
+                    $dataToSave['url'] = null;
+                } else {
+                    $dataToSave['url'] = $validatedData['url'] ?? null;
+                    $dataToSave['file'] = null;
                 }
 
-                $validatedData['tanggal_upload'] = $tanggal_dokumen->toDateString();
-                $validatedData['tahun'] = $tanggal_dokumen->format('Y');
-                $validatedData['user_id'] = $user->id;
-                $validatedData['unit_id'] = $isSuperAdmin ? $request->target_unit : $user->unit_id;
+                $dataToSave['tanggal_upload'] = $tanggal_dokumen->toDateString();
+                $dataToSave['tahun'] = $tanggal_dokumen->format('Y');
+                $dataToSave['user_id'] = $user->id;
+                $dataToSave['unit_id'] = $isSuperAdmin ? $request->target_unit : $user->unit_id;
 
-                if (!$validatedData['unit_id']) {
+                if (!$dataToSave['unit_id']) {
                     throw new \Exception("Gagal menentukan Unit ID. Silakan hubungi Superadmin.");
                 }
 
-                Informasi::create($validatedData);
+                Informasi::create($dataToSave);
             });
         } catch (\Exception $e) {
             Log::error('Store Informasi Failed', ['error' => $e->getMessage()]);
@@ -338,8 +353,8 @@ class InformasiController extends Controller
 
         $validationRules = [
             'title' => 'required|string|min:5|max:255',
-            'deskripsi' => 'nullable|string|max:65535',
-            'content' => 'nullable|string',
+            'doc_desc' => 'nullable|string|max:65535',
+            'doc_content' => 'nullable|string',
             'category' => ['required', 'string', 'in:Informasi Berkala,Informasi Setiap Saat,Informasi Serta Merta,Informasi Dikecualikan'],
             'jenis_dokumen' => 'nullable|string',
             'tahun' => 'required|date',
@@ -358,12 +373,22 @@ class InformasiController extends Controller
             $validationRules['file'] = 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,png|max:2048';
         }
         
-        $validatedData = $request->validate($validationRules, [
-            'file.max' => 'Ukuran file maksimal 2MB. Silakan gunakan link file untuk file yang lebih besar.'
-        ]);
+        $validatedData = $request->validate($validationRules);
 
         try {
             DB::transaction(function () use ($request, $informasi, $validatedData, $isSuperAdmin, $user) {
+                // Map back to database columns
+                $dataToUpdate = [
+                    'title' => $validatedData['title'],
+                    'deskripsi' => $validatedData['doc_desc'],
+                    'content' => $validatedData['doc_content'],
+                    'category' => $validatedData['category'],
+                    'jenis_dokumen' => $validatedData['jenis_dokumen'],
+                    'tahun' => $validatedData['tahun'],
+                    'status' => $validatedData['status'],
+                    'file_type' => $validatedData['file_type'],
+                ];
+
                 if ($request->filled('replacement_id')) {
                     $informasiToArchive = Informasi::find($request->replacement_id);
                     if ($informasiToArchive) {
@@ -381,42 +406,39 @@ class InformasiController extends Controller
                     if ($informasi->file) {
                         Storage::disk('public')->delete($informasi->file);
                     }
-                    $validatedData['file'] = null;
-                    $validatedData['url'] = $request->url;
+                    $dataToUpdate['file'] = null;
+                    $dataToUpdate['url'] = $validatedData['url'];
                 } else {
                     if ($request->hasFile('file')) {
                         if ($informasi->file) {
                             Storage::disk('public')->delete($informasi->file);
                         }
-                        $file = $request->file('file');
-                        $filePath = $this->storeFileWithCompression($file);
-                        $validatedData['file'] = $filePath;
+                        $dataToUpdate['file'] = $this->storeFileWithCompression($request->file('file'));
                     }
                     if ($request->hasFile('file') || $request->input('url')) {
-                        $validatedData['url'] = null;
+                        $dataToUpdate['url'] = null;
                     }
                 }
 
-                $validatedData['tanggal_upload'] = $tanggal_dokumen->toDateString();
-                $validatedData['tahun'] = $tanggal_dokumen->format('Y');
-                $validatedData['status'] = $request->status;
+                $dataToUpdate['tanggal_upload'] = $tanggal_dokumen->toDateString();
+                $dataToUpdate['tahun'] = $tanggal_dokumen->format('Y');
                 
                 if ($isSuperAdmin) {
-                    $validatedData['unit_id'] = $request->target_unit;
-                    $validatedData['user_id'] = $user->id;
+                    $dataToUpdate['unit_id'] = $request->target_unit;
+                    $dataToUpdate['user_id'] = $user->id;
                 } else {
                     // Ensure the user has a unit_id, fetch from API if not present
                     if (empty($user->unit_id) && !empty($user->nip)) {
                         $apiData = User::getDataFromApi($user->nip);
                         if ($apiData && !empty($apiData['unit_id'])) {
                             $user->unit_id = $apiData['unit_id'];
-                            $user->save(); // Save the updated unit_id to the user
+                            $user->save(); 
                         }
                     }
-                    $validatedData['unit_id'] = $user->unit_id;
+                    $dataToUpdate['unit_id'] = $user->unit_id;
                 }
 
-                $informasi->update($validatedData);
+                $informasi->update($dataToUpdate);
             });
         } catch (AuthorizationException $e) {
             return redirect()->route('informasi-crud.edit', ['informasi' => $informasi->id])
