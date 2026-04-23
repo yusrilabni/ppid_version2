@@ -49,6 +49,7 @@ Route::prefix('v1')->group(function () {
     // Statistik & Sistem
     Route::get('/statistik', [StatistikController::class, 'index']);
     Route::get('/health', [HealthController::class, 'index']);
+    Route::get('/profil', [App\Http\Controllers\Api\ProfilPpidController::class, 'index']);
 
     // Auth & Kontak
     Route::post('/login', [LoginController::class, 'login']);
