@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useCallback } from 'react';
-import { StyleSheet, Text, View, StatusBar, Image, TouchableOpacity, FlatList, ActivityIndicator, RefreshControl, TextInput } from 'react-native';
-import { Accessibility, FileText, Calendar, Building, ChevronRight, ChevronLeft, Archive, CheckCircle2, Search, X, Filter } from 'lucide-react-native';
+import { StyleSheet, Text, View, StatusBar, Image, TouchableOpacity, FlatList, ActivityIndicator, RefreshControl, TextInput, ScrollView } from 'react-native';
+import { Accessibility, FileText, Calendar, Building, ChevronRight, ChevronLeft, Archive, CheckCircle2, Search, X, Clock } from 'lucide-react-native';
+import { LinearGradient } from 'expo-linear-gradient';
 import { API_ENDPOINTS } from '../api/config';
 
 const STATUSBAR_HEIGHT = StatusBar.currentHeight || 0;
@@ -11,7 +12,6 @@ export default function InformasiScreen() {
   const [documents, setDocuments] = useState([]);
   const [error, setError] = useState(null);
   
-  // State Filter & Search
   const [searchQuery, setSearchQuery] = useState('');
   const [selectedStatus, setSelectedStatus] = useState('Semua');
   const [currentPage, setCurrentPage] = useState(1);
@@ -47,10 +47,9 @@ export default function InformasiScreen() {
 
   useEffect(() => {
     const delayDebounceFn = setTimeout(() => {
-      setCurrentPage(1); // Reset ke halaman 1 setiap kali filter berubah
+      setCurrentPage(1);
       fetchDocuments(1, searchQuery, selectedStatus);
     }, 500);
-
     return () => clearTimeout(delayDebounceFn);
   }, [searchQuery, selectedStatus]);
 
@@ -63,36 +62,46 @@ export default function InformasiScreen() {
     const isArsip = item.status === 'ARSIP';
     
     return (
-      <TouchableOpacity style={[styles.card, isArsip && styles.cardArsip]} activeOpacity={0.7}>
-        <View style={styles.cardContent}>
-          <View style={[styles.iconBox, isArsip ? styles.iconArsip : styles.iconBerlaku]}>
-              {isArsip ? <Archive size={22} color="#64748b" /> : <CheckCircle2 size={22} color="#2563eb" />}
-          </View>
-
-          <View style={styles.infoBox}>
-            <View style={styles.badgeRow}>
-                <Text style={[styles.categoryTxt, isArsip && styles.txtGray]}>{item.category || 'DIP'}</Text>
-                <View style={[styles.statusTag, isArsip ? styles.tagArsip : styles.tagBerlaku]}>
-                    <Text style={styles.tagTxt}>{item.status}</Text>
+      <TouchableOpacity style={styles.cardWrapper} activeOpacity={0.9}>
+        {/* Dekorasi Garis Status */}
+        <View style={[styles.statusStrip, isArsip ? styles.stripArsip : styles.stripBerlaku]} />
+        
+        <View style={[styles.cardContainer, isArsip && styles.cardArsipBg]}>
+          <View style={styles.cardTop}>
+            <View style={[styles.iconContainer, isArsip ? styles.iconArsipBg : styles.iconBerlakuBg]}>
+                {isArsip ? <Archive size={20} color="#94a3b8" /> : <FileText size={20} color="#2563eb" />}
+            </View>
+            <View style={styles.headerInfo}>
+                <Text style={[styles.categoryTxt, isArsip && styles.txtArsipSub]}>{item.category || 'DOKUMEN PUBLIK'}</Text>
+                <View style={[styles.badge, isArsip ? styles.badgeArsip : styles.badgeBerlaku]}>
+                    <Text style={[styles.badgeTxt, isArsip ? styles.badgeTxtArsip : styles.badgeTxtBerlaku]}>
+                        {item.status}
+                    </Text>
                 </View>
             </View>
-            
-            <Text style={[styles.titleTxt, isArsip && styles.txtGray]} numberOfLines={2}>
-                {item.title}
-            </Text>
-            
-            <View style={styles.metaRow}>
-              <View style={styles.metaItem}>
-                <Calendar size={12} color="#94a3b8" />
-                <Text style={styles.metaTxt}>{item.tanggal_upload || 'Terbaru'}</Text>
-              </View>
-              {/* PERBAIKAN: Gunakan flex:1 agar nama dinas tidak meluap */}
-              <View style={[styles.metaItem, { flex: 1, marginLeft: 12 }]}>
-                <Building size={12} color="#94a3b8" />
-                <Text style={styles.metaTxt} numberOfLines={1} ellipsizeMode="trailing">
-                    {item.organization_name || 'Sekretariat'}
-                </Text>
-              </View>
+          </View>
+
+          <Text style={[styles.titleTxt, isArsip && styles.txtArsipMain]} numberOfLines={2}>
+            {item.title}
+          </Text>
+
+          <View style={styles.divider} />
+
+          <View style={styles.cardBottom}>
+            <View style={styles.metaGroup}>
+                <View style={styles.metaItem}>
+                    <Clock size={12} color="#94a3b8" />
+                    <Text style={styles.metaTxt}>{item.tanggal_upload || 'Terbaru'}</Text>
+                </View>
+                <View style={[styles.metaItem, { flex: 1 }]}>
+                    <Building size={12} color="#94a3b8" />
+                    <Text style={styles.metaTxt} numberOfLines={1} ellipsizeMode="trailing">
+                        {item.organization_name}
+                    </Text>
+                </View>
+            </View>
+            <View style={styles.actionBtn}>
+                <ChevronRight size={16} color="#2563eb" strokeWidth={3} />
             </View>
           </View>
         </View>
@@ -104,52 +113,58 @@ export default function InformasiScreen() {
     <View style={styles.container}>
       <StatusBar barStyle="dark-content" backgroundColor="transparent" translucent={true} />
 
-      {/* HEADER & SEARCH SECTION */}
+      {/* HEADER PREMIUM */}
       <View style={[styles.headerSection, { paddingTop: STATUSBAR_HEIGHT + 10 }]}>
           <View style={styles.headerTop}>
-            <Image source={require('../../assets/logo_ppid.webp')} style={styles.logo} resizeMode="contain" />
-            <View style={styles.headerTxt}>
-              <Text style={styles.subTitle}>DATA INFORMASI ({totalData})</Text>
-              <Text style={styles.mainTitle}>Daftar Dokumen</Text>
+            <View style={styles.logoCircle}>
+                <Image source={require('../../assets/icon.webp')} style={styles.logo} resizeMode="contain" />
+            </View>
+            <View style={styles.headerTxtWrapper}>
+              <Text style={styles.subTitle}>SISTEM INFORMASI DATA</Text>
+              <Text style={styles.mainTitle}>Dokumen Publik</Text>
+            </View>
+            <View style={styles.countBadge}>
+                <Text style={styles.countTxt}>{totalData}</Text>
             </View>
           </View>
 
-          {/* Kolom Pencarian */}
-          <View style={styles.searchBox}>
-            <Search size={18} color="#94a3b8" />
-            <TextInput 
-                style={styles.searchInput}
-                placeholder="Cari judul, dinas, atau kategori..."
-                placeholderTextColor="#94a3b8"
-                value={searchQuery}
-                onChangeText={setSearchQuery}
-            />
-            {searchQuery.length > 0 && (
-                <TouchableOpacity onPress={() => setSearchQuery('')}>
-                    <X size={18} color="#94a3b8" />
-                </TouchableOpacity>
-            )}
+          <View style={styles.searchRow}>
+            <View style={styles.searchContainer}>
+                <Search size={18} color="#94a3b8" />
+                <TextInput 
+                    style={styles.searchInput}
+                    placeholder="Cari kata kunci..."
+                    placeholderTextColor="#94a3b8"
+                    value={searchQuery}
+                    onChangeText={setSearchQuery}
+                />
+                {searchQuery.length > 0 && (
+                    <TouchableOpacity onPress={() => setSearchQuery('')}>
+                        <X size={18} color="#94a3b8" />
+                    </TouchableOpacity>
+                )}
+            </View>
           </View>
 
-          {/* Filter Status */}
-          <View style={styles.filterRow}>
+          <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.filterScroll}>
             {['Semua', 'BERLAKU', 'ARSIP'].map((status) => (
                 <TouchableOpacity 
                     key={status}
                     onPress={() => setSelectedStatus(status)}
-                    style={[styles.filterChip, selectedStatus === status && styles.filterChipActive]}
+                    style={[styles.filterTab, selectedStatus === status && styles.filterTabActive]}
                 >
-                    <Text style={[styles.filterTxt, selectedStatus === status && styles.filterTxtActive]}>
+                    <Text style={[styles.filterLabel, selectedStatus === status && styles.filterLabelActive]}>
                         {status}
                     </Text>
                 </TouchableOpacity>
             ))}
-          </View>
+          </ScrollView>
       </View>
 
       {loading && !refreshing && documents.length === 0 ? (
         <View style={styles.center}>
           <ActivityIndicator size="large" color="#2563eb" />
+          <Text style={styles.loadingTxt}>Menyelaraskan data...</Text>
         </View>
       ) : (
         <FlatList
@@ -160,24 +175,26 @@ export default function InformasiScreen() {
           refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} colors={['#2563eb']} />}
           ListEmptyComponent={
             <View style={styles.center}>
-              <FileText size={48} color="#cbd5e1" />
-              <Text style={styles.emptyTxt}>Dokumen tidak ditemukan</Text>
+              <Image source={require('../../assets/logo_ppid.webp')} style={styles.emptyImg} />
+              <Text style={styles.emptyTxt}>Data tidak ditemukan</Text>
             </View>
           }
           ListFooterComponent={lastPage > 1 && (
             <View style={styles.pagination}>
                 <TouchableOpacity 
                     disabled={currentPage === 1}
-                    onPress={() => fetchDocuments(currentPage - 1, searchQuery, selectedStatus)}
-                    style={[styles.pageBtn, currentPage === 1 && {opacity: 0.5}]}
+                    onPress={() => setCurrentPage(prev => prev - 1)}
+                    style={[styles.pageBtn, currentPage === 1 && styles.btnDisabled]}
                 >
                     <ChevronLeft size={20} color="#fff" />
                 </TouchableOpacity>
-                <Text style={styles.pageIndicator}>{currentPage} / {lastPage}</Text>
+                <View style={styles.pageInfo}>
+                    <Text style={styles.pageInfoTxt}>{currentPage} / {lastPage}</Text>
+                </View>
                 <TouchableOpacity 
                     disabled={currentPage === lastPage}
-                    onPress={() => fetchDocuments(currentPage + 1, searchQuery, selectedStatus)}
-                    style={[styles.pageBtn, currentPage === lastPage && {opacity: 0.5}]}
+                    onPress={() => setCurrentPage(prev => prev + 1)}
+                    style={[styles.pageBtn, currentPage === lastPage && styles.btnDisabled]}
                 >
                     <ChevronRight size={20} color="#fff" />
                 </TouchableOpacity>
@@ -190,48 +207,76 @@ export default function InformasiScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: '#f8fafc' },
-  headerSection: { backgroundColor: '#fff', paddingHorizontal: 20, paddingBottom: 15, borderBottomWidth: 1, borderBottomColor: '#f1f5f9', elevation: 10, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 10 },
-  headerTop: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
-  logo: { width: 40, height: 40, marginRight: 15 },
-  headerTxt: { flex: 1 },
-  subTitle: { fontSize: 10, color: '#94a3b8', fontWeight: '900' },
-  mainTitle: { fontSize: 18, fontWeight: '900', color: '#1e293b' },
+  container: { flex: 1, backgroundColor: '#f4f7fa' },
   
-  searchBox: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f1f5f9', borderRadius: 15, paddingHorizontal: 15, height: 45, marginBottom: 12 },
-  searchInput: { flex: 1, marginLeft: 10, fontSize: 13, color: '#1e293b', fontWeight: '600' },
+  // Header Design
+  headerSection: { backgroundColor: '#fff', paddingHorizontal: 20, paddingBottom: 10, borderBottomLeftRadius: 30, borderBottomRightRadius: 30, elevation: 15, shadowColor: '#1e293b', shadowOpacity: 0.1, shadowRadius: 20 },
+  headerTop: { flexDirection: 'row', alignItems: 'center', marginBottom: 20 },
+  logoCircle: { width: 65, height: 65, borderRadius: 32.5, backgroundColor: '#fff', justifyContent: 'center', alignItems: 'center', elevation: 8, shadowColor: '#000', shadowOpacity: 0.1, shadowRadius: 10, borderWidth: 1, borderColor: '#f1f5f9' },
+  logo: { width: 45, height: 45 },
+  headerTxtWrapper: { flex: 1, marginLeft: 18 },
+  subTitle: { fontSize: 9, color: '#2563eb', fontWeight: '900', letterSpacing: 1 },
+  mainTitle: { fontSize: 20, fontWeight: '900', color: '#1e293b' },
+  countBadge: { backgroundColor: '#1e293b', paddingHorizontal: 12, paddingVertical: 6, borderRadius: 12 },
+  countTxt: { color: '#fff', fontSize: 12, fontWeight: '900' },
   
-  filterRow: { flexDirection: 'row', gap: 10 },
-  filterChip: { paddingHorizontal: 15, paddingVertical: 6, borderRadius: 10, backgroundColor: '#f1f5f9', borderWidth: 1, borderColor: '#e2e8f0' },
-  filterChipActive: { backgroundColor: '#2563eb', borderColor: '#2563eb' },
-  filterTxt: { fontSize: 11, fontWeight: '800', color: '#64748b' },
-  filterTxtActive: { color: '#fff' },
+  searchRow: { marginBottom: 15 },
+  searchContainer: { flexDirection: 'row', alignItems: 'center', backgroundColor: '#f1f5f9', borderRadius: 18, paddingHorizontal: 15, height: 50 },
+  searchInput: { flex: 1, marginLeft: 10, fontSize: 14, color: '#1e293b', fontWeight: '700' },
+  
+  filterScroll: { flexDirection: 'row', marginBottom: 5 },
+  filterTab: { paddingHorizontal: 20, paddingVertical: 8, borderRadius: 12, marginRight: 10, backgroundColor: '#f8fafc', borderWidth: 1, borderColor: '#e2e8f0' },
+  filterTabActive: { backgroundColor: '#2563eb', borderColor: '#2563eb', elevation: 5 },
+  filterLabel: { fontSize: 11, fontWeight: '900', color: '#64748b' },
+  filterLabelActive: { color: '#fff' },
 
-  list: { padding: 15, paddingBottom: 100 },
-  card: { backgroundColor: '#fff', borderRadius: 20, padding: 15, marginBottom: 12, elevation: 3, shadowColor: '#000', shadowOpacity: 0.03, shadowRadius: 8, borderWidth: 1, borderColor: '#f1f5f9' },
-  cardArsip: { backgroundColor: '#f8fafc', elevation: 0 },
-  cardContent: { flexDirection: 'row', alignItems: 'center' },
-  iconBox: { width: 48, height: 48, borderRadius: 14, justifyContent: 'center', alignItems: 'center', marginRight: 15 },
-  iconBerlaku: { backgroundColor: '#eff6ff' },
-  iconArsip: { backgroundColor: '#f1f5f9' },
+  // List & Card Design
+  list: { padding: 20, paddingBottom: 100 },
+  cardWrapper: { marginBottom: 18, flexDirection: 'row', position: 'relative' },
+  statusStrip: { width: 6, height: '60%', borderRadius: 3, position: 'absolute', left: 0, top: '20%', zIndex: 10 },
+  stripBerlaku: { backgroundColor: '#2563eb' },
+  stripArsip: { backgroundColor: '#94a3b8' },
   
-  infoBox: { flex: 1 },
-  badgeRow: { flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center', marginBottom: 5 },
-  categoryTxt: { fontSize: 9, color: '#2563eb', fontWeight: '900' },
-  statusTag: { paddingHorizontal: 6, paddingVertical: 2, borderRadius: 5 },
-  tagBerlaku: { backgroundColor: '#dcfce7' },
-  tagArsip: { backgroundColor: '#f1f5f9' },
-  tagTxt: { fontSize: 8, fontWeight: '900', color: '#1e293b' },
-  titleTxt: { fontSize: 13, fontWeight: '800', color: '#1e293b', lineHeight: 18 },
-  txtGray: { color: '#94a3b8' },
+  cardContainer: { flex: 1, backgroundColor: '#fff', borderRadius: 25, padding: 20, marginLeft: 3, elevation: 5, shadowColor: '#000', shadowOpacity: 0.05, shadowRadius: 15, borderWidth: 1, borderColor: '#f1f5f9' },
+  cardArsipBg: { backgroundColor: '#f8fafc', borderColor: '#e2e8f0' },
   
-  metaRow: { flexDirection: 'row', alignItems: 'center', marginTop: 10 },
-  metaItem: { flexDirection: 'row', alignItems: 'center', gap: 5 },
-  metaTxt: { fontSize: 10, color: '#94a3b8', fontWeight: '700' },
+  cardTop: { flexDirection: 'row', alignItems: 'center', marginBottom: 15 },
+  iconContainer: { width: 44, height: 44, borderRadius: 14, justifyContent: 'center', alignItems: 'center' },
+  iconBerlakuBg: { backgroundColor: '#eff6ff' },
+  iconArsipBg: { backgroundColor: '#f1f5f9' },
+  
+  headerInfo: { flex: 1, marginLeft: 12, flexDirection: 'row', justifyContent: 'space-between', alignItems: 'center' },
+  categoryTxt: { fontSize: 10, fontWeight: '900', color: '#2563eb', letterSpacing: 0.5 },
+  txtArsipSub: { color: '#94a3b8' },
+  
+  badge: { paddingHorizontal: 8, paddingVertical: 4, borderRadius: 8 },
+  badgeBerlaku: { backgroundColor: '#dcfce7' },
+  badgeArsip: { backgroundColor: '#f1f5f9' },
+  badgeTxt: { fontSize: 9, fontWeight: '900' },
+  badgeTxtBerlaku: { color: '#166534' },
+  badgeTxtArsip: { color: '#64748b' },
 
-  pagination: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 20, marginTop: 10, marginBottom: 30 },
-  pageBtn: { backgroundColor: '#2563eb', padding: 10, borderRadius: 12, elevation: 5 },
-  pageIndicator: { fontSize: 14, fontWeight: '900', color: '#1e293b' },
+  titleTxt: { fontSize: 15, fontWeight: '800', color: '#1e293b', lineHeight: 22, marginBottom: 15 },
+  txtArsipMain: { color: '#64748b' },
+  
+  divider: { height: 1, backgroundColor: '#f1f5f9', marginBottom: 15 },
+  
+  cardBottom: { flexDirection: 'row', alignItems: 'center', justifyContent: 'space-between' },
+  metaGroup: { flex: 1, flexDirection: 'row', gap: 15 },
+  metaItem: { flexDirection: 'row', alignItems: 'center', gap: 6 },
+  metaTxt: { fontSize: 11, color: '#94a3b8', fontWeight: '700' },
+  
+  actionBtn: { width: 32, height: 32, borderRadius: 10, backgroundColor: '#eff6ff', justifyContent: 'center', alignItems: 'center' },
+
+  // Common UI
   center: { flex: 1, justifyContent: 'center', alignItems: 'center', padding: 50 },
-  emptyTxt: { marginTop: 15, color: '#94a3b8', fontWeight: '800' }
+  loadingTxt: { marginTop: 15, fontSize: 12, color: '#64748b', fontWeight: '700' },
+  emptyImg: { width: 80, height: 80, opacity: 0.1, marginBottom: 20 },
+  emptyTxt: { color: '#94a3b8', fontWeight: '800', fontSize: 12 },
+
+  pagination: { flexDirection: 'row', justifyContent: 'center', alignItems: 'center', gap: 15, marginVertical: 20 },
+  pageBtn: { backgroundColor: '#1e293b', padding: 12, borderRadius: 15, elevation: 8 },
+  btnDisabled: { backgroundColor: '#cbd5e1', elevation: 0 },
+  pageInfo: { backgroundColor: '#fff', paddingHorizontal: 20, paddingVertical: 10, borderRadius: 15, borderWidth: 1, borderColor: '#e2e8f0' },
+  pageInfoTxt: { fontSize: 14, fontWeight: '900', color: '#1e293b' }
 });
