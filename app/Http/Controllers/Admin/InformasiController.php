@@ -202,27 +202,24 @@ class InformasiController extends Controller
             }
 
             $user = auth()->user();
-            $targetUnit = $request->input('target_unit'); 
+            // Ambil target unit dari request, jika kosong gunakan unit_id user sendiri
+            $targetUnit = $request->input('target_unit') ?: $user->unit_id; 
             
-            \Log::info("Checking similarity for User: {$user->id}, Unit: {$targetUnit}, Title: {$title}");
+            \Log::info("SIMILARITY_CHECK: User: {$user->id}, Unit: {$targetUnit}, Title: {$title}");
 
             $query = Informasi::whereIn('status', ['BERLAKU', 'aktif']);
 
-            if ($user->isSuperAdmin()) {
-                if (!empty($targetUnit)) {
-                    $query->where('unit_id', (string)$targetUnit);
-                } else {
-                    return response()->json([]);
-                }
+            if (!empty($targetUnit)) {
+                $query->where('unit_id', (string)$targetUnit);
             } else {
-                $userUnitId = (string)($user->unit_id ?: '');
-                if (empty($userUnitId) && !empty($user->nip)) {
+                // Jika masih kosong (terjadi pada Admin NIP yang unit_id-nya belum sinkron)
+                // Coba ambil dari API sebagai langkah terakhir
+                if (!empty($user->nip)) {
                     $apiData = User::getDataFromApi($user->nip);
                     if ($apiData && !empty($apiData['unit_id'])) {
-                        $userUnitId = (string)$apiData['unit_id'];
+                        $query->where('unit_id', (string)$apiData['unit_id']);
                     }
                 }
-                $query->where('unit_id', $userUnitId);
             }
 
             // Optimasi awal
