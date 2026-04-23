@@ -131,16 +131,10 @@
                                                 @endphp
 
                                                 @if ($canManage)
-                                                    <div class="grid grid-cols-2 gap-2">
-                                                        <a href="{{ route('opd.manage-public', ['organization' => $organization->id]) }}" class="inline-flex items-center justify-center bg-white text-blue-600 border-2 border-blue-100 hover:border-blue-500 hover:bg-blue-50 font-black text-[9px] py-3 rounded-xl transition-all duration-300 uppercase tracking-tighter gap-1">
-                                                            <i class="fas fa-edit"></i> Profil OPD
+                                                    <div class="pt-2">
+                                                        <a href="{{ route('opd.manage-public', ['organization' => $organization->id]) }}" class="inline-flex items-center justify-center w-full bg-white text-blue-600 border-2 border-blue-100 hover:border-blue-500 hover:bg-blue-50 font-black text-xs py-4 rounded-2xl transition-all duration-500 uppercase tracking-widest gap-2">
+                                                            <i class="fas fa-edit"></i> Kelola Profil Unit
                                                         </a>
-                                                        
-                                                        @if($leader)
-                                                        <a href="{{ route('pimpinan.edit-public', ['official' => $leader->id]) }}" class="inline-flex items-center justify-center bg-amber-500 text-white border-2 border-amber-400 hover:bg-amber-600 font-black text-[9px] py-3 rounded-xl transition-all duration-300 uppercase tracking-tighter gap-1 shadow-md shadow-amber-100">
-                                                            <i class="fas fa-user-edit"></i> Pimpinan
-                                                        </a>
-                                                        @endif
                                                     </div>
                                                 @endif
                                             @endauth
