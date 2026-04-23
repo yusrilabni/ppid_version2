@@ -40,23 +40,25 @@
                     <!-- Identitas Tab -->
                     <div id="identitas" class="tab-content active">
                         <div class="flex flex-col items-center mb-6">
-                            <label for="photo" class="block text-gray-700 text-sm font-semibold mb-2">Foto Profil</label>
+                            <label class="block text-gray-700 text-sm font-semibold mb-2">Foto Profil</label>
+                            
+                            @if($official->photo)
+                                <div class="mb-4 text-center">
+                                    <img src="{{ Storage::url($official->photo) }}" alt="Foto Profil Saat Ini" class="w-32 h-32 object-cover rounded-xl shadow-md border-2 border-blue-100 mx-auto">
+                                    <p class="text-gray-500 text-[10px] mt-2 font-bold uppercase tracking-wider">Foto Saat Ini</p>
+                                </div>
+                            @endif
+
                             <div class="border-2 border-dashed border-gray-300 rounded-lg p-6 text-center hover:border-blue-400 transition-colors duration-200 w-full max-w-xs" id="photoDropZone">
                                 <div class="flex flex-col items-center justify-center">
                                     <i class="fas fa-cloud-upload-alt text-4xl text-gray-400 mb-3" id="photoIcon"></i>
-                                    <p class="text-gray-600 mb-2">Pilih foto untuk diupload</p>
-                                    <p class="text-gray-500 text-sm mb-3">Format: JPG, PNG, GIF (Max 2MB)</p>
+                                    <p class="text-gray-600 mb-2">Pilih foto baru</p>
+                                    <p class="text-gray-500 text-[10px] mb-3 uppercase font-bold tracking-tight">JPG, PNG, GIF (Max 2MB)</p>
                                     <input type="file" name="photo" id="photo" class="hidden" accept="image/*" onchange="validatePhoto(this)">
-                                    <label for="photo" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded-lg cursor-pointer transition duration-200">Pilih Foto</label>
+                                    <label for="photo" class="bg-blue-600 hover:bg-blue-700 text-white text-xs font-bold py-2.5 px-6 rounded-lg cursor-pointer transition duration-200 uppercase">Pilih File</label>
                                     <p id="photoErrorMessage" class="mt-2 text-red-500 text-sm hidden"></p>
                                     <div id="photoNameDisplay" class="mt-3 text-sm hidden"></div>
                                     <div id="photoSizeDisplay" class="text-xs hidden"></div>
-                                    @if($official->photo)
-                                        <div class="mt-4">
-                                            <p class="text-gray-700 text-xs mb-1">Foto Saat Ini:</p>
-                                            <img src="{{ Storage::url($official->photo) }}" alt="Foto Profil Saat Ini" class="w-20 h-20 object-cover rounded-full mx-auto border border-gray-300">
-                                        </div>
-                                    @endif
                                 </div>
                             </div>
                             @error('photo') <p class="mt-1 text-sm text-red-600 text-center">{{ $message }}</p> @enderror
