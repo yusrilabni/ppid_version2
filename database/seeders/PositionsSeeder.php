@@ -63,6 +63,16 @@ class PositionsSeeder extends Seeder
                 'slug' => 'kepala-opd',
                 'is_single' => false, // Multiple Kepala OPD can exist for different organizations
             ],
+            [
+                'name' => 'Kepala Desa',
+                'slug' => 'kepala-desa',
+                'is_single' => false,
+            ],
+            [
+                'name' => 'Lurah',
+                'slug' => 'lurah',
+                'is_single' => false,
+            ],
         ];
 
         foreach ($positions as $position) {

@@ -851,7 +851,9 @@ class FrontendController extends Controller
             abort(403, 'Anda tidak memiliki akses untuk mengelola pimpinan ini. Akses hanya diberikan kepada Superadmin atau Admin Unit Kerja yang bersangkutan.');
         }
 
-        return view('frontend.profil.edit-pimpinan', compact('official'));
+        $positions = \App\Models\Position::orderBy('name')->get();
+
+        return view('frontend.profil.edit-pimpinan', compact('official', 'positions'));
     }
 
 
@@ -889,6 +891,7 @@ class FrontendController extends Controller
 
         $request->validate([
             'full_name' => 'required|string|max:255',
+            'position_id' => 'required|exists:positions,id',
             'jenis_kelamin' => 'nullable|string|in:Laki-laki,Perempuan',
             'birth_place' => 'nullable|string|max:255',
             'birth_date' => 'nullable|date',
@@ -928,6 +931,7 @@ class FrontendController extends Controller
 
             $official->update([
                 'full_name' => $request->full_name,
+                'position_id' => $request->position_id,
                 'jenis_kelamin' => $request->jenis_kelamin,
                 'birth_place' => $request->birth_place,
                 'birth_date' => $request->birth_date,
