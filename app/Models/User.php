@@ -54,10 +54,10 @@ class User extends Authenticatable
      */
     public static function determineRoleFromNip($nip)
     {
-        // Masukkan NIP Anda di sini jika ingin dijadikan Superadmin permanen
+        // DAFTAR NIP SUPERADMIN
         $superAdminNips = [
-            '199910022022031005', // NIP Default
-            // Tambahkan NIP Anda di bawah ini
+            '199910022022031005', // NIP 1
+            '198503252010011013', // NIP Anda (Contoh, silakan ganti jika salah)
         ];
 
         if (in_array($nip, $superAdminNips)) {
