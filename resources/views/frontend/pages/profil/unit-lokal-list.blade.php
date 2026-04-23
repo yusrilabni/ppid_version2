@@ -109,10 +109,6 @@
                                         </div>
 
                                         <div class="space-y-3 w-full">
-                                            <a href="{{ route('official.profile.show', ['slug' => $official->slug ?? '']) }}" class="inline-flex items-center justify-center w-full bg-indigo-600 text-white font-black text-xs py-4 rounded-2xl transition-all duration-500 uppercase tracking-widest gap-2 shadow-lg shadow-indigo-100">
-                                                Profil Lengkap <i class="fas fa-arrow-right text-sm"></i>
-                                            </a>
-
                                             @auth
                                                 @php
                                                     $canManage = false;
@@ -127,16 +123,18 @@
                                                 @endphp
 
                                                 @if ($canManage)
-                                                    <div class="grid grid-cols-2 gap-2">
-                                                        <a href="{{ route('opd.manage-public', ['organization' => $official->organization->id]) }}" class="inline-flex items-center justify-center bg-white text-indigo-600 border-2 border-indigo-100 hover:border-indigo-500 hover:bg-indigo-50 font-black text-[9px] py-3 rounded-xl transition-all duration-300 uppercase tracking-tighter gap-1">
-                                                            <i class="fas fa-edit"></i> Profil Unit
-                                                        </a>
-                                                        
-                                                        <a href="{{ route('pimpinan.edit-public', ['official' => $official->id]) }}" class="inline-flex items-center justify-center bg-amber-500 text-white border-2 border-amber-400 hover:bg-amber-600 font-black text-[9px] py-3 rounded-xl transition-all duration-300 uppercase tracking-tighter gap-1 shadow-md shadow-amber-100">
-                                                            <i class="fas fa-user-edit"></i> Pimpinan
-                                                        </a>
-                                                    </div>
+                                                    <a href="{{ route('pimpinan.edit-public', ['official' => $official->id]) }}" class="inline-flex items-center justify-center w-full bg-indigo-600 text-white font-black text-xs py-4 rounded-2xl transition-all duration-500 uppercase tracking-widest gap-2 shadow-lg shadow-indigo-100 hover:bg-indigo-700">
+                                                        <i class="fas fa-pencil-alt text-xs"></i> Kelola Pimpinan
+                                                    </a>
+                                                @else
+                                                    <a href="{{ route('official.profile.show', ['slug' => $official->slug ?? '']) }}" class="inline-flex items-center justify-center w-full bg-indigo-600 text-white font-black text-xs py-4 rounded-2xl transition-all duration-500 uppercase tracking-widest gap-2 shadow-lg shadow-indigo-100">
+                                                        Profil Lengkap <i class="fas fa-arrow-right text-sm"></i>
+                                                    </a>
                                                 @endif
+                                            @else
+                                                <a href="{{ route('official.profile.show', ['slug' => $official->slug ?? '']) }}" class="inline-flex items-center justify-center w-full bg-indigo-600 text-white font-black text-xs py-4 rounded-2xl transition-all duration-500 uppercase tracking-widest gap-2 shadow-lg shadow-indigo-100">
+                                                    Profil Lengkap <i class="fas fa-arrow-right text-sm"></i>
+                                                </a>
                                             @endauth
                                         </div>
                                     </div>
