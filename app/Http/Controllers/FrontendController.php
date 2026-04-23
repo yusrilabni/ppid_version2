@@ -487,72 +487,75 @@ class FrontendController extends Controller
         // Fetch unit data from API
         $unitData = collect($this->getUnitData());
 
-        // Map API address and Group Organizations
+        // Group Organizations based on new requirements
         $groupedOrganizations = [
-            'Organisasi Perangkat Daerah' => [],
-            'Wilayah Kecamatan' => [],
-            'Wilayah Kelurahan' => [],
-            'Wilayah Desa' => [],
+            'Dinas' => [],
+            'Badan' => [],
+            'Kecamatan' => [],
             'Lembaga Lainnya' => []
         ];
 
         $organizations->each(function ($organization) use ($unitData, &$groupedOrganizations) {
-            // Exclude Government card
-            if (stripos($organization->name, 'PEMERINTAH DAERAH KABUPATEN SINJAI') !== false) {
-                return;
-            }
+            // 1. Abaikan kartu Pemerintah Daerah
+            if (stripos($organization->name, 'PEMERINTAH DAERAH') !== false) return;
+
+            // 2. KELUARKAN Desa dan Kelurahan (Hanya untuk Unit Lokal)
+            $name = $organization->name;
+            if (preg_match('/(Desa|Kelurahan)/i', $name)) return;
 
             $matchingUnit = $unitData->get($organization->remote_id);
-            if ($matchingUnit) {
-                // Check if unit_alamat from API is explicitly '0', null, or empty
-                if (empty($matchingUnit['unit_alamat']) || $matchingUnit['unit_alamat'] === '0') {
-                    $organization->api_address = 'Alamat belum ditambahkan';
-                } else {
-                    $organization->api_address = $matchingUnit['unit_alamat'];
-                }
-            } else {
-                $organization->api_address = 'Alamat belum ditambahkan';
-            }
+            $organization->api_address = $matchingUnit['unit_alamat'] ?? 'Alamat belum ditambahkan';
 
-            // Specific Address Overrides based on User Request
-            if (stripos($organization->name, 'Inspektorat') !== false) {
-                $organization->api_address = 'Tanassang, Kel. Alehanuae, Kec. Sinjai Utara, Kab. Sinjai, Prov. Sulawesi Selatan. Kode Pos 92616';
-            } elseif (stripos($organization->name, 'Satuan Polisi Pamong Praja') !== false) {
-                $organization->api_address = 'Lingk. Tanassang Kel. Alehanuae Kec. Sinjai Utara Kab. Sinjai Telp. (0482) 23305 Kode Pos 92611';
-            }
-
-            // Grouping Logic
-            $name = $organization->name;
-            if (stripos($name, 'Kelurahan') !== false) {
-                $groupedOrganizations['Wilayah Kelurahan'][] = $organization;
-            } elseif (stripos($name, 'Desa') !== false) {
-                $groupedOrganizations['Wilayah Desa'][] = $organization;
+            if (stripos($name, 'Dinas') !== false) {
+                $groupedOrganizations['Dinas'][] = $organization;
+            } elseif (stripos($name, 'Badan') !== false) {
+                $groupedOrganizations['Badan'][] = $organization;
             } elseif (stripos($name, 'Kecamatan') !== false) {
-                $groupedOrganizations['Wilayah Kecamatan'][] = $organization;
-            } elseif (
-                stripos($name, 'Dinas') !== false || 
-                stripos($name, 'Badan') !== false || 
-                stripos($name, 'Kantor') !== false || 
-                stripos($name, 'Bagian') !== false || 
-                stripos($name, 'Sekretariat') !== false ||
-                stripos($name, 'Satuan') !== false ||
-                stripos($name, 'Inspektorat') !== false ||
-                stripos($name, 'Rumah Sakit') !== false
-            ) {
-                $groupedOrganizations['Organisasi Perangkat Daerah'][] = $organization;
+                $groupedOrganizations['Kecamatan'][] = $organization;
             } else {
                 $groupedOrganizations['Lembaga Lainnya'][] = $organization;
             }
         });
-
-        // Remove empty groups
-        $groupedOrganizations = array_filter($groupedOrganizations, function($group) {
-            return count($group) > 0;
-        });
+        $groupedOrganizations = array_filter($groupedOrganizations, fn($group) => count($group) > 0);
 
         return view('frontend.opd.list', compact('groupedOrganizations', 'user', 'api_unit_id'));
     }
 
+    public function unitLokalList()
+    {
+        $organizations = \App\Models\Organization::with('strukturOrganisasi.informasi')->get();
+        $user = auth()->user();
+        $api_unit_id = null;
+
+        if ($user && $user->nip) {
+            $apiData = \App\Models\User::getDataFromApi($user->nip);
+            if (isset($apiData['unit_id'])) {
+                $api_unit_id = $apiData['unit_id'];
+            }
+        }
+
+        $unitData = collect($this->getUnitData());
+
+        $groupedOrganizations = [
+            'Wilayah Kelurahan' => [],
+            'Wilayah Desa' => []
+        ];
+
+        $organizations->each(function ($organization) use ($unitData, &$groupedOrganizations) {
+            if (stripos($organization->name, 'Kelurahan') !== false) {
+                $groupedOrganizations['Wilayah Kelurahan'][] = $organization;
+            } elseif (stripos($organization->name, 'Desa') !== false) {
+                $groupedOrganizations['Wilayah Desa'][] = $organization;
+            }
+
+            $matchingUnit = $unitData->get($organization->remote_id);
+            $organization->api_address = $matchingUnit['unit_alamat'] ?? 'Alamat belum ditambahkan';
+        });
+
+        $groupedOrganizations = array_filter($groupedOrganizations, fn($group) => count($group) > 0);
+
+        return view('frontend.opd.list-lokal', compact('groupedOrganizations', 'user', 'api_unit_id'));
+    }
     public function opdDetail(\App\Models\Organization $organization)
     {
         $informasi = Informasi::where('content', 'struktur_organisasi_' . $organization->id)->first();

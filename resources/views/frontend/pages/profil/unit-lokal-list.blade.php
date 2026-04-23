@@ -24,6 +24,12 @@
                 <p class="text-gray-500">Data profil pimpinan desa dan kelurahan belum tersedia.</p>
             </div>
         @else
+            @php
+                $user = auth()->user();
+                $apiData = $user && $user->nip ? \App\Models\User::getDataFromApi($user->nip) : null;
+                $api_unit_id = $apiData['unit_id'] ?? null;
+            @endphp
+            
             <div class="space-y-24">
                 @foreach($groupedData as $kecName => $group)
                     <section class="relative">
@@ -102,9 +108,37 @@
                                             {{ $orgName }}
                                         </div>
 
-                                        <a href="{{ route('official.profile.show', ['slug' => $official->slug ?? '']) }}" class="inline-flex items-center justify-center w-full bg-white group-hover:bg-indigo-600 text-indigo-600 group-hover:text-white border-2 border-indigo-100 group-hover:border-indigo-600 font-black text-xs py-4 rounded-2xl transition-all duration-500 uppercase tracking-widest gap-2 shadow-sm">
-                                            Lihat Profil Lengkap <i class="fas fa-arrow-right text-sm"></i>
-                                        </a>
+                                        <div class="space-y-3 w-full">
+                                            <a href="{{ route('official.profile.show', ['slug' => $official->slug ?? '']) }}" class="inline-flex items-center justify-center w-full bg-indigo-600 text-white font-black text-xs py-4 rounded-2xl transition-all duration-500 uppercase tracking-widest gap-2 shadow-lg shadow-indigo-100">
+                                                Profil Lengkap <i class="fas fa-arrow-right text-sm"></i>
+                                            </a>
+
+                                            @auth
+                                                @php
+                                                    $canManage = false;
+                                                    $remoteId = $official->organization->remote_id ?? null;
+                                                    if ($user->isSuperAdmin()) {
+                                                        $canManage = true;
+                                                    } elseif ($user->unit_id && (string)$user->unit_id === (string)$remoteId) {
+                                                        $canManage = true;
+                                                    } elseif (isset($api_unit_id) && (string)$api_unit_id === (string)$remoteId) {
+                                                        $canManage = true;
+                                                    }
+                                                @endphp
+
+                                                @if ($canManage)
+                                                    <div class="grid grid-cols-2 gap-2">
+                                                        <a href="{{ route('opd.manage-public', ['organization' => $official->organization->id]) }}" class="inline-flex items-center justify-center bg-white text-indigo-600 border-2 border-indigo-100 hover:border-indigo-500 hover:bg-indigo-50 font-black text-[9px] py-3 rounded-xl transition-all duration-300 uppercase tracking-tighter gap-1">
+                                                            <i class="fas fa-edit"></i> Profil Unit
+                                                        </a>
+                                                        
+                                                        <a href="{{ route('pimpinan.edit-public', ['official' => $official->id]) }}" class="inline-flex items-center justify-center bg-amber-500 text-white border-2 border-amber-400 hover:bg-amber-600 font-black text-[9px] py-3 rounded-xl transition-all duration-300 uppercase tracking-tighter gap-1 shadow-md shadow-amber-100">
+                                                            <i class="fas fa-user-edit"></i> Pimpinan
+                                                        </a>
+                                                    </div>
+                                                @endif
+                                            @endauth
+                                        </div>
                                     </div>
                                 </div>
                             @endforeach
