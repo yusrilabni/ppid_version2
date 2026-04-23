@@ -288,7 +288,7 @@ class InformasiController extends Controller
             if ($request->file_type === 'url') {
                 $validationRules['url'] = 'required|string';
             } else {
-                $validationRules['file'] = 'required|file|max:5120'; // Increase to 5MB for testing
+                $validationRules['file'] = 'required|file|max:2048'; // Kembali ke 2MB
             }
 
             \Log::info('VALIDATION_START');
