@@ -492,6 +492,8 @@ class FrontendController extends Controller
             'Dinas' => [],
             'Badan' => [],
             'Kecamatan' => [],
+            'Desa' => [],
+            'Kelurahan' => [],
             'Lembaga Lainnya' => []
         ];
 
@@ -499,10 +501,7 @@ class FrontendController extends Controller
             // 1. Abaikan kartu Pemerintah Daerah
             if (stripos($organization->name, 'PEMERINTAH DAERAH') !== false) return;
 
-            // 2. KELUARKAN Desa dan Kelurahan (Hanya untuk Unit Lokal)
             $name = $organization->name;
-            if (preg_match('/(Desa|Kelurahan)/i', $name)) return;
-
             $matchingUnit = $unitData->get($organization->remote_id);
             $organization->api_address = $matchingUnit['unit_alamat'] ?? 'Alamat belum ditambahkan';
 
@@ -512,6 +511,10 @@ class FrontendController extends Controller
                 $groupedOrganizations['Badan'][] = $organization;
             } elseif (stripos($name, 'Kecamatan') !== false) {
                 $groupedOrganizations['Kecamatan'][] = $organization;
+            } elseif (stripos($name, 'Desa') !== false) {
+                $groupedOrganizations['Desa'][] = $organization;
+            } elseif (stripos($name, 'Kelurahan') !== false) {
+                $groupedOrganizations['Kelurahan'][] = $organization;
             } else {
                 $groupedOrganizations['Lembaga Lainnya'][] = $organization;
             }

@@ -7,12 +7,12 @@
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         <x-breadcrumbs :breadcrumbs="[
             ['title' => 'Beranda', 'url' => route('home'), 'icon' => 'fas fa-home'],
-            ['title' => 'Pejabat Daerah', 'url' => '', 'icon' => 'fas fa-building']
+            ['title' => 'Tentang OPD', 'url' => '', 'icon' => 'fas fa-building']
         ]" />
 
         <div class="mb-16 text-center mt-8">
             <h1 class="text-4xl md:text-5xl font-black text-gray-900 mb-6 tracking-tight">Profil Pimpinan & Organisasi Daerah</h1>
-            <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">Daftar Kepala Dinas, Kepala Badan, dan Camat yang bertugas di wilayah Kabupaten Sinjai.</p>
+            <p class="text-xl text-gray-600 max-w-3xl mx-auto leading-relaxed">Daftar Dinas, Badan, Kecamatan, Desa, dan Kelurahan yang bertugas di wilayah Kabupaten Sinjai.</p>
         </div>
 
         @if(empty($groupedOrganizations))
@@ -43,6 +43,14 @@
                                         $iconClass = 'fa-shield-alt';
                                         $colorClass = 'bg-emerald-600';
                                         $shadowClass = 'shadow-emerald-200';
+                                    } elseif ($groupName === 'Desa') {
+                                        $iconClass = 'fa-home';
+                                        $colorClass = 'bg-orange-600';
+                                        $shadowClass = 'shadow-orange-200';
+                                    } elseif ($groupName === 'Kelurahan') {
+                                        $iconClass = 'fa-city';
+                                        $colorClass = 'bg-amber-600';
+                                        $shadowClass = 'shadow-amber-200';
                                     }
                                 @endphp
                                 <div class="w-12 h-12 {{ $colorClass }} rounded-2xl flex items-center justify-center text-white mr-5 shadow-lg {{ $shadowClass }}">
