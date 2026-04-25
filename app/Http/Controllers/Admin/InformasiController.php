@@ -276,6 +276,19 @@ class InformasiController extends Controller
                 $request->merge(['url' => 'B64_' . base64_encode($request->url_raw)]);
             }
 
+            // Server-side Double Submit Protection (Title + Unit + User check)
+            $unitId = $user->isSuperAdmin() ? $request->target_unit : $user->unit_id;
+            $existing = Informasi::where('title', $request->title)
+                                 ->where('unit_id', $unitId)
+                                 ->where('created_at', '>=', now()->subSeconds(10))
+                                 ->first();
+            
+            if ($existing) {
+                \Log::warning('DOUBLE_SUBMIT_DETECTED: ' . $user->nip . ' for title: ' . $request->title);
+                return redirect()->route('frontend.informasi.category', ['category' => Str::slug(str_replace('Informasi ', '', $request->category))])
+                    ->with('success', 'Data sudah berhasil disimpan sebelumnya.');
+            }
+
             $validationRules = [
                 'title' => 'required|string|min:5|max:255',
                 'doc_desc' => 'nullable|string',

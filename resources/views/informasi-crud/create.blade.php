@@ -327,30 +327,34 @@
             }
         }
 
+        function disableButtons() {
+            if (form.getAttribute('data-submitting') === 'true') return true;
+            form.setAttribute('data-submitting', 'true');
+            
+            const submitBtn = document.getElementById('submit-btn');
+            const submitFromModalBtn = document.getElementById('submit-from-modal');
+            
+            [submitBtn, submitFromModalBtn].forEach(btn => {
+                if (btn) {
+                    btn.disabled = true;
+                    btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Menyimpan...';
+                    btn.classList.add('opacity-50', 'cursor-not-allowed');
+                }
+            });
+            return false;
+        }
+
         submitFromModalButton.addEventListener('click', function() {
+            if (disableButtons()) return;
             prepareUrl();
             form.submit();
         });
 
         form.addEventListener('submit', function(e) {
-            if (this.submitted) {
+            if (disableButtons()) {
                 e.preventDefault();
                 return false;
             }
-            this.submitted = true;
-            
-            const submitBtn = document.getElementById('submit-btn');
-            const submitFromModalBtn = document.getElementById('submit-from-modal');
-            
-            if (submitBtn) {
-                submitBtn.disabled = true;
-                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Menyimpan...';
-            }
-            if (submitFromModalBtn) {
-                submitFromModalBtn.disabled = true;
-                submitFromModalBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Menyimpan...';
-            }
-
             prepareUrl();
         });
 
