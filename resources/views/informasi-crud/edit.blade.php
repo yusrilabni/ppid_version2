@@ -252,7 +252,8 @@
             this.textContent = 'Mengecek...';
 
             const title = titleInput.value;
-            const url = `{{ route('admin.informasi.check_similarity') }}`;
+            // Gunakan path absolut yang lebih aman untuk server v2
+            const url = "/v2/admin/proses-cek-judul"; 
             const isSuperAdmin = @json($isSuperAdmin);
 
             const formData = new FormData();
@@ -273,17 +274,20 @@
                 return;
             }
 
+            console.log('Checking similarity at:', url);
+
             fetch(url, {
                 method: 'POST',
                 body: formData,
                 headers: {
                     'Accept': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                    'X-Requested-With': 'XMLHttpRequest'
                 }
             })
             .then(response => {
                 if (!response.ok) {
-                    throw new Error('Network response was not ok');
+                    throw new Error('Server returned ' + response.status);
                 }
                 return response.json();
             })
@@ -309,7 +313,7 @@
             })
             .catch(error => {
                 console.error('Error checking similarity:', error);
-                alert('Terjadi kesalahan saat memeriksa kemiripan dokumen.');
+                alert('Terjadi kesalahan koneksi atau server error: ' + error.message);
                 checkButton.disabled = false;
                 checkButton.textContent = 'Check Informasi';
             });

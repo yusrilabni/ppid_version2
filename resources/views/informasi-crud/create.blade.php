@@ -247,8 +247,8 @@
             this.textContent = 'Mengecek...';
 
             const title = titleInput.value;
-            // Gunakan route() helper agar URL selalu benar
-            const url = "{{ route('admin.informasi.check_similarity') }}"; 
+            // Gunakan path absolut yang lebih aman untuk server v2
+            const url = "/v2/admin/proses-cek-judul"; 
             
             const formData = new FormData();
             formData.append('title', title);
@@ -266,12 +266,22 @@
                 return;
             }
 
+            console.log('Checking similarity at:', url);
+
             fetch(url, {
                 method: 'POST',
                 body: formData,
-                headers: { 'Accept': 'application/json' }
+                headers: { 
+                    'Accept': 'application/json',
+                    'X-Requested-With': 'XMLHttpRequest'
+                }
             })
-            .then(response => response.json())
+            .then(response => {
+                if (!response.ok) {
+                    throw new Error('Server returned ' + response.status);
+                }
+                return response.json();
+            })
             .then(data => {
                 checkButton.disabled = false;
                 checkButton.textContent = 'Check Informasi';
@@ -292,8 +302,8 @@
                 }
             })
             .catch(error => {
-                console.error('Error:', error);
-                alert('Terjadi kesalahan koneksi.');
+                console.error('Similarity Check Error:', error);
+                alert('Terjadi kesalahan koneksi atau server error: ' + error.message);
                 checkButton.disabled = false;
                 checkButton.textContent = 'Check Informasi';
             });
