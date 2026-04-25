@@ -29,14 +29,14 @@
             <div class="swiper mySwiper">
                 <div class="swiper-wrapper">
                     @forelse($informasis as $info)
-                        <div class="swiper-slide">
+                        <div class="swiper-slide !h-auto">
                             @include('frontend.extra.widgets.partials.card-item', ['info' => $info, 'index' => $loop->index])
                         </div>
                     @empty
                         <div class="swiper-slide text-center py-12">Belum ada data</div>
                     @endforelse
                 </div>
-                <div class="swiper-pagination"></div>
+                <div class="swiper-pagination !bottom-0"></div>
             </div>
         @else
             {{-- MODE GRID STATIC (CARD) --}}

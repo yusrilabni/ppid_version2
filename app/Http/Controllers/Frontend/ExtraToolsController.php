@@ -63,7 +63,7 @@ class ExtraToolsController extends Controller
         $autoplay = $request->get('autoplay', 0); // 0 atau 1
         $limit = (int) $request->get('limit', 5);
         
-        $query = Informasi::query();
+        $query = Informasi::with(['user', 'organization']);
         if ($request->filled('unit_id')) { $query->where('unit_id', $request->unit_id); }
         if ($request->filled('year')) { $query->where('tahun', $request->year); }
         
@@ -74,8 +74,9 @@ class ExtraToolsController extends Controller
         }
         
         $informasis = $query->take($limit)->get();
+        $unitMap = collect(\App\Helpers\GeneralHelper::getUnitData());
         
-        return Response::view('frontend.extra.widgets.embed-latest', compact('informasis', 'type', 'display', 'mode', 'columns', 'autoplay'))
+        return Response::view('frontend.extra.widgets.embed-latest', compact('informasis', 'type', 'display', 'mode', 'columns', 'autoplay', 'unitMap'))
             ->header('Access-Control-Allow-Origin', '*');
     }
 }
