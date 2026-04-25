@@ -50,82 +50,124 @@
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
                         {{-- Controls --}}
                         <div class="space-y-6">
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Konten</label>
-                                    <select x-model="type" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500">
-                                        <option value="latest">Terbaru</option>
-                                        <option value="popular">Terpopuler</option>
-                                    </select>
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Konten</label>
+                                    <x-custom-select 
+                                        name="type_select" 
+                                        :options="[
+                                            ['value' => 'latest', 'label' => 'Terbaru'],
+                                            ['value' => 'popular', 'label' => 'Terpopuler']
+                                        ]" 
+                                        :value="'latest'"
+                                        @change="type = $event.detail.value"
+                                    />
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Gaya Dasar</label>
-                                    <select x-model="display" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 font-bold text-blue-600">
-                                        <option value="list">Mode Daftar (List)</option>
-                                        <option value="card">Mode Kartu (Card)</option>
-                                    </select>
-                                </div>
-                            </div>
-
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" x-show="display === 'card'">
-                                <div>
-                                    <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Mode Layout</label>
-                                    <select x-model="mode" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500">
-                                        <option value="static">Grid Statis (Full)</option>
-                                        <option value="slider">Slider Otomatis</option>
-                                    </select>
-                                </div>
-                                <div>
-                                    <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Kolom Per Baris</label>
-                                    <select x-model="columns" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500">
-                                        <option value="1">1 Kolom</option>
-                                        <option value="2">2 Kolom</option>
-                                        <option value="3">3 Kolom</option>
-                                        <option value="4">4 Kolom</option>
-                                        <option value="5">5 Kolom</option>
-                                    </select>
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Gaya Dasar</label>
+                                    <x-custom-select 
+                                        name="display_select" 
+                                        :options="[
+                                            ['value' => 'list', 'label' => 'Mode Daftar (List)'],
+                                            ['value' => 'card', 'label' => 'Mode Kartu (Card)']
+                                        ]" 
+                                        :value="'list'"
+                                        @change="display = $event.detail.value"
+                                    />
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6" x-show="display === 'card'">
                                 <div>
-                                    <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Jumlah Total Data</label>
-                                    <select x-model="limit" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500">
-                                        <option value="2">2 Item</option>
-                                        <option value="3">3 Item</option>
-                                        <option value="4">4 Item</option>
-                                        <option value="5">5 Item</option>
-                                        <option value="10">10 Item</option>
-                                        <option value="20">20 Item</option>
-                                    </select>
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Mode Layout</label>
+                                    <x-custom-select 
+                                        name="mode_select" 
+                                        :options="[
+                                            ['value' => 'static', 'label' => 'Grid Statis (Full)'],
+                                            ['value' => 'slider', 'label' => 'Slider Otomatis']
+                                        ]" 
+                                        :value="'static'"
+                                        @change="mode = $event.detail.value"
+                                    />
+                                </div>
+                                <div>
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Kolom Per Baris</label>
+                                    <x-custom-select 
+                                        name="columns_select" 
+                                        :options="[
+                                            ['value' => '1', 'label' => '1 Kolom'],
+                                            ['value' => '2', 'label' => '2 Kolom'],
+                                            ['value' => '3', 'label' => '3 Kolom'],
+                                            ['value' => '4', 'label' => '4 Kolom'],
+                                            ['value' => '5', 'label' => '5 Kolom']
+                                        ]" 
+                                        :value="'3'"
+                                        @change="columns = $event.detail.value"
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Jumlah Total Data</label>
+                                    <x-custom-select 
+                                        name="limit_select" 
+                                        :options="[
+                                            ['value' => '2', 'label' => '2 Item'],
+                                            ['value' => '3', 'label' => '3 Item'],
+                                            ['value' => '4', 'label' => '4 Item'],
+                                            ['value' => '5', 'label' => '5 Item'],
+                                            ['value' => '10', 'label' => '10 Item'],
+                                            ['value' => '20', 'label' => '20 Item']
+                                        ]" 
+                                        :value="'5'"
+                                        @change="limit = $event.detail.value"
+                                    />
                                 </div>
                                 <div x-show="mode === 'slider' && display === 'card'">
-                                    <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Autoplay Slider</label>
-                                    <select x-model="autoplay" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 font-bold text-green-600">
-                                        <option value="0">Nonaktif</option>
-                                        <option value="1">Aktif (3 Detik)</option>
-                                    </select>
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Autoplay Slider</label>
+                                    <x-custom-select 
+                                        name="autoplay_select" 
+                                        :options="[
+                                            ['value' => '0', 'label' => 'Nonaktif'],
+                                            ['value' => '1', 'label' => 'Aktif (3 Detik)']
+                                        ]" 
+                                        :value="'0'"
+                                        @change="autoplay = $event.detail.value"
+                                    />
                                 </div>
                             </div>
 
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                                 <div>
-                                    <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Filter OPD</label>
-                                    <select x-model="unitId" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500">
-                                        <option value="">Semua Instansi</option>
-                                        @foreach($organizations as $org)
-                                            <option value="{{ $org->unit_id }}">{{ $org->name }}</option>
-                                        @endforeach
-                                    </select>
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Filter OPD</label>
+                                    @php
+                                        $orgOptions = [['value' => '', 'label' => 'Semua Instansi']];
+                                        foreach($organizations as $org) {
+                                            $orgOptions[] = ['value' => (string)$org->unit_id, 'label' => $org->name];
+                                        }
+                                    @endphp
+                                    <x-custom-select 
+                                        name="unit_select" 
+                                        :options="$orgOptions" 
+                                        :value="''"
+                                        @change="unitId = $event.detail.value"
+                                    />
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Filter Tahun</label>
-                                    <select x-model="year" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500">
-                                        <option value="">Semua Tahun</option>
-                                        @foreach($years as $y)
-                                            <option value="{{ $y }}">{{ $y }}</option>
-                                        @endforeach
-                                    </select>
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Filter Tahun</label>
+                                    @php
+                                        $yearOptions = [['value' => '', 'label' => 'Semua Tahun']];
+                                        foreach($years as $y) {
+                                            $yearOptions[] = ['value' => (string)$y, 'label' => (string)$y];
+                                        }
+                                    @endphp
+                                    <x-custom-select 
+                                        name="year_select" 
+                                        :options="$yearOptions" 
+                                        :value="''"
+                                        @change="year = $event.detail.value"
+                                    />
                                 </div>
                             </div>
 
