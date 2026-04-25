@@ -70,9 +70,7 @@
                         <ul class="text-xs space-y-2.5 text-slate-700">
                             <li class="flex items-start gap-2"><i class="fas fa-check text-blue-500 mt-0.5"></i> <span>Profil Badan Publik (Visi, Misi, Struktur, Tupoksi)</span></li>
                             <li class="flex items-start gap-2"><i class="fas fa-check text-blue-500 mt-0.5"></i> <span>Ringkasan Program & Anggaran (RKA/DPA/DPA-SKPD)</span></li>
-                            <li class="flex items-start gap-2 p-2 bg-blue-50 rounded-lg border border-blue-100 font-bold">
-                                <i class="fas fa-star text-blue-600 mt-0.5"></i> <span>Daftar Informasi Publik (DIP) & DIK</span>
-                            </li>
+                            <li class="flex items-start gap-2"><i class="fas fa-check text-blue-500 mt-0.5"></i> <span>Daftar Informasi Publik (DIP) & DIK</span></li>
                             <li class="flex items-start gap-2"><i class="fas fa-check text-blue-500 mt-0.5"></i> <span>Laporan Keuangan Tahunan Audited & LRA</span></li>
                             <li class="flex items-start gap-2"><i class="fas fa-check text-blue-500 mt-0.5"></i> <span>Laporan Kinerja (LKjIP / LPPD / LKPJ)</span></li>
                             <li class="flex items-start gap-2"><i class="fas fa-check text-blue-500 mt-0.5"></i> <span>Regulasi: Perda, Perbup, & SK Umum</span></li>
