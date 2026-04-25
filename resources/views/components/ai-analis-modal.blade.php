@@ -381,9 +381,15 @@
                         break;
 
                     case 'permanent_valid':
-                        status = 'Berlaku';
-                        alasanStatus = 'Dokumen bersifat permanen/regulasi yang tetap berlaku selama tidak ada perubahan hukum.';
-                        colorClass = 'bg-green-100 text-green-800 border-green-200';
+                        if (endYear < currentYear) {
+                            status = 'Perlu Verifikasi (Berlaku / Arsip)';
+                            alasanStatus = 'Dokumen secara hukum tetap berlaku, KECUALI jika sudah ada pembaruan dokumen dengan judul/substansi serupa pada tahun berjalan (maka otomatis turun menjadi ARSIP).';
+                            colorClass = 'bg-yellow-100 text-yellow-800 border-yellow-200';
+                        } else {
+                            status = 'Berlaku';
+                            alasanStatus = 'Ini adalah versi dokumen yang aktif.';
+                            colorClass = 'bg-green-100 text-green-800 border-green-200';
+                        }
                         break;
 
                     case 'year_based':
