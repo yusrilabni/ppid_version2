@@ -201,25 +201,20 @@ class FrontendController extends Controller
         $searchTerm = $request->input('search');
         $isStatusFilter = false;
         if ($searchTerm) {
-            $lowerSearchTerm = strtolower($searchTerm);
+            $lowerSearchTerm = strtolower(trim($searchTerm));
+            // Only treat as status filter if the term is EXACTLY 'berlaku' or 'arsip'
             if ($lowerSearchTerm === 'berlaku') {
                 $query->where('status', 'BERLAKU');
                 $isStatusFilter = true;
             } elseif ($lowerSearchTerm === 'arsip') {
                 $query->where('status', 'ARSIP');
                 $isStatusFilter = true;
-            } elseif ($lowerSearchTerm === 'aktif') { // Also handle 'aktif' status for old records
-                $query->where('status', 'aktif');
-                $isStatusFilter = true;
-            } elseif ($lowerSearchTerm === 'nonaktif') { // Also handle 'nonaktif' status for old records
-                $query->where('status', 'nonaktif');
-                $isStatusFilter = true;
             }
         }
 
-        // Apply title/description search filter only if it's not a status filter
+        // Apply title/description search filter only if it's not a strict status filter
         if ($request->has('search') && $request->search != '' && !$isStatusFilter) {
-            $searchTerm = $request->search;
+            $searchTerm = trim($request->search);
             $matchingUnitIds = [];
 
             // Find unit_ids that match the search term in unit_nama
@@ -230,8 +225,8 @@ class FrontendController extends Controller
             }
 
             $query->where(function($q) use ($searchTerm, $matchingUnitIds) {
-                $q->where('title', 'like', '%' . $searchTerm . '%')
-                  ->orWhere('deskripsi', 'like', '%' . $searchTerm . '%');
+                $q->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
+                  ->orWhereRaw('LOWER(deskripsi) LIKE ?', ['%' . strtolower($searchTerm) . '%']);
 
                 if (!empty($matchingUnitIds)) {
                     $q->orWhereIn('unit_id', $matchingUnitIds);
@@ -1099,23 +1094,26 @@ class FrontendController extends Controller
     public function search(Request $request)
     {
         $query = $request->input('q');
-        
+
         if (empty($query)) {
             return redirect()->route('home');
         }
 
-        $informasiResults = Informasi::where('title', 'like', "%{$query}%")
-            ->orWhere('deskripsi', 'like', "%{$query}%")
+        $searchTerm = strtolower(trim($query));
+
+        $informasiResults = Informasi::where(function($q) use ($searchTerm) {
+                $q->whereRaw('LOWER(title) LIKE ?', ['%' . $searchTerm . '%'])
+                  ->orWhereRaw('LOWER(deskripsi) LIKE ?', ['%' . $searchTerm . '%']);
+            })
             ->where('published', true)
             ->latest()
             ->take(20)
             ->get();
 
-        $standarLayananResults = SubStandarLayanan::where('title', 'like', "%{$query}%")
+        $standarLayananResults = SubStandarLayanan::whereRaw('LOWER(title) LIKE ?', ['%' . $searchTerm . '%'])
             ->latest()
             ->take(10)
             ->get();
-
         $orgResults = \App\Models\Organization::where('name', 'like', "%{$query}%")
             ->take(10)
             ->get();
