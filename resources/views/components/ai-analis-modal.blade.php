@@ -115,7 +115,7 @@
                                 x-text="result.alasanSifat">-</span></p>
                     </div>
 
-                    <div class="bg-blue-50 rounded-xl p-5 border border-blue-100 relative overflow-hidden">
+                    <div class="bg-blue-50 rounded-xl p-5 border border-blue-100 relative overflow-hidden transition-all duration-300" :class="result.logicType === 'uji_konsekuensi' ? 'ring-2 ring-red-500' : ''">
                         <div class="absolute -right-4 -top-4 opacity-10">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-24 w-24 text-blue-900" viewBox="0 0 20 20"
                                 fill="currentColor">
@@ -132,6 +132,21 @@
                         </div>
                         <p class="text-sm text-blue-800"><span class="font-semibold">Alasan:</span> <span
                                 x-text="result.alasanStatus">-</span></p>
+                    </div>
+                </div>
+
+                <!-- Banner Peringatan Uji Konsekuensi -->
+                <div x-show="result.logicType === 'uji_konsekuensi'" x-transition class="mb-6 p-4 bg-red-600 rounded-xl flex items-start gap-4 shadow-lg border-2 border-red-700 fade-in">
+                    <div class="bg-white/20 p-2 rounded-lg text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z" />
+                        </svg>
+                    </div>
+                    <div>
+                        <h4 class="text-white font-bold text-lg">PROSEDUR HUKUM WAJIB!</h4>
+                        <p class="text-red-50 text-sm leading-relaxed">
+                            Dokumen ini masuk dalam kategori informasi yang dikecualikan. Berdasarkan <strong>Pasal 19 UU No. 14 Tahun 2008</strong>, akses terhadap dokumen ini hanya boleh ditutup <strong>setelah</strong> melalui proses Uji Konsekuensi secara tertulis oleh Pejabat Pengelola Informasi dan Dokumentasi (PPID).
+                        </p>
                     </div>
                 </div>
 
@@ -195,161 +210,100 @@
                 alasanKategori: '',
                 jenis: '',
                 alasanJenis: '',
-                deskripsi: ''
+                deskripsi: '',
+                logicType: ''
             },
             statusBadgeClass: '',
 
-            // DATABASE PENGETAHUAN "SEMPURNA" (Sesuai UU KIP & PERKI 1/2021)
             knowledgeBase: [
-                // 1. INFORMASI DIKECUALIKAN
+                // 1. INFORMASI DIKECUALIKAN (Revisi Wajib Uji Konsekuensi)
                 {
                     id: 'dikecualikan',
-                    keywords: ['rahasia', 'dikecualikan', 'intelijen', 'sandi', 'data pribadi', 'rekam medis',
-                        'penyelidikan', 'autopsi'
-                    ],
-                    kategori: 'Layanan & Laporan PPID',
-                    jenis: 'Daftar Informasi Dikecualikan',
+                    keywords: ['rahasia', 'dikecualikan', 'intelijen', 'sandi', 'data pribadi', 'rekam medis', 'penyelidikan', 'autopsi'],
+                    kategori: 'Daftar Informasi Dikecualikan',
+                    jenis: 'Informasi Dikecualikan',
                     sifat: 'Dikecualikan',
-                    alasanSifat: 'Sesuai Pasal 17 UU KIP, informasi ini berpotensi membahayakan negara, perlindungan data pribadi, atau proses penegakan hukum.',
-                    logicType: 'stateless'
+                    alasanSifat: 'Wajib melalui Uji Konsekuensi (Pasal 19 UU 14/2008) untuk menentukan apakah informasi ini benar-benar membahayakan kepentingan yang dilindungi.',
+                    logicType: 'uji_konsekuensi'
                 },
                 // 2. INFORMASI SERTA MERTA
                 {
                     id: 'sertamerta',
-                    keywords: ['bencana', 'darurat', 'peringatan dini', 'wabah', 'gempa', 'banjir', 'tsunami',
-                        'status awas'
-                    ],
-                    kategori: 'Lainnya',
+                    keywords: ['bencana', 'darurat', 'peringatan dini', 'wabah', 'gempa', 'banjir', 'tsunami', 'status awas'],
+                    kategori: 'Informasi Serta Merta',
                     jenis: 'Informasi Serta Merta',
                     sifat: 'Serta Merta',
                     alasanSifat: 'Menyangkut hajat hidup orang banyak dan keselamatan jiwa yang wajib diumumkan seketika (Pasal 10 UU KIP).',
                     logicType: 'event_based'
                 },
-                // 3. PERJANJIAN (KINERJA vs KONTRAK)
+                // 3. PENGADAAN BARANG & JASA (Klaster Baru)
                 {
-                    id: 'pk_kinerja',
-                    keywords: ['perjanjian kinerja', 'pk dinas', 'pk kepala', 'sasaran kerja', 'penetapan kinerja',
-                        'janji kinerja'
-                    ],
-                    kategori: 'Kinerja & Strategis',
-                    jenis: 'Dokumen Strategis (PK)',
+                    id: 'pbj_rup',
+                    keywords: ['rup', 'rencana umum pengadaan'],
+                    kategori: 'Pengadaan Barang/Jasa',
+                    jenis: 'Rencana Umum Pengadaan (RUP)',
                     sifat: 'Berkala',
-                    alasanSifat: 'Merupakan dokumen target/janji kinerja tahunan yang wajib dipublikasikan di awal tahun.',
+                    alasanSifat: 'Rencana pengadaan wajib diumumkan secara rutin di awal tahun anggaran.',
                     logicType: 'year_based'
                 },
                 {
-                    id: 'mou_kontrak',
-                    keywords: ['mou', 'nota kesepahaman', 'perjanjian kerja sama', 'pks', 'kontrak kerja'],
-                    kategori: 'Regulasi & Kerja Sama',
-                    jenis: 'Perjanjian Kerja Sama / MoU',
+                    id: 'pbj_teknis',
+                    keywords: ['kontrak', 'kak', 'kerangka acuan kerja', 'hps', 'harga perkiraan sendiri', 'pemenang tender', 'lelang'],
+                    kategori: 'Pengadaan Barang/Jasa',
+                    jenis: 'Dokumen Teknis & Kontrak',
                     sifat: 'Setiap Saat',
-                    alasanSifat: 'Dokumen kontrak adalah arsip legal. Ringkasannya di Berkala, naskah lengkapnya tersedia Setiap Saat.',
-                    logicType: 'contract_based'
+                    alasanSifat: 'Dokumen kontrak dan teknis pengadaan adalah informasi publik yang tersedia setiap saat setelah proses selesai.',
+                    logicType: 'year_based'
                 },
-                // 4. REGULASI & SK (DIPISAHKAN AGAR AKURAT)
+                // 4. LAYANAN PENGADUAN (Klaster Baru)
                 {
-                    id: 'peraturan',
-                    keywords: ['peraturan daerah', 'perda', 'peraturan bupati', 'perbup', 'peraturan walikota',
-                        'perwali', 'undang-undang', 'pp'
-                    ],
-                    kategori: 'Regulasi & Kerja Sama',
-                    jenis: 'Regulasi & Peraturan',
+                    id: 'pengaduan',
+                    keywords: ['rekapitulasi pengaduan', 'statistik pengaduan', 'laporan pengaduan', 'jumlah aduan'],
+                    kategori: 'Layanan & Laporan PPID',
+                    jenis: 'Statistik Layanan Pengaduan',
                     sifat: 'Berkala',
-                    alasanSifat: 'Produk hukum yang bersifat mengatur umum (Regeling) wajib diumumkan secara berkala.',
-                    logicType: 'permanent_valid' // Selalu Berlaku
+                    alasanSifat: 'Rekapitulasi jumlah dan status penanganan pengaduan wajib dilaporkan secara berkala.',
+                    logicType: 'year_based'
                 },
+                // 5. DIP / DIK (Klaster Baru)
                 {
-                    id: 'sk_kegiatan',
-                    keywords: ['sk pptk', 'pejabat pelaksana teknis', 'sk tim', 'sk panitia', 'sk penunjukan',
-                        'sk honorarium', 'sk bendahara'
-                    ],
-                    kategori: 'Regulasi & Kerja Sama',
-                    jenis: 'Regulasi & Peraturan (SK Kegiatan)',
-                    sifat: 'Setiap Saat',
-                    alasanSifat: 'Merupakan SK penetapan personil/administrasi kegiatan internal yang bersifat sementara (ad hoc).',
-                    logicType: 'year_based' // Arsip jika tahun lewat
+                    id: 'dip_dik',
+                    keywords: ['dip', 'dik', 'daftar informasi publik', 'daftar informasi dikecualikan'],
+                    kategori: 'Layanan & Laporan PPID',
+                    jenis: 'Daftar Informasi Publik (DIP/DIK)',
+                    sifat: 'Berkala',
+                    alasanSifat: 'Daftar yang memuat seluruh kategori informasi wajib diperbarui dan diumumkan secara berkala.',
+                    logicType: 'year_based'
                 },
-                {
-                    id: 'sk_status',
-                    keywords: ['penetapan status', 'penetapan cagar budaya', 'penetapan desa wisata',
-                        'sk penetapan lokasi'
-                    ],
-                    kategori: 'Regulasi & Kerja Sama',
-                    jenis: 'Regulasi & Peraturan (SK Penetapan)',
-                    sifat: 'Setiap Saat',
-                    alasanSifat: 'SK Penetapan status hukum melekat pada objek selamanya.',
-                    logicType: 'permanent_valid' // Selalu Berlaku
-                },
-                {
-                    id: 'sk_umum',
-                    keywords: ['keputusan bupati', 'sk bupati', 'keputusan kepala', 'sk kepala'],
-                    kategori: 'Regulasi & Kerja Sama',
-                    jenis: 'Regulasi & Peraturan (SK)',
-                    sifat: 'Setiap Saat',
-                    alasanSifat: 'Surat Keputusan (SK) bersifat penetapan administratif. Naskah aslinya adalah arsip.',
-                    logicType: 'sk_context' // Cek Konteks
-                },
-                // 5. PERENCANAAN
+                // 6. PERENCANAAN
                 {
                     id: 'renstra',
                     keywords: ['renstra', 'rpjmd', 'rencana strategis', 'peta jalan', 'roadmap'],
-                    kategori: 'Kinerja & Strategis',
-                    jenis: 'Dokumen Strategis',
+                    kategori: 'Dokumen Strategis',
+                    jenis: 'Rencana Strategis',
                     sifat: 'Berkala',
                     alasanSifat: 'Dokumen perencanaan jangka menengah/panjang wajib dipublikasikan berkala.',
                     logicType: 'range_based'
                 },
-                {
-                    id: 'renja',
-                    keywords: ['renja', 'rencana kerja', 'rkt', 'rencana aksi'],
-                    kategori: 'Kinerja & Strategis',
-                    jenis: 'Dokumen Strategis',
-                    sifat: 'Berkala',
-                    alasanSifat: 'Rencana kerja tahunan wajib diumumkan di awal tahun anggaran.',
-                    logicType: 'year_based'
-                },
-                // 6. KEUANGAN
+                // 7. KEUANGAN
                 {
                     id: 'laporan_keuangan',
-                    keywords: ['lra', 'neraca', 'realisasi anggaran', 'calk', 'laporan keuangan', 'rka', 'dpa',
-                        'anggaran kas'
-                    ],
-                    kategori: 'Keuangan & Aset',
-                    jenis: 'Informasi Keuangan',
+                    keywords: ['lra', 'neraca', 'realisasi anggaran', 'calk', 'laporan keuangan', 'rka', 'dpa'],
+                    kategori: 'Informasi Keuangan',
+                    jenis: 'Laporan Keuangan & Anggaran',
                     sifat: 'Berkala',
                     alasanSifat: 'Ringkasan Laporan Keuangan dan Anggaran wajib diumumkan secara berkala.',
                     logicType: 'year_based'
                 },
-                {
-                    id: 'bukti_transaksi',
-                    keywords: ['sp2d', 'spm', 'kuitansi', 'buku kas', 'bku', 'spj', 'bukti bayar'],
-                    kategori: 'Keuangan & Aset',
-                    jenis: 'Informasi Keuangan (Bukti)',
-                    sifat: 'Setiap Saat',
-                    alasanSifat: 'Dokumen sumber/bukti transaksi detail (raw data) disimpan sebagai arsip.',
-                    logicType: 'year_based'
-                },
-                // 7. PROFIL & SOP
+                // 8. PROFIL & SOP
                 {
                     id: 'profil_sop',
-                    keywords: ['struktur organisasi', 'sotk', 'visi misi', 'tupoksi', 'sop', 'standar layanan',
-                        'maklumat', 'alur permohonan'
-                    ],
-                    kategori: 'Profil & Organisasi',
-                    jenis: 'Profil / SOP',
+                    keywords: ['struktur organisasi', 'sotk', 'visi misi', 'tupoksi', 'sop', 'standar layanan', 'maklumat'],
+                    kategori: 'Profil Badan Publik',
+                    jenis: 'Profil / Standar Layanan',
                     sifat: 'Berkala',
-                    alasanSifat: 'Profil, Struktur, dan SOP Layanan wajib diumumkan berkala agar publik tahu tanpa bertanya.',
+                    alasanSifat: 'Profil, Struktur, dan SOP Layanan wajib diumumkan berkala agar publik dapat mengakses layanan dengan mudah.',
                     logicType: 'permanent_valid'
-                },
-                // 8. LAINNYA
-                {
-                    id: 'laporan_kinerja',
-                    keywords: ['lkjip', 'lkpj', 'laporan kinerja', 'laporan tahunan'],
-                    kategori: 'Kinerja & Strategis',
-                    jenis: 'Laporan Kinerja Instansi',
-                    sifat: 'Berkala',
-                    alasanSifat: 'Laporan pertanggungjawaban wajib diumumkan rutin.',
-                    logicType: 'year_based'
                 }
             ],
 
@@ -359,7 +313,6 @@
                 let startYear = null;
                 let endYear = null;
 
-                // --- 1. DETEKSI TAHUN (Range & Single) ---
                 const rangeMatch = titleInput.match(/(19|20)\d{2}\s*(-|s\/d|sampai)\s*(19|20)\d{2}/);
                 if (rangeMatch) {
                     const years = rangeMatch[0].match(/\d{4}/g).map(y => parseInt(y));
@@ -386,7 +339,6 @@
                     endYear = currentYear;
                 }
 
-                // --- 2. MATCHING CERDAS (Weighted Scoring) ---
                 let bestMatch = null;
                 let maxScore = 0;
 
@@ -397,8 +349,8 @@
                         if (titleInput.includes(keyword)) {
                             score += 10;
                             matchedCount++;
-                            if (keyword.length > 5) score += 5; // Keyword panjang lebih berbobot
-                            if (titleInput.startsWith(keyword)) score += 5; // Posisi di depan lebih berbobot
+                            if (keyword.length > 5) score += 5;
+                            if (titleInput.startsWith(keyword)) score += 5;
                         }
                     }
                     if (matchedCount > 0 && score > maxScore) {
@@ -407,124 +359,80 @@
                     }
                 }
 
-                // Fallback
                 if (!bestMatch) {
                     bestMatch = {
                         kategori: 'Lainnya',
                         jenis: 'Informasi Umum',
                         sifat: 'Setiap Saat',
-                        alasanSifat: 'Tidak ditemukan klasifikasi spesifik. Secara default dokumen publik dianggap terbuka setiap saat.',
-                        alasanKategori: 'Dokumen umum.',
-                        alasanJenis: 'Dokumen kedinasan umum.',
+                        alasanSifat: 'Dokumen publik pada prinsipnya terbuka dan tersedia setiap saat kecuali diatur lain.',
                         logicType: 'year_based'
                     };
                 }
 
-                // --- 3. LOGIKA PENENTUAN STATUS (FINAL - SWITCH CASE) ---
                 let status = '';
                 let alasanStatus = '';
                 let colorClass = '';
 
                 switch (bestMatch.logicType) {
+                    case 'uji_konsekuensi':
+                        status = 'Wajib Uji Konsekuensi';
+                        alasanStatus = 'PERINGATAN: Status dokumen ini HANYA SAH menjadi "Dikecualikan" jika terdapat Surat Keputusan (SK) Uji Konsekuensi yang ditandatangani PPID Utama.';
+                        colorClass = 'bg-red-100 text-red-900 border-red-400 ring-2 ring-red-500';
+                        break;
+
                     case 'permanent_valid':
                         status = 'Berlaku';
-                        alasanStatus =
-                            'Dokumen ini adalah Regulasi, Penetapan Status Hukum, atau Profil/SOP yang BERLAKU SELAMANYA sampai ada revisi/pencabutan baru, terlepas dari tahun terbitnya.';
+                        alasanStatus = 'Dokumen bersifat permanen/regulasi yang tetap berlaku selama tidak ada perubahan hukum.';
                         colorClass = 'bg-green-100 text-green-800 border-green-200';
                         break;
 
                     case 'year_based':
                         if (endYear < currentYear) {
                             status = 'Arsip';
-                            alasanStatus =
-                                `Dokumen ini terikat pada Tahun Anggaran ${endYear} yang sudah berakhir/tutup buku.`;
+                            alasanStatus = `Dokumen tahun anggaran ${endYear} telah berakhir dan kini berstatus sebagai data sejarah/arsip.`;
                             colorClass = 'bg-yellow-100 text-yellow-800 border-yellow-200';
                         } else {
                             status = 'Berlaku / Berjalan';
-                            alasanStatus = `Dokumen ini relevan untuk operasional tahun berjalan (${currentYear}).`;
+                            alasanStatus = `Dokumen operasional aktif untuk tahun anggaran ${currentYear}.`;
                             colorClass = 'bg-blue-100 text-blue-800 border-blue-200';
                         }
                         break;
 
-                    case 'range_based': // Renstra
+                    case 'range_based':
                         if (currentYear >= startYear && currentYear <= endYear) {
                             status = 'Berlaku';
-                            alasanStatus =
-                                `Saat ini tahun ${currentYear}, masih berada dalam periode berlaku dokumen (${startYear}-${endYear}).`;
+                            alasanStatus = `Periode dokumen (${startYear}-${endYear}) masih aktif pada tahun ${currentYear}.`;
                             colorClass = 'bg-green-100 text-green-800 border-green-200';
-                        } else if (currentYear > endYear) {
+                        } else {
                             status = 'Arsip';
-                            alasanStatus = `Periode berlaku dokumen (${startYear}-${endYear}) sudah berakhir.`;
+                            alasanStatus = `Periode masa berlaku dokumen (${startYear}-${endYear}) sudah terlewati.`;
                             colorClass = 'bg-yellow-100 text-yellow-800 border-yellow-200';
-                        } else {
-                            status = 'Arsip / Belum Berlaku';
-                            alasanStatus = 'Saat ini berada di luar rentang periode berlaku dokumen tersebut.';
-                            colorClass = 'bg-gray-100 text-gray-800 border-gray-200';
                         }
-                        break;
-
-                    case 'contract_based': // MoU
-                        if (endYear < currentYear) {
-                            status = 'Arsip';
-                            alasanStatus = `Masa berlaku kontrak/MoU tahun ${endYear} dipastikan sudah berakhir.`;
-                            colorClass = 'bg-yellow-100 text-yellow-800 border-yellow-200';
-                        } else {
-                            status = 'Berlaku';
-                            alasanStatus = 'Kontrak/MoU diasumsikan masih aktif pada tahun berjalan.';
-                            colorClass = 'bg-green-100 text-green-800 border-green-200';
-                        }
-                        break;
-
-                    case 'sk_context': // SK Umum (Smart Check)
-                        if (titleInput.includes('penetapan') || titleInput.includes('status') || titleInput.includes(
-                                'cagar budaya')) {
-                            status = 'Berlaku';
-                            alasanStatus = 'SK Penetapan status hukum suatu objek/situs melekat selamanya (Berlaku).';
-                            colorClass = 'bg-green-100 text-green-800 border-green-200';
-                        } else {
-                            // Asumsi SK Kegiatan Tahunan
-                            if (endYear < currentYear) {
-                                status = 'Arsip';
-                                alasanStatus =
-                                    `SK kegiatan/kepanitiaan untuk Tahun Anggaran ${endYear} sudah berakhir.`;
-                                colorClass = 'bg-yellow-100 text-yellow-800 border-yellow-200';
-                            } else {
-                                status = 'Berlaku';
-                                alasanStatus = 'SK kegiatan untuk tahun berjalan.';
-                                colorClass = 'bg-blue-100 text-blue-800 border-blue-200';
-                            }
-                        }
-                        break;
-
-                    case 'stateless':
-                        status = '-';
-                        alasanStatus = 'Status Berlaku/Arsip tidak relevan untuk informasi yang dikecualikan.';
-                        colorClass = 'bg-red-100 text-red-800 border-red-200';
                         break;
 
                     case 'event_based':
                         status = 'Insidental';
-                        alasanStatus = 'Berlaku selama masa darurat atau insiden berlangsung.';
+                        alasanStatus = 'Berlaku selama kejadian atau kondisi darurat masih berlangsung.';
                         colorClass = 'bg-orange-100 text-orange-800 border-orange-200';
                         break;
 
                     default:
                         status = 'Tinjau Manual';
-                        alasanStatus = 'Perlu verifikasi lebih lanjut.';
+                        alasanStatus = 'Perlu verifikasi kebijakan internal.';
                         colorClass = 'bg-gray-100 text-gray-800 border-gray-200';
                 }
 
-                // --- 4. RENDER HASIL ---
                 this.result = {
                     sifat: bestMatch.sifat,
                     alasanSifat: bestMatch.alasanSifat,
                     status: status,
                     alasanStatus: alasanStatus,
                     kategori: bestMatch.kategori,
-                    alasanKategori: bestMatch.alasanKategori || 'Sesuai standar klasifikasi PPID.',
+                    alasanKategori: 'Sesuai UU No. 14 Tahun 2008 & Perki No. 1 Tahun 2021.',
                     jenis: bestMatch.jenis,
-                    alasanJenis: bestMatch.alasanJenis || 'Sesuai jenis dokumen yang teridentifikasi.',
-                    deskripsi: `Dokumen "${this.title}" teridentifikasi sebagai ${bestMatch.jenis} (${bestMatch.kategori}). Berdasarkan analisis tahun (${startYear === endYear ? startYear : startYear + '-' + endYear}), dokumen ini berstatus ${status.toUpperCase()}. Sifat informasinya adalah ${bestMatch.sifat.toUpperCase()}.`
+                    alasanJenis: 'Identifikasi berdasarkan pola judul dokumen.',
+                    deskripsi: `Analisis judul "${this.title}" menunjukkan dokumen ini bersifat ${bestMatch.sifat.toUpperCase()} dengan status ${status.toUpperCase()}.`,
+                    logicType: bestMatch.logicType
                 };
                 this.statusBadgeClass = colorClass;
                 this.showResult = true;
