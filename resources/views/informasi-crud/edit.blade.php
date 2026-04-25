@@ -181,15 +181,15 @@
                             </div>
                             <div id="urlField" class="mb-6" style="{{ $informasi->url ? '' : 'display: none;' }}">
                                 <label for="url_raw" class="block text-gray-700 text-sm font-semibold mb-2">Link File (untuk file > 2MB)</label>
-                                <input type="url" id="url_raw" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" value="{{ old('url', $informasi->url) }}" placeholder="https://contoh.com/file.pdf" oninput="updateUrlHidden(this.value)">
-                                <input type="hidden" name="url" id="url_hidden" value="{{ old('url', $informasi->url) }}">
+                                <input type="url" name="url_raw" id="url_raw" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" value="{{ old('url', $informasi->url) }}" placeholder="https://contoh.com/file.pdf">
+                                <input type="hidden" name="url" id="url_hidden">
                                 <p class="text-gray-500 text-xs mt-2">Gunakan ini jika file Anda lebih dari 2MB dan tidak bisa diupload</p>
                             </div>
                         </div>
                         <div class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
                             <a href="{{ route('frontend.informasi.category', $categorySlug) }}" class="px-6 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition duration-200">Batal</a>
-                            <button type="button" id="check-similarity-btn" x-show="status === 'BERLAKU' && !similarityChecked" class="px-6 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-medium rounded-lg transition duration-200">Check Informasi</button>
-                            <button type="submit" id="submit-btn" x-show="status === 'ARSIP' || similarityChecked" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200">Simpan Perubahan</button>
+                            <button type="button" id="check-similarity-btn" class="px-6 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-medium rounded-lg transition duration-200">Check Informasi</button>
+                            <button type="submit" id="submit-btn" style="display: none;" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200">Simpan Perubahan</button>
                         </div>
                     </form>
                 </div>
@@ -234,21 +234,6 @@
 
 @push('scripts')
 <script>
-    function updateUrlHidden(value) {
-        const urlHidden = document.getElementById('url_hidden');
-        if (value) {
-            try {
-                // Gunakan btoa untuk bypass WAF jika diperlukan oleh sistem
-                urlHidden.value = 'B64_' + btoa(unescape(encodeURIComponent(value)));
-            } catch (e) {
-                console.error('Error encoding URL:', e);
-                urlHidden.value = value; // Fallback ke raw jika gagal
-            }
-        } else {
-            urlHidden.value = '';
-        }
-    }
-
     document.addEventListener('DOMContentLoaded', function () {
         const form = document.querySelector('form');
         const checkButton = document.getElementById('check-similarity-btn');
@@ -317,9 +302,9 @@
                     });
                     modal.classList.remove('hidden');
                 } else {
-                    const alpineData = document.querySelector('[x-data]').__x.$data;
-                    alpineData.similarityChecked = true;
                     alert('Tidak ada dokumen serupa yang ditemukan. Anda dapat menyimpan perubahan ini.');
+                    checkButton.style.display = 'none';
+                    submitButton.style.display = 'inline-block';
                 }
             })
             .catch(error => {
@@ -333,15 +318,22 @@
         confirmButton.addEventListener('click', function () {
             replacementIdInput.value = similarDocumentsSelect.value;
             modal.classList.add('hidden');
-            const alpineData = document.querySelector('[x-data]').__x.$data;
-            alpineData.similarityChecked = true;
+
+            // Hide check button, show submit button as per user request
+            checkButton.style.display = 'none';
+            submitButton.style.display = 'inline-block';
+
+            // Do NOT submit the form immediately.
         });
 
         function prepareUrl() {
             const urlRaw = document.getElementById('url_raw');
+            const urlHidden = document.getElementById('url_hidden');
             const fileTypeInput = document.querySelector('input[name="file_type"]:checked');
+            
             if (fileTypeInput && fileTypeInput.value === 'url' && urlRaw && urlRaw.value) {
-                updateUrlHidden(urlRaw.value);
+                // Encode to Base64 and add prefix to identify it in controller
+                urlHidden.value = 'B64_' + btoa(urlRaw.value);
             }
         }
 
@@ -359,8 +351,8 @@
         cancelButton.addEventListener('click', function () {
             replacementIdInput.value = '';
             modal.classList.add('hidden');
-            const alpineData = document.querySelector('[x-data]').__x.$data;
-            alpineData.similarityChecked = true;
+            checkButton.style.display = 'none';
+            submitButton.style.display = 'inline-block';
         });
     });
 
@@ -370,10 +362,26 @@
             tahun: '{{ old('tahun', $informasi->tanggal_upload) }}',
             fileInput: '{{ $informasi->url ? 'url' : 'upload' }}',
             status: '{{ old('status', $informasi->status) }}',
-            similarityChecked: false,
             
             init() {
                 this.toggleFileInput();
+                this.updateButtonVisibility();
+
+                this.$watch('status', () => {
+                    this.updateButtonVisibility();
+                });
+            },
+
+            updateButtonVisibility() {
+                const checkButton = document.getElementById('check-similarity-btn');
+                const submitButton = document.getElementById('submit-btn');
+                if (this.status === 'ARSIP') {
+                    checkButton.style.display = 'none';
+                    submitButton.style.display = 'inline-block';
+                } else {
+                    checkButton.style.display = 'inline-block';
+                    submitButton.style.display = 'none';
+                }
             },
 
             toggleFileInput() {
@@ -394,55 +402,126 @@
     }
 
     function validateFile(input) {
-        const file = input.files[0];
-        const fileNameDisplay = document.getElementById('fileNameDisplay');
-        const fileSizeDisplay = document.getElementById('fileSizeDisplay');
-        const fileIcon = document.getElementById('fileIcon');
-        const fileErrorMessage = document.getElementById('fileErrorMessage');
 
-        fileErrorMessage.textContent = '';
-        fileErrorMessage.classList.add('hidden');
-        
-        fileIcon.classList.remove('fa-check-circle', 'fa-times-circle', 'text-green-500', 'text-red-500');
-        fileIcon.classList.add('fa-cloud-upload-alt', 'text-gray-400');
+            const file = input.files[0];
 
-        if (file) {
-            const fileSize = file.size;
-            const fileName = file.name;
-            const maxFileSize = 2 * 1024 * 1024; // 2MB
+            const fileNameDisplay = document.getElementById('fileNameDisplay');
 
-            if (fileSize > maxFileSize) {
-                fileErrorMessage.textContent = 'Ukuran file melebihi batas maksimal 2MB. Silakan pilih file yang lebih kecil atau gunakan opsi Link File.';
-                fileErrorMessage.classList.remove('hidden');
-                input.value = ''; 
+            const fileSizeDisplay = document.getElementById('fileSizeDisplay');
+
+            const fileIcon = document.getElementById('fileIcon');
+
+            const fileErrorMessage = document.getElementById('fileErrorMessage');
+
+    
+
+            // Clear previous error messages
+
+            fileErrorMessage.textContent = '';
+
+            fileErrorMessage.classList.add('hidden');
+
+            
+
+            // Reset icon to default state before processing
+
+            fileIcon.classList.remove('fa-check-circle', 'fa-times-circle', 'text-green-500', 'text-red-500');
+
+            fileIcon.classList.add('fa-cloud-upload-alt', 'text-gray-400');
+
+    
+
+    
+
+            if (file) {
+
+                const fileSize = file.size;
+
+                const fileName = file.name;
+
+                const maxFileSize = 2 * 1024 * 1024; // 2MB
+
+    
+
+                if (fileSize > maxFileSize) {
+
+                    fileErrorMessage.textContent = 'Ukuran file melebihi batas maksimal 2MB. Silakan pilih file yang lebih kecil atau gunakan opsi Link File.';
+
+                    fileErrorMessage.classList.remove('hidden');
+
+                    input.value = ''; // Clear the file input
+
+                    fileNameDisplay.textContent = '';
+
+                    fileNameDisplay.classList.add('hidden');
+
+                    fileSizeDisplay.textContent = '';
+
+                    fileSizeDisplay.classList.add('hidden');
+
+                    // Change icon to show error
+
+                    fileIcon.classList.remove('fa-cloud-upload-alt', 'text-gray-400'); // Remove default classes
+
+                    fileIcon.classList.add('fa-times-circle', 'text-red-500');
+
+                    return;
+
+                }
+
+                
+
+                // Display file info with green color
+
+                fileNameDisplay.textContent = `File: ${fileName}`;
+
+                fileSizeDisplay.textContent = `Ukuran: ${(fileSize / 1024).toFixed(2)} KB`;
+
+                
+
+                fileNameDisplay.classList.remove('hidden');
+
+                fileSizeDisplay.classList.remove('hidden');
+
+                fileNameDisplay.classList.add('text-green-600');
+
+                fileSizeDisplay.classList.add('text-green-600');
+
+    
+
+    
+
+                // Change icon to show success
+
+                fileIcon.classList.remove('fa-cloud-upload-alt', 'text-gray-400'); // Remove default classes
+
+                fileIcon.classList.add('fa-check-circle', 'text-green-500');
+
+            } else {
+
+                // No file selected or selection cancelled, reset everything to default
+
                 fileNameDisplay.textContent = '';
-                fileNameDisplay.classList.add('hidden');
-                fileSizeDisplay.textContent = '';
-                fileSizeDisplay.classList.add('hidden');
-                fileIcon.classList.remove('fa-cloud-upload-alt', 'text-gray-400');
-                fileIcon.classList.add('fa-times-circle', 'text-red-500');
-                return;
-            }
-            
-            fileNameDisplay.textContent = `File: ${fileName}`;
-            fileSizeDisplay.textContent = `Ukuran: ${(fileSize / 1024).toFixed(2)} KB`;
-            
-            fileNameDisplay.classList.remove('hidden');
-            fileSizeDisplay.classList.remove('hidden');
-            fileNameDisplay.classList.add('text-green-600');
-            fileSizeDisplay.classList.add('text-green-600');
 
-            fileIcon.classList.remove('fa-cloud-upload-alt', 'text-gray-400');
-            fileIcon.classList.add('fa-check-circle', 'text-green-500');
-        } else {
-            fileNameDisplay.textContent = '';
-            fileNameDisplay.classList.add('hidden');
-            fileSizeDisplay.textContent = '';
-            fileSizeDisplay.classList.add('hidden');
-            fileNameDisplay.classList.remove('text-green-600');
-            fileSizeDisplay.classList.remove('text-green-600');
+                fileNameDisplay.classList.add('hidden');
+
+                fileSizeDisplay.textContent = '';
+
+                fileSizeDisplay.classList.add('hidden');
+
+                
+
+                fileNameDisplay.classList.remove('text-green-600');
+
+                fileSizeDisplay.classList.remove('text-green-600');
+
+    
+
+                // Icon is already reset at the top of the function
+
+            }
+
         }
-    }
 
     function updateJenisDokumenDescription(select) {
         const selectedOption = select.options[select.selectedIndex];
@@ -470,6 +549,7 @@
         });
     }
 
+    // Initialize description on page load
     document.addEventListener('DOMContentLoaded', function() {
         const jenisDokumenSelect = document.getElementById('jenis_dokumen');
         if (jenisDokumenSelect) {

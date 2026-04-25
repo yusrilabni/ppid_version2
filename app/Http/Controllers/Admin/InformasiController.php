@@ -271,6 +271,11 @@ class InformasiController extends Controller
                 }
             }
 
+            // Fallback for url if hidden field is empty but url_raw is present
+            if ($request->file_type === 'url' && !$request->filled('url') && $request->filled('url_raw')) {
+                $request->merge(['url' => 'B64_' . base64_encode($request->url_raw)]);
+            }
+
             $validationRules = [
                 'title' => 'required|string|min:5|max:255',
                 'doc_desc' => 'nullable|string',
@@ -334,6 +339,11 @@ class InformasiController extends Controller
     {
         $user = Auth::user();
         $isSuperAdmin = $user->isSuperAdmin();
+
+        // Fallback for url if hidden field is empty but url_raw is present
+        if ($request->file_type === 'url' && !$request->filled('url') && $request->filled('url_raw')) {
+            $request->merge(['url' => 'B64_' . base64_encode($request->url_raw)]);
+        }
 
         $validationRules = [
             'title' => 'required|string|min:5|max:255',
