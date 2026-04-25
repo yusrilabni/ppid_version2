@@ -176,15 +176,15 @@
                             </div>
                             <div id="urlField" class="mb-6" style="display: none;">
                                 <label for="url_raw" class="block text-gray-700 text-sm font-semibold mb-2">Link File (untuk file > 2MB)</label>
-                                <input type="url" id="url_raw" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" placeholder="https://contoh.com/file.pdf">
-                                <input type="hidden" name="url" id="url_hidden">
+                                <input type="url" id="url_raw" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" placeholder="https://contoh.com/file.pdf" oninput="updateUrlHidden(this.value)">
+                                <input type="hidden" name="url" id="url_hidden" value="{{ old('url') }}">
                                 <p class="text-gray-500 text-xs mt-2">Gunakan ini jika file Anda lebih dari 2MB dan tidak bisa diupload</p>
                             </div>
                         </div>
                         <div class="flex items-center justify-end space-x-4 pt-6 border-t border-gray-200">
                             <a href="{{ route('frontend.informasi.category', $categorySlug) }}" class="px-6 py-2 border border-gray-300 text-gray-700 font-medium rounded-lg hover:bg-gray-50 transition duration-200">Batal</a>
-                            <button type="button" id="check-similarity-btn" x-show="status === 'BERLAKU'" class="px-6 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-medium rounded-lg transition duration-200">Check Informasi</button>
-                            <button type="submit" id="submit-btn" x-show="status === 'ARSIP'" style="display: none;" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200">Simpan Informasi</button>
+                            <button type="button" id="check-similarity-btn" x-show="status === 'BERLAKU' && !similarityChecked" class="px-6 py-2 bg-yellow-500 hover:bg-yellow-600 text-white font-medium rounded-lg transition duration-200">Check Informasi</button>
+                            <button type="submit" id="submit-btn" x-show="status === 'ARSIP' || similarityChecked" class="px-6 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition duration-200">Simpan Informasi</button>
                         </div>
                     </form>
                 </div>
@@ -230,6 +230,21 @@
 
 @push('scripts')
 <script>
+    function updateUrlHidden(value) {
+        const urlHidden = document.getElementById('url_hidden');
+        if (value) {
+            try {
+                // Gunakan btoa untuk bypass WAF jika diperlukan oleh sistem
+                urlHidden.value = 'B64_' + btoa(unescape(encodeURIComponent(value)));
+            } catch (e) {
+                console.error('Error encoding URL:', e);
+                urlHidden.value = value; // Fallback ke raw jika gagal
+            }
+        } else {
+            urlHidden.value = '';
+        }
+    }
+
     document.addEventListener('DOMContentLoaded', function () {
         const form = document.querySelector('form');
         const checkButton = document.getElementById('check-similarity-btn');
@@ -247,8 +262,7 @@
             this.textContent = 'Mengecek...';
 
             const title = titleInput.value;
-            // Gunakan URL statis untuk similarity check juga jika perlu
-            const url = "/v2/admin/informasi-crud/cek-validasi"; 
+            const url = "/v2/admin/informasi-crud/check-similarity"; 
             
             const formData = new FormData();
             formData.append('title', title);
@@ -286,9 +300,10 @@
                     });
                     modal.classList.remove('hidden');
                 } else {
+                    // Set similarityChecked via Alpine
+                    const alpineData = document.querySelector('[x-data]').__x.$data;
+                    alpineData.similarityChecked = true;
                     alert('Tidak ada dokumen serupa. Anda dapat menyimpan.');
-                    checkButton.style.display = 'none';
-                    submitButton.style.display = 'inline-block';
                 }
             })
             .catch(error => {
@@ -302,18 +317,15 @@
         confirmButton.addEventListener('click', function () {
             replacementIdInput.value = similarDocumentsSelect.value;
             modal.classList.add('hidden');
-            checkButton.style.display = 'none';
-            submitButton.style.display = 'inline-block';
+            const alpineData = document.querySelector('[x-data]').__x.$data;
+            alpineData.similarityChecked = true;
         });
         
         function prepareUrl() {
             const urlRaw = document.getElementById('url_raw');
-            const urlHidden = document.getElementById('url_hidden');
             const fileTypeInput = document.querySelector('input[name="file_type"]:checked');
-            
             if (fileTypeInput && fileTypeInput.value === 'url' && urlRaw && urlRaw.value) {
-                // Encode to Base64 and add prefix to identify it in controller
-                urlHidden.value = 'B64_' + btoa(urlRaw.value);
+                updateUrlHidden(urlRaw.value);
             }
         }
 
@@ -328,21 +340,17 @@
 
         cancelButton.addEventListener('click', function () {
             modal.classList.add('hidden');
-            checkButton.style.display = 'none';
-            submitButton.style.display = 'inline-block';
+            const alpineData = document.querySelector('[x-data]').__x.$data;
+            alpineData.similarityChecked = true;
         });
     });
 
     function informasiForm() {
         return {
             status: '{{ old('status', 'BERLAKU') }}',
+            similarityChecked: false,
             init() {
-                this.$watch('status', (value) => {
-                    const cb = document.getElementById('check-similarity-btn');
-                    const sb = document.getElementById('submit-btn');
-                    if (value === 'BERLAKU') { cb.style.display = 'inline-block'; sb.style.display = 'none'; }
-                    else { cb.style.display = 'none'; sb.style.display = 'inline-block'; }
-                });
+                // Initial check logic moved to x-show
             },
             toggleFileInput() {
                 const type = document.querySelector('input[name="file_type"]:checked').value;
