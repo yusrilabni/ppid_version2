@@ -57,12 +57,22 @@ class ExtraToolsController extends Controller
     public function widgetLatest(Request $request)
     {
         $type = $request->get('type', 'latest');
+        $display = $request->get('display', 'list'); // Default ke list
         $limit = (int) $request->get('limit', 5);
+        
         $query = Informasi::query();
         if ($request->filled('unit_id')) { $query->where('unit_id', $request->unit_id); }
         if ($request->filled('year')) { $query->where('tahun', $request->year); }
-        if ($type === 'popular') { $query->orderBy('views_count', 'desc'); } else { $query->orderBy('tanggal_upload', 'desc'); }
+        
+        if ($type === 'popular') { 
+            $query->orderBy('views_count', 'desc'); 
+        } else { 
+            $query->orderBy('tanggal_upload', 'desc'); 
+        }
+        
         $informasis = $query->take($limit)->get();
-        return Response::view('frontend.extra.widgets.embed-latest', compact('informasis', 'type'))->header('Access-Control-Allow-Origin', '*');
+        
+        return Response::view('frontend.extra.widgets.embed-latest', compact('informasis', 'type', 'display'))
+            ->header('Access-Control-Allow-Origin', '*');
     }
 }

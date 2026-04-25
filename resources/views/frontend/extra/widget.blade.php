@@ -28,12 +28,13 @@
 
                 <div x-data="{ 
                     type: 'latest', 
+                    display: 'list',
                     limit: 5, 
                     unitId: '', 
                     year: '',
                     refreshKey: Date.now(),
                     get embedUrl() { 
-                        let url = '{{ route('extra.widgets.embed') }}?type=' + this.type + '&limit=' + this.limit;
+                        let url = '{{ route('extra.widgets.embed') }}?type=' + this.type + '&display=' + this.display + '&limit=' + this.limit;
                         if (this.unitId) url += '&unit_id=' + this.unitId;
                         if (this.year) url += '&year=' + this.year;
                         url += '&t=' + this.refreshKey; // Paksa refresh
@@ -42,7 +43,7 @@
                     triggerRefresh() {
                         this.refreshKey = Date.now();
                     }
-                }" x-init="$watch('type', () => triggerRefresh()); $watch('limit', () => triggerRefresh()); $watch('unitId', () => triggerRefresh()); $watch('year', () => triggerRefresh());">
+                }" x-init="$watch('type', () => triggerRefresh()); $watch('display', () => triggerRefresh()); $watch('limit', () => triggerRefresh()); $watch('unitId', () => triggerRefresh()); $watch('year', () => triggerRefresh());">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
                         {{-- Controls --}}
                         <div class="space-y-6">
@@ -55,23 +56,23 @@
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Jumlah Data</label>
-                                    <select x-model="limit" @change="triggerRefresh()" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 transition-all">
-                                        <option value="3">3 Item</option>
-                                        <option value="5">5 Item</option>
-                                        <option value="10">10 Item</option>
+                                    <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Gaya Tampilan</label>
+                                    <select x-model="display" @change="triggerRefresh()" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 transition-all font-bold text-blue-600">
+                                        <option value="list">Daftar (List)</option>
+                                        <option value="card">Kartu (Card)</option>
                                     </select>
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Filter Per OPD (Instansi)</label>
-                                    <select x-model="unitId" @change="triggerRefresh()" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 transition-all">
-                                        <option value="">Semua Instansi</option>
-                                        @foreach($organizations as $org)
-                                            <option value="{{ $org->unit_id }}">{{ $org->name }}</option>
-                                        @endforeach
+                                    <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Jumlah Data</label>
+                                    <select x-model="limit" @change="triggerRefresh()" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 transition-all">
+                                        <option value="2">2 Item</option>
+                                        <option value="3">3 Item</option>
+                                        <option value="4">4 Item</option>
+                                        <option value="5">5 Item</option>
+                                        <option value="10">10 Item</option>
                                     </select>
                                 </div>
                                 <div>
@@ -83,6 +84,16 @@
                                         @endforeach
                                     </select>
                                 </div>
+                            </div>
+
+                            <div>
+                                <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Filter Per OPD (Instansi)</label>
+                                <select x-model="unitId" @change="triggerRefresh()" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 transition-all">
+                                    <option value="">Semua Instansi</option>
+                                    @foreach($organizations as $org)
+                                        <option value="{{ $org->unit_id }}">{{ $org->name }}</option>
+                                    @endforeach
+                                </select>
                             </div>
 
                             <div class="pt-6">
