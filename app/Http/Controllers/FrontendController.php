@@ -232,6 +232,21 @@ class FrontendController extends Controller
                     $q->orWhereIn('unit_id', $matchingUnitIds);
                 }
             });
+
+            // Relevancy Sorting
+            $lowerSearch = strtolower($searchTerm);
+            $query->orderByRaw("
+                CASE 
+                    WHEN LOWER(title) = ? THEN 1
+                    WHEN LOWER(title) LIKE ? THEN 2
+                    WHEN LOWER(title) LIKE ? THEN 3
+                    ELSE 4
+                END
+            ", [
+                $lowerSearch,
+                $lowerSearch . '%',
+                '%' . $lowerSearch . '%'
+            ]);
         }
 
         // Apply date filters
@@ -1106,6 +1121,18 @@ class FrontendController extends Controller
                   ->orWhereRaw('LOWER(deskripsi) LIKE ?', ['%' . $searchTerm . '%']);
             })
             ->where('published', true)
+            ->orderByRaw("
+                CASE 
+                    WHEN LOWER(title) = ? THEN 1
+                    WHEN LOWER(title) LIKE ? THEN 2
+                    WHEN LOWER(title) LIKE ? THEN 3
+                    ELSE 4
+                END
+            ", [
+                $searchTerm,
+                $searchTerm . '%',
+                '%' . $searchTerm . '%'
+            ])
             ->latest()
             ->take(20)
             ->get();
