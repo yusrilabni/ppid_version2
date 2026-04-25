@@ -1125,54 +1125,48 @@ class FrontendController extends Controller
         }
 
         $searchTerm = trim($query);
-        $lowerSearch = strtolower($searchTerm);
-        
-        // Pecah kata kunci menjadi array
         $words = array_filter(explode(' ', $searchTerm), function($w) {
             return strlen($w) > 1;
         });
 
-        $informasiResults = Informasi::where(function($q) use ($searchTerm, $words) {
-                // Cari kalimat utuh dulu
-                $q->where('title', 'like', '%' . $searchTerm . '%')
-                  ->orWhere('deskripsi', 'like', '%' . $searchTerm . '%');
-                
-                // Cari per kata (Fuzzy logic)
-                if (!empty($words)) {
-                    foreach ($words as $word) {
-                        $q->orWhere('title', 'like', '%' . $word . '%');
-                    }
-                }
-            })
-            ->where('published', true);
-
-        // RELEVANCY RANKING (MySQL Friendly)
-        $scoreSql = "CASE 
-            WHEN title = " . DB::getPdo()->quote($searchTerm) . " THEN 100 
-            WHEN title LIKE " . DB::getPdo()->quote($searchTerm . '%') . " THEN 50 
-            WHEN title LIKE " . DB::getPdo()->quote('%' . $searchTerm . '%') . " THEN 30 ";
+        // Query Informasi tanpa filter published untuk memastikan data ditemukan
+        $informasiQuery = Informasi::query();
         
-        if (!empty($words)) {
+        $informasiQuery->where(function($q) use ($searchTerm, $words) {
+            $q->where('title', 'like', '%' . $searchTerm . '%')
+              ->orWhere('deskripsi', 'like', '%' . $searchTerm . '%');
+            
             foreach ($words as $word) {
-                $scoreSql .= " WHEN title LIKE " . DB::getPdo()->quote('%' . $word . '%') . " THEN 10 ";
+                $q->orWhere('title', 'like', '%' . $word . '%');
             }
+        });
+
+        // Simple Ranking
+        $informasiResults = $informasiQuery->get()->map(function($item) use ($searchTerm, $words) {
+            $score = 0;
+            $title = strtolower($item->title);
+            $searchLower = strtolower($searchTerm);
+
+            if ($title == $searchLower) $score += 100;
+            if (str_starts_with($title, $searchLower)) $score += 50;
+            if (str_contains($title, $searchLower)) $score += 30;
+            
+            foreach ($words as $word) {
+                if (str_contains($title, strtolower($word))) $score += 10;
+            }
+            
+            $item->search_score = $score;
+            return $item;
+        })->sortByDesc('search_score')->take(40);
+
+        // Query Standar Layanan
+        $standarLayananResults = SubStandarLayanan::where('title', 'like', '%' . $searchTerm . '%');
+        foreach ($words as $word) {
+            $standarLayananResults->orWhere('title', 'like', '%' . $word . '%');
         }
-        $scoreSql .= " ELSE 0 END";
+        $standarLayananResults = $standarLayananResults->take(20)->get();
 
-        $informasiResults = $informasiResults->orderByRaw("($scoreSql) DESC")
-            ->take(40)
-            ->get();
-
-        $standarLayananResults = SubStandarLayanan::where(function($q) use ($searchTerm, $words) {
-                $q->where('title', 'like', '%' . $searchTerm . '%');
-                if (!empty($words)) {
-                    foreach ($words as $word) {
-                        $q->orWhere('title', 'like', '%' . $word . '%');
-                    }
-                }
-            })
-            ->take(20)
-            ->get();
+        $orgResults = \App\Models\Organization::where('name', 'like', "%{$searchTerm}%")->take(10)->get();
         $orgResults = \App\Models\Organization::where('name', 'like', "%{$query}%")
             ->take(10)
             ->get();
