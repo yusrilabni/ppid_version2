@@ -394,8 +394,8 @@
 
                     case 'year_based':
                         if (endYear < currentYear) {
-                            status = 'Arsip';
-                            alasanStatus = `Dokumen tahun anggaran ${endYear} telah berakhir dan kini berstatus sebagai data sejarah/arsip.`;
+                            status = 'Perlu Verifikasi (Berlaku / Arsip)';
+                            alasanStatus = 'Tahun anggaran dokumen telah lewat, namun JANGAN langsung diarsipkan. Harap periksa apakah dokumen/SK pembaruan untuk tahun berjalan sudah diterbitkan. Jika belum ada pembaruan, dokumen ini tetap digunakan sebagai rujukan yang berlaku.';
                             colorClass = 'bg-yellow-100 text-yellow-800 border-yellow-200';
                         } else {
                             status = 'Berlaku / Berjalan';
