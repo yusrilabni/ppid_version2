@@ -19,10 +19,10 @@
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
         .swiper-pagination-bullet-active { background: #2563eb !important; }
-        .swiper { padding: 10px 10px 40px 10px !important; }
+        .swiper { padding: 5px 5px 30px 5px !important; }
     </style>
 </head>
-<body class="p-2">
+<body class="p-1">
     @if(($display ?? 'list') === 'card')
         @if(($mode ?? 'static') === 'slider')
             {{-- MODE SLIDER (CARD) --}}
@@ -101,12 +101,12 @@
         </div>
     @endif
     
-    <div class="mt-6 pt-4 border-t border-gray-100 flex items-center justify-between">
+    <div class="mt-2 pt-2 border-t border-gray-100 flex items-center justify-between">
         <div class="flex items-center">
-            <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse mr-2"></div>
-            <span class="text-[10px] font-bold text-gray-400 uppercase tracking-tighter">Live Updates</span>
+            <div class="w-1.5 h-1.5 rounded-full bg-green-500 animate-pulse mr-2"></div>
+            <span class="text-[9px] font-bold text-gray-400 uppercase tracking-tighter">Live Updates</span>
         </div>
-        <a href="{{ url('/') }}" target="_blank" class="text-[9px] font-black text-blue-600/40 uppercase tracking-widest hover:text-blue-600 transition-colors">
+        <a href="{{ url('/') }}" target="_blank" class="text-[8px] font-black text-blue-600/40 uppercase tracking-widest hover:text-blue-600 transition-colors">
             PPID KABUPATEN SINJAI
         </a>
     </div>
