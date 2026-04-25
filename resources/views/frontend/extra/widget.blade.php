@@ -29,55 +29,98 @@
                 <div x-data="{ 
                     type: 'latest', 
                     display: 'list',
+                    mode: 'static',
+                    columns: 3,
+                    autoplay: 0,
                     limit: 5, 
                     unitId: '', 
                     year: '',
                     refreshKey: Date.now(),
                     get embedUrl() { 
-                        let url = '{{ route('extra.widgets.embed') }}?type=' + this.type + '&display=' + this.display + '&limit=' + this.limit;
+                        let url = '{{ route('extra.widgets.embed') }}?type=' + this.type + '&display=' + this.display + '&mode=' + this.mode + '&columns=' + this.columns + '&autoplay=' + this.autoplay + '&limit=' + this.limit;
                         if (this.unitId) url += '&unit_id=' + this.unitId;
                         if (this.year) url += '&year=' + this.year;
-                        url += '&t=' + this.refreshKey; // Paksa refresh
+                        url += '&t=' + this.refreshKey;
                         return url;
                     },
                     triggerRefresh() {
                         this.refreshKey = Date.now();
                     }
-                }" x-init="$watch('type', () => triggerRefresh()); $watch('display', () => triggerRefresh()); $watch('limit', () => triggerRefresh()); $watch('unitId', () => triggerRefresh()); $watch('year', () => triggerRefresh());">
+                }" x-init="$watch('type', () => triggerRefresh()); $watch('display', () => triggerRefresh()); $watch('mode', () => triggerRefresh()); $watch('columns', () => triggerRefresh()); $watch('autoplay', () => triggerRefresh()); $watch('limit', () => triggerRefresh()); $watch('unitId', () => triggerRefresh()); $watch('year', () => triggerRefresh());">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
                         {{-- Controls --}}
                         <div class="space-y-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Jenis Konten</label>
-                                    <select x-model="type" @change="triggerRefresh()" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 transition-all">
-                                        <option value="latest">Informasi Terbaru</option>
-                                        <option value="popular">Paling Banyak Dilihat</option>
+                                    <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Konten</label>
+                                    <select x-model="type" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500">
+                                        <option value="latest">Terbaru</option>
+                                        <option value="popular">Terpopuler</option>
                                     </select>
                                 </div>
                                 <div>
-                                    <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Gaya Tampilan</label>
-                                    <select x-model="display" @change="triggerRefresh()" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 transition-all font-bold text-blue-600">
-                                        <option value="list">Daftar (List)</option>
-                                        <option value="card">Kartu (Card)</option>
+                                    <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Gaya Dasar</label>
+                                    <select x-model="display" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 font-bold text-blue-600">
+                                        <option value="list">Mode Daftar (List)</option>
+                                        <option value="card">Mode Kartu (Card)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4" x-show="display === 'card'">
+                                <div>
+                                    <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Mode Layout</label>
+                                    <select x-model="mode" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500">
+                                        <option value="static">Grid Statis (Full)</option>
+                                        <option value="slider">Slider Otomatis</option>
+                                    </select>
+                                </div>
+                                <div>
+                                    <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Kolom Per Baris</label>
+                                    <select x-model="columns" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500">
+                                        <option value="1">1 Kolom</option>
+                                        <option value="2">2 Kolom</option>
+                                        <option value="3">3 Kolom</option>
+                                        <option value="4">4 Kolom</option>
+                                        <option value="5">5 Kolom</option>
                                     </select>
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div>
-                                    <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Jumlah Data</label>
-                                    <select x-model="limit" @change="triggerRefresh()" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 transition-all">
+                                    <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Jumlah Total Data</label>
+                                    <select x-model="limit" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500">
                                         <option value="2">2 Item</option>
                                         <option value="3">3 Item</option>
                                         <option value="4">4 Item</option>
                                         <option value="5">5 Item</option>
                                         <option value="10">10 Item</option>
+                                        <option value="20">20 Item</option>
+                                    </select>
+                                </div>
+                                <div x-show="mode === 'slider' && display === 'card'">
+                                    <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Autoplay Slider</label>
+                                    <select x-model="autoplay" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 font-bold text-green-600">
+                                        <option value="0">Nonaktif</option>
+                                        <option value="1">Aktif (3 Detik)</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div>
+                                    <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Filter OPD</label>
+                                    <select x-model="unitId" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500">
+                                        <option value="">Semua Instansi</option>
+                                        @foreach($organizations as $org)
+                                            <option value="{{ $org->unit_id }}">{{ $org->name }}</option>
+                                        @endforeach
                                     </select>
                                 </div>
                                 <div>
                                     <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Filter Tahun</label>
-                                    <select x-model="year" @change="triggerRefresh()" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 transition-all">
+                                    <select x-model="year" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500">
                                         <option value="">Semua Tahun</option>
                                         @foreach($years as $y)
                                             <option value="{{ $y }}">{{ $y }}</option>
@@ -86,26 +129,16 @@
                                 </div>
                             </div>
 
-                            <div>
-                                <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Filter Per OPD (Instansi)</label>
-                                <select x-model="unitId" @change="triggerRefresh()" class="w-full bg-gray-50 border-0 rounded-xl px-4 py-3 text-sm focus:ring-2 focus:ring-blue-500 transition-all">
-                                    <option value="">Semua Instansi</option>
-                                    @foreach($organizations as $org)
-                                        <option value="{{ $org->unit_id }}">{{ $org->name }}</option>
-                                    @endforeach
-                                </select>
-                            </div>
-
                             <div class="pt-6">
                                 <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Salin Kode Embed</label>
                                 <div class="relative group">
-                                    <textarea id="embedCodeInput" readonly x-text="'<iframe src=\'' + embedUrl + '\' width=\'100%\' height=\'450\' frameborder=\'0\'></iframe>'" 
-                                        class="w-full bg-gray-900 text-blue-400 font-mono text-xs p-4 rounded-2xl h-24 border-0 focus:ring-0 resize-none"></textarea>
+                                    <textarea id="embedCodeInput" readonly x-text="'<iframe src=\'' + embedUrl + '\' width=\'100%\' height=\'' + (display === 'list' ? '450' : '480') + '\' frameborder=\'0\'></iframe>'" 
+                                        class="w-full bg-gray-900 text-blue-400 font-mono text-[10px] p-4 rounded-2xl h-24 border-0 focus:ring-0 resize-none"></textarea>
                                     <button type="button" @click="
-                                        const code = '<iframe src=\'' + embedUrl + '\' width=\'100%\' height=\'450\' frameborder=\'0\'></iframe>';
+                                        const code = '<iframe src=\'' + embedUrl + '\' width=\'100%\' height=\'' + (display === 'list' ? '450' : '480') + '\' frameborder=\'0\'></iframe>';
                                         if (navigator.clipboard && navigator.clipboard.writeText) {
                                             navigator.clipboard.writeText(code).then(() => {
-                                                alert('Kode berhasil disalin ke clipboard!');
+                                                alert('Kode berhasil disalin!');
                                             });
                                         } else {
                                             const el = document.getElementById('embedCodeInput');
@@ -122,18 +155,22 @@
                         </div>
 
                         {{-- Preview --}}
-                        <div class="bg-gray-50 rounded-[2rem] p-4 border-4 border-dashed border-gray-200 flex flex-col">
+                        <div class="bg-gray-50 rounded-[2rem] p-4 border-4 border-dashed border-gray-200 flex flex-col min-h-[500px]">
                             <div class="flex justify-between items-center mb-4 px-2">
-                                <span class="text-[10px] font-black text-gray-400 uppercase tracking-tighter">Live Preview</span>
+                                <div class="flex items-center space-x-2">
+                                    <div class="w-2 h-2 rounded-full bg-green-500 animate-pulse"></div>
+                                    <span class="text-[10px] font-black text-gray-400 uppercase tracking-tighter">Live Preview Widget</span>
+                                </div>
                                 <div class="flex space-x-1">
                                     <div class="w-2 h-2 rounded-full bg-red-300"></div>
                                     <div class="w-2 h-2 rounded-full bg-yellow-300"></div>
                                     <div class="w-2 h-2 rounded-full bg-green-300"></div>
                                 </div>
                             </div>
-                            <div class="flex-grow bg-white rounded-2xl shadow-inner overflow-hidden min-h-[350px]">
-                                <iframe :src="embedUrl" width="100%" height="450" class="border-0"></iframe>
+                            <div class="flex-grow bg-white rounded-2xl shadow-inner overflow-hidden border border-gray-100">
+                                <iframe :src="embedUrl" width="100%" height="480" class="border-0"></iframe>
                             </div>
+                            <p class="mt-4 text-[10px] text-gray-400 text-center italic">Widget ini bersifat responsif dan otomatis menyesuaikan lebar kontainer induknya.</p>
                         </div>
                     </div>
                 </div>

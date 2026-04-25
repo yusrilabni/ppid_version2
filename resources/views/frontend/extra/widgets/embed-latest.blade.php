@@ -6,55 +6,60 @@
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap" rel="stylesheet">
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    
+    @if(($mode ?? 'static') === 'slider')
+        <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.css" />
+        <script src="https://cdn.jsdelivr.net/npm/swiper@10/swiper-bundle.min.js"></script>
+    @endif
+
     <style>
-        body { font-family: 'Plus Jakarta Sans', sans-serif; background: transparent; }
-        .info-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); }
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background: transparent; overflow-x: hidden; }
+        .info-card { transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1); height: 100%; }
         .info-card:hover { transform: translateY(-4px); }
         .line-clamp-2 { display: -webkit-box; -webkit-line-clamp: 2; -webkit-box-orient: vertical; overflow: hidden; }
         .line-clamp-3 { display: -webkit-box; -webkit-line-clamp: 3; -webkit-box-orient: vertical; overflow: hidden; }
+        .swiper-pagination-bullet-active { background: #2563eb !important; }
+        .swiper { padding: 10px 10px 40px 10px !important; }
     </style>
 </head>
-<body class="p-3">
+<body class="p-2">
     @if(($display ?? 'list') === 'card')
-        {{-- MODE CARD (Keren & Modern) --}}
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-            @forelse($informasis as $info)
-                @php
-                    $colors = ['blue', 'indigo', 'emerald', 'amber', 'rose'];
-                    $color = $colors[$loop->index % count($colors)];
-                @endphp
-                <div class="info-card group bg-white rounded-3xl border border-gray-100 shadow-sm hover:shadow-xl overflow-hidden flex flex-col h-full relative">
-                    <div class="absolute top-0 right-0 p-4">
-                         <div class="w-8 h-8 rounded-full bg-{{ $color }}-50 text-{{ $color }}-500 flex items-center justify-center group-hover:bg-{{ $color }}-500 group-hover:text-white transition-colors duration-300">
-                             <i class="fas fa-arrow-up-right-from-square text-[10px]"></i>
-                         </div>
-                    </div>
-                    <div class="p-6 flex-1 flex flex-col">
-                        <div class="mb-4">
-                            <span class="text-[10px] font-extrabold uppercase tracking-widest text-{{ $color }}-600 bg-{{ $color }}-50 px-3 py-1 rounded-full border border-{{ $color }}-100">
-                                {{ $info->category }}
-                            </span>
+        @if(($mode ?? 'static') === 'slider')
+            {{-- MODE SLIDER (CARD) --}}
+            <div class="swiper mySwiper">
+                <div class="swiper-wrapper">
+                    @forelse($informasis as $info)
+                        <div class="swiper-slide">
+                            @include('frontend.extra.widgets.partials.card-item', ['info' => $info, 'index' => $loop->index])
                         </div>
-                        <a href="{{ route('frontend.informasi.detail', $info->slug) }}" target="_blank" class="block flex-1">
-                            <h3 class="text-base font-extrabold text-gray-900 leading-tight group-hover:text-{{ $color }}-600 transition-colors line-clamp-3 mb-4">
-                                {{ $info->title }}
-                            </h3>
-                        </a>
-                        <div class="pt-4 border-t border-gray-50 flex items-center justify-between mt-auto">
-                            <div class="flex items-center space-x-3 text-[10px] font-bold text-gray-400">
-                                <span class="flex items-center"><i class="far fa-calendar-alt mr-1.5 text-{{ $color }}-400"></i> {{ \Carbon\Carbon::parse($info->tanggal_upload)->isoFormat('D MMM Y') }}</span>
-                                <span class="flex items-center"><i class="far fa-eye mr-1.5 text-{{ $color }}-400"></i> {{ number_format($info->views_count ?? 0) }}</span>
-                            </div>
-                        </div>
+                    @empty
+                        <div class="swiper-slide text-center py-12">Belum ada data</div>
+                    @endforelse
+                </div>
+                <div class="swiper-pagination"></div>
+            </div>
+        @else
+            {{-- MODE GRID STATIC (CARD) --}}
+            @php
+                $gridCols = [
+                    1 => 'grid-cols-1',
+                    2 => 'grid-cols-1 sm:grid-cols-2',
+                    3 => 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-3',
+                    4 => 'grid-cols-1 sm:grid-cols-2 lg:grid-cols-4',
+                    5 => 'grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-5',
+                ][$columns ?? 3];
+            @endphp
+            <div class="grid {{ $gridCols }} gap-4">
+                @forelse($informasis as $info)
+                    @include('frontend.extra.widgets.partials.card-item', ['info' => $info, 'index' => $loop->index])
+                @empty
+                    <div class="col-span-full text-center py-12 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
+                        <i class="fas fa-info-circle text-gray-300 text-3xl mb-3"></i>
+                        <p class="text-gray-500 text-xs font-bold uppercase tracking-widest">Belum ada informasi tersedia</p>
                     </div>
-                </div>
-            @empty
-                <div class="col-span-full text-center py-12 bg-gray-50 rounded-3xl border-2 border-dashed border-gray-200">
-                    <i class="fas fa-info-circle text-gray-300 text-3xl mb-3"></i>
-                    <p class="text-gray-500 text-xs font-bold uppercase tracking-widest">Belum ada informasi tersedia</p>
-                </div>
-            @endforelse
-        </div>
+                @endforelse
+            </div>
+        @endif
     @else
         {{-- MODE LIST (Default) --}}
         <div class="space-y-3">
@@ -105,5 +110,30 @@
             PPID KABUPATEN SINJAI
         </a>
     </div>
+
+    @if(($mode ?? 'static') === 'slider')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            var swiper = new Swiper(".mySwiper", {
+                slidesPerView: 1,
+                spaceBetween: 20,
+                pagination: {
+                    el: ".swiper-pagination",
+                    clickable: true,
+                },
+                breakpoints: {
+                    640: { slidesPerView: 2 },
+                    1024: { slidesPerView: {{ $columns ?? 3 }} },
+                },
+                @if($autoplay)
+                autoplay: {
+                    delay: 3000,
+                    disableOnInteraction: false,
+                },
+                @endif
+            });
+        });
+    </script>
+    @endif
 </body>
 </html>

@@ -57,7 +57,10 @@ class ExtraToolsController extends Controller
     public function widgetLatest(Request $request)
     {
         $type = $request->get('type', 'latest');
-        $display = $request->get('display', 'list'); // Default ke list
+        $display = $request->get('display', 'list'); 
+        $mode = $request->get('mode', 'static'); // static atau slider
+        $columns = (int) $request->get('columns', 3); // 1-5 kolom
+        $autoplay = $request->get('autoplay', 0); // 0 atau 1
         $limit = (int) $request->get('limit', 5);
         
         $query = Informasi::query();
@@ -72,7 +75,7 @@ class ExtraToolsController extends Controller
         
         $informasis = $query->take($limit)->get();
         
-        return Response::view('frontend.extra.widgets.embed-latest', compact('informasis', 'type', 'display'))
+        return Response::view('frontend.extra.widgets.embed-latest', compact('informasis', 'type', 'display', 'mode', 'columns', 'autoplay'))
             ->header('Access-Control-Allow-Origin', '*');
     }
 }
