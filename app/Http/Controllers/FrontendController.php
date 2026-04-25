@@ -1125,51 +1125,54 @@ class FrontendController extends Controller
         }
 
         $searchTerm = trim($query);
+        $searchLower = strtolower($searchTerm);
         $words = array_filter(explode(' ', $searchTerm), function($w) {
             return strlen($w) > 1;
         });
 
-        // Query Informasi tanpa filter published untuk memastikan data ditemukan
+        // Ambil data yang mengandung setidaknya satu kata kunci agar efisien
         $informasiQuery = Informasi::query();
-        
         $informasiQuery->where(function($q) use ($searchTerm, $words) {
             $q->where('title', 'like', '%' . $searchTerm . '%')
               ->orWhere('deskripsi', 'like', '%' . $searchTerm . '%');
             
-            foreach ($words as $word) {
-                $q->orWhere('title', 'like', '%' . $word . '%');
+            if (!empty($words)) {
+                foreach ($words as $word) {
+                    $q->orWhere('title', 'like', '%' . $word . '%');
+                }
             }
         });
 
-        // Simple Ranking
-        $informasiResults = $informasiQuery->get()->map(function($item) use ($searchTerm, $words) {
-            $score = 0;
-            $title = strtolower($item->title);
-            $searchLower = strtolower($searchTerm);
+        // Hitung skor kemiripan secara presisi menggunakan PHP
+        $informasiResults = $informasiQuery->get()->map(function($item) use ($searchLower, $words) {
+            $titleLower = strtolower($item->title);
+            
+            // Hitung persentase kemiripan teks (0-100)
+            similar_text($titleLower, $searchLower, $percent);
+            
+            $score = $percent * 10; // Bobot utama dari kemiripan karakter
 
-            if ($title == $searchLower) $score += 100;
-            if (str_starts_with($title, $searchLower)) $score += 50;
-            if (str_contains($title, $searchLower)) $score += 30;
+            // Bonus jika judul mengandung kalimat utuh yang dicari (termasuk jika user ketik lebih panjang)
+            if (str_contains($searchLower, $titleLower) && strlen($titleLower) > 5) $score += 500;
+            if (str_contains($titleLower, $searchLower)) $score += 300;
             
+            // Bonus per kata yang cocok
             foreach ($words as $word) {
-                if (str_contains($title, strtolower($word))) $score += 10;
+                if (str_contains($titleLower, strtolower($word))) $score += 50;
             }
-            
+
             $item->search_score = $score;
             return $item;
-        })->sortByDesc('search_score')->take(40);
+        })->sortByDesc('search_score')->take(50);
 
-        // Query Standar Layanan
+        // Pencarian Standar Layanan
         $standarLayananResults = SubStandarLayanan::where('title', 'like', '%' . $searchTerm . '%');
-        foreach ($words as $word) {
-            $standarLayananResults->orWhere('title', 'like', '%' . $word . '%');
+        if (!empty($words)) {
+            foreach ($words as $word) { $standarLayananResults->orWhere('title', 'like', '%' . $word . '%'); }
         }
-        $standarLayananResults = $standarLayananResults->take(20)->get();
+        $standarLayananResults = $standarLayananResults->take(15)->get();
 
         $orgResults = \App\Models\Organization::where('name', 'like', "%{$searchTerm}%")->take(10)->get();
-        $orgResults = \App\Models\Organization::where('name', 'like', "%{$query}%")
-            ->take(10)
-            ->get();
 
         $breadcrumbs = [
             ['title' => 'Beranda', 'url' => route('home'), 'icon' => 'fas fa-home'],
