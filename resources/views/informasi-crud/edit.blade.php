@@ -348,7 +348,25 @@
             form.submit();
         });
 
-        form.addEventListener('submit', function() {
+        form.addEventListener('submit', function(e) {
+            if (this.submitted) {
+                e.preventDefault();
+                return false;
+            }
+            this.submitted = true;
+            
+            const submitBtn = document.getElementById('submit-btn');
+            const submitFromModalBtn = document.getElementById('submit-from-modal');
+            
+            if (submitBtn) {
+                submitBtn.disabled = true;
+                submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Menyimpan...';
+            }
+            if (submitFromModalBtn) {
+                submitFromModalBtn.disabled = true;
+                submitFromModalBtn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Menyimpan...';
+            }
+
             prepareUrl();
         });
 
