@@ -215,11 +215,10 @@ class FrontendController extends Controller
         // Apply title/description search filter only if it's not a strict status filter
         if ($request->has('search') && $request->search != '' && !$isStatusFilter) {
             $searchTerm = trim($request->search);
-            $lowerSearch = strtolower($searchTerm);
             
-            // Pecah kata kunci menjadi array (filter kata yang sangat pendek jika perlu)
-            $words = array_filter(explode(' ', $lowerSearch), function($w) {
-                return strlen($w) > 1; // Cari kata yang minimal 2 karakter
+            // Pecah kata kunci menjadi array
+            $words = array_filter(explode(' ', $searchTerm), function($w) {
+                return strlen($w) > 1;
             });
 
             $matchingUnitIds = [];
@@ -230,14 +229,12 @@ class FrontendController extends Controller
             }
 
             $query->where(function($q) use ($searchTerm, $words, $matchingUnitIds) {
-                // Prioritas pertama: kecocokan kalimat utuh (biar tetap ada fallback standar)
-                $q->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
-                  ->orWhereRaw('LOWER(deskripsi) LIKE ?', ['%' . strtolower($searchTerm) . '%']);
+                $q->where('title', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('deskripsi', 'like', '%' . $searchTerm . '%');
 
-                // Prioritas kedua: kecocokan per kata (Fuzzy logic sederhana)
                 if (!empty($words)) {
                     foreach ($words as $word) {
-                        $q->orWhereRaw('LOWER(title) LIKE ?', ['%' . $word . '%']);
+                        $q->orWhere('title', 'like', '%' . $word . '%');
                     }
                 }
 
@@ -246,18 +243,18 @@ class FrontendController extends Controller
                 }
             });
 
-            // ADVANCED RELEVANCY SCORING
-            // Kita hitung skor berdasarkan seberapa mirip judul dengan input
-            $scoreSql = "(CASE WHEN LOWER(title) = " . DB::getPdo()->quote($lowerSearch) . " THEN 100 ELSE 0 END) + ";
-            $scoreSql .= "(CASE WHEN LOWER(title) LIKE " . DB::getPdo()->quote($lowerSearch . '%') . " THEN 50 ELSE 0 END) + ";
+            // RELEVANCY RANKING
+            $scoreSql = "CASE 
+                WHEN title = " . DB::getPdo()->quote($searchTerm) . " THEN 100 
+                WHEN title LIKE " . DB::getPdo()->quote($searchTerm . '%') . " THEN 50 
+                WHEN title LIKE " . DB::getPdo()->quote('%' . $searchTerm . '%') . " THEN 30 ";
             
             if (!empty($words)) {
                 foreach ($words as $word) {
-                    // Setiap kata yang cocok di judul menambah poin 10
-                    $scoreSql .= "(CASE WHEN LOWER(title) LIKE " . DB::getPdo()->quote('%' . $word . '%') . " THEN 10 ELSE 0 END) + ";
+                    $scoreSql .= " WHEN title LIKE " . DB::getPdo()->quote('%' . $word . '%') . " THEN 10 ";
                 }
             }
-            $scoreSql .= "0"; // Akhiran biar query tidak error
+            $scoreSql .= " ELSE 0 END";
 
             $query->orderByRaw("($scoreSql) DESC");
         }
@@ -1130,48 +1127,51 @@ class FrontendController extends Controller
         $searchTerm = trim($query);
         $lowerSearch = strtolower($searchTerm);
         
-        // Pecah kata kunci menjadi array untuk pencarian per kata
-        $words = array_filter(explode(' ', $lowerSearch), function($w) {
+        // Pecah kata kunci menjadi array
+        $words = array_filter(explode(' ', $searchTerm), function($w) {
             return strlen($w) > 1;
         });
 
         $informasiResults = Informasi::where(function($q) use ($searchTerm, $words) {
-                $q->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($searchTerm) . '%'])
-                  ->orWhereRaw('LOWER(deskripsi) LIKE ?', ['%' . strtolower($searchTerm) . '%']);
+                // Cari kalimat utuh dulu
+                $q->where('title', 'like', '%' . $searchTerm . '%')
+                  ->orWhere('deskripsi', 'like', '%' . $searchTerm . '%');
                 
+                // Cari per kata (Fuzzy logic)
                 if (!empty($words)) {
                     foreach ($words as $word) {
-                        $q->orWhereRaw('LOWER(title) LIKE ?', ['%' . $word . '%']);
+                        $q->orWhere('title', 'like', '%' . $word . '%');
                     }
                 }
             })
             ->where('published', true);
 
-        // ADVANCED RELEVANCY SCORING
-        $scoreSql = "(CASE WHEN LOWER(title) = " . DB::getPdo()->quote($lowerSearch) . " THEN 100 ELSE 0 END) + ";
-        $scoreSql .= "(CASE WHEN LOWER(title) LIKE " . DB::getPdo()->quote($lowerSearch . '%') . " THEN 50 ELSE 0 END) + ";
+        // RELEVANCY RANKING (MySQL Friendly)
+        $scoreSql = "CASE 
+            WHEN title = " . DB::getPdo()->quote($searchTerm) . " THEN 100 
+            WHEN title LIKE " . DB::getPdo()->quote($searchTerm . '%') . " THEN 50 
+            WHEN title LIKE " . DB::getPdo()->quote('%' . $searchTerm . '%') . " THEN 30 ";
+        
         if (!empty($words)) {
             foreach ($words as $word) {
-                $scoreSql .= "(CASE WHEN LOWER(title) LIKE " . DB::getPdo()->quote('%' . $word . '%') . " THEN 10 ELSE 0 END) + ";
+                $scoreSql .= " WHEN title LIKE " . DB::getPdo()->quote('%' . $word . '%') . " THEN 10 ";
             }
         }
-        $scoreSql .= "0";
+        $scoreSql .= " ELSE 0 END";
 
         $informasiResults = $informasiResults->orderByRaw("($scoreSql) DESC")
-            ->latest()
-            ->take(30)
+            ->take(40)
             ->get();
 
         $standarLayananResults = SubStandarLayanan::where(function($q) use ($searchTerm, $words) {
-                $q->whereRaw('LOWER(title) LIKE ?', ['%' . strtolower($searchTerm) . '%']);
+                $q->where('title', 'like', '%' . $searchTerm . '%');
                 if (!empty($words)) {
                     foreach ($words as $word) {
-                        $q->orWhereRaw('LOWER(title) LIKE ?', ['%' . $word . '%']);
+                        $q->orWhere('title', 'like', '%' . $word . '%');
                     }
                 }
             })
-            ->latest()
-            ->take(15)
+            ->take(20)
             ->get();
         $orgResults = \App\Models\Organization::where('name', 'like', "%{$query}%")
             ->take(10)
