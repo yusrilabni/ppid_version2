@@ -59,12 +59,12 @@
     {{-- Dropdown Menu --}}
     <div x-show="open" 
         x-transition:enter="transition ease-out duration-200"
-        x-transition:enter-start="opacity-0 translate-y-2 scale-95"
+        x-transition:enter-start="opacity-0 translate-y-1 scale-95"
         x-transition:enter-end="opacity-100 translate-y-0 scale-100"
         x-transition:leave="transition ease-in duration-100"
         x-transition:leave-start="opacity-100 translate-y-0 scale-100"
-        x-transition:leave-end="opacity-0 translate-y-2 scale-95"
-        class="absolute mt-3 w-full rounded-2xl bg-white shadow-[0_20px_50px_rgba(0,0,0,0.15)] z-[9999] border border-gray-100 overflow-hidden ring-1 ring-black/5"
+        x-transition:leave-end="opacity-0 translate-y-1 scale-95"
+        class="absolute mt-1 w-full rounded-2xl bg-white shadow-[0_25px_60px_-15px_rgba(0,0,0,0.3)] z-[9999] border border-gray-100 overflow-hidden ring-1 ring-black/5"
         x-cloak>
 
         @if($shouldShowSearch)
