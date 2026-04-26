@@ -238,7 +238,7 @@
         </div>
         @endif
 
-        <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+        <div class="bg-white rounded-2xl shadow-xl border border-gray-100">
             <!-- Header Section -->
             <div class="bg-gradient-to-r from-blue-600 to-indigo-700 p-6 md:p-8 text-white">
                 <div class="flex flex-col md:flex-row md:items-center justify-between gap-6">

@@ -121,7 +121,7 @@
                     </div>
                 </div>
 
-                <div class="bg-white rounded-2xl shadow-xl overflow-hidden" x-data="surveyProgress({{ $survey->id }}, {{ $totalQuestions }}, {{ $pages->count() }})"
+                <div class="bg-white rounded-2xl shadow-xl" x-data="surveyProgress({{ $survey->id }}, {{ $totalQuestions }}, {{ $pages->count() }})"
                     x-init="init()">
 
                     {{-- Progress Bar --}}
