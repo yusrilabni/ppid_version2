@@ -95,39 +95,30 @@ class DashboardController extends Controller
         $latestVisitorRecord = Statistik::latest('nama')->first();
         $latestVisitorsCount = $latestVisitorRecord ? $latestVisitorRecord->jumlah : 0;
         
-        // --- Chart Data Logic ---
-        $totalVisitors = Statistik::sum('jumlah');
-        $visitStats = Statistik::select(
-                DB::raw('YEAR(created_at) as year'),
-                DB::raw('MONTH(created_at) as month'),
-                DB::raw('SUM(jumlah) as count')
-            )
-            ->where('created_at', '>=', Carbon::now()->subYear())
-            ->groupBy('year', 'month')
-            ->orderBy('year', 'asc')
-            ->orderBy('month', 'asc')
-            ->get();
-        
+        // --- Chart Data Logic (Last 30 Days Daily) ---
         $chartLabels = [];
         $chartData = [];
-        $months = collect(range(1, 12))->map(function ($month) {
-            return Carbon::now()->month($month)->shortMonthName;
-        });
 
-        $statsByMonth = $visitStats->keyBy(function ($item) {
-            return $item->year . '-' . $item->month;
-        });
+        $visitStats = Statistik::select(
+                DB::raw('DATE(created_at) as date'),
+                DB::raw('SUM(jumlah) as count')
+            )
+            ->where('created_at', '>=', Carbon::now()->subDays(30))
+            ->groupBy('date')
+            ->orderBy('date', 'asc')
+            ->get()
+            ->keyBy('date');
 
-        for ($i = 11; $i >= 0; $i--) {
-            $date = Carbon::now()->subMonths($i);
-            $year = $date->year;
-            $month = $date->month;
-            $key = $year . '-' . $month;
-            
-            $chartLabels[] = $date->shortMonthName;
-            $chartData[] = $statsByMonth->has($key) ? $statsByMonth->get($key)->count : 0;
+        for ($i = 29; $i >= 0; $i--) {
+            $date = Carbon::now()->subDays($i)->format('Y-m-d');
+            $label = Carbon::now()->subDays($i)->isoFormat('DD MMM');
+
+            $chartLabels[] = $label;
+            $chartData[] = isset($visitStats[$date]) ? $visitStats[$date]->count : 0;
         }
         // --- End of Chart Data Logic ---
+
+        $totalVisitors = Statistik::sum('jumlah');
 
 
 
@@ -200,7 +191,7 @@ class DashboardController extends Controller
 
     private function getRecentActivity(): Collection
     {
-        $recentGaleri = Galeri::with('user')->latest()->take(5)->get()->map(function ($item) {
+        $recentGaleri = Galeri::with('user')->latest()->take(20)->get()->map(function ($item) {
             return (object)[
                 'type' => 'Galeri', 
                 'title' => $item->title, 
@@ -212,7 +203,7 @@ class DashboardController extends Controller
             ];
         });
 
-        $recentInformasi = Informasi::with('user')->latest()->take(5)->get()->map(function ($item) {
+        $recentInformasi = Informasi::with('user')->latest()->take(20)->get()->map(function ($item) {
             return (object)[
                 'type' => 'Informasi', 
                 'title' => $item->title, 
@@ -224,7 +215,7 @@ class DashboardController extends Controller
             ];
         });
         
-        $recentStandarLayanan = SubStandarLayanan::with(['standarLayanan', 'user'])->latest()->take(5)->get()->map(function ($item) {
+        $recentStandarLayanan = SubStandarLayanan::with(['standarLayanan', 'user'])->latest()->take(20)->get()->map(function ($item) {
             return (object)[
                 'type' => 'Standar Layanan', 
                 'title' => $item->title, 
@@ -241,6 +232,6 @@ class DashboardController extends Controller
             ->merge($recentInformasi)
             ->merge($recentStandarLayanan)
             ->sortByDesc('date')
-            ->take(10);
+            ->take(30);
     }
 }

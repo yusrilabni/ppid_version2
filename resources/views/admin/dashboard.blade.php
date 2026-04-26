@@ -59,7 +59,7 @@
             <div class="flex items-center justify-between mb-8">
                 <h3 class="text-lg font-black text-gray-800 uppercase tracking-tight flex items-center gap-3">
                     <span class="w-1.5 h-6 bg-blue-600 rounded-full"></span>
-                    Grafik Kunjungan 7 Hari Terakhir
+                    Statistik Kunjungan 30 Hari Terakhir
                 </h3>
                 <div class="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase">Live Stats</div>
             </div>
@@ -118,7 +118,7 @@
                 <span class="w-1.5 h-6 bg-indigo-600 rounded-full"></span>
                 Aktivitas Terbaru
             </h3>
-            <span class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">10 Data Terakhir</span>
+            <span class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">30 Data Terakhir</span>
         </div>
         <div class="overflow-x-auto">
             <table class="w-full text-left">
