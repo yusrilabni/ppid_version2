@@ -154,7 +154,7 @@
                             <div x-show="step === {{ $stepNumber }}" data-step="{{ $stepNumber }}"
                                 x-transition:enter="transition ease-out duration-300"
                                 x-transition:enter-start="opacity-0 transform -translate-x-4"
-                                x-transition:enter-end="opacity-100 transform translate-x-0" class="p-4 md:p-8">
+                                x-transition:enter-end="opacity-100 transform translate-x-0" class="p-4 md:p-8 relative z-10">
 
                                 {{-- Page Header --}}
                                 <div
@@ -197,7 +197,7 @@
                                 <div class="space-y-6 md:space-y-10">
                                     @forelse ($page['questions'] as $question)
                                         <div
-                                            class="question-card bg-white rounded-2xl border border-gray-100 p-5 md:p-8 shadow-md">
+                                            class="question-card bg-white rounded-2xl border border-gray-100 p-5 md:p-8 shadow-md relative z-10">
                                             <div class="flex flex-col md:flex-row items-start">
                                                 <div class="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
                                                     <div
@@ -393,7 +393,7 @@
                         @endforeach
 
                         {{-- Navigation Buttons --}}
-                        <div class="sticky bottom-0 bg-white/95 backdrop-blur-md border-t border-gray-100 px-4 md:px-8 py-4 md:py-6 shadow-2xl z-20">
+                        <div class="sticky bottom-0 bg-white border-t border-gray-100 px-4 md:px-8 py-4 md:py-6 shadow-lg z-[5]">
                             <div class="flex justify-between items-center max-w-5xl mx-auto">
                                 <button type="button" x-show="step > 1" x-on:click="prevStep()"
                                     class="group flex items-center px-4 py-3 md:px-8 md:py-4 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-xl transition-all duration-200 transform active:scale-95 shadow-md">
