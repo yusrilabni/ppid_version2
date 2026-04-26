@@ -3,6 +3,9 @@
 @section('title', 'Kelola Survei: ' . $survey->title)
 
 @section('content')
+    {{-- Include SortableJS --}}
+    <script src="https://cdn.jsdelivr.net/npm/sortablejs@1.15.0/Sortable.min.js"></script>
+
     <div class="container mx-auto p-4 sm:p-6 lg:p-8">
         <div class="max-w-6xl mx-auto">
 
@@ -138,12 +141,8 @@
 
                 <!-- Sections and Questions List -->
                 <div class="p-6 space-y-6 relative">
-                    {{-- Floating Save Order Button --}}
-                    <div id="saveOrderContainer" class="hidden sticky top-4 z-40 flex justify-center mb-4">
-                        <button type="button" onclick="saveNewOrder()" 
-                                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full shadow-2xl font-bold flex items-center gap-2 transform hover:scale-105 transition-all">
-                            <i class="fas fa-save"></i> Simpan Urutan Baru
-                        </button>
+                    <div id="savingOrderIndicator" class="hidden absolute top-0 right-0 m-4 px-4 py-2 bg-blue-600 text-white text-xs font-bold rounded-full shadow-lg z-50 animate-pulse">
+                        <i class="fas fa-spinner fa-spin mr-2"></i> Menyimpan Urutan...
                     </div>
 
                     @php
@@ -165,12 +164,16 @@
                                     </span>
                                 </div>
                             </div>
-                            <div class="divide-y divide-gray-100">
+                            <div class="divide-y divide-gray-100 sortable-container" data-section-id="">
                                 @foreach ($questionsBySection['']->sortBy('order') as $question)
-                                    <div class="px-4 py-3 hover:bg-gray-50 transition-colors duration-150">
+                                    <div class="px-4 py-3 hover:bg-gray-50 transition-colors duration-150 relative bg-white" data-id="{{ $question->id }}">
                                         <div class="flex items-start justify-between">
                                             <div class="flex-1">
                                                 <div class="flex items-center gap-2 mb-1">
+                                                    {{-- Drag Handle --}}
+                                                    <div class="cursor-move p-2 text-gray-300 hover:text-blue-500 drag-handle">
+                                                        <i class="fas fa-grip-vertical"></i>
+                                                    </div>
                                                     <span
                                                         class="flex items-center justify-center w-6 h-6 bg-blue-100 text-blue-700 text-xs font-bold rounded-full">
                                                         {{ $loop->iteration }}
@@ -180,15 +183,8 @@
                                                         <span
                                                             class="px-2 py-0.5 text-xs font-medium bg-red-100 text-red-700 rounded">Wajib</span>
                                                     @endif
-                                                    <div class="ml-auto flex items-center gap-2 mr-4">
-                                                        <label class="text-[10px] font-bold text-gray-400 uppercase">Urutan:</label>
-                                                        <input type="number" 
-                                                               value="{{ $question->order ?? 0 }}" 
-                                                               data-id="{{ $question->id }}"
-                                                               class="question-order-input w-16 px-2 py-1 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 transition-all text-center font-bold text-blue-600"
-                                                               onchange="showSaveOrderButton()">
-                                                    </div>
-                                                    </div>                                                <div class="ml-8 flex items-center gap-3">
+                                                </div>
+                                                <div class="ml-10 flex items-center gap-3">
                                                     <span
                                                         class="text-xs px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full">
                                                         {{ str_replace('_', ' ', $question->question_type) }}
@@ -271,13 +267,17 @@
                             </div>
 
                             <!-- Questions in Section -->
-                            <div class="divide-y divide-gray-100">
+                            <div class="divide-y divide-gray-100 sortable-container" data-section-id="{{ $section->id }}">
                                 @if (isset($questionsBySection[$section->id]) && $questionsBySection[$section->id]->count() > 0)
                                     @foreach ($questionsBySection[$section->id]->sortBy('order') as $question)
-                                        <div class="px-4 py-3 hover:bg-gray-50 transition-colors duration-150">
+                                        <div class="px-4 py-3 hover:bg-gray-50 transition-colors duration-150 relative bg-white" data-id="{{ $question->id }}">
                                             <div class="flex items-start justify-between">
                                                 <div class="flex-1">
                                                     <div class="flex items-center gap-2 mb-1">
+                                                        {{-- Drag Handle --}}
+                                                        <div class="cursor-move p-2 text-gray-300 hover:text-blue-500 drag-handle">
+                                                            <i class="fas fa-grip-vertical"></i>
+                                                        </div>
                                                         <span
                                                             class="flex items-center justify-center w-6 h-6 bg-gray-100 text-gray-700 text-xs font-bold rounded-full">
                                                             {{ $loop->iteration }}
@@ -289,7 +289,7 @@
                                                                 class="px-2 py-0.5 text-xs font-medium bg-red-100 text-red-700 rounded">Wajib</span>
                                                         @endif
                                                     </div>
-                                                    <div class="ml-8 flex items-center gap-3">
+                                                    <div class="ml-10 flex items-center gap-3">
                                                         <span
                                                             class="text-xs px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full">
                                                             {{ str_replace('_', ' ', $question->question_type) }}
@@ -318,7 +318,7 @@
                                         </div>
                                     @endforeach
                                 @else
-                                    <div class="px-4 py-8 text-center">
+                                    <div class="px-4 py-8 text-center bg-white">
                                         <div
                                             class="w-12 h-12 mx-auto mb-3 bg-gray-100 rounded-full flex items-center justify-center">
                                             <i class="fas fa-question-circle text-gray-300 text-xl"></i>
@@ -334,146 +334,55 @@
                             </div>
                         </div>
                     @endforeach
-
-                    <!-- Empty State -->
-                    @if ($sections->isEmpty() && (!isset($questionsBySection['']) || $questionsBySection['']->count() == 0))
-                        <div class="text-center py-12 border-2 border-dashed border-gray-200 rounded-xl bg-gray-50/50">
-                            <div class="w-16 h-16 mx-auto mb-4 bg-gray-100 rounded-full flex items-center justify-center">
-                                <i class="fas fa-question-circle text-gray-400 text-2xl"></i>
-                            </div>
-                            <h3 class="text-lg font-medium text-gray-900 mb-2">Belum Ada Konten Survei</h3>
-                            <p class="text-gray-500 mb-4">Mulai dengan menambahkan bagian atau pertanyaan pertama Anda</p>
-                            <div class="flex flex-col sm:flex-row justify-center gap-3">
-                                <button type="button"
-                                    onclick="document.getElementById('createSectionModal').classList.remove('hidden')"
-                                    class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 transition-colors duration-200">
-                                    <i class="fas fa-layer-group"></i>
-                                    Tambah Bagian
-                                </button>
-                                <a href="{{ route('admin.surveys.questions.create', $survey) }}"
-                                    class="inline-flex items-center justify-center gap-2 px-4 py-2.5 bg-blue-600 border border-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-700 transition-colors duration-200">
-                                    <i class="fas fa-plus"></i>
-                                    Tambah Pertanyaan Pertama
-                                </a>
-                            </div>
-                        </div>
-                    @endif
                 </div>
             </div>
 
         </div>
     </div>
 
-    <!-- Modal Create Section -->
-    <div id="createSectionModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title"
-        role="dialog" aria-modal="true">
+    <!-- Modals Section -->
+    <div id="createSectionModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
-                onclick="document.getElementById('createSectionModal').classList.add('hidden')"></div>
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="document.getElementById('createSectionModal').classList.add('hidden')"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div
-                class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
                 <form action="{{ route('admin.surveys.sections.store', $survey) }}" method="POST">
                     @csrf
                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-semibold text-gray-900" id="modal-title">Tambah Bagian Baru</h3>
-                            <button type="button"
-                                onclick="document.getElementById('createSectionModal').classList.add('hidden')"
-                                class="text-gray-400 hover:text-gray-500">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Tambah Bagian Baru</h3>
                         <div class="space-y-4">
-                            <div>
-                                <label for="section_title" class="block text-sm font-medium text-gray-700 mb-1">Judul
-                                    Bagian</label>
-                                <input type="text" name="title" id="section_title" required
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
-                            </div>
-                            <div>
-                                <label for="section_description"
-                                    class="block text-sm font-medium text-gray-700 mb-1">Deskripsi (Opsional)</label>
-                                <textarea name="description" id="section_description" rows="3"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"></textarea>
-                            </div>
-                            <div>
-                                <label for="section_order"
-                                    class="block text-sm font-medium text-gray-700 mb-1">Urutan</label>
-                                <input type="number" name="order" id="section_order"
-                                    value="{{ $sections->count() + 1 }}"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
-                            </div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Judul Bagian</label><input type="text" name="title" required class="w-full px-3 py-2 border border-gray-300 rounded-lg"></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label><textarea name="description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg"></textarea></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Urutan</label><input type="number" name="order" value="{{ $sections->count() + 1 }}" class="w-full px-3 py-2 border border-gray-300 rounded-lg"></div>
                         </div>
                     </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:px-6 flex flex-col sm:flex-row-reverse gap-3">
-                        <button type="submit"
-                            class="w-full sm:w-auto px-4 py-2.5 bg-blue-600 border border-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-700 hover:border-blue-700 transition-colors duration-200">
-                            Simpan Bagian
-                        </button>
-                        <button type="button"
-                            onclick="document.getElementById('createSectionModal').classList.add('hidden')"
-                            class="w-full sm:w-auto px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors duration-200">
-                            Batal
-                        </button>
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 flex flex-row-reverse gap-3">
+                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">Simpan</button>
+                        <button type="button" onclick="document.getElementById('createSectionModal').classList.add('hidden')" class="bg-white border border-gray-300 px-4 py-2 rounded-lg text-sm font-medium text-gray-700">Batal</button>
                     </div>
                 </form>
             </div>
         </div>
     </div>
 
-    <!-- Modal Edit Section -->
-    <div id="editSectionModal" class="fixed inset-0 z-50 hidden overflow-y-auto" aria-labelledby="modal-title"
-        role="dialog" aria-modal="true">
+    <div id="editSectionModal" class="fixed inset-0 z-50 hidden overflow-y-auto" role="dialog" aria-modal="true">
         <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true"
-                onclick="document.getElementById('editSectionModal').classList.add('hidden')"></div>
+            <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" aria-hidden="true" onclick="document.getElementById('editSectionModal').classList.add('hidden')"></div>
             <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-            <div
-                class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
-                <form id="editSectionForm" action="" method="POST">
-                    @csrf
-                    @method('PUT')
+            <div class="inline-block align-bottom bg-white rounded-lg text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-md sm:w-full">
+                <form id="editSectionForm" method="POST">
+                    @csrf @method('PUT')
                     <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
-                        <div class="flex items-center justify-between mb-4">
-                            <h3 class="text-lg font-semibold text-gray-900" id="modal-title">Edit Bagian</h3>
-                            <button type="button"
-                                onclick="document.getElementById('editSectionModal').classList.add('hidden')"
-                                class="text-gray-400 hover:text-gray-500">
-                                <i class="fas fa-times"></i>
-                            </button>
-                        </div>
+                        <h3 class="text-lg font-semibold text-gray-900 mb-4">Edit Bagian</h3>
                         <div class="space-y-4">
-                            <div>
-                                <label for="edit_section_title" class="block text-sm font-medium text-gray-700 mb-1">Judul
-                                    Bagian</label>
-                                <input type="text" name="title" id="edit_section_title" required
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
-                            </div>
-                            <div>
-                                <label for="edit_section_description"
-                                    class="block text-sm font-medium text-gray-700 mb-1">Deskripsi (Opsional)</label>
-                                <textarea name="description" id="edit_section_description" rows="3"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200"></textarea>
-                            </div>
-                            <div>
-                                <label for="edit_section_order"
-                                    class="block text-sm font-medium text-gray-700 mb-1">Urutan</label>
-                                <input type="number" name="order" id="edit_section_order"
-                                    class="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors duration-200">
-                            </div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Judul Bagian</label><input type="text" name="title" id="edit_section_title" required class="w-full px-3 py-2 border border-gray-300 rounded-lg"></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Deskripsi</label><textarea name="description" id="edit_section_description" rows="3" class="w-full px-3 py-2 border border-gray-300 rounded-lg"></textarea></div>
+                            <div><label class="block text-sm font-medium text-gray-700 mb-1">Urutan</label><input type="number" name="order" id="edit_section_order" class="w-full px-3 py-2 border border-gray-300 rounded-lg"></div>
                         </div>
                     </div>
-                    <div class="bg-gray-50 px-4 py-3 sm:px-6 flex flex-col sm:flex-row-reverse gap-3">
-                        <button type="submit"
-                            class="w-full sm:w-auto px-4 py-2.5 bg-blue-600 border border-blue-600 rounded-lg text-sm font-medium text-white hover:bg-blue-700 hover:border-blue-700 transition-colors duration-200">
-                            Update Bagian
-                        </button>
-                        <button type="button"
-                            onclick="document.getElementById('editSectionModal').classList.add('hidden')"
-                            class="w-full sm:w-auto px-4 py-2.5 bg-white border border-gray-300 rounded-lg text-sm font-medium text-gray-700 hover:bg-gray-50 hover:border-gray-400 transition-colors duration-200">
-                            Batal
-                        </button>
+                    <div class="bg-gray-50 px-4 py-3 sm:px-6 flex flex-row-reverse gap-3">
+                        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded-lg text-sm font-medium">Update</button>
+                        <button type="button" onclick="document.getElementById('editSectionModal').classList.add('hidden')" class="bg-white border border-gray-300 px-4 py-2 rounded-lg text-sm font-medium text-gray-700">Batal</button>
                     </div>
                 </form>
             </div>
@@ -481,44 +390,44 @@
     </div>
 
     <script>
-        function showSaveOrderButton() {
-            document.getElementById('saveOrderContainer').classList.remove('hidden');
-        }
+        document.addEventListener('DOMContentLoaded', function() {
+            const containers = document.querySelectorAll('.sortable-container');
+            const indicator = document.getElementById('savingOrderIndicator');
 
-        function saveNewOrder() {
-            const inputs = document.querySelectorAll('.question-order-input');
-            const orders = {};
-            inputs.forEach(input => {
-                orders[input.dataset.id] = input.value;
+            containers.forEach(container => {
+                new Sortable(container, {
+                    handle: '.drag-handle',
+                    animation: 150,
+                    ghostClass: 'bg-blue-50',
+                    onEnd: function(evt) {
+                        const orders = {};
+                        container.querySelectorAll('[data-id]').forEach((el, index) => {
+                            orders[el.dataset.id] = index + 1;
+                        });
+
+                        indicator.classList.remove('hidden');
+
+                        fetch("{{ route('admin.surveys.questions.reorder', $survey) }}", {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                                'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                            },
+                            body: JSON.stringify({ orders: orders })
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            setTimeout(() => indicator.classList.add('hidden'), 500);
+                        })
+                        .catch(error => {
+                            console.error('Error:', error);
+                            alert('Gagal menyimpan urutan.');
+                            indicator.classList.add('hidden');
+                        });
+                    }
+                });
             });
-
-            const btn = document.querySelector('#saveOrderContainer button');
-            const originalContent = btn.innerHTML;
-            btn.disabled = true;
-            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
-
-            fetch("{{ route('admin.surveys.questions.reorder', $survey) }}", {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
-                },
-                body: JSON.stringify({ orders: orders })
-            })
-            .then(response => response.json())
-            .then(data => {
-                if (data.success) {
-                    alert('Urutan berhasil disimpan!');
-                    location.reload();
-                }
-            })
-            .catch(error => {
-                console.error('Error:', error);
-                alert('Gagal menyimpan urutan.');
-                btn.disabled = false;
-                btn.innerHTML = originalContent;
-            });
-        }
+        });
 
         function openEditSectionModal(id, title, description, order) {
             document.getElementById('editSectionForm').action = "/v2/admin/surveys/sections/" + id;
