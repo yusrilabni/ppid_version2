@@ -239,7 +239,7 @@
                                             title="Edit Bagian">
                                             <i class="fas fa-edit text-sm"></i>
                                         </button>
-                                        <form action="{{ route('admin.surveys.sections.destroy', $section) }}"
+                                        <form action="{{ url('/v2/admin/surveys/sections/' . $section->id) }}"
                                             method="POST"
                                             onsubmit="return confirm('Hapus bagian ini? Pertanyaan akan tetap ada tanpa bagian.');"
                                             class="inline">
@@ -467,7 +467,7 @@
 
     <script>
         function openEditSectionModal(id, title, description, order) {
-            document.getElementById('editSectionForm').action = "/admin/sections/" + id;
+            document.getElementById('editSectionForm').action = "/v2/admin/surveys/sections/" + id;
             document.getElementById('edit_section_title').value = title;
             document.getElementById('edit_section_description').value = description || '';
             document.getElementById('edit_section_order').value = order;

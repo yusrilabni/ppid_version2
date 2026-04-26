@@ -87,7 +87,10 @@ Route::middleware(['auth', SuperadminMiddleware::class])->group(function () {
     
     // Survei
     Route::resource('surveys', SurveyController::class);
-    Route::resource('surveys.sections', SurveySectionController::class)->only(['store', 'update', 'destroy']);
+    Route::post('surveys/{survey}/sections', [SurveySectionController::class, 'store'])->name('surveys.sections.store');
+    Route::put('surveys/sections/{section}', [SurveySectionController::class, 'update'])->name('surveys.sections.update');
+    Route::delete('surveys/sections/{section}', [SurveySectionController::class, 'destroy'])->name('surveys.sections.destroy');
+    
     Route::resource('surveys.questions', SurveyQuestionController::class);
     Route::resource('surveys.responses', SurveyResponseController::class)->only(['index']);
     Route::get('surveys/{survey}/responses/export', [SurveyResponseController::class, 'export'])->name('surveys.responses.export');
