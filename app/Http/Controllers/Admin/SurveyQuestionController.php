@@ -89,16 +89,16 @@ class SurveyQuestionController extends Controller
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(SurveyQuestion $question)
+    public function edit(Survey $survey, SurveyQuestion $question)
     {
         $question->load('options');
-        return view('admin.questions.edit', compact('question'));
+        return view('admin.questions.edit', compact('survey', 'question'));
     }
 
     /**
      * Update the specified resource in storage.
      */
-    public function update(Request $request, SurveyQuestion $question)
+    public function update(Request $request, Survey $survey, SurveyQuestion $question)
     {
         $messages = [
             'question_text.required' => 'Teks pertanyaan wajib diisi.',
@@ -148,15 +148,14 @@ class SurveyQuestionController extends Controller
             }
         }
 
-        return redirect()->route('admin.surveys.show', $question->survey)->with('success', 'Pertanyaan berhasil diperbarui.');
+        return redirect()->route('admin.surveys.show', $survey)->with('success', 'Pertanyaan berhasil diperbarui.');
     }
 
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(SurveyQuestion $question)
+    public function destroy(Survey $survey, SurveyQuestion $question)
     {
-        $survey = $question->survey;
         $question->delete();
 
         return redirect()->route('admin.surveys.show', $survey)->with('success', 'Pertanyaan berhasil dihapus.');
