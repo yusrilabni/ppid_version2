@@ -5,7 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\Informasi;
 use App\Models\Organization;
-use App\Models\LinkAccessLog;
+use App\Models\ExternalLinkLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\DB;
@@ -104,25 +104,25 @@ class ExtraToolsController extends Controller
         // Jangan catat jika akses dari domain sendiri (PPID atau Sinjaikab)
         if (str_contains($domain, 'sinjaikab.go.id') || str_contains($domain, 'localhost') || str_contains($domain, '127.0.0.1')) {
             return;
-        use App\Models\ExternalLinkLog;
-        ...
-                try {
-                    // Check if record exists
-                    $log = ExternalLinkLog::where('domain', $domain)->where('type', $type)->first();
+        }
 
-                    if ($log) {
-                        $log->increment('access_count');
-                        $log->last_access = now();
-                        $log->save();
-                    } else {
-                        ExternalLinkLog::create([
-                            'domain' => $domain,
-                            'type' => $type,
-                            'access_count' => 1,
-                            'last_access' => now()
-                        ]);
-                    }
-                } catch (\Exception $e) {
+        try {
+            // Check if record exists
+            $log = ExternalLinkLog::where('domain', $domain)->where('type', $type)->first();
+            
+            if ($log) {
+                $log->increment('access_count');
+                $log->last_access = now();
+                $log->save();
+            } else {
+                ExternalLinkLog::create([
+                    'domain' => $domain,
+                    'type' => $type,
+                    'access_count' => 1,
+                    'last_access' => now()
+                ]);
+            }
+        } catch (\Exception $e) {
             \Log::error("Error tracking widget/rss access: " . $e->getMessage());
         }
     }
