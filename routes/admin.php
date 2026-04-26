@@ -22,6 +22,8 @@ use App\Http\Controllers\Admin\StrukturOrganisasiController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SurveyQuestionController;
 use App\Http\Controllers\Admin\SurveyResponseController;
+use App\Http\Controllers\Admin\SurveySectionController;
+use App\Http\Controllers\Admin\BeritaController;
 use App\Http\Middleware\AdminMiddleware;
 use App\Http\Middleware\SuperadminMiddleware;
 
@@ -49,6 +51,7 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
 
     // Resource Dasar
     Route::resource('galeri', GaleriController::class);
+    Route::resource('berita', BeritaController::class);
     Route::resource('officials', OfficialController::class);
     Route::resource('statistik', StatistikController::class);
     Route::resource('laporan', LaporanController::class);
@@ -84,6 +87,7 @@ Route::middleware(['auth', SuperadminMiddleware::class])->group(function () {
     
     // Survei
     Route::resource('surveys', SurveyController::class);
+    Route::resource('surveys.sections', SurveySectionController::class)->only(['store', 'update', 'destroy']);
     Route::resource('surveys.questions', SurveyQuestionController::class);
     Route::resource('surveys.responses', SurveyResponseController::class)->only(['index']);
     Route::get('surveys/{survey}/responses/export', [SurveyResponseController::class, 'export'])->name('surveys.responses.export');
