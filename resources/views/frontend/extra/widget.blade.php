@@ -15,8 +15,8 @@
         </div>
 
         {{-- Generator Widget --}}
-        <section class="bg-white rounded-[3rem] shadow-xl border border-gray-100 p-8 md:p-12 mb-12 relative overflow-hidden">
-            <div class="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full -mr-32 -mt-32 opacity-50"></div>
+        <section class="bg-white rounded-[3rem] shadow-xl border border-gray-100 p-8 md:p-12 mb-12 relative">
+            <div class="absolute top-0 right-0 w-64 h-64 bg-blue-50 rounded-full -mr-32 -mt-32 opacity-50 pointer-events-none"></div>
             
             <div class="relative z-10">
                 <h2 class="text-2xl font-bold text-gray-800 mb-8 flex items-center">
@@ -36,6 +36,7 @@
                     unitId: '', 
                     year: '',
                     refreshKey: Date.now(),
+                    activeDropdown: null,
                     get embedUrl() { 
                         let url = '{{ route('extra.widgets.embed') }}?type=' + this.type + '&display=' + this.display + '&mode=' + this.mode + '&columns=' + this.columns + '&autoplay=' + this.autoplay + '&limit=' + this.limit;
                         if (this.unitId) url += '&unit_id=' + this.unitId;
@@ -51,7 +52,7 @@
                         {{-- Controls --}}
                         <div class="space-y-6">
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
+                                <div class="relative transition-all duration-200" :style="activeDropdown === 'type' ? 'z-index: 100' : 'z-index: 40'">
                                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Konten</label>
                                     <x-custom-select 
                                         name="type_select" 
@@ -61,9 +62,10 @@
                                         ]" 
                                         :value="'latest'"
                                         @change="type = $event.detail.value"
+                                        x-init="$watch('open', v => v ? activeDropdown = 'type' : (activeDropdown === 'type' && (activeDropdown = null)))"
                                     />
                                 </div>
-                                <div>
+                                <div class="relative transition-all duration-200" :style="activeDropdown === 'display' ? 'z-index: 100' : 'z-index: 40'">
                                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Gaya Dasar</label>
                                     <x-custom-select 
                                         name="display_select" 
@@ -73,12 +75,13 @@
                                         ]" 
                                         :value="'list'"
                                         @change="display = $event.detail.value"
+                                        x-init="$watch('open', v => v ? activeDropdown = 'display' : (activeDropdown === 'display' && (activeDropdown = null)))"
                                     />
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6" x-show="display === 'card'">
-                                <div>
+                                <div class="relative transition-all duration-200" :style="activeDropdown === 'mode' ? 'z-index: 100' : 'z-index: 30'">
                                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Mode Layout</label>
                                     <x-custom-select 
                                         name="mode_select" 
@@ -88,9 +91,10 @@
                                         ]" 
                                         :value="'static'"
                                         @change="mode = $event.detail.value"
+                                        x-init="$watch('open', v => v ? activeDropdown = 'mode' : (activeDropdown === 'mode' && (activeDropdown = null)))"
                                     />
                                 </div>
-                                <div>
+                                <div class="relative transition-all duration-200" :style="activeDropdown === 'cols' ? 'z-index: 100' : 'z-index: 30'">
                                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Kolom Per Baris</label>
                                     <x-custom-select 
                                         name="columns_select" 
@@ -103,12 +107,13 @@
                                         ]" 
                                         :value="'3'"
                                         @change="columns = $event.detail.value"
+                                        x-init="$watch('open', v => v ? activeDropdown = 'cols' : (activeDropdown === 'cols' && (activeDropdown = null)))"
                                     />
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
+                                <div class="relative transition-all duration-200" :style="activeDropdown === 'limit' ? 'z-index: 100' : 'z-index: 20'">
                                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Jumlah Total Data</label>
                                     <x-custom-select 
                                         name="limit_select" 
@@ -122,9 +127,10 @@
                                         ]" 
                                         :value="'5'"
                                         @change="limit = $event.detail.value"
+                                        x-init="$watch('open', v => v ? activeDropdown = 'limit' : (activeDropdown === 'limit' && (activeDropdown = null)))"
                                     />
                                 </div>
-                                <div x-show="mode === 'slider' && display === 'card'">
+                                <div x-show="mode === 'slider' && display === 'card'" class="relative transition-all duration-200" :style="activeDropdown === 'auto' ? 'z-index: 100' : 'z-index: 20'">
                                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Autoplay Slider</label>
                                     <x-custom-select 
                                         name="autoplay_select" 
@@ -134,12 +140,13 @@
                                         ]" 
                                         :value="'0'"
                                         @change="autoplay = $event.detail.value"
+                                        x-init="$watch('open', v => v ? activeDropdown = 'auto' : (activeDropdown === 'auto' && (activeDropdown = null)))"
                                     />
                                 </div>
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
+                                <div class="relative transition-all duration-200" :style="activeDropdown === 'unit' ? 'z-index: 100' : 'z-index: 10'">
                                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Filter OPD</label>
                                     @php
                                         $orgOptions = [['value' => '', 'label' => 'Semua Instansi']];
@@ -152,9 +159,10 @@
                                         :options="$orgOptions" 
                                         :value="''"
                                         @change="unitId = $event.detail.value"
+                                        x-init="$watch('open', v => v ? activeDropdown = 'unit' : (activeDropdown === 'unit' && (activeDropdown = null)))"
                                     />
                                 </div>
-                                <div>
+                                <div class="relative transition-all duration-200" :style="activeDropdown === 'year' ? 'z-index: 100' : 'z-index: 10'">
                                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Filter Tahun</label>
                                     @php
                                         $yearOptions = [['value' => '', 'label' => 'Semua Tahun']];
@@ -167,6 +175,7 @@
                                         :options="$yearOptions" 
                                         :value="''"
                                         @change="year = $event.detail.value"
+                                        x-init="$watch('open', v => v ? activeDropdown = 'year' : (activeDropdown === 'year' && (activeDropdown = null)))"
                                     />
                                 </div>
                             </div>
