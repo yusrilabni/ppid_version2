@@ -197,7 +197,7 @@
                                 <div class="space-y-6 md:space-y-10">
                                     @forelse ($page['questions'] as $question)
                                         <div
-                                            class="question-card bg-white rounded-2xl border border-gray-100 p-5 md:p-8 shadow-md relative z-10">
+                                            class="question-card bg-white rounded-2xl border border-gray-100 p-5 md:p-8 shadow-md relative">
                                             <div class="flex flex-col md:flex-row items-start">
                                                 <div class="flex-shrink-0 mb-4 md:mb-0 md:mr-6">
                                                     <div

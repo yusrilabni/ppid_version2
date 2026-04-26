@@ -25,7 +25,7 @@
 <div x-data="customSelectComponent({ 
     data: {{ json_encode($normalizedOptions) }}, 
     selectedValue: '{{ old($name, $value) }}' 
-})" class="relative w-full" :style="open ? 'z-index: 9999 !important; position: relative;' : 'z-index: 10; position: relative;'" @click.away="open = false">
+})" class="relative w-full" :style="open ? 'z-index: 9999 !important;' : ''" @click.away="open = false">
     
     @if($required)
         <input type="hidden" name="{{ $name }}" x-model="selectedValue" required>
