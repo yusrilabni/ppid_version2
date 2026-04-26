@@ -52,7 +52,7 @@
                     </div>
                 @endif
 
-                <form action="{{ route('admin.questions.update', $question) }}" method="POST" class="p-6">
+                <form action="{{ route('admin.surveys.questions.update', [$question->survey, $question]) }}" method="POST" class="p-6">
                     @csrf
                     @method('PUT')
 

@@ -181,12 +181,12 @@
                                                 </div>
                                             </div>
                                             <div class="flex items-center gap-1 ml-4">
-                                                <a href="{{ route('admin.questions.edit', $question) }}"
+                                                <a href="{{ route('admin.surveys.questions.edit', [$survey, $question]) }}"
                                                     class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200"
                                                     title="Edit">
                                                     <i class="fas fa-edit text-sm"></i>
                                                 </a>
-                                                <form action="{{ route('admin.questions.destroy', $question) }}"
+                                                <form action="{{ route('admin.surveys.questions.destroy', [$survey, $question]) }}"
                                                     method="POST" onsubmit="return confirm('Hapus pertanyaan ini?');"
                                                     class="inline">
                                                     @csrf
@@ -282,12 +282,12 @@
                                                     </div>
                                                 </div>
                                                 <div class="flex items-center gap-1 ml-4">
-                                                    <a href="{{ route('admin.questions.edit', $question) }}"
+                                                    <a href="{{ route('admin.surveys.questions.edit', [$survey, $question]) }}"
                                                         class="p-2 text-gray-400 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition-colors duration-200"
                                                         title="Edit">
                                                         <i class="fas fa-edit text-sm"></i>
                                                     </a>
-                                                    <form action="{{ route('admin.questions.destroy', $question) }}"
+                                                    <form action="{{ route('admin.surveys.questions.destroy', [$survey, $question]) }}"
                                                         method="POST" onsubmit="return confirm('Hapus pertanyaan ini?');"
                                                         class="inline">
                                                         @csrf

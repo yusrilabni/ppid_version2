@@ -29,7 +29,7 @@ use App\Http\Middleware\SuperadminMiddleware;
 
 /*
 |--------------------------------------------------------------------------
-| Admin Routes (FIXED penamaan agar sinkron dengan View)
+| Admin Routes (EXPLICIT NAMING TO BYPASS CACHE ISSUES)
 |--------------------------------------------------------------------------
 */
 
@@ -56,11 +56,15 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     Route::resource('standar-layanan', SubStandarLayananController::class);
     Route::resource('permohonan-informasi', PermohonanInformasiController::class);
 
-    // LHKPN (Fixed Route Names)
+    // LHKPN
     Route::get('lhkpn', [LhkpnController::class, 'index'])->name('lhkpn.index');
     Route::get('lhkpn/create', [LhkpnController::class, 'createForUnit'])->name('lhkpn.create');
     Route::post('lhkpn', [LhkpnController::class, 'storeForUnit'])->name('lhkpn.store');
     Route::delete('lhkpn/{lhkpn}', [LhkpnController::class, 'destroy'])->name('lhkpn.destroy');
+    
+    // Struktur Internal
+    Route::get('my-structure', [StrukturOrganisasiController::class, 'myStructure'])->name('my-structure.manage');
+    Route::post('my-structure', [StrukturOrganisasiController::class, 'updateMyStructure'])->name('my-structure.update');
 });
 
 // KHUSUS SUPERADMIN
@@ -73,36 +77,41 @@ Route::middleware(['auth', SuperadminMiddleware::class])->group(function () {
     Route::get('slider-settings', [AdminSettingController::class, 'showSliderSettings'])->name('slider-settings.show');
     Route::post('slider-settings', [AdminSettingController::class, 'updateSliderSettings'])->name('slider-settings.update');
     
-    // Organisasi & Jabatan (Mapping name to 'positions' to match view)
+    // Organisasi & Jabatan (Explicit)
     Route::resource('organizations', OrganizationController::class);
-    Route::resource('organizations.positions', OrganizationPositionController::class)->names([
-        'index' => 'organizations.positions.index',
-        'create' => 'organizations.positions.create',
-        'store' => 'organizations.positions.store',
-        'edit' => 'positions.edit',
-        'update' => 'positions.update',
-        'destroy' => 'positions.destroy',
-    ]);
+    Route::get('organizations/{organization}/positions', [OrganizationPositionController::class, 'index'])->name('organizations.positions.index');
+    Route::get('organizations/{organization}/positions/create', [OrganizationPositionController::class, 'create'])->name('organizations.positions.create');
+    Route::post('organizations/{organization}/positions', [OrganizationPositionController::class, 'store'])->name('organizations.positions.store');
+    Route::get('positions/{position}/edit', [OrganizationPositionController::class, 'edit'])->name('positions.edit');
+    Route::put('positions/{position}', [OrganizationPositionController::class, 'update'])->name('positions.update');
+    Route::delete('positions/{position}', [OrganizationPositionController::class, 'destroy'])->name('positions.destroy');
     
-    // Profil Pimpinan & LHKPN Terintegrasi
+    // Profil Pimpinan LHKPN
     Route::resource('officials.lhkpn', LhkpnController::class)->only(['index', 'store', 'destroy']);
     
-    // Survei (PENTING: Mapping name agar sinkron dengan View)
-    Route::resource('surveys', SurveyController::class);
+    // SURVEI (EXPLICIT TOTAL)
+    Route::get('surveys', [SurveyController::class, 'index'])->name('surveys.index');
+    Route::get('surveys/create', [SurveyController::class, 'create'])->name('surveys.create');
+    Route::post('surveys', [SurveyController::class, 'store'])->name('surveys.store');
+    Route::get('surveys/{survey}', [SurveyController::class, 'show'])->name('surveys.show');
+    Route::get('surveys/{survey}/edit', [SurveyController::class, 'edit'])->name('surveys.edit');
+    Route::put('surveys/{survey}', [SurveyController::class, 'update'])->name('surveys.update');
+    Route::delete('surveys/{survey}', [SurveyController::class, 'destroy'])->name('surveys.destroy');
+
+    // Survey Sections (Flat)
     Route::post('surveys/{survey}/sections', [SurveySectionController::class, 'store'])->name('surveys.sections.store');
     Route::put('surveys/sections/{section}', [SurveySectionController::class, 'update'])->name('surveys.sections.update');
     Route::delete('surveys/sections/{section}', [SurveySectionController::class, 'destroy'])->name('surveys.sections.destroy');
-    
-    Route::resource('surveys.questions', SurveyQuestionController::class)->names([
-        'index' => 'surveys.questions.index',
-        'create' => 'questions.create',
-        'store' => 'questions.store',
-        'edit' => 'questions.edit',
-        'update' => 'questions.update',
-        'destroy' => 'questions.destroy',
-    ]);
 
-    Route::resource('surveys.responses', SurveyResponseController::class)->only(['index']);
+    // Survey Questions (Explicit Nested Names to match View)
+    Route::get('surveys/{survey}/questions/create', [SurveyQuestionController::class, 'create'])->name('surveys.questions.create');
+    Route::post('surveys/{survey}/questions', [SurveyQuestionController::class, 'store'])->name('surveys.questions.store');
+    Route::get('surveys/{survey}/questions/{question}/edit', [SurveyQuestionController::class, 'edit'])->name('surveys.questions.edit');
+    Route::put('surveys/{survey}/questions/{question}', [SurveyQuestionController::class, 'update'])->name('surveys.questions.update');
+    Route::delete('surveys/{survey}/questions/{question}', [SurveyQuestionController::class, 'destroy'])->name('surveys.questions.destroy');
+    
+    // Survey Responses
+    Route::get('surveys/{survey}/responses', [SurveyResponseController::class, 'index'])->name('surveys.responses.index');
     Route::get('surveys/{survey}/responses/export', [SurveyResponseController::class, 'export'])->name('surveys.responses.export');
     
     // PBJ
@@ -110,7 +119,7 @@ Route::middleware(['auth', SuperadminMiddleware::class])->group(function () {
     Route::post('pbj-questions/duplicate', [PbjQuestionController::class, 'duplicate'])->name('pbj-questions.duplicate');
     Route::delete('pbj-questions/year/{year}', [PbjQuestionController::class, 'deleteYear'])->name('pbj-questions.delete-year');
 
-    // Laporan PPID (Export)
+    // Laporan (Explicit)
     Route::get('reports', [ReportController::class, 'index'])->name('reports.index');
     Route::get('reports/export/total', [ReportController::class, 'exportTotal'])->name('reports.total.export');
     Route::get('reports/export/informasi', [ReportController::class, 'exportInformasi'])->name('reports.informasi.export');
@@ -119,11 +128,11 @@ Route::middleware(['auth', SuperadminMiddleware::class])->group(function () {
     Route::get('reports/export/survey', [ReportController::class, 'exportSurvey'])->name('reports.survey.export');
 });
 
-// PEMBERSIH CACHE TOTAL
+// CACHE BUSTER SAKTI
 Route::get('clear-all-cache', function() {
     \Illuminate\Support\Facades\Artisan::call('route:clear');
     \Illuminate\Support\Facades\Artisan::call('view:clear');
     \Illuminate\Support\Facades\Artisan::call('config:clear');
     \Illuminate\Support\Facades\Artisan::call('cache:clear');
-    return "Semua cache server telah dibersihkan secara paksa! Silakan coba buka menu kembali.";
+    return "BERHASIL! Semua rute telah diperbarui secara paksa. Silakan coba buka menu kembali.";
 })->middleware(['auth']);
