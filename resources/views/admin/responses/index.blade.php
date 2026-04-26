@@ -3,38 +3,39 @@
 @section('title', 'Respon Survei: ' . $survey->title)
 
 @section('content')
-<div class="w-full min-h-screen bg-gray-50 pb-12">
-    {{-- Header Section --}}
-    <div class="bg-white border-b border-gray-200">
-        <div class="px-4 sm:px-6 lg:px-8 py-6">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 shadow-sm">
-                        <i class="fas fa-chart-pie text-xl"></i>
+<div class="max-w-full overflow-x-hidden -m-4 sm:-m-6 lg:-m-8"> {{-- Offset the parent padding --}}
+    <div class="w-full min-h-screen bg-gray-50 pb-12">
+        {{-- Header Section --}}
+        <div class="bg-white border-b border-gray-200">
+            <div class="px-4 sm:px-6 lg:px-8 py-6">
+                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                    <div class="flex items-center gap-4">
+                        <div class="w-12 h-12 bg-blue-100 rounded-2xl flex items-center justify-center text-blue-600 shadow-sm">
+                            <i class="fas fa-chart-pie text-xl"></i>
+                        </div>
+                        <div>
+                            <h1 class="text-xl md:text-2xl font-black text-gray-900 uppercase tracking-tight">Respon Survei</h1>
+                            <p class="text-sm text-gray-500 font-medium line-clamp-1">{{ $survey->title }}</p>
+                        </div>
                     </div>
-                    <div>
-                        <h1 class="text-xl md:text-2xl font-black text-gray-900 uppercase tracking-tight">Respon Survei</h1>
-                        <p class="text-sm text-gray-500 font-medium line-clamp-1">{{ $survey->title }}</p>
+                    <div class="flex flex-wrap gap-3">
+                        <a href="{{ route('admin.surveys.responses.export', $survey) }}" 
+                           class="inline-flex items-center px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-emerald-600/20 active:scale-95" 
+                           target="_blank">
+                            <i class="fas fa-file-excel mr-2"></i>
+                            Export Excel (CSV)
+                        </a>
+                        <a href="{{ route('admin.surveys.index') }}" 
+                           class="inline-flex items-center px-5 py-2.5 bg-white border border-gray-200 text-gray-700 text-sm font-bold rounded-xl hover:bg-gray-50 transition-all active:scale-95">
+                            <i class="fas fa-arrow-left mr-2 text-gray-400"></i>
+                            Daftar Survei
+                        </a>
                     </div>
-                </div>
-                <div class="flex flex-wrap gap-3">
-                    <a href="{{ route('admin.surveys.responses.export', $survey) }}" 
-                       class="inline-flex items-center px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-emerald-600/20 active:scale-95" 
-                       target="_blank">
-                        <i class="fas fa-file-excel mr-2"></i>
-                        Export Excel (CSV)
-                    </a>
-                    <a href="{{ route('admin.surveys.index') }}" 
-                       class="inline-flex items-center px-5 py-2.5 bg-white border border-gray-200 text-gray-700 text-sm font-bold rounded-xl hover:bg-gray-50 transition-all active:scale-95">
-                        <i class="fas fa-arrow-left mr-2 text-gray-400"></i>
-                        Daftar Survei
-                    </a>
                 </div>
             </div>
         </div>
-    </div>
 
-    <div class="px-4 sm:px-6 lg:px-8 py-8">
+        <div class="px-4 sm:px-6 lg:px-8 py-8">
         
         {{-- Charts Section --}}
         @if(isset($chartData) && count($chartData) > 0)

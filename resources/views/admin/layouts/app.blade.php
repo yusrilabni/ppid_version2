@@ -163,7 +163,7 @@
         </aside>
 
         <!-- Main Content Wrapper -->
-        <div class="main-content flex-1 flex flex-col"
+        <div class="main-content flex-1 flex flex-col min-w-0 overflow-x-hidden"
              :class="{ 'collapsed': sidebarCollapsed && !isMobile }">
 
             <!-- Topbar -->
