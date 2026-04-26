@@ -116,7 +116,7 @@
                 <!-- Progress Bar -->
                 <div class="w-full h-1 bg-slate-100 flex-shrink-0">
                     <div class="h-full bg-blue-500 transition-all duration-300" 
-                         :style="`width: ${scrollProgress}%` text-white"></div>
+                         :style="`width: ${scrollProgress}%` shadow-sm"></div>
                 </div>
 
                 <!-- Content Area -->
@@ -230,7 +230,7 @@
                         <button @click="showModal = false" 
                                 class="flex-1 md:flex-none px-12 py-3 bg-blue-700 text-white font-black rounded-2xl shadow-xl shadow-blue-700/20 disabled:opacity-30 text-xs transition-all uppercase tracking-widest"
                                 :disabled="!hasReadPanduan">
-                            <span x-text="hasReadPanduan ? 'SAYA MENGERTI & LANJUT' : `BACA DAHULU (${scrollProgress}%)` text-white"></span>
+                            <span x-text="hasReadPanduan ? 'SAYA MENGERTI & LANJUT' : `BACA DAHULU (${scrollProgress}%)` "></span>
                         </button>
                     </div>
                 </div>
