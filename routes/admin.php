@@ -74,7 +74,7 @@ Route::middleware(['auth', SuperadminMiddleware::class])->group(function () {
     
     Route::resource('pbj-questions', \App\Http\Controllers\Admin\PbjQuestionController::class);
     Route::post('pbj-questions/duplicate', [\App\Http\Controllers\Admin\PbjQuestionController::class, 'duplicate'])->name('pbj-questions.duplicate');
-    Route::delete('pbj-questions/year/{year}', [\App\Http\Controllers\Admin\PbjQuestionController::class, 'deleteYear'])->name('pbj-questions.deleteYear');
+    Route::delete('pbj-questions/year/{year}', [\App\Http\Controllers\Admin\PbjQuestionController::class, 'deleteYear'])->name('pbj-questions.delete-year');
 
     // Laporan PPID
     Route::get('reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
