@@ -30,11 +30,12 @@
                     <label for="answers_{{ $child->id }}_category" class="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Klasifikasi</label>
                     @php
                         $childCurrentVal = old('answers.' . $child->id . '.category', $childAnswer->informasi->category ?? '');
+                        $childOptList = collect($categories)->map(fn($c) => ['value' => $c, 'label' => $c])->toArray();
                     @endphp
                     <x-custom-select 
                         name="answers[{{ $child->id }}][category]" 
                         id="answers_{{ $child->id }}_category"
-                        :options="collect($categories)->map(fn($c) => ['value' => $c, 'label' => $c])->toArray()" 
+                        :options="$childOptList" 
                         :value="$childCurrentVal"
                         placeholder="-- Pilih --"
                         @change="handleInputChange({ target: $el.querySelector('input[type=hidden]') })"
