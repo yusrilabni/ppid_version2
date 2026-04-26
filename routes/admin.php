@@ -68,6 +68,10 @@ Route::middleware(['auth', SuperadminMiddleware::class])->group(function () {
     
     // Survei & PBJ
     Route::resource('surveys', \App\Http\Controllers\Admin\SurveyController::class);
+    Route::resource('surveys.questions', \App\Http\Controllers\Admin\SurveyQuestionController::class);
+    Route::resource('surveys.responses', \App\Http\Controllers\Admin\SurveyResponseController::class)->only(['index']);
+    Route::get('surveys/{survey}/responses/export', [\App\Http\Controllers\Admin\SurveyResponseController::class, 'export'])->name('surveys.responses.export');
+    
     Route::resource('pbj-questions', \App\Http\Controllers\Admin\PbjQuestionController::class);
     Route::post('pbj-questions/duplicate', [\App\Http\Controllers\Admin\PbjQuestionController::class, 'duplicate'])->name('pbj-questions.duplicate');
     Route::delete('pbj-questions/year/{year}', [\App\Http\Controllers\Admin\PbjQuestionController::class, 'deleteYear'])->name('pbj-questions.deleteYear');
