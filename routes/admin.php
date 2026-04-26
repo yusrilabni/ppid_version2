@@ -47,6 +47,7 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     Route::resource('standar-layanan', \App\Http\Controllers\Admin\SubStandarLayananController::class);
     
     Route::get('lhkpn', [\App\Http\Controllers\Admin\LhkpnController::class, 'index'])->name('lhkpn.index');
+    Route::get('lhkpn/create', [\App\Http\Controllers\Admin\LhkpnController::class, 'createForUnit'])->name('lhkpn.create');
     Route::post('lhkpn', [\App\Http\Controllers\Admin\LhkpnController::class, 'storeForUnit'])->name('lhkpn.store');
     Route::resource('permohonan-informasi', PermohonanInformasiController::class);
 
