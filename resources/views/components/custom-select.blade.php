@@ -22,11 +22,11 @@
     $shouldShowSearch = $searchable && count($normalizedOptions) > 5;
 @endphp
 
-<div x-data="customSelectComponent({ 
+<div {{ $attributes->merge(['class' => 'relative w-full']) }}
+    x-data="customSelectComponent({ 
     data: {{ json_encode($normalizedOptions) }}, 
     selectedValue: '{{ old($name, $value) }}' 
 })" 
-class="relative w-full" 
 :class="open ? 'custom-select-open' : ''"
 :style="open ? 'z-index: 9999 !important;' : ''" 
 @click.away="open = false"

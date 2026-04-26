@@ -209,8 +209,11 @@
                                     <div class="w-2 h-2 rounded-full bg-green-300"></div>
                                 </div>
                             </div>
-                            <div class="flex-grow bg-white rounded-2xl shadow-inner overflow-hidden border border-gray-100">
-                                <iframe :src="embedUrl" width="100%" height="480" class="border-0"></iframe>
+                            <div class="flex-grow bg-white rounded-2xl shadow-inner overflow-hidden border border-gray-100 relative">
+                                <div x-show="refreshKey" x-transition class="absolute inset-0 z-0 bg-gray-50 flex items-center justify-center opacity-50" style="display: none;">
+                                    <i class="fas fa-spinner fa-spin text-blue-500 text-2xl"></i>
+                                </div>
+                                <iframe :key="refreshKey" :src="embedUrl" width="100%" height="480" class="border-0 relative z-10"></iframe>
                             </div>
                             <p class="mt-4 text-[10px] text-gray-400 text-center italic">Widget ini bersifat responsif dan otomatis menyesuaikan lebar kontainer induknya.</p>
                         </div>
