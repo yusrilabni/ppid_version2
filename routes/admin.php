@@ -64,7 +64,13 @@ Route::middleware(['auth', SuperadminMiddleware::class])->group(function () {
     Route::resource('users', \App\Http\Controllers\Admin\UserController::class);
     Route::resource('sliders', SliderController::class);
     Route::resource('profil-ppid', ProfilPpidController::class);
+    
+    // Organisasi & Jabatan
     Route::resource('organizations', \App\Http\Controllers\Admin\OrganizationController::class);
+    Route::resource('organizations.positions', \App\Http\Controllers\Admin\OrganizationPositionController::class);
+    
+    // Profil Pimpinan & LHKPN Terintegrasi
+    Route::resource('officials.lhkpn', \App\Http\Controllers\Admin\LhkpnController::class)->only(['index', 'store', 'destroy']);
     
     // Survei & PBJ
     Route::resource('surveys', \App\Http\Controllers\Admin\SurveyController::class);
