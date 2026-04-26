@@ -202,12 +202,12 @@
                             </div>
 
                             <div class="pt-6">
-                                <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Salin Kode Embed</label>
+                                <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Salin Kode Embed (Relevan untuk WordPress/Blogspot)</label>
                                 <div class="relative group">
-                                    <textarea id="embedCodeInput" readonly x-text="'<iframe src=\'' + embedUrl + '\' width=\'100%\' height=\'' + (limit === 'all' || limit > 10 ? '800' : (display === 'list' ? '450' : '480')) + '\' frameborder=\'0\'></iframe>'" 
+                                    <textarea id="embedCodeInput" readonly x-text="'<iframe src=\'' + embedUrl + '&origin=\' + window.location.origin + \'\' width=\'100%\' height=\'' + (limit === 'all' || limit > 10 ? '800' : (display === 'list' ? '450' : '480')) + '\' frameborder=\'0\'></iframe>'" 
                                         class="w-full bg-gray-900 text-blue-400 font-mono text-[10px] p-4 rounded-2xl h-24 border-0 focus:ring-0 resize-none"></textarea>
                                     <button type="button" @click="
-                                        const code = '<iframe src=\'' + embedUrl + '\' width=\'100%\' height=\'' + (limit === 'all' || limit > 10 ? '800' : (display === 'list' ? '450' : '480')) + '\' frameborder=\'0\'></iframe>';
+                                        const code = '<iframe src=\'' + embedUrl + '&origin=\' + window.location.origin + \'\' width=\'100%\' height=\'' + (limit === 'all' || limit > 10 ? '800' : (display === 'list' ? '450' : '480')) + '\' frameborder=\'0\'></iframe>';
                                         if (navigator.clipboard && navigator.clipboard.writeText) {
                                             navigator.clipboard.writeText(code).then(() => {
                                                 alert('Kode berhasil disalin!');
@@ -223,6 +223,7 @@
                                         SALIN KODE
                                     </button>
                                 </div>
+                                <p class="mt-2 text-[10px] text-gray-400 italic">Catatan: Kode di atas sudah dilengkapi pelacak otomatis agar website Anda terdaftar di laporan statistik kami.</p>
                             </div>
                         </div>
 

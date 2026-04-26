@@ -95,16 +95,19 @@ class ExtraToolsController extends Controller
 
     private function trackAccess(Request $request, $type)
     {
+        // Prioritas 1: Ambil dari Referer (Otomatis)
         $referer = $request->headers->get('referer');
-        if (!$referer) return;
+        $domain = $referer ? parse_url($referer, PHP_URL_HOST) : null;
 
-        $domain = parse_url($referer, PHP_URL_HOST);
+        // Prioritas 2: Ambil dari parameter 'origin' (Manual fallback)
+        if (!$domain && $request->has('origin')) {
+            $domain = parse_url($request->origin, PHP_URL_HOST) ?: $request->origin;
+        }
+
         if (!$domain) return;
 
-        // Jangan catat jika akses dari domain sendiri (PPID atau Sinjaikab)
-        if (str_contains($domain, 'sinjaikab.go.id') || str_contains($domain, 'localhost') || str_contains($domain, '127.0.0.1')) {
-            return;
-        }
+        // Bersihkan domain dari 'www.' agar unik
+        $domain = str_replace('www.', '', strtolower($domain));
 
         try {
             // Check if record exists
