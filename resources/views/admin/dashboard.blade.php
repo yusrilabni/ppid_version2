@@ -36,7 +36,7 @@
             </div>
             <div>
                 <p class="text-xs font-black text-gray-400 uppercase tracking-widest">Kunjungan</p>
-                <p class="text-2xl font-black text-gray-900">{{ number_format($stats['activity']['visits']) }}</p>
+                <p class="text-2xl font-black text-gray-900">{{ number_format($stats['activity']['visitors']) }}</p>
             </div>
         </div>
 
