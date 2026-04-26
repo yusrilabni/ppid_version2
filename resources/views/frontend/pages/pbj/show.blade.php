@@ -6,10 +6,17 @@
 <div x-data="{ 
     showModal: @json($show_pedoman_modal ?? false),
     hasReadPanduan: false,
-    checkScroll(e) {
-        const el = e.target;
-        // Jika sisa scroll kurang dari 50px, anggap sudah sampai bawah
-        if (el.scrollHeight - el.scrollTop <= el.clientHeight + 50) {
+    scrollProgress: 0,
+    updateProgress(el) {
+        const scrolled = el.scrollTop;
+        const totalHeight = el.scrollHeight - el.clientHeight;
+        if (totalHeight <= 10) {
+            this.scrollProgress = 100;
+        } else {
+            this.scrollProgress = Math.round((scrolled / totalHeight) * 100);
+        }
+        
+        if (this.scrollProgress >= 95) {
             this.hasReadPanduan = true;
         }
     },
@@ -17,17 +24,16 @@
         if (this.showModal) {
             this.$nextTick(() => {
                 const el = this.$refs.modalBody;
-                if (el && el.scrollHeight <= el.clientHeight) {
-                    this.hasReadPanduan = true;
-                }
+                if (el) this.updateProgress(el);
             });
         }
         this.$watch('showModal', value => {
             if (value) {
                 this.$nextTick(() => {
                     const el = this.$refs.modalBody;
-                    if (el && el.scrollHeight <= el.clientHeight) {
-                        this.hasReadPanduan = true;
+                    if (el) {
+                        el.scrollTop = 0;
+                        this.updateProgress(el);
                     }
                 });
             }
@@ -74,98 +80,158 @@
         @endif
 
         @if($canEdit)
-        {{-- Modal Panduan --}}
-        <div x-show="showModal" class="fixed inset-0 z-50 overflow-y-auto" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" style="display: none;">
-            <div class="flex items-center justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
-                <div class="fixed inset-0 bg-gray-900/60 backdrop-blur-sm transition-opacity" aria-hidden="true" @click="showModal = false"></div>
-
-                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
-
-                <div x-show="showModal" class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-2xl transform transition-all sm:my-8 sm:align-middle sm:max-w-4xl sm:w-full" x-transition:enter="transition ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="transition ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" role="dialog" aria-modal="true" aria-labelledby="modal-headline">
-                    <div class="bg-gradient-to-r from-blue-600 to-indigo-700 px-6 md:px-8 py-5 md:py-6">
-                        <div class="flex items-center">
-                            <div class="flex-shrink-0 bg-white/20 rounded-full p-2.5 md:p-3 mr-3 md:mr-4">
-                                <i class="fas fa-file-alt text-white text-xl md:text-2xl"></i>
+        {{-- Modal Panduan PBJ (Premium Design) --}}
+        <div x-show="showModal" 
+             class="fixed inset-0 z-[100] bg-slate-900/90 flex items-center justify-center p-2 md:p-6" 
+             x-transition:enter="transition ease-out duration-200"
+             x-transition:enter-start="opacity-0"
+             x-transition:enter-end="opacity-100"
+             x-transition:leave="transition ease-in duration-150"
+             style="display: none;">
+            
+            <div class="bg-white w-full max-w-5xl max-h-[95vh] rounded-3xl shadow-2xl flex flex-col overflow-hidden border border-slate-200 font-sans">
+                
+                <!-- Header Premium -->
+                <div class="bg-gradient-to-r from-blue-800 to-indigo-900 px-6 py-5 flex-shrink-0 border-b border-white/10 relative overflow-hidden">
+                    <div class="absolute top-0 right-0 -mt-4 -mr-4 w-24 h-24 bg-white/5 rounded-full blur-2xl"></div>
+                    <div class="flex items-center justify-between relative z-10">
+                        <div class="flex items-center gap-4">
+                            <div class="bg-white/10 p-2.5 rounded-xl text-white">
+                                <i class="fas fa-file-contract text-xl"></i>
                             </div>
                             <div>
-                                <h3 class="text-xl md:text-2xl font-bold text-white leading-tight" id="modal-headline">
-                                    PANDUAN KLASIFIKASI PBJ
-                                </h3>
-                                <p class="text-blue-100 text-[10px] md:text-sm">(Wajib Dibaca Admin PPID sebelum Upload)</p>
+                                <h3 class="text-xl md:text-2xl font-black text-white leading-none uppercase tracking-tight">Panduan Klasifikasi PBJ</h3>
+                                <p class="text-blue-200 text-[10px] md:text-xs mt-1 font-medium">Wajib dipatuhi oleh Admin PPID sebelum melakukan input data</p>
                             </div>
                         </div>
+                        <button x-show="hasReadPanduan" 
+                                @click="showModal = false" 
+                                class="text-white/60 hover:text-white transition-all p-2 rounded-xl hover:bg-white/10"
+                                x-transition>
+                            <i class="fas fa-times text-2xl"></i>
+                        </button>
                     </div>
-                    <div class="px-6 md:px-8 py-6 max-h-[60vh] md:max-h-[65vh] overflow-y-auto" @scroll="checkScroll" x-ref="modalBody">
-                        <div class="grid grid-cols-1 md:grid-cols-2 gap-6 md:gap-8">
-                            <div class="space-y-4">
-                                <h4 class="text-base md:text-lg font-bold text-gray-800 flex items-center border-b pb-2"><i class="fas fa-lightbulb text-yellow-500 mr-2"></i> PRINSIP UTAMA</h4>
-                                <ul class="space-y-3 text-sm text-gray-700">
-                                    <li class="flex items-start">
-                                        <i class="fas fa-check-circle text-blue-500 mt-1 mr-2 text-xs"></i>
-                                        <span>Klasifikasi ditentukan oleh <span class="font-bold">jenis dokumen</span>, bukan tahun.</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <i class="fas fa-check-circle text-blue-500 mt-1 mr-2 text-xs"></i>
-                                        <span><span class="font-bold text-blue-600">Informasi Berkala</span> tidak pernah berubah jadi <span class="font-bold text-green-600">Setiap Saat</span>.</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <i class="fas fa-check-circle text-blue-500 mt-1 mr-2 text-xs"></i>
-                                        <span>Dokumen PBJ detail adalah <span class="font-bold text-green-600">Setiap Saat</span> sejak awal.</span>
-                                    </li>
-                                    <li class="flex items-start">
-                                        <i class="fas fa-check-circle text-blue-500 mt-1 mr-2 text-xs"></i>
-                                        <span>Dokumen lama <span class="font-bold text-red-600">tidak dihapus</span>, hanya diarsipkan.</span>
-                                    </li>
-                                </ul>
+                </div>
+
+                <!-- Progress Bar -->
+                <div class="w-full h-1 bg-slate-100 flex-shrink-0">
+                    <div class="h-full bg-blue-500 transition-all duration-300" 
+                         :style="`width: ${scrollProgress}%` text-white"></div>
+                </div>
+
+                <!-- Content Area -->
+                <div class="flex-1 overflow-y-auto p-6 md:p-8 bg-slate-50/50"
+                     @scroll="updateProgress($el)" x-ref="modalBody">
+                    
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+                        <div class="bg-white p-6 rounded-2xl shadow-sm border border-slate-200">
+                            <h4 class="text-sm font-black text-blue-600 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <i class="fas fa-lightbulb text-yellow-400"></i> PRINSIP UTAMA
+                            </h4>
+                            <ul class="space-y-3 text-xs text-slate-700 font-medium">
+                                <li class="flex items-start gap-3 p-2 hover:bg-blue-50 rounded-lg transition-colors">
+                                    <i class="fas fa-check-circle text-blue-500 mt-0.5"></i>
+                                    <span>Klasifikasi ditentukan oleh <span class="text-blue-600 font-bold">jenis dokumen</span>, bukan tahun anggaran.</span>
+                                </li>
+                                <li class="flex items-start gap-3 p-2 hover:bg-blue-50 rounded-lg transition-colors">
+                                    <i class="fas fa-check-circle text-blue-500 mt-0.5"></i>
+                                    <span><span class="font-bold text-blue-700">Info Berkala</span> tidak pernah berubah menjadi <span class="font-bold text-green-700">Setiap Saat</span>.</span>
+                                </li>
+                                <li class="flex items-start gap-3 p-2 hover:bg-blue-50 rounded-lg transition-colors">
+                                    <i class="fas fa-check-circle text-blue-500 mt-0.5"></i>
+                                    <span>Dokumen lama <span class="text-red-600 font-bold">dilarang dihapus</span>, hanya boleh diarsipkan.</span>
+                                </li>
+                            </ul>
+                        </div>
+
+                        <div class="bg-red-50 p-6 rounded-2xl border border-red-100 shadow-sm relative overflow-hidden">
+                            <div class="absolute -right-4 -bottom-4 text-red-200/30 rotate-12"><i class="fas fa-exclamation-triangle fa-5x"></i></div>
+                            <h4 class="text-sm font-black text-red-600 uppercase tracking-widest mb-4 flex items-center gap-2">
+                                <i class="fas fa-ban"></i> KESALAHAN FATAL
+                            </h4>
+                            <ul class="space-y-2 text-[11px] text-red-700 font-bold">
+                                <li class="flex items-center gap-2"><i class="fas fa-times-circle"></i> Salah masuk menu kategori upload</li>
+                                <li class="flex items-center gap-2"><i class="fas fa-times-circle"></i> Mengubah klasifikasi tanpa dasar hukum</li>
+                                <li class="flex items-center gap-2"><i class="fas fa-times-circle"></i> Mengunggah file PDF yang korup/tidak terbaca</li>
+                            </ul>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
+                        <!-- KATEGORI BERKALA -->
+                        <div class="flex flex-col">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center shadow-md"><i class="fas fa-calendar-alt text-sm"></i></div>
+                                <h4 class="font-black text-slate-800 text-sm uppercase tracking-tight">A. INFORMASI BERKALA</h4>
                             </div>
-                            <div class="bg-red-50 border border-red-100 p-5 rounded-xl">
-                                <h4 class="text-base md:text-lg font-bold text-red-800 mb-3 flex items-center"><i class="fas fa-exclamation-triangle mr-2"></i> KESALAHAN FATAL</h4>
-                                <ul class="space-y-2 text-sm text-red-700">
-                                    <li class="flex items-center"><i class="fas fa-times-circle mr-2 text-xs"></i> Salah menu upload</li>
-                                    <li class="flex items-center"><i class="fas fa-times-circle mr-2 text-xs"></i> Mengubah klasifikasi tanpa dasar</li>
-                                    <li class="flex items-center"><i class="fas fa-times-circle mr-2 text-xs"></i> Menghapus dokumen PBJ lama</li>
-                                    <li class="flex items-center"><i class="fas fa-times-circle mr-2 text-xs"></i> Tidak memberi keterangan tahun/status</li>
+                            <div class="bg-white p-5 rounded-2xl border border-blue-100 shadow-sm flex-1">
+                                <p class="text-[10px] font-bold text-blue-600 mb-3 uppercase tracking-widest border-b pb-2 italic">Diumumkan rutin (Menu Berkala)</p>
+                                <ul class="space-y-2 text-xs text-slate-700">
+                                    <li class="flex items-center gap-3"><i class="fas fa-caret-right text-blue-400"></i> Rencana Umum Pengadaan (RUP)</li>
+                                    <li class="flex items-center gap-3"><i class="fas fa-caret-right text-blue-400"></i> Link Aplikasi SIRUP LKPP</li>
+                                    <li class="flex items-center gap-3"><i class="fas fa-caret-right text-blue-400"></i> Rekap RUP Tahunan / Semesteran</li>
+                                    <li class="flex items-center gap-3"><i class="fas fa-caret-right text-blue-400"></i> Pengumuman / Rekap Paket PBJ</li>
                                 </ul>
                             </div>
                         </div>
 
-                        <div class="mt-8 grid grid-cols-1 md:grid-cols-2 gap-6">
-                            <div class="bg-blue-50 p-5 rounded-xl border border-blue-100">
-                                <h4 class="text-sm md:text-base font-bold text-blue-800 mb-3 flex items-center uppercase"><i class="fas fa-calendar-alt mr-2"></i> Informasi Berkala</h4>
-                                <p class="text-[10px] md:text-xs text-blue-600 mb-3 font-semibold">(Menu Berkala)</p>
-                                <ul class="space-y-1.5 text-[13px] text-gray-700">
-                                    <li class="flex items-center"><i class="fas fa-caret-right mr-2 text-blue-400"></i> Rencana Umum Pengadaan (RUP)</li>
-                                    <li class="flex items-center"><i class="fas fa-caret-right mr-2 text-blue-400"></i> Link SIRUP</li>
-                                    <li class="flex items-center"><i class="fas fa-caret-right mr-2 text-blue-400"></i> Rekap RUP Tahunan / Semesteran</li>
-                                    <li class="flex items-center"><i class="fas fa-caret-right mr-2 text-blue-400"></i> Pengumuman / Rekap Paket PBJ</li>
-                                </ul>
+                        <!-- KATEGORI SETIAP SAAT -->
+                        <div class="flex flex-col">
+                            <div class="flex items-center gap-3 mb-4">
+                                <div class="w-8 h-8 bg-green-600 text-white rounded-lg flex items-center justify-center shadow-md"><i class="fas fa-clock text-sm"></i></div>
+                                <h4 class="font-black text-slate-800 text-sm uppercase tracking-tight">B. INFORMASI SETIAP SAAT</h4>
                             </div>
-                            <div class="bg-green-50 p-5 rounded-xl border border-green-100">
-                                <h4 class="text-sm md:text-base font-bold text-green-800 mb-3 flex items-center uppercase"><i class="fas fa-clock mr-2"></i> Informasi Setiap Saat</h4>
-                                <p class="text-[10px] md:text-xs text-green-600 mb-3 font-semibold">(Menu Setiap Saat)</p>
-                                <ul class="space-y-1.5 text-[13px] text-gray-700">
-                                    <li class="flex items-center"><i class="fas fa-caret-right mr-2 text-green-400"></i> KAK, HPS, Kontrak, & Addendum</li>
-                                    <li class="flex items-center"><i class="fas fa-caret-right mr-2 text-green-400"></i> Dokumen Pemilihan & Kualifikasi</li>
-                                    <li class="flex items-center"><i class="fas fa-caret-right mr-2 text-green-400"></i> SPPBJ, SPMK, SPM, SP2D</li>
-                                    <li class="flex items-center"><i class="fas fa-caret-right mr-2 text-green-400"></i> Laporan, BAPH, Jaminan</li>
+                            <div class="bg-white p-5 rounded-2xl border border-green-100 shadow-sm flex-1">
+                                <p class="text-[10px] font-bold text-green-600 mb-3 uppercase tracking-widest border-b pb-2 italic">Via Permohonan (Menu Setiap Saat)</p>
+                                <ul class="space-y-2 text-xs text-slate-700">
+                                    <li class="flex items-center gap-3"><i class="fas fa-caret-right text-green-400"></i> KAK, HPS, Kontrak, & Addendum</li>
+                                    <li class="flex items-center gap-3"><i class="fas fa-caret-right text-green-400"></i> Dokumen Pemilihan & Kualifikasi</li>
+                                    <li class="flex items-center gap-3"><i class="fas fa-caret-right text-green-400"></i> SPPBJ, SPMK, SPM, SP2D Lengkap</li>
+                                    <li class="flex items-center gap-3"><i class="fas fa-caret-right text-green-400"></i> Laporan Akhir, BAPH, & Jaminan</li>
                                 </ul>
                             </div>
                         </div>
                     </div>
-                    <div class="bg-gray-50 border-t border-gray-100 px-6 md:px-8 py-4 text-center md:text-right min-h-[80px] flex items-center justify-center md:justify-end">
-                        <button type="button" 
-                            x-show="hasReadPanduan"
-                            x-transition:enter="transition ease-out duration-300"
-                            x-transition:enter-start="opacity-0 scale-90"
-                            x-transition:enter-end="opacity-100 scale-100"
-                            @click="showModal = false" 
-                            class="w-full md:w-auto inline-flex justify-center rounded-xl px-8 py-2.5 bg-blue-600 text-sm font-bold text-white hover:bg-blue-700 shadow-md transition-all active:scale-[0.98]">
-                            Saya Mengerti
+
+                    <div class="mt-8 p-5 bg-blue-50 border border-blue-100 rounded-2xl">
+                        <div class="flex items-start gap-4">
+                            <span class="text-xl">📝</span>
+                            <div>
+                                <h5 class="text-xs font-black text-blue-900 uppercase mb-1">Catatan Penting: Sinkronisasi DIP</h5>
+                                <p class="text-[11px] text-blue-800 leading-relaxed italic">
+                                    Pastikan setiap dokumen yang diinput di sini juga tercatat judulnya dalam <strong>Daftar Informasi Publik (DIP)</strong> yang diunggah di menu berkala, guna memudahkan warga mencari referensi dokumen sebelum mengajukan permohonan.
+                                </p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Scroll Indicator -->
+                    <div x-show="!hasReadPanduan" class="mt-12 flex flex-col items-center animate-bounce text-slate-300">
+                        <p class="text-[9px] font-black uppercase tracking-[0.3em] mb-1">Scroll Hingga Bawah</p>
+                        <i class="fas fa-chevron-down text-lg"></i>
+                    </div>
+                    
+                    <div class="h-10"></div>
+                </div>
+
+                <!-- Footer -->
+                <div class="bg-white p-5 border-t border-slate-100 flex flex-col md:flex-row gap-4 items-center justify-between flex-shrink-0 relative z-[110]">
+                    <div class="flex items-center gap-3">
+                        <div class="p-2.5 bg-blue-50 text-blue-600 rounded-xl text-xs">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <div class="flex flex-col">
+                            <span class="text-slate-400 text-[10px] font-bold tracking-widest uppercase leading-tight">Standar Kepatuhan</span>
+                            <span class="text-slate-600 text-[10px] font-medium leading-tight">UU No. 14 Tahun 2008 & Perki 1/2021</span>
+                        </div>
+                    </div>
+                    
+                    <div class="flex gap-3 w-full md:w-auto">
+                        <button @click="showModal = false" 
+                                class="flex-1 md:flex-none px-12 py-3 bg-blue-700 text-white font-black rounded-2xl shadow-xl shadow-blue-700/20 disabled:opacity-30 text-xs transition-all uppercase tracking-widest"
+                                :disabled="!hasReadPanduan">
+                            <span x-text="hasReadPanduan ? 'SAYA MENGERTI & LANJUT' : `BACA DAHULU (${scrollProgress}%)` text-white"></span>
                         </button>
-                        <p x-show="!hasReadPanduan" class="text-xs text-gray-400 italic">
-                            <i class="fas fa-arrow-down mr-1 animate-bounce"></i>
-                            Silakan baca panduan sampai bawah untuk melanjutkan
-                        </p>
                     </div>
                 </div>
             </div>
