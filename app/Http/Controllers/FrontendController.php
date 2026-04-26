@@ -1130,8 +1130,8 @@ class FrontendController extends Controller
             return strlen($w) > 1;
         });
 
-        // Ambil data yang mengandung setidaknya satu kata kunci agar efisien
-        $informasiQuery = Informasi::query();
+        // Ambil data yang cukup luas agar hasil tidak terlalu kaku (fuzzy)
+        $informasiQuery = Informasi::with(['user', 'organization']);
         $informasiQuery->where(function($q) use ($searchTerm, $words) {
             $q->where('title', 'like', '%' . $searchTerm . '%')
               ->orWhere('deskripsi', 'like', '%' . $searchTerm . '%');
@@ -1143,43 +1143,60 @@ class FrontendController extends Controller
             }
         });
 
-        // Hitung skor kemiripan secara presisi menggunakan PHP
-        $informasiResults = $informasiQuery->get()->map(function($item) use ($searchLower, $words) {
+        // Ambil unitMap untuk nama dinas
+        $unitMap = collect($this->getUnitData());
+
+        // Hitung skor kemiripan secara presisi menggunakan PHP di memori
+        $allResults = $informasiQuery->get()->map(function($item) use ($searchLower, $words) {
             $titleLower = strtolower($item->title);
             
             // Hitung persentase kemiripan teks (0-100)
             similar_text($titleLower, $searchLower, $percent);
             
-            $score = $percent * 10; // Bobot utama dari kemiripan karakter
+            $score = $percent * 20; // Bobot utama dari kemiripan karakter
 
-            // Bonus jika judul mengandung kalimat utuh yang dicari (termasuk jika user ketik lebih panjang)
-            if (str_contains($searchLower, $titleLower) && strlen($titleLower) > 5) $score += 500;
-            if (str_contains($titleLower, $searchLower)) $score += 300;
+            // SUPER BONUS jika judul persis sama atau terkandung utuh
+            if ($titleLower === $searchLower) $score += 5000;
+            if (str_contains($searchLower, $titleLower) && strlen($titleLower) > 5) $score += 2000;
+            if (str_contains($titleLower, $searchLower)) $score += 1000;
             
             // Bonus per kata yang cocok
             foreach ($words as $word) {
-                if (str_contains($titleLower, strtolower($word))) $score += 50;
+                if (str_contains($titleLower, strtolower($word))) $score += 100;
             }
 
             $item->search_score = $score;
             return $item;
-        })->sortByDesc('search_score')->take(50);
+        })->sortByDesc('search_score');
 
-        // Pencarian Standar Layanan
+        // Logic Manual Pagination (10 item per halaman)
+        $currentPage = $request->input('page', 1);
+        $perPage = 10;
+        $currentItems = $allResults->slice(($currentPage - 1) * $perPage, $perPage)->values();
+        
+        $informasiResults = new \Illuminate\Pagination\LengthAwarePaginator(
+            $currentItems,
+            $allResults->count(),
+            $perPage,
+            $currentPage,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        // Standar Layanan
         $standarLayananResults = SubStandarLayanan::where('title', 'like', '%' . $searchTerm . '%');
         if (!empty($words)) {
             foreach ($words as $word) { $standarLayananResults->orWhere('title', 'like', '%' . $word . '%'); }
         }
-        $standarLayananResults = $standarLayananResults->take(15)->get();
+        $standarLayananResults = $standarLayananResults->take(10)->get();
 
-        $orgResults = \App\Models\Organization::where('name', 'like', "%{$searchTerm}%")->take(10)->get();
+        $orgResults = \App\Models\Organization::where('name', 'like', "%{$searchTerm}%")->take(5)->get();
 
         $breadcrumbs = [
             ['title' => 'Beranda', 'url' => route('home'), 'icon' => 'fas fa-home'],
             ['title' => 'Pencarian', 'url' => '#', 'icon' => 'fas fa-search'],
         ];
 
-        return view('frontend.search', compact('informasiResults', 'standarLayananResults', 'orgResults', 'query', 'breadcrumbs'));
+        return view('frontend.search', compact('query', 'informasiResults', 'standarLayananResults', 'orgResults', 'breadcrumbs', 'unitMap'));
     }
 
     /**
