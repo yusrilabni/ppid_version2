@@ -84,9 +84,9 @@ Route::middleware(['auth', SuperadminMiddleware::class])->group(function () {
 
     // Laporan PPID
     Route::get('reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
-    Route::get('reports/export/total', [\App\Http\Controllers\Admin\ReportController::class, 'exportTotal'])->name('reports.export.total');
-    Route::get('reports/export/informasi', [\App\Http\Controllers\Admin\ReportController::class, 'exportInformasi'])->name('reports.export.informasi');
-    Route::get('reports/export/permohonan', [\App\Http\Controllers\Admin\ReportController::class, 'exportPermohonan'])->name('reports.export.permohonan');
-    Route::get('reports/export/visitors', [\App\Http\Controllers\Admin\ReportController::class, 'exportVisitors'])->name('reports.export.visitors');
-    Route::get('reports/export/survey', [\App\Http\Controllers\Admin\ReportController::class, 'exportSurvey'])->name('reports.export.survey');
+    Route::get('reports/export/total', [\App\Http\Controllers\Admin\ReportController::class, 'exportTotal'])->name('reports.total.export');
+    Route::get('reports/export/informasi', [\App\Http\Controllers\Admin\ReportController::class, 'exportInformasi'])->name('reports.informasi.export');
+    Route::get('reports/export/permohonan', [\App\Http\Controllers\Admin\ReportController::class, 'exportPermohonan'])->name('reports.permohonan.export');
+    Route::get('reports/export/visitors', [\App\Http\Controllers\Admin\ReportController::class, 'exportVisitors'])->name('reports.visitors.export');
+    Route::get('reports/export/survey', [\App\Http\Controllers\Admin\ReportController::class, 'exportSurvey'])->name('reports.survey.export');
 });
