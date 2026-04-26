@@ -28,15 +28,17 @@
                 @if($canEdit)
                 <div class="space-y-1.5">
                     <label for="answers_{{ $child->id }}_category" class="text-[10px] md:text-xs font-bold text-gray-500 uppercase tracking-wider ml-1">Klasifikasi</label>
-                    <select name="answers[{{ $child->id }}][category]" id="answers_{{ $child->id }}_category" 
-                        class="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
-                        <option value="">-- Pilih --</option>
-                        @foreach($categories as $category)
-                            <option value="{{ $category }}" {{ (old('answers.' . $child->id . '.category', $childAnswer->informasi->category ?? '') == $category) ? 'selected' : '' }}>
-                                {{ $category }}
-                            </option>
-                        @endforeach
-                    </select>
+                    @php
+                        $childCurrentVal = old('answers.' . $child->id . '.category', $childAnswer->informasi->category ?? '');
+                    @endphp
+                    <x-custom-select 
+                        name="answers[{{ $child->id }}][category]" 
+                        id="answers_{{ $child->id }}_category"
+                        :options="collect($categories)->map(fn($c) => ['value' => $c, 'label' => $c])->toArray()" 
+                        :value="$childCurrentVal"
+                        placeholder="-- Pilih --"
+                        @change="handleInputChange({ target: $el.querySelector('input[type=hidden]') })"
+                    />
                 </div>
                 @endif
             </div>

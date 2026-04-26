@@ -290,15 +290,18 @@
                                             @if($canEdit)
                                             <div class="space-y-1.5">
                                                 <label for="answers_{{ $question->id }}_category" class="text-xs md:text-sm font-bold text-gray-700 ml-1">Klafikasi PPID</label>
-                                                <select name="answers[{{ $question->id }}][category]" id="answers_{{ $question->id }}_category" 
-                                                    class="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
-                                                    <option value="">-- Pilih Klasifikasi --</option>
-                                                    @foreach($categories as $category)
-                                                        <option value="{{ $category }}" {{ (old('answers.' . $question->id . '.category', $answer->informasi->category ?? '') == $category) ? 'selected' : '' }}>
-                                                            {{ $category }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
+                                                @php
+                                                    $optList = collect($categories)->map(fn($c) => ['value' => $category, 'label' => $category])->toArray();
+                                                    $currentVal = old('answers.' . $question->id . '.category', $answer->informasi->category ?? '');
+                                                @endphp
+                                                <x-custom-select 
+                                                    name="answers[{{ $question->id }}][category]" 
+                                                    id="answers_{{ $question->id }}_category"
+                                                    :options="collect($categories)->map(fn($c) => ['value' => $c, 'label' => $c])->toArray()" 
+                                                    :value="$currentVal"
+                                                    placeholder="-- Pilih Klasifikasi --"
+                                                    @change="handleInputChange({ target: $el.querySelector('input[type=hidden]') })"
+                                                />
                                             </div>
                                             @endif
                                         </div>
@@ -322,15 +325,17 @@
                                             @if($canEdit)
                                             <div class="space-y-1.5">
                                                 <label for="answers_{{ $question->id }}_file_category" class="text-xs md:text-sm font-bold text-gray-700 ml-1">Klafikasi PPID</label>
-                                                <select name="answers[{{ $question->id }}][category]" id="answers_{{ $question->id }}_file_category" 
-                                                    class="w-full px-4 py-2.5 text-sm border border-gray-200 rounded-xl focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all">
-                                                    <option value="">-- Pilih Klasifikasi --</option>
-                                                    @foreach($categories as $category)
-                                                        <option value="{{ $category }}" {{ (old('answers.' . $question->id . '.category', $answer->informasi->category ?? '') == $category) ? 'selected' : '' }}>
-                                                            {{ $category }}
-                                                        </option>
-                                                    @endforeach
-                                                </select>
+                                                @php
+                                                    $currentFileVal = old('answers.' . $question->id . '.category', $answer->informasi->category ?? '');
+                                                @endphp
+                                                <x-custom-select 
+                                                    name="answers[{{ $question->id }}][category]" 
+                                                    id="answers_{{ $question->id }}_file_category"
+                                                    :options="collect($categories)->map(fn($c) => ['value' => $c, 'label' => $c])->toArray()" 
+                                                    :value="$currentFileVal"
+                                                    placeholder="-- Pilih Klasifikasi --"
+                                                    @change="handleInputChange({ target: $el.querySelector('input[type=hidden]') })"
+                                                />
                                             </div>
                                             @endif
                                         </div>
