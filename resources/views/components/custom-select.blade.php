@@ -25,7 +25,15 @@
 <div x-data="customSelectComponent({ 
     data: {{ json_encode($normalizedOptions) }}, 
     selectedValue: '{{ old($name, $value) }}' 
-})" class="relative w-full" :style="open ? 'z-index: 9999 !important;' : ''" @click.away="open = false">
+})" 
+class="relative w-full" 
+:class="open ? 'custom-select-open' : ''"
+:style="open ? 'z-index: 9999 !important;' : ''" 
+@click.away="open = false"
+x-init="$watch('open', value => {
+    let card = $el.closest('.question-card');
+    if(card) card.style.zIndex = value ? '9999' : '';
+})">
     
     @if($required)
         <input type="hidden" name="{{ $name }}" x-model="selectedValue" required>

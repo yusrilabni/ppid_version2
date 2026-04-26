@@ -5,11 +5,7 @@
 @push('styles')
     <style>
         .question-card {
-            transition: all 0.3s ease;
-        }
-
-        .question-card:hover {
-            transform: translateY(-5px);
+            transition: border-color 0.3s ease, shadow 0.3s ease;
         }
 
         .progress-fill {
