@@ -144,9 +144,11 @@ class DashboardController extends Controller
 
         // Widget & RSS Usage Stats
         $externalWebsitesCount = 0;
+        $externalLogs = collect();
         try {
             if (\Illuminate\Support\Facades\Schema::hasTable('ppid_external_logs')) {
                 $externalWebsitesCount = \App\Models\ExternalLinkLog::distinct('domain')->count();
+                $externalLogs = \App\Models\ExternalLinkLog::orderBy('last_access', 'desc')->take(5)->get();
             }
         } catch (\Exception $e) {
             \Log::warning("ExternalLinkLog Error: " . $e->getMessage());
@@ -191,7 +193,8 @@ class DashboardController extends Controller
             'allRecentActivity',
             'chartLabels',
             'chartData',
-            'externalWebsitesCount'
+            'externalWebsitesCount',
+            'externalLogs'
         ));
     }
 

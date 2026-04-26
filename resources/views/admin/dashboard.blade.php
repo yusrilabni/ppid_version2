@@ -1,397 +1,225 @@
 @extends('admin.layouts.app')
 
-@section('title', 'Dasboard')
+@section('title', 'Dashboard Admin')
 
 @section('content')
-    <!-- Welcome Section -->
-    <div class="mb-8">
-        <h1 class="text-2xl md:text-3xl font-bold text-gray-800">Selamat Datang, {{ Auth::user()->name }}</h1>
-        <p class="text-gray-600 mt-2">Berikut adalah ringkasan aktivitas terbaru di sistem PPID</p>
+<div class="p-6 md:p-10 space-y-8 bg-gray-50/30 min-h-screen">
+    
+    <!-- Top Statistics Grid (Modern & Compact) -->
+    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+        {{-- Card: Total Informasi --}}
+        <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex items-center gap-5 group hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl shadow-inner group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                <i class="fas fa-file-alt"></i>
+            </div>
+            <div>
+                <p class="text-xs font-black text-gray-400 uppercase tracking-widest">Informasi</p>
+                <p class="text-2xl font-black text-gray-900">{{ number_format($stats['informasi']['total']) }}</p>
+            </div>
+        </div>
+
+        {{-- Card: Permohonan --}}
+        <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex items-center gap-5 group hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-2xl shadow-inner group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                <i class="fas fa-paper-plane"></i>
+            </div>
+            <div>
+                <p class="text-xs font-black text-gray-400 uppercase tracking-widest">Permohonan</p>
+                <p class="text-2xl font-black text-gray-900">{{ number_format($stats['permohonan']['total']) }}</p>
+            </div>
+        </div>
+
+        {{-- Card: Pengunjung --}}
+        <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex items-center gap-5 group hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <div class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-2xl shadow-inner group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                <i class="fas fa-users"></i>
+            </div>
+            <div>
+                <p class="text-xs font-black text-gray-400 uppercase tracking-widest">Kunjungan</p>
+                <p class="text-2xl font-black text-gray-900">{{ number_format($stats['activity']['visits']) }}</p>
+            </div>
+        </div>
+
+        {{-- Card: Widget Installs --}}
+        <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex items-center gap-5 group hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
+            <div class="w-14 h-14 rounded-2xl bg-pink-50 text-pink-600 flex items-center justify-center text-2xl shadow-inner group-hover:bg-pink-600 group-hover:text-white transition-colors">
+                <i class="fas fa-link"></i>
+            </div>
+            <div>
+                <p class="text-xs font-black text-gray-400 uppercase tracking-widest">Pemasangan</p>
+                <p class="text-2xl font-black text-gray-900">{{ number_format($externalWebsitesCount ?? 0) }} <span class="text-[10px] text-gray-400 font-bold">Web</span></p>
+            </div>
+        </div>
     </div>
 
-    <!-- Stats Cards Grid -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-8 gap-4 mb-8">
-        <div class="bg-gradient-to-r from-blue-500 to-blue-600 rounded-xl shadow-lg p-3 text-white transform transition hover:scale-105">
-            <div class="flex items-center">
-                <div class="p-1 rounded-lg bg-blue-400 bg-opacity-30">
-                    <i class="fas fa-chart-line text-base"></i>
-                </div>
-                <div class="ml-2">
-                    <p class="text-xs opacity-80">Pengunjung Baru</p>
-                    <p class="text-lg font-bold">{{ $stats['activity']['latest_visitors'] }}</p>
-                </div>
+    <!-- Main Content: Charts & External Installs -->
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
+        {{-- Chart Section --}}
+        <div class="lg:col-span-2 bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
+            <div class="flex items-center justify-between mb-8">
+                <h3 class="text-lg font-black text-gray-800 uppercase tracking-tight flex items-center gap-3">
+                    <span class="w-1.5 h-6 bg-blue-600 rounded-full"></span>
+                    Grafik Kunjungan 7 Hari Terakhir
+                </h3>
+                <div class="text-[10px] font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-full uppercase">Live Stats</div>
             </div>
-        </div>
-
-        <div class="bg-gradient-to-r from-orange-500 to-orange-600 rounded-xl shadow-lg p-3 text-white transform transition hover:scale-105">
-            <div class="flex items-center">
-                <div class="p-1 rounded-lg bg-orange-400 bg-opacity-30">
-                    <i class="fas fa-file-alt text-base"></i>
-                </div>
-                <div class="ml-2">
-                    <p class="text-xs opacity-80">Jumlah Permohonan</p>
-                    <p class="text-lg font-bold">{{ $stats['permohonan']['total'] }}</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl shadow-lg p-3 text-white transform transition hover:scale-105">
-            <div class="flex items-center">
-                <div class="p-1 rounded-lg bg-purple-400 bg-opacity-30">
-                    <i class="fas fa-check-double text-base"></i>
-                </div>
-                <div class="ml-2">
-                    <p class="text-xs opacity-80">Respon Survei</p>
-                    <p class="text-lg font-bold">{{ $stats['survey_response']['total'] }}</p>
-                </div>
-            </div>
-        </div>
-
-
-        <div class="bg-gradient-to-r from-green-500 to-green-600 rounded-xl shadow-lg p-3 text-white transform transition hover:scale-105">
-            <div class="flex items-center">
-                <div class="p-1 rounded-lg bg-green-400 bg-opacity-30">
-                    <i class="fas fa-images text-base"></i>
-                </div>
-                <div class="ml-2">
-                    <p class="text-xs opacity-80">Sliders</p>
-                    <p class="text-lg font-bold">{{ $stats['slider']['total'] }}</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-r from-purple-500 to-purple-600 rounded-xl shadow-lg p-3 text-white transform transition hover:scale-105">
-            <div class="flex items-center">
-                <div class="p-1 rounded-lg bg-purple-400 bg-opacity-30">
-                    <i class="fas fa-photo-video text-base"></i>
-                </div>
-                <div class="ml-2">
-                    <p class="text-xs opacity-80">Galeri</p>
-                    <p class="text-lg font-bold">{{ $stats['galeri']['total'] }}</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-r from-yellow-500 to-yellow-600 rounded-xl shadow-lg p-3 text-white transform transition hover:scale-105">
-            <div class="flex items-center">
-                <div class="p-1 rounded-lg bg-yellow-400 bg-opacity-30">
-                    <i class="fas fa-users text-base"></i>
-                </div>
-                <div class="ml-2">
-                    <p class="text-xs opacity-80">Pengunjung</p>
-                    <p class="text-lg font-bold">{{ $stats['activity']['visitors'] }}</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-r from-red-500 to-red-600 rounded-xl shadow-lg p-3 text-white transform transition hover:scale-105">
-            <div class="flex items-center">
-                <div class="p-1 rounded-lg bg-red-400 bg-opacity-30">
-                    <i class="fas fa-eye text-base"></i>
-                </div>
-                <div class="ml-2">
-                    <p class="text-xs opacity-80">Dilihat</p>
-                    <p class="text-lg font-bold">{{ $stats['activity']['views'] }}</p>
-                </div>
-            </div>
-        </div>
-
-        <div class="bg-gradient-to-r from-indigo-500 to-indigo-600 rounded-xl shadow-lg p-3 text-white transform transition hover:scale-105">
-            <div class="flex items-center">
-                <div class="p-1 rounded-lg bg-indigo-400 bg-opacity-30">
-                    <i class="fas fa-download text-base"></i>
-                </div>
-                <div class="ml-2">
-                    <p class="text-xs opacity-80">Diunduh</p>
-                    <p class="text-lg font-bold">{{ $stats['activity']['downloads'] }}</p>
-                </div>
-            </div>
-        </div>
-
-        @if(Auth::user()->isSuperAdmin())
-        <div class="bg-gradient-to-r from-pink-500 to-rose-600 rounded-xl shadow-lg p-3 text-white transform transition hover:scale-105">
-            <div class="flex items-center">
-                <div class="p-1 rounded-lg bg-pink-400 bg-opacity-30">
-                    <i class="fas fa-link text-base"></i>
-                </div>
-                <div class="ml-2">
-                    <p class="text-xs opacity-80">Pemasangan</p>
-                    <p class="text-lg font-bold">{{ $externalWebsitesCount ?? 0 }} Website</p>
-                </div>
-            </div>
-        </div>
-        @endif
-    </div>
-
-
-
-    <!-- Charts and Recent Activity Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        <!-- Chart -->
-        <div class="bg-white p-6 rounded-xl shadow">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-800">Statistik Kunjungan</h3>
-                <span class="px-3 py-1 bg-blue-100 text-blue-800 text-xs rounded-full">Tahun Ini</span>
-            </div>
-            <div class="h-64">
+            <div class="h-80 w-full">
                 <canvas id="visitChart"></canvas>
             </div>
         </div>
 
-        <!-- Recent Activity -->
-        <div class="bg-white p-5 rounded-xl shadow">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-800">Aktivitas Terbaru</h3>
-                <a href="#" class="text-blue-600 text-sm hover:underline">Lihat Semua</a>
+        {{-- External Installation Table (NEW) --}}
+        <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-black text-gray-800 uppercase tracking-tight">Pemasangan Luar</h3>
+                <a href="{{ route('admin.reports.index', ['tab' => 'external']) }}" class="text-[10px] font-black text-blue-600 hover:underline uppercase">Lihat Semua</a>
             </div>
-
-            <div class="space-y-3 max-h-80 overflow-y-auto">
-                @forelse($allRecentActivity as $activity)
-                    <div class="flex items-start pb-2 border-b border-gray-50 last:border-0">
-                        <div class="mr-3 mt-1">
-                            <div class="bg-gray-200 border-2 border-dashed rounded-full w-8 h-8 flex items-center justify-center">
-                                <i class="fas {{ $activity->icon }} text-gray-500"></i>
+            
+            @if(Auth::user()->isSuperAdmin())
+                <div class="flex-1">
+                    @forelse($externalLogs as $log)
+                        <div class="flex items-center justify-between p-4 mb-3 bg-gray-50 rounded-2xl border border-transparent hover:border-blue-200 transition-all group/item">
+                            <div class="flex items-center gap-3 min-w-0">
+                                <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-gray-400 shadow-sm group-hover/item:text-blue-500 transition-colors">
+                                    <i class="fas fa-globe text-sm"></i>
+                                </div>
+                                <div class="min-w-0">
+                                    <p class="text-xs font-black text-gray-800 truncate">{{ $log->domain }}</p>
+                                    <p class="text-[9px] text-gray-400 font-bold uppercase tracking-tighter">{{ $log->type }} • {{ \Carbon\Carbon::parse($log->last_access)->diffForHumans() }}</p>
+                                </div>
+                            </div>
+                            <div class="text-right">
+                                <p class="text-sm font-black text-gray-900">{{ number_format($log->access_count) }}</p>
+                                <p class="text-[8px] font-black text-gray-300 uppercase tracking-tighter">Hits</p>
                             </div>
                         </div>
-                        <div class="flex-1 min-w-0">
-                            <p class="text-xs text-gray-500">{{ $activity->type }}</p>
-                            <h5 class="text-sm font-medium text-gray-800 truncate">{{ Str::limit($activity->title, 40) }}</h5>
-                            <div class="flex items-center justify-between mt-1">
-                                <p class="text-xs text-gray-400">{{ $activity->date->format('d M Y') }}</p>
-                                <span @class([
-                                    'inline-block px-1.5 py-0.5 text-xs rounded-full',
-                                    'bg-green-100 text-green-800' => $activity->status_color === 'green',
-                                    'bg-blue-100 text-blue-800' => $activity->status_color === 'blue',
-                                    'bg-purple-100 text-purple-800' => $activity->status_color === 'purple',
-                                    'bg-yellow-100 text-yellow-800' => $activity->status_color === 'yellow',
-                                    'bg-gray-100 text-gray-800' => $activity->status_color === 'gray',
-                                ])>
-                                    {{ Str::limit($activity->status, 20) }}
+                    @empty
+                        <div class="flex flex-col items-center justify-center h-full text-center py-10">
+                            <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                                <i class="fas fa-link-slash text-gray-200 text-2xl"></i>
+                            </div>
+                            <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-loose">Belum ada website luar<br>yang terdeteksi</p>
+                        </div>
+                    @endforelse
+                </div>
+            @else
+                <div class="bg-blue-50 p-6 rounded-2xl text-center">
+                    <i class="fas fa-shield-alt text-blue-200 text-3xl mb-3"></i>
+                    <p class="text-xs font-bold text-blue-800 leading-relaxed uppercase tracking-tighter">Hanya dapat diakses oleh Super Admin Kabupaten</p>
+                </div>
+            @endif
+        </div>
+    </div>
+
+    <!-- Recent Activity Section -->
+    <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
+        <div class="px-8 py-6 border-b border-gray-50 bg-gray-50/50 flex items-center justify-between">
+            <h3 class="text-lg font-black text-gray-800 uppercase tracking-tight flex items-center gap-3">
+                <span class="w-1.5 h-6 bg-indigo-600 rounded-full"></span>
+                Aktivitas Terbaru
+            </h3>
+            <span class="text-[10px] font-black text-gray-400 uppercase tracking-[0.2em]">10 Data Terakhir</span>
+        </div>
+        <div class="overflow-x-auto">
+            <table class="w-full text-left">
+                <thead>
+                    <tr class="bg-white border-b border-gray-50">
+                        <th class="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Tipe</th>
+                        <th class="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Konten / Judul</th>
+                        <th class="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest">Dibuat Oleh</th>
+                        <th class="px-8 py-4 text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Waktu</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-gray-50">
+                    @foreach($allRecentActivity as $activity)
+                        <tr class="hover:bg-blue-50/30 transition-colors group">
+                            <td class="px-8 py-5">
+                                <span class="px-3 py-1 text-[9px] font-black uppercase tracking-widest rounded-lg border 
+                                    @if($activity->type === 'Informasi') bg-blue-50 text-blue-600 border-blue-100
+                                    @elseif($activity->type === 'Galeri') bg-purple-50 text-purple-600 border-purple-100
+                                    @else bg-green-50 text-green-600 border-green-100 @endif">
+                                    {{ $activity->type }}
                                 </span>
-                            </div>
-                        </div>
-                    </div>
-                @empty
-                    <p class="text-sm text-gray-500 py-4 text-center">Tidak ada aktivitas terbaru.</p>
-                @endforelse
-            </div>
+                            </td>
+                            <td class="px-8 py-5">
+                                <p class="text-sm font-bold text-gray-800 group-hover:text-blue-600 transition-colors line-clamp-1 leading-tight">{{ $activity->title }}</p>
+                                <p class="text-[10px] text-gray-400 font-medium mt-1 uppercase tracking-tighter">{{ $activity->category ?? ($activity->gallery_type ?? 'Dokumen') }}</p>
+                            </td>
+                            <td class="px-8 py-5">
+                                <div class="flex items-center gap-2">
+                                    <div class="w-6 h-6 rounded-full bg-gray-100 flex items-center justify-center text-[10px] font-bold text-gray-500 border border-white shadow-sm">
+                                        {{ substr($activity->uploader_name, 0, 1) }}
+                                    </div>
+                                    <span class="text-xs font-bold text-gray-600">{{ $activity->uploader_name }}</span>
+                                </div>
+                            </td>
+                            <td class="px-8 py-5 text-right">
+                                <span class="text-[10px] font-bold text-gray-400 uppercase">{{ \Carbon\Carbon::parse($activity->date)->diffForHumans() }}</span>
+                            </td>
+                        </tr>
+                    @endforeach
+                </tbody>
+            </table>
         </div>
     </div>
+</div>
 
-    <!-- Additional Statistics Section -->
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
-        {{-- Permohonan Informasi Cards --}}
-        <div class="bg-white p-5 rounded-xl shadow mb-6">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-800">Permohonan Informasi</h3>
-                <a href="#" class="text-blue-600 text-sm hover:underline">Lihat Semua</a>
-            </div>
-            <div class="grid grid-cols-2 sm:grid-cols-3 gap-3">
-                <div class="bg-purple-50 p-3 rounded-lg text-center">
-                    <i class="fas fa-hourglass-half text-purple-600 text-xl mb-1"></i>
-                    <p class="text-xs text-gray-500">Pending</p>
-                    <p class="text-lg font-bold text-gray-800">{{ $stats['permohonan']['pending'] }}</p>
-                </div>
-                <div class="bg-blue-50 p-3 rounded-lg text-center">
-                    <i class="fas fa-sync-alt text-blue-600 text-xl mb-1"></i>
-                    <p class="text-xs text-gray-500">Diproses</p>
-                    <p class="text-lg font-bold text-gray-800">{{ $stats['permohonan']['diproses'] }}</p>
-                </div>
-                <div class="bg-green-50 p-3 rounded-lg text-center">
-                    <i class="fas fa-check-circle text-green-600 text-xl mb-1"></i>
-                    <p class="text-xs text-gray-500">Selesai</p>
-                    <p class="text-lg font-bold text-gray-800">{{ $stats['permohonan']['selesai'] }}</p>
-                </div>
-            </div>
-            <div class="mt-3 pt-3 border-t border-gray-100">
-                <h4 class="font-medium text-gray-700 mb-2">Total Permohonan: {{ $stats['permohonan']['total'] }}</h4>
-            </div>
-        </div>
-
-        {{-- Users Cards --}}
-        <div class="bg-white p-5 rounded-xl shadow mb-6">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-800">Pengguna Sistem</h3>
-                <a href="{{ route('admin.users.index') }}" class="text-blue-600 text-sm hover:underline">Lihat Semua</a>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <div class="bg-gray-50 p-3 rounded-lg text-center">
-                    <i class="fas fa-users text-gray-600 text-xl mb-1"></i>
-                    <p class="text-xs text-gray-500">Total</p>
-                    <p class="text-lg font-bold text-gray-800">{{ $stats['user']['total'] }}</p>
-                </div>
-                <div class="bg-red-50 p-3 rounded-lg text-center">
-                    <i class="fas fa-user-shield text-red-600 text-xl mb-1"></i>
-                    <p class="text-xs text-gray-500">Superadmin</p>
-                    <p class="text-lg font-bold text-gray-800">{{ $stats['user']['superadmin'] }}</p>
-                </div>
-                <div class="bg-yellow-50 p-3 rounded-lg text-center">
-                    <i class="fas fa-user-tie text-yellow-600 text-xl mb-1"></i>
-                    <p class="text-xs text-gray-500">Admin</p>
-                    <p class="text-lg font-bold text-gray-800">{{ $stats['user']['admin'] }}</p>
-                </div>
-                <div class="bg-green-50 p-3 rounded-lg text-center">
-                    <i class="fas fa-user text-green-600 text-xl mb-1"></i>
-                    <p class="text-xs text-gray-500">Normal</p>
-                    <p class="text-lg font-bold text-gray-800">{{ $stats['user']['normal'] }}</p>
-                </div>
-            </div>
-        </div>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const ctx = document.getElementById('visitChart').getContext('2d');
         
-        {{-- Officials Cards --}}
-        <div class="bg-white p-5 rounded-xl shadow mb-6">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-800">Pejabat (Kepala OPD)</h3>
-                <a href="{{ route('admin.officials.index') }}" class="text-blue-600 text-sm hover:underline">Lihat Semua</a>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <div class="bg-gray-50 p-3 rounded-lg text-center">
-                    <i class="fas fa-user-tie text-gray-600 text-xl mb-1"></i>
-                    <p class="text-xs text-gray-500">Total</p>
-                    <p class="text-lg font-bold text-gray-800">{{ $stats['official']['total'] }}</p>
-                </div>
-                <div class="bg-green-50 p-3 rounded-lg text-center">
-                    <i class="fas fa-check text-green-600 text-xl mb-1"></i>
-                    <p class="text-xs text-gray-500">Aktif</p>
-                    <p class="text-lg font-bold text-gray-800">{{ $stats['official']['active'] }}</p>
-                </div>
-                <div class="bg-red-50 p-3 rounded-lg text-center">
-                    <i class="fas fa-times text-red-600 text-xl mb-1"></i>
-                    <p class="text-xs text-gray-500">Nonaktif</p>
-                    <p class="text-lg font-bold text-gray-800">{{ $stats['official']['inactive'] }}</p>
-                </div>
-                <div class="bg-yellow-50 p-3 rounded-lg text-center">
-                    <i class="fas fa-pencil-alt text-yellow-600 text-xl mb-1"></i>
-                    <p class="text-xs text-gray-500">Draft</p>
-                    <p class="text-lg font-bold text-gray-800">{{ $stats['official']['draft'] }}</p>
-                </div>
-            </div>
-        </div>
-        
-        {{-- Organizations, Profil PPID, Struktur Organisasi --}}
-        <div class="bg-white p-5 rounded-xl shadow mb-6">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-800">Struktur Organisasi & Profil</h3>
-                <a href="{{ route('admin.organizations.index') }}" class="text-blue-600 text-sm hover:underline">Lihat Semua</a>
-            </div>
-            <div class="grid grid-cols-3 gap-3">
-                <div class="bg-blue-50 p-3 rounded-lg text-center">
-                    <i class="fas fa-building text-blue-600 text-xl mb-1"></i>
-                    <p class="text-xs text-gray-500">OPD</p>
-                    <p class="text-lg font-bold text-gray-800">{{ $stats['organization']['total'] }}</p>
-                </div>
-                <div class="bg-green-50 p-3 rounded-lg text-center">
-                    <i class="fas fa-address-card text-green-600 text-xl mb-1"></i>
-                    <p class="text-xs text-gray-500">Profil PPID</p>
-                    <p class="text-lg font-bold text-gray-800">{{ $stats['profil_ppid']['total'] }}</p>
-                </div>
-                <div class="bg-purple-50 p-3 rounded-lg text-center">
-                    <i class="fas fa-sitemap text-purple-600 text-xl mb-1"></i>
-                    <p class="text-xs text-gray-500">Struktur Org.</p>
-                    <p class="text-lg font-bold text-gray-800">{{ $stats['struktur_organisasi']['total'] }}</p>
-                </div>
-            </div>
-        </div>
+        // Gradient effect
+        const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+        gradient.addColorStop(0, 'rgba(59, 130, 246, 0.5)');
+        gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
 
-        {{-- Surveys & Standar Layanan & Laporan --}}
-        <div class="bg-white p-5 rounded-xl shadow mb-6">
-            <div class="flex items-center justify-between mb-4">
-                <h3 class="text-lg font-semibold text-gray-800">Lainnya</h3>
-            </div>
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-3">
-                <div class="bg-orange-50 p-3 rounded-lg text-center">
-                    <i class="fas fa-poll text-orange-600 text-xl mb-1"></i>
-                    <p class="text-xs text-gray-500">Survei</p>
-                    <p class="text-lg font-bold text-gray-800">{{ $stats['survey']['total'] }}</p>
-                </div>
-                <div class="bg-teal-50 p-3 rounded-lg text-center">
-                    <i class="fas fa-clipboard-list text-teal-600 text-xl mb-1"></i>
-                    <p class="text-xs text-gray-500">S. Layanan</p>
-                    <p class="text-lg font-bold text-gray-800">{{ $stats['sub_standar_layanan']['total'] }}</p>
-                </div>
-                <div class="bg-cyan-50 p-3 rounded-lg text-center">
-                    <i class="fas fa-file-alt text-cyan-600 text-xl mb-1"></i>
-                    <p class="text-xs text-gray-500">Laporan</p>
-                    <p class="text-lg font-bold text-gray-800">{{ $stats['laporan']['total'] }}</p>
-                </div>
-                <div class="bg-fuchsia-50 p-3 rounded-lg text-center">
-                    <i class="fas fa-check-double text-fuchsia-600 text-xl mb-1"></i>
-                    <p class="text-xs text-gray-500">Respon Survei</p>
-                    <p class="text-lg font-bold text-gray-800">{{ $stats['survey_response']['total'] }}</p>
-                </div>
-            </div>
-        </div>
-    </div>
-
-
-    <!-- Quick Actions -->
-    <div class="bg-white p-6 rounded-xl shadow">
-
-        <h3 class="text-lg font-semibold text-gray-800 mb-4">Akses Cepat</h3>
-        <div class="grid grid-cols-2 sm:grid-cols-4 gap-4">
-            <a href="{{ route('admin.permohonan-informasi.index') }}" class="flex flex-col items-center justify-center p-4 bg-blue-50 hover:bg-blue-100 rounded-lg transition">
-                <i class="fas fa-file-signature text-2xl text-blue-600 mb-2"></i>
-                <span class="text-sm text-gray-700">Permohonan Informasi</span>
-            </a>
-            <a href="{{ route('informasi-crud.index') }}" class="flex flex-col items-center justify-center p-4 bg-green-50 hover:bg-green-100 rounded-lg transition">
-                <i class="fas fa-info-circle text-2xl text-green-600 mb-2"></i>
-                <span class="text-sm text-gray-700">Informasi</span>
-            </a>
-            <a href="{{ route('admin.users.index') }}" class="flex flex-col items-center justify-center p-4 bg-yellow-50 hover:bg-yellow-100 rounded-lg transition">
-                <i class="fas fa-users text-2xl text-yellow-600 mb-2"></i>
-                <span class="text-sm text-gray-700">Users</span>
-            </a>
-            <a href="{{ route('admin.sliders.index') }}" class="flex flex-col items-center justify-center p-4 bg-purple-50 hover:bg-purple-100 rounded-lg transition">
-                <i class="fas fa-images text-2xl text-purple-600 mb-2"></i>
-                <span class="text-sm text-gray-700">Sliders</span>
-            </a>
-        </div>
-    </div>
-
-    <!-- Chart Script -->
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const ctx = document.getElementById('visitChart').getContext('2d');
-
-            // Real data from controller
-            const data = {
+        new Chart(ctx, {
+            type: 'line',
+            data: {
                 labels: {!! json_encode($chartLabels) !!},
-                datasets: [
-                    {
-                        label: 'Pengunjung',
-                        data: {!! json_encode($chartData) !!},
-                        backgroundColor: 'rgba(59, 130, 246, 0.2)',
-                        borderColor: 'rgba(59, 130, 246, 1)',
-                        borderWidth: 2,
-                        tension: 0.4,
-                        fill: true
+                datasets: [{
+                    label: 'Kunjungan Harian',
+                    data: {!! json_encode($chartData) !!},
+                    borderColor: '#3b82f6',
+                    borderWidth: 4,
+                    backgroundColor: gradient,
+                    fill: true,
+                    tension: 0.4,
+                    pointBackgroundColor: '#ffffff',
+                    pointBorderColor: '#3b82f6',
+                    pointBorderWidth: 3,
+                    pointRadius: 6,
+                    pointHoverRadius: 8
+                }]
+            },
+            options: {
+                responsive: true,
+                maintainAspectRatio: false,
+                plugins: {
+                    legend: { display: false },
+                    tooltip: {
+                        backgroundColor: '#1e293b',
+                        padding: 12,
+                        titleFont: { size: 14, weight: 'bold' },
+                        bodyFont: { size: 13 },
+                        cornerRadius: 12,
+                        displayColors: false
                     }
-                ]
-            };
-
-            const config = {
-                type: 'line',
-                data: data,
-                options: {
-                    responsive: true,
-                    maintainAspectRatio: false,
-                    plugins: {
-                        legend: {
-                            position: 'top',
-                        },
-                        title: {
-                            display: false
-                        }
+                },
+                scales: {
+                    y: {
+                        beginAtZero: true,
+                        grid: { color: '#f1f5f9', drawBorder: false },
+                        ticks: { font: { size: 11, weight: 'bold' }, color: '#94a3b8' }
                     },
-                    scales: {
-                        y: {
-                            beginAtZero: true
-                        }
+                    x: {
+                        grid: { display: false },
+                        ticks: { font: { size: 11, weight: 'bold' }, color: '#94a3b8' }
                     }
                 }
-            };
-
-            const visitChart = new Chart(ctx, config);
+            }
         });
-    </script>
+    });
+</script>
 @endsection
