@@ -222,7 +222,15 @@ class ReportController extends Controller
             'totalLaporan' => Laporan::count(),
         ];
 
-        $linkAccessLogs = \App\Models\ExternalLinkLog::orderBy('last_access', 'desc')->get();
+        // Widget & RSS Usage Detail (With Safety Check)
+        $linkAccessLogs = collect();
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('ppid_external_logs')) {
+                $linkAccessLogs = \App\Models\ExternalLinkLog::orderBy('last_access', 'desc')->get();
+            }
+        } catch (\Exception $e) {
+            \Log::warning("ExternalLinkLog Table missing: " . $e->getMessage());
+        }
 
         return view('admin.reports.index', compact('totalReportsData', 'informasiReports', 'permohonanReports', 'visitorReports', 'surveyReports', 'startDate', 'endDate', 'unitMap', 'selectedUnitId', 'dashboardStatsForReports', 'linkAccessLogs'));
     }
