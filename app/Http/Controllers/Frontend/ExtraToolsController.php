@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Frontend;
 use App\Http\Controllers\Controller;
 use App\Models\Informasi;
 use App\Models\Organization;
+use App\Models\LinkAccessLog;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Response;
 use Illuminate\Support\Facades\DB;
@@ -36,6 +37,8 @@ class ExtraToolsController extends Controller
 
     public function rssGenerate(Request $request)
     {
+        $this->trackAccess($request, 'rss');
+
         $query = Informasi::query();
         if ($request->filled('unit_id')) { $query->where('unit_id', $request->unit_id); }
         if ($request->filled('year')) { $query->where('tahun', $request->year); }
@@ -56,6 +59,8 @@ class ExtraToolsController extends Controller
 
     public function widgetLatest(Request $request)
     {
+        $this->trackAccess($request, 'widget');
+
         $type = $request->get('type', 'latest');
         $display = $request->get('display', 'list'); 
         $mode = $request->get('mode', 'static'); 
@@ -86,5 +91,39 @@ class ExtraToolsController extends Controller
         
         return Response::view('frontend.extra.widgets.embed-latest', compact('informasis', 'type', 'display', 'mode', 'columns', 'autoplay', 'unitMap'))
             ->header('Access-Control-Allow-Origin', '*');
+    }
+
+    private function trackAccess(Request $request, $type)
+    {
+        $referer = $request->headers->get('referer');
+        if (!$referer) return;
+
+        $domain = parse_url($referer, PHP_URL_HOST);
+        if (!$domain) return;
+
+        // Jangan catat jika akses dari domain sendiri (PPID atau Sinjaikab)
+        if (str_contains($domain, 'sinjaikab.go.id') || str_contains($domain, 'localhost') || str_contains($domain, '127.0.0.1')) {
+            return;
+        }
+
+        try {
+            // Check if record exists
+            $log = LinkAccessLog::where('domain', $domain)->where('type', $type)->first();
+            
+            if ($log) {
+                $log->increment('access_count');
+                $log->last_access = now();
+                $log->save();
+            } else {
+                LinkAccessLog::create([
+                    'domain' => $domain,
+                    'type' => $type,
+                    'access_count' => 1,
+                    'last_access' => now()
+                ]);
+            }
+        } catch (\Exception $e) {
+            \Log::error("Error tracking widget/rss access: " . $e->getMessage());
+        }
     }
 }

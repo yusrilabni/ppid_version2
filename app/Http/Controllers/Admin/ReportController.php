@@ -222,8 +222,12 @@ class ReportController extends Controller
             'totalLaporan' => Laporan::count(),
         ];
 
-        return view('admin.reports.index', compact('totalReportsData', 'informasiReports', 'permohonanReports', 'visitorReports', 'surveyReports', 'startDate', 'endDate', 'unitMap', 'selectedUnitId', 'dashboardStatsForReports'));
-    }
+        $linkAccessLogs = \App\Models\LinkAccessLog::orderBy('last_access', 'desc')->get();
+
+        $linkAccessLogs = \App\Models\LinkAccessLog::orderBy('last_access', 'desc')->get();
+
+        return view('admin.reports.index', compact('totalReportsData', 'informasiReports', 'permohonanReports', 'visitorReports', 'surveyReports', 'startDate', 'endDate', 'unitMap', 'selectedUnitId', 'dashboardStatsForReports', 'linkAccessLogs'));
+        }
 
     public function exportTotal(Request $request)
     {

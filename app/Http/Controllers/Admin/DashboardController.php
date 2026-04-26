@@ -142,6 +142,9 @@ class DashboardController extends Controller
         // Recent Activity Logic
         $allRecentActivity = $this->getRecentActivity();
 
+        // Widget & RSS Usage Stats
+        $externalWebsitesCount = \App\Models\LinkAccessLog::distinct('domain')->count();
+
         $stats = [
 
             'slider' => ['total' => $sliderCount, 'active' => $activeSliderCount],
@@ -180,8 +183,8 @@ class DashboardController extends Controller
             'stats',
             'allRecentActivity',
             'chartLabels',
-            'chartData'
-            // No longer need to pass permohonanPending, permohonanDiproses, permohonanSelesai separately
+            'chartData',
+            'externalWebsitesCount'
         ));
     }
 

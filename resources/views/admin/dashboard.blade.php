@@ -107,6 +107,20 @@
                 </div>
             </div>
         </div>
+
+        @if(Auth::user()->isSuperAdmin())
+        <div class="bg-gradient-to-r from-pink-500 to-rose-600 rounded-xl shadow-lg p-3 text-white transform transition hover:scale-105">
+            <div class="flex items-center">
+                <div class="p-1 rounded-lg bg-pink-400 bg-opacity-30">
+                    <i class="fas fa-link text-base"></i>
+                </div>
+                <div class="ml-2">
+                    <p class="text-xs opacity-80">Pemasangan</p>
+                    <p class="text-lg font-bold">{{ $externalWebsitesCount ?? 0 }} Website</p>
+                </div>
+            </div>
+        </div>
+        @endif
     </div>
 
 

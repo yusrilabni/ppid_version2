@@ -65,6 +65,11 @@
                     <a href="#" @click.prevent="openTab = 'survey'" :class="{ 'border-blue-500 text-blue-600': openTab === 'survey', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': openTab !== 'survey' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
                         Laporan Survei
                     </a>
+                    @if(Auth::user()->isSuperAdmin())
+                    <a href="#" @click.prevent="openTab = 'external'" :class="{ 'border-blue-500 text-blue-600': openTab === 'external', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': openTab !== 'external' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
+                        Pemasangan Luar
+                    </a>
+                    @endif
                     <a href="#" @click.prevent="openTab = 'visitors'" :class="{ 'border-blue-500 text-blue-600': openTab === 'visitors', 'border-transparent text-gray-500 hover:text-gray-700 hover:border-gray-300': openTab !== 'visitors' }" class="whitespace-nowrap py-4 px-1 border-b-2 font-medium text-sm">
                         Statistik Laporan
                     </a>
@@ -203,7 +208,7 @@
                         @endif
                     </div>
 
-                    {{-- Pengunjung Summary --}}
+                    {{-- Statistik Summary --}}
                     <div class="mb-8">
                         <h4 class="text-md font-semibold text-gray-700 mb-2">Statistik Laporan</h4>
                         @if(empty($dashboardStatsForReports))
@@ -241,34 +246,6 @@
                                         <tr>
                                             <td class="px-6 py-4 text-sm font-medium text-gray-900">Total Unduhan</td>
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $dashboardStatsForReports['totalDownloads'] }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-6 py-4 text-sm font-medium text-gray-900">Total Pengguna</td>
-                                            <td class="px-6 py-4 text-sm text-gray-500">{{ $dashboardStatsForReports['totalUsers'] }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-6 py-4 text-sm font-medium text-gray-900">Total Organisasi</td>
-                                            <td class="px-6 py-4 text-sm text-gray-500">{{ $dashboardStatsForReports['totalOrganizations'] }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-6 py-4 text-sm font-medium text-gray-900">Total Pejabat</td>
-                                            <td class="px-6 py-4 text-sm text-gray-500">{{ $dashboardStatsForReports['totalOfficials'] }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-6 py-4 text-sm font-medium text-gray-900">Total Sliders</td>
-                                            <td class="px-6 py-4 text-sm text-gray-500">{{ $dashboardStatsForReports['totalSliders'] }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-6 py-4 text-sm font-medium text-gray-900">Total Galeri</td>
-                                            <td class="px-6 py-4 text-sm text-gray-500">{{ $dashboardStatsForReports['totalGaleri'] }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-6 py-4 text-sm font-medium text-gray-900">Total Sub Standar Layanan</td>
-                                            <td class="px-6 py-4 text-sm text-gray-500">{{ $dashboardStatsForReports['totalSubStandarLayanan'] }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-6 py-4 text-sm font-medium text-gray-900">Total Laporan</td>
-                                            <td class="px-6 py-4 text-sm text-gray-500">{{ $dashboardStatsForReports['totalLaporan'] }}</td>
                                         </tr>
                                     </tbody>
                                 </table>
@@ -366,8 +343,9 @@
                     </div>
 
                     {{-- Survey Reports Tab Content --}}
-                                    <div x-show="openTab === 'survey'">
-                                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Daftar Laporan Survei</h3>                        @if($surveyReports->isEmpty())
+                    <div x-show="openTab === 'survey'">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4">Daftar Laporan Survei</h3>                        
+                        @if($surveyReports->isEmpty())
                             <p class="text-gray-600 text-center py-4">Tidak ada pengisian survei dalam periode ini.</p>
                         @else
                             <div class="overflow-x-auto bg-white rounded-lg shadow">
@@ -406,82 +384,107 @@
                         @endif
                     </div>
 
-                    {{-- Pengunjung Reports Tab Content --}}
-                    <div x-show="openTab === 'visitors'">
-                        <h4 class="text-md font-semibold text-gray-700 mb-2">Statistik Laporan</h4>
-                        @if(empty($dashboardStatsForReports))
-                            <p class="text-gray-600">Tidak ada data statistik dalam periode ini.</p>
+                    {{-- External Installation Reports Tab Content --}}
+                    @if(Auth::user()->isSuperAdmin())
+                    <div x-show="openTab === 'external'">
+                        <div class="flex items-center justify-between mb-6">
+                            <h3 class="text-lg font-black text-gray-800 uppercase tracking-tight">Website Pemasang Widget & RSS</h3>
+                            <div class="px-4 py-2 bg-pink-50 border border-pink-100 rounded-xl">
+                                <span class="text-xs font-bold text-pink-600">Total Website: {{ $linkAccessLogs->unique('domain')->count() }}</span>
+                            </div>
+                        </div>
+
+                        @if($linkAccessLogs->isEmpty())
+                            <div class="py-20 text-center bg-gray-50 rounded-[2rem] border-2 border-dashed border-gray-200 shadow-inner">
+                                <i class="fas fa-link text-gray-300 text-4xl mb-4"></i>
+                                <p class="text-gray-500 font-bold uppercase text-[10px] tracking-widest leading-loose">Belum ada website luar yang terdeteksi<br>memasang widget atau RSS feed Anda</p>
+                            </div>
                         @else
-                            <div class="overflow-x-auto bg-white rounded-lg shadow">
-                                <table class="min-w-full divide-y divide-gray-200">
-                                    <thead class="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
+                            <div class="overflow-x-auto bg-white rounded-[2rem] shadow-sm border border-gray-100">
+                                <table class="min-w-full divide-y divide-gray-100">
+                                    <thead class="bg-gray-50/50">
                                         <tr>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider w-1/2">Nama Statistik</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider w-1/2">Nilai</th>
+                                            <th class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">No.</th>
+                                            <th class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Domain Website</th>
+                                            <th class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Tipe Akses</th>
+                                            <th class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Total Hit</th>
+                                            <th class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest text-right">Akses Terakhir</th>
                                         </tr>
                                     </thead>
-                                    <tbody class="bg-white divide-y divide-gray-200">
-                                        <tr>
-                                            <td class="px-6 py-4 text-sm font-medium text-gray-900">Total Informasi</td>
-                                            <td class="px-6 py-4 text-sm text-gray-500">{{ $dashboardStatsForReports['totalInformasiCount'] }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-6 py-4 text-sm font-medium text-gray-900">Total Permohonan Informasi</td>
-                                            <td class="px-6 py-4 text-sm text-gray-500">{{ $dashboardStatsForReports['totalPermohonanCount'] }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-6 py-4 text-sm font-medium text-gray-900">Total Respon Survei</td>
-                                            <td class="px-6 py-4 text-sm text-gray-500">{{ $dashboardStatsForReports['totalSurveyResponses'] }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-6 py-4 text-sm font-medium text-gray-900">Total Kunjungan</td>
-                                            <td class="px-6 py-4 text-sm text-gray-500">{{ $dashboardStatsForReports['totalVisits'] }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-6 py-4 text-sm font-medium text-gray-900">Total Dilihat (Page Views)</td>
-                                            <td class="px-6 py-4 text-sm text-gray-500">{{ $dashboardStatsForReports['totalPageViews'] }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-6 py-4 text-sm font-medium text-gray-900">Total Unduhan</td>
-                                            <td class="px-6 py-4 text-sm text-gray-500">{{ $dashboardStatsForReports['totalDownloads'] }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-6 py-4 text-sm font-medium text-gray-900">Total Pengguna</td>
-                                            <td class="px-6 py-4 text-sm text-gray-500">{{ $dashboardStatsForReports['totalUsers'] }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-6 py-4 text-sm font-medium text-gray-900">Total Organisasi</td>
-                                            <td class="px-6 py-4 text-sm text-gray-500">{{ $dashboardStatsForReports['totalOrganizations'] }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-6 py-4 text-sm font-medium text-gray-900">Total Pejabat</td>
-                                            <td class="px-6 py-4 text-sm text-gray-500">{{ $dashboardStatsForReports['totalOfficials'] }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-6 py-4 text-sm font-medium text-gray-900">Total Sliders</td>
-                                            <td class="px-6 py-4 text-sm text-gray-500">{{ $dashboardStatsForReports['totalSliders'] }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-6 py-4 text-sm font-medium text-gray-900">Total Galeri</td>
-                                            <td class="px-6 py-4 text-sm text-gray-500">{{ $dashboardStatsForReports['totalGaleri'] }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-6 py-4 text-sm font-medium text-gray-900">Total Sub Standar Layanan</td>
-                                            <td class="px-6 py-4 text-sm text-gray-500">{{ $dashboardStatsForReports['totalSubStandarLayanan'] }}</td>
-                                        </tr>
-                                        <tr>
-                                            <td class="px-6 py-4 text-sm font-medium text-gray-900">Total Laporan</td>
-                                            <td class="px-6 py-4 text-sm text-gray-500">{{ $dashboardStatsForReports['totalLaporan'] }}</td>
-                                        </tr>
+                                    <tbody class="divide-y divide-gray-50">
+                                        @foreach($linkAccessLogs as $index => $log)
+                                            <tr class="hover:bg-blue-50/30 transition-colors">
+                                                <td class="px-6 py-4 text-sm font-bold text-gray-400">{{ $index + 1 }}</td>
+                                                <td class="px-6 py-4">
+                                                    <div class="flex items-center gap-3">
+                                                        <div class="w-8 h-8 rounded-lg bg-gray-100 flex items-center justify-center text-gray-400 shadow-inner">
+                                                            <i class="fas fa-globe text-xs"></i>
+                                                        </div>
+                                                        <span class="text-sm font-bold text-gray-800">{{ $log->domain }}</span>
+                                                    </div>
+                                                </td>
+                                                <td class="px-6 py-4 text-center">
+                                                    <span @class([
+                                                        'px-2.5 py-1 rounded-lg text-[10px] font-black uppercase tracking-tighter border shadow-sm',
+                                                        'bg-blue-50 text-blue-600 border-blue-100' => $log->type === 'widget',
+                                                        'bg-orange-50 text-orange-600 border-orange-100' => $log->type === 'rss'
+                                                    ])>
+                                                        {{ $log->type }}
+                                                    </span>
+                                                </td>
+                                                <td class="px-6 py-4 text-center text-sm font-black text-gray-900">
+                                                    {{ number_format($log->access_count) }}
+                                                </td>
+                                                <td class="px-6 py-4 text-right text-xs font-medium text-gray-500">
+                                                    {{ \Carbon\Carbon::parse($log->last_access)->diffForHumans() }}
+                                                </td>
+                                            </tr>
+                                        @endforeach
                                     </tbody>
                                 </table>
                             </div>
                         @endif
                     </div>
+                    @endif
+
+                    {{-- Visitors Reports Tab Content --}}
+                    <div x-show="openTab === 'visitors'">
+                        <h3 class="text-lg font-semibold text-gray-800 mb-4 tracking-tight uppercase flex items-center">
+                            <span class="w-8 h-1 bg-purple-600 rounded-full mr-3"></span>
+                            Statistik Harian
+                        </h3>
+                        @if($visitorReports->isEmpty())
+                            <p class="text-gray-600 text-center py-4 italic">Tidak ada data statistik harian dalam periode ini.</p>
+                        @else
+                            <div class="overflow-x-auto bg-white rounded-[2rem] shadow-sm border border-gray-100">
+                                <table class="min-w-full divide-y divide-gray-100">
+                                    <thead class="bg-gray-50/50">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest">Tanggal</th>
+                                            <th scope="col" class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Pengunjung (Unique)</th>
+                                            <th scope="col" class="px-6 py-4 text-left text-[10px] font-black text-gray-400 uppercase tracking-widest text-center">Dilihat (Page Views)</th>
+                                        </tr>
+                                    </thead>
+                                    <tbody class="divide-y divide-gray-50 bg-white">
+                                        @foreach($visitorReports as $report)
+                                            <tr class="hover:bg-purple-50/30 transition-colors">
+                                                <td class="px-6 py-4 text-sm font-bold text-gray-800">{{ \Carbon\Carbon::parse($report->report_date)->isoFormat('D MMMM Y') }}</td>
+                                                <td class="px-6 py-4 text-center text-sm font-black text-purple-600 bg-purple-50/50">{{ number_format($report->visitors_count) }}</td>
+                                                <td class="px-6 py-4 text-center text-sm font-black text-blue-600">{{ number_format($report->views_count) }}</td>
+                                            </tr>
+                                        @endforeach
+                                    </tbody>
+                                </table>
+                            </div>
+                            <div class="mt-6">
+                                {{ $visitorReports->appends(request()->query())->links() }}
+                            </div>
+                        @endif
+                    </div>
                 </div>
-            </div> <!-- Closes the <div class="p-6"> that wraps the Tab Content (all x-show blocks) -->
-        </div> <!-- Closes the <div x-data="{ openTab: 'total' }"> (Tabbed Interface) -->
-        </div> <!-- Closes the <div class="p-6"> that wraps the filter and tabbed interface sections -->
+            </div> <!-- Closes the <div class="p-6"> that wraps the Tab Content -->
+        </div> <!-- Closes the <div x-data="{ openTab: ... }"> (Tabbed Interface) -->
+        </div> <!-- Closes the <div class="p-6"> that wraps the entire content -->
     </div> <!-- Closes the <div class="bg-white rounded-xl shadow-lg overflow-hidden"> -->
 </div> <!-- Closes the <div class="w-full"> -->
 @endsection
@@ -491,25 +494,22 @@
         document.addEventListener('DOMContentLoaded', function() {
             const startDateInput = document.getElementById('startDate');
             const endDateInput = document.getElementById('endDate');
-            const exportExcelButton = document.getElementById('exportExcelButton'); // Corrected ID
+            const exportExcelButton = document.getElementById('exportExcelButton');
 
             exportExcelButton.addEventListener('click', function() {
                 const startDate = startDateInput.value;
                 const endDate = endDateInput.value;
                 let exportUrl = '';
                 
-                // Prioritize getting the active tab from the URL parameter
                 const urlParams = new URLSearchParams(window.location.search);
                 let activeTab = urlParams.get('tab');
 
-                // Fallback to Alpine.js data if not found in URL
                 if (!activeTab) {
                     const alpineDataElement = document.querySelector('[x-data]');
                     if (alpineDataElement && alpineDataElement.__x && alpineDataElement.__x.$data) {
                         activeTab = alpineDataElement.__x.$data.openTab;
                     } else {
-                        console.warn('Alpine.js x-data element or its data not found, and no tab in URL. Defaulting to "total".');
-                        activeTab = 'total'; // Default to 'total' if Alpine.js data is also unavailable
+                        activeTab = 'total';
                     }
                 }
 
@@ -529,43 +529,28 @@
                     case 'visitors':
                         exportUrl = '{{ route('admin.reports.visitors.export') }}';
                         break;
+                    default:
+                         exportUrl = '{{ route('admin.reports.total.export') }}';
                 }
 
                 if (exportUrl) {
                     window.location.href = `${exportUrl}?start_date=${startDate}&end_date=${endDate}`;
-                } else {
-                    console.error('No export URL determined for the active tab:', activeTab);
                 }
             });
-
-            // Update URL parameters when filter form is submitted
-            document.getElementById('filterForm').addEventListener('submit', function(event) {
-                // The form submission will handle updating URL parameters naturally
-                // No need for client-side JS to modify URL on submit
-            });
-
-            // Set initial tab based on URL parameter, if any
-            const urlParams = new URLSearchParams(window.location.search);
-            const tabFromUrl = urlParams.get('tab');
-            if (tabFromUrl) {
-                // Wrap in setTimeout to ensure Alpine.js is fully initialized
-                setTimeout(() => {
-                    const alpineDataElement = document.querySelector('[x-data]');
-                    if (alpineDataElement && alpineDataElement.__x && alpineDataElement.__x.$data) {
-                        alpineDataElement.__x.$data.openTab = tabFromUrl;
-                    } else {
-                        console.warn('Alpine.js x-data element or its data not found on initial tab set.');
-                    }
-                }, 0); // 0ms delay
-            }
 
             // Update URL with tab when tab changes
             document.querySelectorAll('nav[aria-label="Tabs"] a').forEach(tabLink => {
                 tabLink.addEventListener('click', function() {
-                    const newTab = this.getAttribute('@click.prevent').match(/'(.*?)'/)[1];
-                    const currentUrl = new URL(window.location.href);
-                    currentUrl.searchParams.set('tab', newTab);
-                    window.history.pushState({}, '', currentUrl.toString());
+                    const clickAttr = this.getAttribute('@click.prevent');
+                    if (clickAttr) {
+                        const match = clickAttr.match(/'(.*?)'/);
+                        if (match) {
+                            const newTab = match[1];
+                            const currentUrl = new URL(window.location.href);
+                            currentUrl.searchParams.set('tab', newTab);
+                            window.history.pushState({}, '', currentUrl.toString());
+                        }
+                    }
                 });
             });
         });
