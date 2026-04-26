@@ -42,7 +42,7 @@
                     </div>
                 </div>
                 @can('viewAny', App\Models\Informasi::class)
-                <a href="{{ route('informasi-crud.index') }}" class="flex items-center px-4 py-2 text-blue-200 hover:bg-blue-700 hover:bg-opacity-50 hover:text-white rounded-lg transition-colors duration-200 my-1 menu-item @if(request()->routeIs('informasi-crud.*')) bg-blue-700 bg-opacity-75 @endif" title="Informasi">
+                <a href="{{ route('admin.informasi-crud.index') }}" class="flex items-center px-4 py-2 text-blue-200 hover:bg-blue-700 hover:bg-opacity-50 hover:text-white rounded-lg transition-colors duration-200 my-1 menu-item @if(request()->routeIs('admin.informasi-crud.*')) bg-blue-700 bg-opacity-75 @endif" title="Informasi">
                     <i class="fas fa-info-circle w-4 mr-3"></i>
                     <span class="menu-text">Informasi</span>
                 </a>
@@ -59,11 +59,13 @@
                     <i class="fas fa-file-signature w-4 mr-3"></i>
                     <span class="menu-text">Permohonan Informasi</span>
                 </a>
-                @if(Auth::user()->isSuperAdmin())
+                @if(Route::has('admin.surveys.index') && Auth::user()->isSuperAdmin())
                 <a href="{{ route('admin.surveys.index') }}" class="flex items-center px-4 py-2 text-blue-200 hover:bg-blue-700 hover:bg-opacity-50 hover:text-white rounded-lg transition-colors duration-200 my-1 menu-item @if(request()->routeIs('admin.surveys.*')) bg-blue-700 bg-opacity-75 @endif" title="Daftar Survei">
                     <i class="fas fa-poll w-4 mr-3"></i>
                     <span class="menu-text">Survei Kepuasan</span>
                 </a>
+                @endif
+                @if(Route::has('admin.pbj-questions.index') && Auth::user()->isSuperAdmin())
                 <a href="{{ route('admin.pbj-questions.index') }}" class="flex items-center px-4 py-2 text-blue-200 hover:bg-blue-700 hover:bg-opacity-50 hover:text-white rounded-lg transition-colors duration-200 my-1 menu-item @if(request()->routeIs('admin.pbj-questions.*')) bg-blue-700 bg-opacity-75 @endif" title="PBJ">
                     <i class="fas fa-shopping-cart w-4 mr-3"></i>
                     <span class="menu-text">PBJ</span>
@@ -73,24 +75,30 @@
 
             <div class="mt-6 px-4">
                 <div class="h-8 flex items-center justify-center">
-                    <h3 class="menu-text w-full text-xs uppercase text-blue-300 font-semibold tracking-wider">Manajemen Struktur</h3>
+                    <h3 class="menu-text w-full text-xs uppercase text-blue-300 font-semibold tracking-wider">Manajemen Struktur</h3>   
                     <div class="separator-icon justify-center w-full">
                         <i class="bi bi-three-dots text-blue-400"></i>
                     </div>
                 </div>
+                @if(Route::has('admin.organizations.index'))
                 <a href="{{ route('admin.organizations.index') }}" class="flex items-center px-4 py-2 text-blue-200 hover:bg-blue-700 hover:bg-opacity-50 hover:text-white rounded-lg transition-colors duration-200 my-1 menu-item @if(request()->routeIs('admin.organizations.*') && !request()->routeIs('admin.organizations.structures')) bg-blue-700 bg-opacity-75 @endif" title="Organisasi">
                     <i class="fas fa-building w-4 mr-3"></i>
                     <span class="menu-text">Organisasi</span>
                 </a>
+                @endif
+                @if(Route::has('admin.officials.index'))
                 <a href="{{ route('admin.officials.index') }}" class="flex items-center px-4 py-2 text-blue-200 hover:bg-blue-700 hover:bg-opacity-50 hover:text-white rounded-lg transition-colors duration-200 my-1 menu-item @if(request()->routeIs('admin.officials.*')) bg-blue-700 bg-opacity-75 @endif" title="Profil Pimpinan">
                     <i class="fas fa-users w-4 mr-3"></i>
                     <span class="menu-text">Profil Pimpinan</span>
                 </a>
+                @endif
+                @if(Route::has('admin.lhkpn.index'))
                 <a href="{{ route('admin.lhkpn.index') }}" class="flex items-center px-4 py-2 text-blue-200 hover:bg-blue-700 hover:bg-opacity-50 hover:text-white rounded-lg transition-colors duration-200 my-1 menu-item @if(request()->routeIs('admin.lhkpn.*') || request()->routeIs('admin.officials.lhkpn.*')) bg-blue-700 bg-opacity-75 @endif" title="LHKPN">
                     <i class="fas fa-file-invoice-dollar w-4 mr-3"></i>
                     <span class="menu-text">LHKPN</span>
                 </a>
-                @if(Auth::user()->isSuperAdmin())
+                @endif
+                @if(Route::has('admin.profil-ppid.index') && Auth::user()->isSuperAdmin())
                 <a href="{{ route('admin.profil-ppid.index') }}" class="flex items-center px-4 py-2 text-blue-200 hover:bg-blue-700 hover:bg-opacity-50 hover:text-white rounded-lg transition-colors duration-200 my-1 menu-item @if(request()->routeIs('admin.profil-ppid.*')) bg-blue-700 bg-opacity-75 @endif" title="Profil PPID">
                     <i class="fas fa-info-circle w-4 mr-3"></i>
                     <span class="menu-text">Profil PPID</span>
@@ -100,32 +108,35 @@
 
             <div class="mt-6 px-4">
                 <div class="h-8 flex items-center justify-center">
-                    <h3 class="menu-text w-full text-xs uppercase text-blue-300 font-semibold tracking-wider">Manajemen Website</h3>
+                    <h3 class="menu-text w-full text-xs uppercase text-blue-300 font-semibold tracking-wider">Manajemen Website</h3>    
                     <div class="separator-icon justify-center w-full">
                         <i class="bi bi-three-dots text-blue-400"></i>
                     </div>
                 </div>
-                @if(Auth::user()->isSuperAdmin())
+                @if(Route::has('admin.sliders.index') && Auth::user()->isSuperAdmin())
                 <a href="{{ route('admin.sliders.index') }}" class="flex items-center px-4 py-2 text-blue-200 hover:bg-blue-700 hover:bg-opacity-50 hover:text-white rounded-lg transition-colors duration-200 my-1 menu-item @if(request()->routeIs('admin.sliders.*')) bg-blue-700 bg-opacity-75 @endif" title="Sliders">
                     <i class="fas fa-images w-4 mr-3"></i>
                     <span class="menu-text">Sliders</span>
                 </a>
                 @endif
+                @if(Route::has('admin.galeri.index'))
                 <a href="{{ route('admin.galeri.index') }}" class="flex items-center px-4 py-2 text-blue-200 hover:bg-blue-700 hover:bg-opacity-50 hover:text-white rounded-lg transition-colors duration-200 my-1 menu-item @if(request()->routeIs('admin.galeri.*')) bg-blue-700 bg-opacity-75 @endif" title="Galeri">
                     <i class="fas fa-photo-video w-4 mr-3"></i>
                     <span class="menu-text">Galeri</span>
                 </a>
-                @if(Auth::user()->isSuperAdmin())
+                @endif
+                @if(Route::has('admin.users.index') && Auth::user()->isSuperAdmin())
                 <a href="{{ route('admin.users.index') }}" class="flex items-center px-4 py-2 text-blue-200 hover:bg-blue-700 hover:bg-opacity-50 hover:text-white rounded-lg transition-colors duration-200 my-1 menu-item @if(request()->routeIs('admin.users.*')) bg-blue-700 bg-opacity-75 @endif" title="Users">
                     <i class="fas fa-users w-4 mr-3"></i>
                     <span class="menu-text">Users</span>
                 </a>
+                @endif
+                @if(Route::has('admin.reports.index') && Auth::user()->isSuperAdmin())
                 <a href="{{ route('admin.reports.index') }}" class="flex items-center px-4 py-2 text-blue-200 hover:bg-blue-700 hover:bg-opacity-50 hover:text-white rounded-lg transition-colors duration-200 my-1 menu-item @if(request()->routeIs('admin.reports.*')) bg-blue-700 bg-opacity-75 @endif" title="Laporan">
                     <i class="fas fa-chart-line w-4 mr-3"></i>
                     <span class="menu-text">Laporan PPID</span>
                 </a>
-                @endif
-            </div>
+                @endif            </div>
         </nav>
     </div>
 

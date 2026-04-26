@@ -28,6 +28,16 @@ class DashboardController extends Controller
 {
     public function index()
     {
+        // Auto-clear route cache if we just updated routes (temporary fix for RouteNotFoundException)
+        if (!\Illuminate\Support\Facades\Cache::has('routes_refreshed_v2')) {
+            try {
+                \Illuminate\Support\Facades\Artisan::call('route:clear');
+                \Illuminate\Support\Facades\Artisan::call('view:clear');
+                \Illuminate\Support\Facades\Cache::put('routes_refreshed_v2', true, 60);
+            } catch (\Exception $e) {
+                \Log::error('Dashboard Auto-Clear Cache Error: ' . $e->getMessage());
+            }
+        }
 
         $sliderCount = Slider::count();
         $activeSliderCount = Slider::where('active', true)->count();
