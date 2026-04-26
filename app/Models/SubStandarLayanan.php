@@ -34,4 +34,9 @@ class SubStandarLayanan extends Model
     {
         return $this->hasOne(Informasi::class);
     }
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

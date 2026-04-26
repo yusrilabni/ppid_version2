@@ -14,6 +14,12 @@ class Galeri extends Model
         'type',
         'category',
         'jenis_dokumen',
+        'user_id',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
 }
