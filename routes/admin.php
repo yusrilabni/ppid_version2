@@ -114,7 +114,7 @@ Route::middleware(['auth', SuperadminMiddleware::class])->group(function () {
     // Survey Responses
     Route::get('surveys/{survey}/responses', [SurveyResponseController::class, 'index'])->name('surveys.responses.index');
     Route::get('surveys/{survey}/responses/export', [SurveyResponseController::class, 'export'])->name('surveys.responses.export');
-    Route::post('surveys/{survey}/responses/export-excel', [SurveyResponseController::class, 'exportExcel'])->name('surveys.responses.exportExcel');
+    Route::post('surveys/{survey}/responses/process-report', [SurveyResponseController::class, 'exportExcel'])->name('surveys.responses.exportExcel');
     
     // PBJ
     Route::resource('pbj-questions', PbjQuestionController::class);

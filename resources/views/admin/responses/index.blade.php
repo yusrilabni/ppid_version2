@@ -272,49 +272,63 @@
     });
 
     function exportWithCharts() {
-        const chartImages = [];
         const canvases = document.querySelectorAll('canvas');
-        
+        if (canvases.length === 0) {
+            alert('Tidak ada grafik untuk diekspor.');
+            return;
+        }
+
         // Show loading state
         const btn = document.querySelector('button[onclick="exportWithCharts()"]');
         const originalHtml = btn.innerHTML;
         btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Mengolah Data...';
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Mengolah Grafik...';
 
-        canvases.forEach(canvas => {
-            chartImages.push(canvas.toDataURL('image/png'));
-        });
-
-        // Create a temporary form to submit the data via POST
-        const form = document.createElement('form');
-        form.method = 'POST';
-        form.action = "{{ route('admin.surveys.responses.exportExcel', $survey) }}";
-        form.target = "_blank";
-
+        const formData = new FormData();
         const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-        const csrfInput = document.createElement('input');
-        csrfInput.type = 'hidden';
-        csrfInput.name = '_token';
-        csrfInput.value = csrfToken;
-        form.appendChild(csrfInput);
+        formData.append('_token', csrfToken);
 
-        chartImages.forEach((img, index) => {
-            const input = document.createElement('input');
-            input.type = 'hidden';
-            input.name = `chart_images[]`;
-            input.value = img;
-            form.appendChild(input);
+        canvases.forEach((canvas, index) => {
+            // Convert to Base64
+            const dataUrl = canvas.toDataURL('image/png');
+            formData.append(`chart_images[${index}]`, dataUrl);
         });
 
-        document.body.appendChild(form);
-        form.submit();
-        document.body.removeChild(form);
-
-        // Reset button state after a short delay
-        setTimeout(() => {
+        // Use fetch instead of form submit to handle data as multipart more reliably
+        fetch("{{ route('admin.surveys.responses.exportExcel', $survey) }}", {
+            method: 'POST',
+            body: formData,
+            headers: {
+                'X-Requested-With': 'XMLHttpRequest'
+            }
+        })
+        .then(response => {
+            if (!response.ok) {
+                if (response.status === 403) {
+                    throw new Error('Akses diblokir oleh server (Error 403). Coba gunakan kata kunci pencarian yang lebih singkat atau hubungi admin server.');
+                }
+                throw new Error('Terjadi kesalahan pada server (Error ' + response.status + ')');
+            }
+            return response.blob();
+        })
+        .then(blob => {
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = "Laporan_Survei_{{ $survey->id }}_{{ date('Ymd_His') }}.xlsx";
+            document.body.appendChild(a);
+            a.click();
+            window.URL.revokeObjectURL(url);
+            
             btn.disabled = false;
             btn.innerHTML = originalHtml;
-        }, 2000);
+        })
+        .catch(error => {
+            console.error('Export Error:', error);
+            alert(error.message);
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+        });
     }
 </script>
 @endif

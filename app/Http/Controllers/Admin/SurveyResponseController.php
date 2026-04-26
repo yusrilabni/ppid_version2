@@ -161,7 +161,15 @@ class SurveyResponseController extends Controller
     {
         $survey->load(['questions.options', 'responses.answers']);
         $sortedQuestions = $this->getSortedQuestions($survey);
+        
+        // Handle input from both form and fetch/FormData
         $chartImages = $request->input('chart_images', []);
+        
+        if (empty($chartImages) && $request->isXmlHttpRequest()) {
+             // If coming from fetch but using keys like chart_images[0]
+             $chartImages = $request->all();
+             $chartImages = array_filter($chartImages, fn($k) => str_contains($k, 'chart_images'), ARRAY_FILTER_USE_KEY);
+        }
 
         $fileName = 'survey_report_' . $survey->id . '_' . date('Ymd_His') . '.xlsx';
 
