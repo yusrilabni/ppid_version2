@@ -200,16 +200,40 @@ class DashboardController extends Controller
 
     private function getRecentActivity(): Collection
     {
-        $recentGaleri = Galeri::latest()->take(5)->get()->map(function ($item) {
-            return (object)['type' => 'Galeri', 'title' => $item->title, 'date' => $item->created_at, 'icon' => $item->type === 'foto' ? 'fa-image' : 'fa-video', 'status' => $item->type, 'status_color' => 'blue'];
+        $recentGaleri = Galeri::with('user')->latest()->take(5)->get()->map(function ($item) {
+            return (object)[
+                'type' => 'Galeri', 
+                'title' => $item->title, 
+                'date' => $item->created_at, 
+                'icon' => $item->type === 'foto' ? 'fa-image' : 'fa-video', 
+                'status' => $item->type, 
+                'status_color' => 'blue',
+                'uploader_name' => $item->user->name ?? 'Administrator'
+            ];
         });
 
-        $recentInformasi = Informasi::latest()->take(5)->get()->map(function ($item) {
-            return (object)['type' => 'Informasi', 'title' => $item->title, 'date' => $item->created_at, 'icon' => 'fa-file-alt', 'status' => $item->category, 'status_color' => 'purple'];
+        $recentInformasi = Informasi::with('user')->latest()->take(5)->get()->map(function ($item) {
+            return (object)[
+                'type' => 'Informasi', 
+                'title' => $item->title, 
+                'date' => $item->created_at, 
+                'icon' => 'fa-file-alt', 
+                'status' => $item->category, 
+                'status_color' => 'purple',
+                'uploader_name' => $item->user->name ?? 'Administrator'
+            ];
         });
         
-        $recentStandarLayanan = SubStandarLayanan::with('standarLayanan')->latest()->take(5)->get()->map(function ($item) {
-            return (object)['type' => 'Standar Layanan', 'title' => $item->title, 'date' => $item->created_at, 'icon' => 'fa-clipboard-list', 'status' => $item->standarLayanan->title ?? 'N/A', 'status_color' => 'yellow'];
+        $recentStandarLayanan = SubStandarLayanan::with(['standarLayanan', 'user'])->latest()->take(5)->get()->map(function ($item) {
+            return (object)[
+                'type' => 'Standar Layanan', 
+                'title' => $item->title, 
+                'date' => $item->created_at, 
+                'icon' => 'fa-clipboard-list', 
+                'status' => $item->standarLayanan->title ?? 'N/A', 
+                'status_color' => 'yellow',
+                'uploader_name' => $item->user->name ?? 'Administrator'
+            ];
         });
 
         return (new Collection)
