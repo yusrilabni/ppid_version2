@@ -143,7 +143,14 @@ class DashboardController extends Controller
         $allRecentActivity = $this->getRecentActivity();
 
         // Widget & RSS Usage Stats
-        $externalWebsitesCount = \App\Models\LinkAccessLog::distinct('domain')->count();
+        $externalWebsitesCount = 0;
+        try {
+            if (\Illuminate\Support\Facades\Schema::hasTable('ppid_link_logs')) {
+                $externalWebsitesCount = \App\Models\LinkAccessLog::distinct('domain')->count();
+            }
+        } catch (\Exception $e) {
+            \Log::warning("LinkAccessLog Error: " . $e->getMessage());
+        }
 
         $stats = [
 

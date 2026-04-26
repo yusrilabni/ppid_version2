@@ -8,8 +8,9 @@ return new class extends Migration
 {
     public function up(): void
     {
-        if (!Schema::hasTable('link_access_logs')) {
-            Schema::create('link_access_logs', function (Blueprint $table) {
+        // Gunakan nama tabel yang unik agar tidak bentrok di server
+        if (!Schema::hasTable('ppid_link_logs')) {
+            Schema::create('ppid_link_logs', function (Blueprint $table) {
                 $table->id();
                 $table->string('domain')->index();
                 $table->string('type'); // widget atau rss
@@ -23,6 +24,6 @@ return new class extends Migration
 
     public function down(): void
     {
-        Schema::dropIfExists('link_access_logs');
+        Schema::dropIfExists('ppid_link_logs');
     }
 };
