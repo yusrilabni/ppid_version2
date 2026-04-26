@@ -224,11 +224,10 @@ class ReportController extends Controller
 
         $linkAccessLogs = \App\Models\LinkAccessLog::orderBy('last_access', 'desc')->get();
 
-        $linkAccessLogs = \App\Models\LinkAccessLog::orderBy('last_access', 'desc')->get();
+        $linkAccessLogs = \App\Models\ExternalLinkLog::orderBy('last_access', 'desc')->get();
 
         return view('admin.reports.index', compact('totalReportsData', 'informasiReports', 'permohonanReports', 'visitorReports', 'surveyReports', 'startDate', 'endDate', 'unitMap', 'selectedUnitId', 'dashboardStatsForReports', 'linkAccessLogs'));
         }
-
     public function exportTotal(Request $request)
     {
         $startDate = $request->input('start_date');

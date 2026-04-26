@@ -104,25 +104,25 @@ class ExtraToolsController extends Controller
         // Jangan catat jika akses dari domain sendiri (PPID atau Sinjaikab)
         if (str_contains($domain, 'sinjaikab.go.id') || str_contains($domain, 'localhost') || str_contains($domain, '127.0.0.1')) {
             return;
-        }
+        use App\Models\ExternalLinkLog;
+        ...
+                try {
+                    // Check if record exists
+                    $log = ExternalLinkLog::where('domain', $domain)->where('type', $type)->first();
 
-        try {
-            // Check if record exists
-            $log = LinkAccessLog::where('domain', $domain)->where('type', $type)->first();
-            
-            if ($log) {
-                $log->increment('access_count');
-                $log->last_access = now();
-                $log->save();
-            } else {
-                LinkAccessLog::create([
-                    'domain' => $domain,
-                    'type' => $type,
-                    'access_count' => 1,
-                    'last_access' => now()
-                ]);
-            }
-        } catch (\Exception $e) {
+                    if ($log) {
+                        $log->increment('access_count');
+                        $log->last_access = now();
+                        $log->save();
+                    } else {
+                        ExternalLinkLog::create([
+                            'domain' => $domain,
+                            'type' => $type,
+                            'access_count' => 1,
+                            'last_access' => now()
+                        ]);
+                    }
+                } catch (\Exception $e) {
             \Log::error("Error tracking widget/rss access: " . $e->getMessage());
         }
     }

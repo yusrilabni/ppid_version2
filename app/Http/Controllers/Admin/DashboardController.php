@@ -145,11 +145,11 @@ class DashboardController extends Controller
         // Widget & RSS Usage Stats
         $externalWebsitesCount = 0;
         try {
-            if (\Illuminate\Support\Facades\Schema::hasTable('ppid_link_logs')) {
-                $externalWebsitesCount = \App\Models\LinkAccessLog::distinct('domain')->count();
+            if (\Illuminate\Support\Facades\Schema::hasTable('ppid_external_logs')) {
+                $externalWebsitesCount = \App\Models\ExternalLinkLog::distinct('domain')->count();
             }
         } catch (\Exception $e) {
-            \Log::warning("LinkAccessLog Error: " . $e->getMessage());
+            \Log::warning("ExternalLinkLog Error: " . $e->getMessage());
         }
 
         $stats = [

@@ -6,7 +6,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class LinkAccessLog extends Model
 {
-    protected $table = 'ppid_link_logs';
-    protected $fillable = ['domain', 'type', 'access_count', 'last_access'];
-    public $timestamps = false;
+    // Mengembalikan ke default (tabel: link_access_logs) agar beranda normal
+    protected $fillable = ['title', 'url', 'access_count', 'last_accessed_at'];
 }
