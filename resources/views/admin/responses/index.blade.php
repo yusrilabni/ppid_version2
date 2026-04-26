@@ -271,7 +271,7 @@
         chartTypeSelector.addEventListener('change', (e) => renderCharts(e.target.value));
     });
 
-    function exportWithCharts() {
+    async function exportWithCharts() {
         const canvases = document.querySelectorAll('canvas');
         if (canvases.length === 0) {
             alert('Tidak ada grafik untuk diekspor.');
@@ -282,36 +282,56 @@
         const btn = document.querySelector('button[onclick="exportWithCharts()"]');
         const originalHtml = btn.innerHTML;
         btn.disabled = true;
-        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Mengolah Grafik...';
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Mengompres Grafik...';
 
-        const formData = new FormData();
-        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
-        formData.append('_token', csrfToken);
-
-        canvases.forEach((canvas, index) => {
-            // Convert to Base64
-            const dataUrl = canvas.toDataURL('image/png');
-            formData.append(`chart_images[${index}]`, dataUrl);
-        });
-
-        // Use fetch instead of form submit to handle data as multipart more reliably
-        fetch("{{ route('admin.surveys.responses.exportExcel', $survey) }}", {
-            method: 'POST',
-            body: formData,
-            headers: {
-                'X-Requested-With': 'XMLHttpRequest'
+        try {
+            const chartImages = [];
+            
+            for (let canvas of canvases) {
+                // Optimasi: Buat canvas sementara untuk pengecekan ukuran
+                const tempCanvas = document.createElement('canvas');
+                const ctx = tempCanvas.getContext('2d');
+                
+                // Set max width 800px (Sangat cukup untuk Excel)
+                const maxWidth = 800;
+                const scale = Math.min(1, maxWidth / canvas.width);
+                tempCanvas.width = canvas.width * scale;
+                tempCanvas.height = canvas.height * scale;
+                
+                // Gambar ulang dengan ukuran lebih kecil
+                ctx.fillStyle = '#ffffff'; // Background putih agar JPEG tidak hitam
+                ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
+                ctx.drawImage(canvas, 0, 0, tempCanvas.width, tempCanvas.height);
+                
+                // Gunakan JPEG kualitas 0.6 (Ukuran file berkurang drastis dibanding PNG)
+                const dataUrl = tempCanvas.toDataURL('image/jpeg', 0.6);
+                chartImages.push(dataUrl);
             }
-        })
-        .then(response => {
+
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Mengirim Data...';
+
+            const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+
+            const response = await fetch("{{ route('admin.surveys.responses.exportExcel', $survey) }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': csrfToken,
+                    'X-Requested-With': 'XMLHttpRequest'
+                },
+                body: JSON.stringify({ 
+                    chart_images: chartImages 
+                })
+            });
+
             if (!response.ok) {
                 if (response.status === 403) {
-                    throw new Error('Akses diblokir oleh server (Error 403). Coba gunakan kata kunci pencarian yang lebih singkat atau hubungi admin server.');
+                    throw new Error('Gagal: Server memblokir data besar (403). Silakan coba lagi atau kurangi jumlah grafik.');
                 }
-                throw new Error('Terjadi kesalahan pada server (Error ' + response.status + ')');
+                throw new Error('Terjadi kesalahan server (Error ' + response.status + ')');
             }
-            return response.blob();
-        })
-        .then(blob => {
+
+            const blob = await response.blob();
             const url = window.URL.createObjectURL(blob);
             const a = document.createElement('a');
             a.href = url;
@@ -319,16 +339,13 @@
             document.body.appendChild(a);
             a.click();
             window.URL.revokeObjectURL(url);
-            
-            btn.disabled = false;
-            btn.innerHTML = originalHtml;
-        })
-        .catch(error => {
+        } catch (error) {
             console.error('Export Error:', error);
             alert(error.message);
+        } finally {
             btn.disabled = false;
             btn.innerHTML = originalHtml;
-        });
+        }
     }
 </script>
 @endif
