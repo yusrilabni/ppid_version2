@@ -58,14 +58,16 @@ class ExtraToolsController extends Controller
     {
         $type = $request->get('type', 'latest');
         $display = $request->get('display', 'list'); 
-        $mode = $request->get('mode', 'static'); // static atau slider
-        $columns = (int) $request->get('columns', 3); // 1-5 kolom
-        $autoplay = $request->get('autoplay', 0); // 0 atau 1
-        $limit = (int) $request->get('limit', 5);
+        $mode = $request->get('mode', 'static'); 
+        $columns = (int) $request->get('columns', 3); 
+        $autoplay = $request->get('autoplay', 0); 
+        $limit = $request->get('limit', 5);
+        $category = $request->get('category');
         
         $query = Informasi::with(['user', 'organization']);
         if ($request->filled('unit_id')) { $query->where('unit_id', $request->unit_id); }
         if ($request->filled('year')) { $query->where('tahun', $request->year); }
+        if ($request->filled('category')) { $query->where('category', $request->category); }
         
         if ($type === 'popular') { 
             $query->orderBy('views_count', 'desc'); 
@@ -73,7 +75,13 @@ class ExtraToolsController extends Controller
             $query->orderBy('tanggal_upload', 'desc'); 
         }
         
-        $informasis = $query->take($limit)->get();
+        // Handle "all" limit
+        if ($limit === 'all') {
+            $informasis = $query->get();
+        } else {
+            $informasis = $query->take((int)$limit)->get();
+        }
+
         $unitMap = collect(\App\Helpers\GeneralHelper::getUnitData());
         
         return Response::view('frontend.extra.widgets.embed-latest', compact('informasis', 'type', 'display', 'mode', 'columns', 'autoplay', 'unitMap'))

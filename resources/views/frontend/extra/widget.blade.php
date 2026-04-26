@@ -29,6 +29,7 @@
                 <div x-data="{ 
                     type: 'latest', 
                     display: 'list',
+                    category: '',
                     mode: 'static',
                     columns: 3,
                     autoplay: 0,
@@ -41,13 +42,14 @@
                         let url = '{{ route('extra.widgets.embed') }}?type=' + this.type + '&display=' + this.display + '&mode=' + this.mode + '&columns=' + this.columns + '&autoplay=' + this.autoplay + '&limit=' + this.limit;
                         if (this.unitId) url += '&unit_id=' + this.unitId;
                         if (this.year) url += '&year=' + this.year;
+                        if (this.category) url += '&category=' + encodeURIComponent(this.category);
                         url += '&t=' + this.refreshKey;
                         return url;
                     },
                     triggerRefresh() {
                         this.refreshKey = Date.now();
                     }
-                }" x-init="$watch('type', () => triggerRefresh()); $watch('display', () => triggerRefresh()); $watch('mode', () => triggerRefresh()); $watch('columns', () => triggerRefresh()); $watch('autoplay', () => triggerRefresh()); $watch('limit', () => triggerRefresh()); $watch('unitId', () => triggerRefresh()); $watch('year', () => triggerRefresh());">
+                }" x-init="$watch('type', () => triggerRefresh()); $watch('display', () => triggerRefresh()); $watch('category', () => triggerRefresh()); $watch('mode', () => triggerRefresh()); $watch('columns', () => triggerRefresh()); $watch('autoplay', () => triggerRefresh()); $watch('limit', () => triggerRefresh()); $watch('unitId', () => triggerRefresh()); $watch('year', () => triggerRefresh());">
                     <div class="grid grid-cols-1 lg:grid-cols-2 gap-12">
                         {{-- Controls --}}
                         <div class="space-y-6">
@@ -76,6 +78,42 @@
                                         :value="'list'"
                                         @change="display = $event.detail.value"
                                         x-init="$watch('open', v => v ? activeDropdown = 'display' : (activeDropdown === 'display' && (activeDropdown = null)))"
+                                    />
+                                </div>
+                            </div>
+
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div class="relative transition-all duration-200" :style="activeDropdown === 'cat' ? 'z-index: 100' : 'z-index: 35'">
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Kategori Informasi</label>
+                                    <x-custom-select 
+                                        name="category_select" 
+                                        :options="[
+                                            ['value' => '', 'label' => 'Semua Kategori'],
+                                            ['value' => 'Informasi Berkala', 'label' => 'Informasi Berkala'],
+                                            ['value' => 'Informasi Setiap Saat', 'label' => 'Informasi Setiap Saat'],
+                                            ['value' => 'Informasi Serta Merta', 'label' => 'Informasi Serta Merta'],
+                                            ['value' => 'Informasi Dikecualikan', 'label' => 'Informasi Dikecualikan']
+                                        ]" 
+                                        :value="''"
+                                        @change="category = $event.detail.value"
+                                        x-init="$watch('open', v => v ? activeDropdown = 'cat' : (activeDropdown === 'cat' && (activeDropdown = null)))"
+                                    />
+                                </div>
+                                <div class="relative transition-all duration-200" :style="activeDropdown === 'limit' ? 'z-index: 100' : 'z-index: 35'">
+                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Jumlah Total Data</label>
+                                    <x-custom-select 
+                                        name="limit_select" 
+                                        :options="[
+                                            ['value' => '2', 'label' => '2 Item'],
+                                            ['value' => '5', 'label' => '5 Item'],
+                                            ['value' => '10', 'label' => '10 Item'],
+                                            ['value' => '20', 'label' => '20 Item'],
+                                            ['value' => '50', 'label' => '50 Item'],
+                                            ['value' => 'all', 'label' => 'Semua Data']
+                                        ]" 
+                                        :value="'5'"
+                                        @change="limit = $event.detail.value"
+                                        x-init="$watch('open', v => v ? activeDropdown = 'limit' : (activeDropdown === 'limit' && (activeDropdown = null)))"
                                     />
                                 </div>
                             </div>
@@ -113,24 +151,7 @@
                             </div>
 
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div class="relative transition-all duration-200" :style="activeDropdown === 'limit' ? 'z-index: 100' : 'z-index: 20'">
-                                    <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Jumlah Total Data</label>
-                                    <x-custom-select 
-                                        name="limit_select" 
-                                        :options="[
-                                            ['value' => '2', 'label' => '2 Item'],
-                                            ['value' => '3', 'label' => '3 Item'],
-                                            ['value' => '4', 'label' => '4 Item'],
-                                            ['value' => '5', 'label' => '5 Item'],
-                                            ['value' => '10', 'label' => '10 Item'],
-                                            ['value' => '20', 'label' => '20 Item']
-                                        ]" 
-                                        :value="'5'"
-                                        @change="limit = $event.detail.value"
-                                        x-init="$watch('open', v => v ? activeDropdown = 'limit' : (activeDropdown === 'limit' && (activeDropdown = null)))"
-                                    />
-                                </div>
-                                <div x-show="mode === 'slider' && display === 'card'" class="relative transition-all duration-200" :style="activeDropdown === 'auto' ? 'z-index: 100' : 'z-index: 20'">
+                                <div x-show="mode === 'slider' && display === 'card'" class="relative transition-all duration-200" :style="activeDropdown === 'auto' ? 'z-index: 100' : 'z-index: 25'">
                                     <label class="block text-[10px] font-black text-gray-400 uppercase tracking-[0.2em] mb-3">Autoplay Slider</label>
                                     <x-custom-select 
                                         name="autoplay_select" 
@@ -183,10 +204,10 @@
                             <div class="pt-6">
                                 <label class="block text-xs font-black text-gray-400 uppercase tracking-widest mb-2">Salin Kode Embed</label>
                                 <div class="relative group">
-                                    <textarea id="embedCodeInput" readonly x-text="'<iframe src=\'' + embedUrl + '\' width=\'100%\' height=\'' + (display === 'list' ? '450' : '480') + '\' frameborder=\'0\'></iframe>'" 
+                                    <textarea id="embedCodeInput" readonly x-text="'<iframe src=\'' + embedUrl + '\' width=\'100%\' height=\'' + (limit === 'all' || limit > 10 ? '800' : (display === 'list' ? '450' : '480')) + '\' frameborder=\'0\'></iframe>'" 
                                         class="w-full bg-gray-900 text-blue-400 font-mono text-[10px] p-4 rounded-2xl h-24 border-0 focus:ring-0 resize-none"></textarea>
                                     <button type="button" @click="
-                                        const code = '<iframe src=\'' + embedUrl + '\' width=\'100%\' height=\'' + (display === 'list' ? '450' : '480') + '\' frameborder=\'0\'></iframe>';
+                                        const code = '<iframe src=\'' + embedUrl + '\' width=\'100%\' height=\'' + (limit === 'all' || limit > 10 ? '800' : (display === 'list' ? '450' : '480')) + '\' frameborder=\'0\'></iframe>';
                                         if (navigator.clipboard && navigator.clipboard.writeText) {
                                             navigator.clipboard.writeText(code).then(() => {
                                                 alert('Kode berhasil disalin!');
@@ -222,7 +243,7 @@
                                 <div x-show="refreshKey" x-transition class="absolute inset-0 z-0 bg-gray-50 flex items-center justify-center opacity-50" style="display: none;">
                                     <i class="fas fa-spinner fa-spin text-blue-500 text-2xl"></i>
                                 </div>
-                                <iframe :key="refreshKey" :src="embedUrl" width="100%" height="480" class="border-0 relative z-10"></iframe>
+                                <iframe :key="refreshKey" :src="embedUrl" width="100%" :height="(limit === 'all' || limit > 10) ? '800' : '480'" class="border-0 relative z-10"></iframe>
                             </div>
                             <p class="mt-4 text-[10px] text-gray-400 text-center italic">Widget ini bersifat responsif dan otomatis menyesuaikan lebar kontainer induknya.</p>
                         </div>
