@@ -3,54 +3,189 @@
 @section('title', 'Dashboard Admin')
 
 @section('content')
-<div class="p-6 md:p-10 space-y-8 bg-gray-50/30 min-h-screen">
+<div class="p-6 md:p-10 space-y-12 bg-gray-50/30 min-h-screen">
     
-    <!-- Top Statistics Grid (Modern & Compact) -->
-    <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
-        {{-- Card: Total Informasi --}}
-        <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex items-center gap-5 group hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-            <div class="w-14 h-14 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-2xl shadow-inner group-hover:bg-blue-600 group-hover:text-white transition-colors">
-                <i class="fas fa-file-alt"></i>
-            </div>
-            <div>
-                <p class="text-xs font-black text-gray-400 uppercase tracking-widest">Informasi</p>
-                <p class="text-2xl font-black text-gray-900">{{ number_format($stats['informasi']['total']) }}</p>
-            </div>
+    {{-- I. GRUP: INFORMASI & LAYANAN PUBLIK --}}
+    <section>
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-1.5 h-6 bg-blue-600 rounded-full"></div>
+            <h2 class="text-lg font-black text-gray-800 uppercase tracking-tight">Informasi & Layanan</h2>
         </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {{-- Informasi --}}
+            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col group hover:shadow-xl transition-all duration-300">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-12 h-12 rounded-2xl bg-blue-50 text-blue-600 flex items-center justify-center text-xl shadow-inner group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                        <i class="fas fa-file-alt"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Informasi</p>
+                        <p class="text-2xl font-black text-gray-900 leading-tight">{{ number_format($stats['informasi']['total']) }}</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-2 gap-2 mt-auto border-t pt-4">
+                    <div class="text-[10px] font-bold text-gray-500 uppercase">Berkala: <span class="text-blue-600">{{ $stats['informasi']['berkala'] }}</span></div>
+                    <div class="text-[10px] font-bold text-gray-500 uppercase">Setiap Saat: <span class="text-green-600">{{ $stats['informasi']['setiap_saat'] }}</span></div>
+                </div>
+            </div>
 
-        {{-- Card: Permohonan --}}
-        <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex items-center gap-5 group hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-            <div class="w-14 h-14 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-2xl shadow-inner group-hover:bg-indigo-600 group-hover:text-white transition-colors">
-                <i class="fas fa-paper-plane"></i>
+            {{-- Permohonan --}}
+            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col group hover:shadow-xl transition-all duration-300">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-12 h-12 rounded-2xl bg-indigo-50 text-indigo-600 flex items-center justify-center text-xl shadow-inner group-hover:bg-indigo-600 group-hover:text-white transition-colors">
+                        <i class="fas fa-paper-plane"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Permohonan</p>
+                        <p class="text-2xl font-black text-gray-900 leading-tight">{{ number_format($stats['permohonan']['total']) }}</p>
+                    </div>
+                </div>
+                <div class="grid grid-cols-3 gap-1 mt-auto border-t pt-4 text-center">
+                    <div><p class="text-[8px] font-bold text-gray-400 uppercase">Wait</p><p class="text-[10px] font-black text-yellow-600">{{ $stats['permohonan']['pending'] }}</p></div>
+                    <div><p class="text-[8px] font-bold text-gray-400 uppercase">Proses</p><p class="text-[10px] font-black text-blue-600">{{ $stats['permohonan']['diproses'] }}</p></div>
+                    <div><p class="text-[8px] font-bold text-gray-400 uppercase">Done</p><p class="text-[10px] font-black text-green-600">{{ $stats['permohonan']['selesai'] }}</p></div>
+                </div>
             </div>
-            <div>
-                <p class="text-xs font-black text-gray-400 uppercase tracking-widest">Permohonan</p>
-                <p class="text-2xl font-black text-gray-900">{{ number_format($stats['permohonan']['total']) }}</p>
-            </div>
-        </div>
 
-        {{-- Card: Pengunjung --}}
-        <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex items-center gap-5 group hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-            <div class="w-14 h-14 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-2xl shadow-inner group-hover:bg-purple-600 group-hover:text-white transition-colors">
-                <i class="fas fa-users"></i>
+            {{-- Kunjungan --}}
+            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col group hover:shadow-xl transition-all duration-300">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-12 h-12 rounded-2xl bg-purple-50 text-purple-600 flex items-center justify-center text-xl shadow-inner group-hover:bg-purple-600 group-hover:text-white transition-colors">
+                        <i class="fas fa-users"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Kunjungan</p>
+                        <p class="text-2xl font-black text-gray-900 leading-tight">{{ number_format($stats['activity']['visitors']) }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between mt-auto border-t pt-4">
+                    <div class="text-[10px] font-bold text-gray-500 uppercase italic">Page Views: <span class="text-purple-600">{{ number_format($stats['activity']['views']) }}</span></div>
+                </div>
             </div>
-            <div>
-                <p class="text-xs font-black text-gray-400 uppercase tracking-widest">Kunjungan</p>
-                <p class="text-2xl font-black text-gray-900">{{ number_format($stats['activity']['visitors']) }}</p>
-            </div>
-        </div>
 
-        {{-- Card: Widget Installs --}}
-        <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex items-center gap-5 group hover:shadow-xl hover:-translate-y-1 transition-all duration-300">
-            <div class="w-14 h-14 rounded-2xl bg-pink-50 text-pink-600 flex items-center justify-center text-2xl shadow-inner group-hover:bg-pink-600 group-hover:text-white transition-colors">
-                <i class="fas fa-link"></i>
-            </div>
-            <div>
-                <p class="text-xs font-black text-gray-400 uppercase tracking-widest">Pemasangan</p>
-                <p class="text-2xl font-black text-gray-900">{{ number_format($externalWebsitesCount ?? 0) }} <span class="text-[10px] text-gray-400 font-bold">Web</span></p>
+            {{-- Downloads --}}
+            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex flex-col group hover:shadow-xl transition-all duration-300">
+                <div class="flex items-center gap-4 mb-4">
+                    <div class="w-12 h-12 rounded-2xl bg-amber-50 text-amber-600 flex items-center justify-center text-xl shadow-inner group-hover:bg-amber-600 group-hover:text-white transition-colors">
+                        <i class="fas fa-cloud-download-alt"></i>
+                    </div>
+                    <div>
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-none">Unduhan</p>
+                        <p class="text-2xl font-black text-gray-900 leading-tight">{{ number_format($stats['activity']['downloads']) }}</p>
+                    </div>
+                </div>
+                <div class="flex items-center justify-between mt-auto border-t pt-4">
+                    <div class="text-[10px] font-bold text-gray-500 uppercase italic">Dokumen Terunduh</div>
+                </div>
             </div>
         </div>
-    </div>
+    </section>
+
+    {{-- II. GRUP: SDM & ORGANISASI --}}
+    <section>
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-1.5 h-6 bg-emerald-600 rounded-full"></div>
+            <h2 class="text-lg font-black text-gray-800 uppercase tracking-tight">SDM & Struktur Organisasi</h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {{-- Pimpinan --}}
+            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex items-center gap-5 group hover:shadow-xl transition-all duration-300">
+                <div class="w-14 h-14 rounded-2xl bg-emerald-50 text-emerald-600 flex items-center justify-center text-2xl shadow-inner group-hover:bg-emerald-600 group-hover:text-white transition-colors">
+                    <i class="fas fa-user-tie"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Pimpinan</p>
+                    <p class="text-2xl font-black text-gray-900">{{ number_format($stats['official']['total']) }}</p>
+                </div>
+            </div>
+
+            {{-- LHKPN --}}
+            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex items-center gap-5 group hover:shadow-xl transition-all duration-300">
+                <div class="w-14 h-14 rounded-2xl bg-cyan-50 text-cyan-600 flex items-center justify-center text-2xl shadow-inner group-hover:bg-cyan-600 group-hover:text-white transition-colors">
+                    <i class="fas fa-file-invoice-dollar"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">LHKPN</p>
+                    <p class="text-2xl font-black text-gray-900">{{ number_format($stats['official']['active']) }} <span class="text-[10px] text-gray-400 font-bold uppercase">Terdata</span></p>
+                </div>
+            </div>
+
+            {{-- Organisasi --}}
+            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex items-center gap-5 group hover:shadow-xl transition-all duration-300">
+                <div class="w-14 h-14 rounded-2xl bg-teal-50 text-teal-600 flex items-center justify-center text-2xl shadow-inner group-hover:bg-teal-600 group-hover:text-white transition-colors">
+                    <i class="fas fa-sitemap"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">OPD / Unit</p>
+                    <p class="text-2xl font-black text-gray-900">{{ number_format($stats['organization']['total']) }}</p>
+                </div>
+            </div>
+
+            {{-- Users --}}
+            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex items-center gap-5 group hover:shadow-xl transition-all duration-300">
+                <div class="w-14 h-14 rounded-2xl bg-gray-50 text-gray-600 flex items-center justify-center text-2xl shadow-inner group-hover:bg-gray-800 group-hover:text-white transition-colors">
+                    <i class="fas fa-users-cog"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">User Admin</p>
+                    <p class="text-2xl font-black text-gray-900">{{ number_format($stats['user']['total']) }}</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    {{-- III. GRUP: WEBSITE & INTERAKSI --}}
+    <section>
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-1.5 h-6 bg-pink-600 rounded-full"></div>
+            <h2 class="text-lg font-black text-gray-800 uppercase tracking-tight">Website & Interaksi</h2>
+        </div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-6">
+            {{-- Sliders --}}
+            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex items-center gap-5 group hover:shadow-xl transition-all duration-300">
+                <div class="w-14 h-14 rounded-2xl bg-pink-50 text-pink-600 flex items-center justify-center text-2xl shadow-inner group-hover:bg-pink-600 group-hover:text-white transition-colors">
+                    <i class="fas fa-images"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Sliders</p>
+                    <p class="text-2xl font-black text-gray-900">{{ number_format($stats['slider']['total']) }}</p>
+                </div>
+            </div>
+
+            {{-- Galeri --}}
+            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex items-center gap-5 group hover:shadow-xl transition-all duration-300">
+                <div class="w-14 h-14 rounded-2xl bg-rose-50 text-rose-600 flex items-center justify-center text-2xl shadow-inner group-hover:bg-rose-600 group-hover:text-white transition-colors">
+                    <i class="fas fa-photo-video"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Galeri</p>
+                    <p class="text-2xl font-black text-gray-900">{{ number_format($stats['galeri']['total']) }}</p>
+                </div>
+            </div>
+
+            {{-- Survei --}}
+            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex items-center gap-5 group hover:shadow-xl transition-all duration-300">
+                <div class="w-14 h-14 rounded-2xl bg-violet-50 text-violet-600 flex items-center justify-center text-2xl shadow-inner group-hover:bg-violet-600 group-hover:text-white transition-colors">
+                    <i class="fas fa-poll"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Survei</p>
+                    <p class="text-2xl font-black text-gray-900">{{ number_format($stats['survey_response']['total']) }} <span class="text-[10px] text-gray-400 font-bold uppercase">Respon</span></p>
+                </div>
+            </div>
+
+            {{-- Pemasangan --}}
+            <div class="bg-white p-6 rounded-[2rem] shadow-sm border border-gray-100 flex items-center gap-5 group hover:shadow-xl transition-all duration-300">
+                <div class="w-14 h-14 rounded-2xl bg-orange-50 text-orange-600 flex items-center justify-center text-2xl shadow-inner group-hover:bg-orange-600 group-hover:text-white transition-colors">
+                    <i class="fas fa-link"></i>
+                </div>
+                <div>
+                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Pemasangan</p>
+                    <p class="text-2xl font-black text-gray-900">{{ number_format($externalWebsitesCount ?? 0) }} <span class="text-[10px] text-gray-400 font-bold uppercase">Web</span></p>
+                </div>
+            </div>
+        </div>
+    </section>
 
     <!-- Main Content: Charts & External Installs -->
     <div class="grid grid-cols-1 lg:grid-cols-3 gap-8">
@@ -68,15 +203,15 @@
             </div>
         </div>
 
-        {{-- External Installation Table (NEW) --}}
-        <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col">
+        {{-- External Installation Table --}}
+        <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col overflow-hidden relative">
             <div class="flex items-center justify-between mb-6">
                 <h3 class="text-lg font-black text-gray-800 uppercase tracking-tight">Pemasangan Luar</h3>
                 <a href="{{ route('admin.reports.index', ['tab' => 'external']) }}" class="text-[10px] font-black text-blue-600 hover:underline uppercase">Lihat Semua</a>
             </div>
             
             @if(Auth::user()->isSuperAdmin())
-                <div class="flex-1">
+                <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar">
                     @forelse($externalLogs as $log)
                         <div class="flex items-center justify-between p-4 mb-3 bg-gray-50 rounded-2xl border border-transparent hover:border-blue-200 transition-all group/item">
                             <div class="flex items-center gap-3 min-w-0">
@@ -164,14 +299,18 @@
     </div>
 </div>
 
+<style>
+    .custom-scrollbar::-webkit-scrollbar { width: 4px; }
+    .custom-scrollbar::-webkit-scrollbar-track { background: transparent; }
+    .custom-scrollbar::-webkit-scrollbar-thumb { background: #e2e8f0; border-radius: 10px; }
+</style>
+
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 <script>
     document.addEventListener('DOMContentLoaded', function() {
         const ctx = document.getElementById('visitChart').getContext('2d');
-        
-        // Gradient effect
         const gradient = ctx.createLinearGradient(0, 0, 0, 400);
-        gradient.addColorStop(0, 'rgba(59, 130, 246, 0.5)');
+        gradient.addColorStop(0, 'rgba(59, 130, 246, 0.4)');
         gradient.addColorStop(1, 'rgba(59, 130, 246, 0)');
 
         new Chart(ctx, {
@@ -189,8 +328,8 @@
                     pointBackgroundColor: '#ffffff',
                     pointBorderColor: '#3b82f6',
                     pointBorderWidth: 3,
-                    pointRadius: 6,
-                    pointHoverRadius: 8
+                    pointRadius: 4,
+                    pointHoverRadius: 6
                 }]
             },
             options: {
@@ -201,22 +340,13 @@
                     tooltip: {
                         backgroundColor: '#1e293b',
                         padding: 12,
-                        titleFont: { size: 14, weight: 'bold' },
-                        bodyFont: { size: 13 },
                         cornerRadius: 12,
                         displayColors: false
                     }
                 },
                 scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: { color: '#f1f5f9', drawBorder: false },
-                        ticks: { font: { size: 11, weight: 'bold' }, color: '#94a3b8' }
-                    },
-                    x: {
-                        grid: { display: false },
-                        ticks: { font: { size: 11, weight: 'bold' }, color: '#94a3b8' }
-                    }
+                    y: { beginAtZero: true, grid: { color: '#f1f5f9', drawBorder: false }, ticks: { font: { size: 10, weight: 'bold' }, color: '#94a3b8' } },
+                    x: { grid: { display: false }, ticks: { font: { size: 10, weight: 'bold' }, color: '#94a3b8' } }
                 }
             }
         });
