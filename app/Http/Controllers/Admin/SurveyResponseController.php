@@ -156,4 +156,18 @@ class SurveyResponseController extends Controller
 
         return response()->stream($callback, 200, $headers);
     }
+
+    public function exportExcel(Request $request, Survey $survey)
+    {
+        $survey->load(['questions.options', 'responses.answers']);
+        $sortedQuestions = $this->getSortedQuestions($survey);
+        $chartImages = $request->input('chart_images', []);
+
+        $fileName = 'survey_report_' . $survey->id . '_' . date('Ymd_His') . '.xlsx';
+
+        return \Maatwebsite\Excel\Facades\Excel::download(
+            new \App\Exports\SingleSurveyExport($survey, $sortedQuestions, $chartImages), 
+            $fileName
+        );
+    }
 }

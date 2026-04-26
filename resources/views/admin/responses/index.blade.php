@@ -19,12 +19,11 @@
                         </div>
                     </div>
                     <div class="flex flex-wrap gap-3">
-                        <a href="{{ route('admin.surveys.responses.export', $survey) }}" 
-                           class="inline-flex items-center px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-emerald-600/20 active:scale-95" 
-                           target="_blank">
+                        <button type="button" onclick="exportWithCharts()"
+                           class="inline-flex items-center px-5 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white text-sm font-bold rounded-xl transition-all shadow-lg shadow-emerald-600/20 active:scale-95">
                             <i class="fas fa-file-excel mr-2"></i>
-                            Export Excel (CSV)
-                        </a>
+                            Export Excel + Grafik
+                        </button>
                         <a href="{{ route('admin.surveys.index') }}" 
                            class="inline-flex items-center px-5 py-2.5 bg-white border border-gray-200 text-gray-700 text-sm font-bold rounded-xl hover:bg-gray-50 transition-all active:scale-95">
                             <i class="fas fa-arrow-left mr-2 text-gray-400"></i>
@@ -271,6 +270,52 @@
         renderCharts('bar');
         chartTypeSelector.addEventListener('change', (e) => renderCharts(e.target.value));
     });
+
+    function exportWithCharts() {
+        const chartImages = [];
+        const canvases = document.querySelectorAll('canvas');
+        
+        // Show loading state
+        const btn = document.querySelector('button[onclick="exportWithCharts()"]');
+        const originalHtml = btn.innerHTML;
+        btn.disabled = true;
+        btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Mengolah Data...';
+
+        canvases.forEach(canvas => {
+            chartImages.push(canvas.toDataURL('image/png'));
+        });
+
+        // Create a temporary form to submit the data via POST
+        const form = document.createElement('form');
+        form.method = 'POST';
+        form.action = "{{ route('admin.surveys.responses.exportExcel', $survey) }}";
+        form.target = "_blank";
+
+        const csrfToken = document.querySelector('meta[name="csrf-token"]').content;
+        const csrfInput = document.createElement('input');
+        csrfInput.type = 'hidden';
+        csrfInput.name = '_token';
+        csrfInput.value = csrfToken;
+        form.appendChild(csrfInput);
+
+        chartImages.forEach((img, index) => {
+            const input = document.createElement('input');
+            input.type = 'hidden';
+            input.name = `chart_images[]`;
+            input.value = img;
+            form.appendChild(input);
+        });
+
+        document.body.appendChild(form);
+        form.submit();
+        document.body.removeChild(form);
+
+        // Reset button state after a short delay
+        setTimeout(() => {
+            btn.disabled = false;
+            btn.innerHTML = originalHtml;
+        }, 2000);
+    }
 </script>
 @endif
 @endsection
