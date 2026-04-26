@@ -104,6 +104,7 @@ Route::middleware(['auth', SuperadminMiddleware::class])->group(function () {
     Route::delete('surveys/sections/{section}', [SurveySectionController::class, 'destroy'])->name('surveys.sections.destroy');
 
     // Survey Questions (Explicit Nested Names to match View)
+    Route::post('surveys/{survey}/questions/reorder', [SurveyQuestionController::class, 'reorder'])->name('surveys.questions.reorder');
     Route::get('surveys/{survey}/questions/create', [SurveyQuestionController::class, 'create'])->name('surveys.questions.create');
     Route::post('surveys/{survey}/questions', [SurveyQuestionController::class, 'store'])->name('surveys.questions.store');
     Route::get('surveys/{survey}/questions/{question}/edit', [SurveyQuestionController::class, 'edit'])->name('surveys.questions.edit');

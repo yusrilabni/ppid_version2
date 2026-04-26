@@ -160,4 +160,22 @@ class SurveyQuestionController extends Controller
 
         return redirect()->route('admin.surveys.show', $survey)->with('success', 'Pertanyaan berhasil dihapus.');
     }
+
+    /**
+     * Update questions order.
+     */
+    public function reorder(Request $request, Survey $survey)
+    {
+        $orders = $request->input('orders');
+        
+        if (is_array($orders)) {
+            foreach ($orders as $id => $order) {
+                SurveyQuestion::where('id', $id)
+                    ->where('survey_id', $survey->id)
+                    ->update(['order' => $order]);
+            }
+        }
+
+        return response()->json(['success' => true, 'message' => 'Urutan pertanyaan berhasil diperbarui.']);
+    }
 }

@@ -137,7 +137,15 @@
                 </div>
 
                 <!-- Sections and Questions List -->
-                <div class="p-6 space-y-6">
+                <div class="p-6 space-y-6 relative">
+                    {{-- Floating Save Order Button --}}
+                    <div id="saveOrderContainer" class="hidden sticky top-4 z-40 flex justify-center mb-4">
+                        <button type="button" onclick="saveNewOrder()" 
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-6 py-2 rounded-full shadow-2xl font-bold flex items-center gap-2 transform hover:scale-105 transition-all">
+                            <i class="fas fa-save"></i> Simpan Urutan Baru
+                        </button>
+                    </div>
+
                     @php
                         $questionsBySection = $survey->questions->groupBy('section_id');
                         $sections = $survey->sections;
@@ -172,8 +180,15 @@
                                                         <span
                                                             class="px-2 py-0.5 text-xs font-medium bg-red-100 text-red-700 rounded">Wajib</span>
                                                     @endif
-                                                </div>
-                                                <div class="ml-8 flex items-center gap-3">
+                                                    <div class="ml-auto flex items-center gap-2 mr-4">
+                                                        <label class="text-[10px] font-bold text-gray-400 uppercase">Urutan:</label>
+                                                        <input type="number" 
+                                                               value="{{ $question->order ?? 0 }}" 
+                                                               data-id="{{ $question->id }}"
+                                                               class="question-order-input w-16 px-2 py-1 text-xs border border-gray-200 rounded focus:ring-1 focus:ring-blue-500 transition-all text-center font-bold text-blue-600"
+                                                               onchange="showSaveOrderButton()">
+                                                    </div>
+                                                    </div>                                                <div class="ml-8 flex items-center gap-3">
                                                     <span
                                                         class="text-xs px-2.5 py-1 bg-gray-100 text-gray-700 rounded-full">
                                                         {{ str_replace('_', ' ', $question->question_type) }}
@@ -466,6 +481,45 @@
     </div>
 
     <script>
+        function showSaveOrderButton() {
+            document.getElementById('saveOrderContainer').classList.remove('hidden');
+        }
+
+        function saveNewOrder() {
+            const inputs = document.querySelectorAll('.question-order-input');
+            const orders = {};
+            inputs.forEach(input => {
+                orders[input.dataset.id] = input.value;
+            });
+
+            const btn = document.querySelector('#saveOrderContainer button');
+            const originalContent = btn.innerHTML;
+            btn.disabled = true;
+            btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Menyimpan...';
+
+            fetch("{{ route('admin.surveys.questions.reorder', $survey) }}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-CSRF-TOKEN': '{{ csrf_token() }}'
+                },
+                body: JSON.stringify({ orders: orders })
+            })
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    alert('Urutan berhasil disimpan!');
+                    location.reload();
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Gagal menyimpan urutan.');
+                btn.disabled = false;
+                btn.innerHTML = originalContent;
+            });
+        }
+
         function openEditSectionModal(id, title, description, order) {
             document.getElementById('editSectionForm').action = "/v2/admin/surveys/sections/" + id;
             document.getElementById('edit_section_title').value = title;
