@@ -59,6 +59,7 @@
                     <i class="fas fa-file-signature w-4 mr-3"></i>
                     <span class="menu-text">Permohonan Informasi</span>
                 </a>
+                @if(Auth::user()->isSuperAdmin())
                 <a href="{{ route('admin.surveys.index') }}" class="flex items-center px-4 py-2 text-blue-200 hover:bg-blue-700 hover:bg-opacity-50 hover:text-white rounded-lg transition-colors duration-200 my-1 menu-item @if(request()->routeIs('admin.surveys.*')) bg-blue-700 bg-opacity-75 @endif" title="Daftar Survei">
                     <i class="fas fa-poll w-4 mr-3"></i>
                     <span class="menu-text">Survei Kepuasan</span>
@@ -67,6 +68,7 @@
                     <i class="fas fa-shopping-cart w-4 mr-3"></i>
                     <span class="menu-text">PBJ</span>
                 </a>
+                @endif
             </div>
 
             <div class="mt-6 px-4">
@@ -88,10 +90,12 @@
                     <i class="fas fa-file-invoice-dollar w-4 mr-3"></i>
                     <span class="menu-text">LHKPN</span>
                 </a>
+                @if(Auth::user()->isSuperAdmin())
                 <a href="{{ route('admin.profil-ppid.index') }}" class="flex items-center px-4 py-2 text-blue-200 hover:bg-blue-700 hover:bg-opacity-50 hover:text-white rounded-lg transition-colors duration-200 my-1 menu-item @if(request()->routeIs('admin.profil-ppid.*')) bg-blue-700 bg-opacity-75 @endif" title="Profil PPID">
                     <i class="fas fa-info-circle w-4 mr-3"></i>
                     <span class="menu-text">Profil PPID</span>
                 </a>
+                @endif
             </div>
 
             <div class="mt-6 px-4">
@@ -101,14 +105,17 @@
                         <i class="bi bi-three-dots text-blue-400"></i>
                     </div>
                 </div>
+                @if(Auth::user()->isSuperAdmin())
                 <a href="{{ route('admin.sliders.index') }}" class="flex items-center px-4 py-2 text-blue-200 hover:bg-blue-700 hover:bg-opacity-50 hover:text-white rounded-lg transition-colors duration-200 my-1 menu-item @if(request()->routeIs('admin.sliders.*')) bg-blue-700 bg-opacity-75 @endif" title="Sliders">
                     <i class="fas fa-images w-4 mr-3"></i>
                     <span class="menu-text">Sliders</span>
                 </a>
+                @endif
                 <a href="{{ route('admin.galeri.index') }}" class="flex items-center px-4 py-2 text-blue-200 hover:bg-blue-700 hover:bg-opacity-50 hover:text-white rounded-lg transition-colors duration-200 my-1 menu-item @if(request()->routeIs('admin.galeri.*')) bg-blue-700 bg-opacity-75 @endif" title="Galeri">
                     <i class="fas fa-photo-video w-4 mr-3"></i>
                     <span class="menu-text">Galeri</span>
                 </a>
+                @if(Auth::user()->isSuperAdmin())
                 <a href="{{ route('admin.users.index') }}" class="flex items-center px-4 py-2 text-blue-200 hover:bg-blue-700 hover:bg-opacity-50 hover:text-white rounded-lg transition-colors duration-200 my-1 menu-item @if(request()->routeIs('admin.users.*')) bg-blue-700 bg-opacity-75 @endif" title="Users">
                     <i class="fas fa-users w-4 mr-3"></i>
                     <span class="menu-text">Users</span>
@@ -117,6 +124,7 @@
                     <i class="fas fa-chart-line w-4 mr-3"></i>
                     <span class="menu-text">Laporan PPID</span>
                 </a>
+                @endif
             </div>
         </nav>
     </div>

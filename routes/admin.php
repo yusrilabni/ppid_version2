@@ -65,4 +65,18 @@ Route::middleware(['auth', SuperadminMiddleware::class])->group(function () {
     Route::resource('sliders', SliderController::class);
     Route::resource('profil-ppid', ProfilPpidController::class);
     Route::resource('organizations', \App\Http\Controllers\Admin\OrganizationController::class);
+    
+    // Survei & PBJ
+    Route::resource('surveys', \App\Http\Controllers\Admin\SurveyController::class);
+    Route::resource('pbj-questions', \App\Http\Controllers\Admin\PbjQuestionController::class);
+    Route::post('pbj-questions/duplicate', [\App\Http\Controllers\Admin\PbjQuestionController::class, 'duplicate'])->name('pbj-questions.duplicate');
+    Route::delete('pbj-questions/year/{year}', [\App\Http\Controllers\Admin\PbjQuestionController::class, 'deleteYear'])->name('pbj-questions.deleteYear');
+
+    // Laporan PPID
+    Route::get('reports', [\App\Http\Controllers\Admin\ReportController::class, 'index'])->name('reports.index');
+    Route::get('reports/export/total', [\App\Http\Controllers\Admin\ReportController::class, 'exportTotal'])->name('reports.export.total');
+    Route::get('reports/export/informasi', [\App\Http\Controllers\Admin\ReportController::class, 'exportInformasi'])->name('reports.export.informasi');
+    Route::get('reports/export/permohonan', [\App\Http\Controllers\Admin\ReportController::class, 'exportPermohonan'])->name('reports.export.permohonan');
+    Route::get('reports/export/visitors', [\App\Http\Controllers\Admin\ReportController::class, 'exportVisitors'])->name('reports.export.visitors');
+    Route::get('reports/export/survey', [\App\Http\Controllers\Admin\ReportController::class, 'exportSurvey'])->name('reports.export.survey');
 });
