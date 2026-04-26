@@ -312,22 +312,19 @@
                                                             </div>
                                                         @elseif ($question->question_type === 'Dropdown')
                                                             <div class="relative">
-                                                                <select name="answers[{{ $question->id }}]"
-                                                                    class="text-input w-full px-4 py-3 md:px-5 md:py-4 text-base md:text-lg border-2 border-gray-200 rounded-xl focus:border-blue-500 focus:ring-4 focus:ring-blue-100 appearance-none bg-white transition-all duration-200 pr-12"
-                                                                    {{ $question->is_required ? 'required' : '' }}
-                                                                    x-on:change="handleInputChange($event)">
-                                                                    <option value="" class="text-gray-400">-- Pilih --</option>
-                                                                    @foreach ($question->options->sortBy('order') as $option)
-                                                                        <option value="{{ $option->id }}"
-                                                                            class="text-gray-800">
-                                                                            {{ $option->option_text }}</option>
-                                                                    @endforeach
-                                                                </select>
-                                                                <div
-                                                                    class="absolute inset-y-0 right-0 flex items-center px-4 pointer-events-none">
-                                                                    <i
-                                                                        class="fas fa-chevron-down text-gray-400 text-lg"></i>
-                                                                </div>
+                                                                @php
+                                                                    $options = $question->options->sortBy('order')->map(function($opt) {
+                                                                        return ['value' => (string)$opt->id, 'label' => $opt->option_text];
+                                                                    })->toArray();
+                                                                @endphp
+                                                                <x-custom-select 
+                                                                    name="answers[{{ $question->id }}]" 
+                                                                    :options="$options"
+                                                                    placeholder="-- Pilih --"
+                                                                    :searchable="true"
+                                                                    :required="$question->is_required"
+                                                                    @change="handleInputChange({ target: $el.querySelector('input[type=hidden]') })"
+                                                                />
                                                             </div>
                                                         @elseif ($question->question_type === 'Skala Kepuasan')
                                                             <div
