@@ -29,7 +29,7 @@ use App\Http\Middleware\SuperadminMiddleware;
 
 /*
 |--------------------------------------------------------------------------
-| Admin Routes
+| Admin Routes (FIXED penamaan agar sinkron dengan View)
 |--------------------------------------------------------------------------
 */
 
@@ -38,9 +38,7 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
-    // Informasi CRUD & Similarity
-    Route::post('informasi-crud/save', [InformasiController::class, 'store']);
-    Route::post('informasi-crud/update/{informasi}', [InformasiController::class, 'update']);
+    // Informasi CRUD
     Route::post('proses-tambah-informasi', [InformasiController::class, 'store'])->name('informasi.stealth_store');
     Route::post('proses-update-informasi/{informasi}', [InformasiController::class, 'update'])->name('informasi.stealth_update');
     Route::post('proses-cek-judul', [InformasiController::class, 'checkSimilarity'])->name('informasi.check_similarity');
@@ -58,10 +56,7 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     Route::resource('standar-layanan', SubStandarLayananController::class);
     Route::resource('permohonan-informasi', PermohonanInformasiController::class);
 
-    // LHKPN & Struktur
-    Route::get('my-structure', [StrukturOrganisasiController::class, 'myStructure'])->name('my-structure.manage');
-    Route::post('my-structure', [StrukturOrganisasiController::class, 'updateMyStructure'])->name('my-structure.update');
-    
+    // LHKPN (Fixed Route Names)
     Route::get('lhkpn', [LhkpnController::class, 'index'])->name('lhkpn.index');
     Route::get('lhkpn/create', [LhkpnController::class, 'createForUnit'])->name('lhkpn.create');
     Route::post('lhkpn', [LhkpnController::class, 'storeForUnit'])->name('lhkpn.store');
@@ -78,20 +73,35 @@ Route::middleware(['auth', SuperadminMiddleware::class])->group(function () {
     Route::get('slider-settings', [AdminSettingController::class, 'showSliderSettings'])->name('slider-settings.show');
     Route::post('slider-settings', [AdminSettingController::class, 'updateSliderSettings'])->name('slider-settings.update');
     
-    // Organisasi & Jabatan (Hierarki)
+    // Organisasi & Jabatan (Mapping name to 'positions' to match view)
     Route::resource('organizations', OrganizationController::class);
-    Route::resource('organizations.positions', OrganizationPositionController::class);
+    Route::resource('organizations.positions', OrganizationPositionController::class)->names([
+        'index' => 'organizations.positions.index',
+        'create' => 'organizations.positions.create',
+        'store' => 'organizations.positions.store',
+        'edit' => 'positions.edit',
+        'update' => 'positions.update',
+        'destroy' => 'positions.destroy',
+    ]);
     
     // Profil Pimpinan & LHKPN Terintegrasi
     Route::resource('officials.lhkpn', LhkpnController::class)->only(['index', 'store', 'destroy']);
     
-    // Survei
+    // Survei (PENTING: Mapping name agar sinkron dengan View)
     Route::resource('surveys', SurveyController::class);
     Route::post('surveys/{survey}/sections', [SurveySectionController::class, 'store'])->name('surveys.sections.store');
     Route::put('surveys/sections/{section}', [SurveySectionController::class, 'update'])->name('surveys.sections.update');
     Route::delete('surveys/sections/{section}', [SurveySectionController::class, 'destroy'])->name('surveys.sections.destroy');
     
-    Route::resource('surveys.questions', SurveyQuestionController::class);
+    Route::resource('surveys.questions', SurveyQuestionController::class)->names([
+        'index' => 'surveys.questions.index',
+        'create' => 'questions.create',
+        'store' => 'questions.store',
+        'edit' => 'questions.edit',
+        'update' => 'questions.update',
+        'destroy' => 'questions.destroy',
+    ]);
+
     Route::resource('surveys.responses', SurveyResponseController::class)->only(['index']);
     Route::get('surveys/{survey}/responses/export', [SurveyResponseController::class, 'export'])->name('surveys.responses.export');
     
@@ -109,11 +119,11 @@ Route::middleware(['auth', SuperadminMiddleware::class])->group(function () {
     Route::get('reports/export/survey', [ReportController::class, 'exportSurvey'])->name('reports.survey.export');
 });
 
-// PEMBERSIH CACHE (Akses: /admin/clear-all-cache)
+// PEMBERSIH CACHE TOTAL
 Route::get('clear-all-cache', function() {
     \Illuminate\Support\Facades\Artisan::call('route:clear');
     \Illuminate\Support\Facades\Artisan::call('view:clear');
     \Illuminate\Support\Facades\Artisan::call('config:clear');
     \Illuminate\Support\Facades\Artisan::call('cache:clear');
-    return "Semua cache server telah dibersihkan! Silakan coba buka menu kembali.";
+    return "Semua cache server telah dibersihkan secara paksa! Silakan coba buka menu kembali.";
 })->middleware(['auth']);
