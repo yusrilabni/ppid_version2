@@ -39,6 +39,7 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
     // Informasi CRUD
+    Route::post('informasi-crud/save', [InformasiController::class, 'store'])->name('informasi-crud.save');
     Route::post('proses-tambah-informasi', [InformasiController::class, 'store'])->name('informasi.stealth_store');
     Route::post('proses-update-informasi/{informasi}', [InformasiController::class, 'update'])->name('informasi.stealth_update');
     Route::post('proses-cek-judul', [InformasiController::class, 'checkSimilarity'])->name('informasi.check_similarity');
