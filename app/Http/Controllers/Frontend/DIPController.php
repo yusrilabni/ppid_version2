@@ -96,7 +96,7 @@ class DIPController extends Controller
             ->whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])
             ->where('status_keterbukaan', 'Terbuka')
             ->get()
-            ->groupBy(['category', 'jenis_dokumen']);
+            ->groupBy(['category', 'jenis_dokumen', 'unit_id']);
 
         $allUnits = $this->getUnitData();
 
