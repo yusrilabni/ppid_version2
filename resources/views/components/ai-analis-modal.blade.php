@@ -1,5 +1,5 @@
 <div x-show="$store.aiAnalisModal.open" x-transition
-    class="fixed inset-0 z-[60] bg-black/50 flex items-center justify-center p-4" style="display: none;">
+    class="fixed inset-0 z-[150] bg-black/50 flex items-center justify-center p-4" style="display: none;">
 
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap');
