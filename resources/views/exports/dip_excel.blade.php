@@ -49,25 +49,29 @@
                     </tr>
 
                     @foreach($groupedByUnit as $originUnitName => $informasiList)
-                        @foreach($informasiList as $informasi)
-                            @php
-                                $unitId = trim((string)$informasi->unit_id);
-                                $infoUnitName = $unitMap->get($unitId)['unit_nama'] ?? 'Unit Tidak Terdaftar';
-                                $pejabat = ($infoUnitName == 'Dinas Komunikasi Informatika dan Persandian') ? 'PPID Utama' : 'PPID Pelaksana';
-                                $bentuk = !empty($informasi->url) || !empty($informasi->official_id) ? 'Soft Copy' : (!empty($informasi->file) ? 'Hard Copy' : 'N/A');
-                                $retensi = in_array(strtoupper(trim($informasi->status)), ['BERLAKU', 'AKTIF']) ? 'Selama Berlaku' : 'Arsip (Tahun ' . $informasi->tahun . ')';
-                            @endphp
-                            <tr>
-                                <td style="border: 1px solid #000000; text-align: center;">{{ $globalCounter++ }}</td>
-                                <td style="border: 1px solid #000000;">{{ $informasi->title }}</td>
-                                <td style="border: 1px solid #000000;">{{ $pejabat }}</td>
-                                <td style="border: 1px solid #000000;">{{ $infoUnitName }}</td>
-                                <td style="border: 1px solid #000000; text-align: center;">{{ $informasi->tahun }}</td>
-                                <td style="border: 1px solid #000000; text-align: center;">{{ $bentuk }}</td>
-                                <td style="border: 1px solid #000000; text-align: center;">{{ $retensi }}</td>
-                                <td style="border: 1px solid #000000;">{{ route('frontend.informasi.show', $informasi->id) }}</td>
-                            </tr>
-                        @endforeach
+                        @if(is_iterable($informasiList))
+                            @foreach($informasiList as $informasi)
+                                @if(is_object($informasi))
+                                    @php
+                                        $unitId = trim((string)$informasi->unit_id);
+                                        $infoUnitName = $unitMap->get($unitId)['unit_nama'] ?? 'Unit Tidak Terdaftar';
+                                        $pejabat = ($infoUnitName == 'Dinas Komunikasi Informatika dan Persandian') ? 'PPID Utama' : 'PPID Pelaksana';
+                                        $bentuk = !empty($informasi->url) || !empty($informasi->official_id) ? 'Soft Copy' : (!empty($informasi->file) ? 'Hard Copy' : 'N/A');
+                                        $retensi = in_array(strtoupper(trim($informasi->status)), ['BERLAKU', 'AKTIF']) ? 'Selama Berlaku' : 'Arsip (Tahun ' . $informasi->tahun . ')';
+                                    @endphp
+                                    <tr>
+                                        <td style="border: 1px solid #000000; text-align: center;">{{ $globalCounter++ }}</td>
+                                        <td style="border: 1px solid #000000;">{{ $informasi->title }}</td>
+                                        <td style="border: 1px solid #000000;">{{ $pejabat }}</td>
+                                        <td style="border: 1px solid #000000;">{{ $infoUnitName }}</td>
+                                        <td style="border: 1px solid #000000; text-align: center;">{{ $informasi->tahun }}</td>
+                                        <td style="border: 1px solid #000000; text-align: center;">{{ $bentuk }}</td>
+                                        <td style="border: 1px solid #000000; text-align: center;">{{ $retensi }}</td>
+                                        <td style="border: 1px solid #000000;">{{ route('frontend.informasi.show', $informasi->id) }}</td>
+                                    </tr>
+                                @endif
+                            @endforeach
+                        @endif
                     @endforeach
                 @endforeach
             @endif
