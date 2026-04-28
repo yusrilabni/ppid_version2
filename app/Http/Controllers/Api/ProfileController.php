@@ -24,33 +24,34 @@ class ProfileController extends Controller
         // Data dari API eksternal jika ada NIP
         $apiData = User::getDataFromApi($user->nip);
 
-        // Ambil data unit untuk mendapatkan nama dinas
-        $allUnits = GeneralHelper::getUnitData();
-        $unitNama = null;
-
-        if ($apiData && isset($apiData['unit_id'])) {
-            foreach ($allUnits as $unit) {
-                if (isset($unit['unit_id']) && $unit['unit_id'] == $apiData['unit_id']) {
-                    $unitNama = $unit['unit_nama'] ?? null;
-                    break;
-                }
-            }
+        // Logic for Pangkat
+        $pangkat = null;
+        if (!empty($apiData)) {
+            $pangkat = trim(($apiData['pangkat_nama'] ?? '') . ' ' . ($apiData['pangkat_golruang'] ?? ''));
+            if ($pangkat === '()') $pangkat = null;
         }
 
-        if (!$unitNama && $user->unit_id) {
-            $userUnit = $allUnits->get($user->unit_id);
-            if ($userUnit) {
-                $unitNama = $userUnit['unit_nama'];
-            }
+        // Final Profile Photo Logic (Same as Web)
+        $photoUrl = null;
+        if (!empty($apiData['foto'])) {
+            $photoUrl = $apiData['foto'];
+        } elseif ($user->profile_photo_path) {
+            $photoUrl = asset('storage/' . $user->profile_photo_path);
         }
 
         return response()->json([
             'success' => true,
             'data' => [
                 'user' => $user,
-                'external_data' => $apiData,
-                'unit_name' => $unitNama,
-                'profile_photo_url' => $user->profile_photo_path ? asset('storage/' . $user->profile_photo_path) : null
+                'is_asn' => !empty($apiData['nip']),
+                'kepegawaian' => [
+                    'pangkat' => $pangkat,
+                    'jabatan' => $apiData['jabatan_nama'] ?? null,
+                    'unit_bagian' => $apiData['jabatan_grup'] ?? null,
+                    'unit_kerja' => $apiData['unit_nama'] ?? null,
+                    'nomor_hp' => $apiData['nomor_hp'] ?? null,
+                ],
+                'profile_photo_url' => $photoUrl
             ]
         ]);
     }
@@ -82,6 +83,7 @@ class ProfileController extends Controller
             ], 422);
         }
 
+        // Fill data
         $user->fill($request->only([
             'name', 'email', 'nip', 'bio', 'facebook', 'instagram', 'tiktok', 'linkedin'
         ]));
@@ -90,6 +92,7 @@ class ProfileController extends Controller
             $user->email_verified_at = null;
         }
 
+        // Handle Photo
         if ($request->hasFile('photo')) {
             if ($user->profile_photo_path) {
                 Storage::disk('public')->delete($user->profile_photo_path);
