@@ -18,8 +18,24 @@ class GaleriController extends Controller
      */
     public function index()
     {
-        $galeris = Galeri::all();
+        $galeris = Galeri::orderBy('is_pinned', 'desc')->orderBy('created_at', 'desc')->get();
         return view('admin.galeri.index', compact('galeris'));
+    }
+
+    /**
+     * Toggle the pinned status of the specified resource.
+     *
+     * @param  \App\Models\Galeri  $galeri
+     * @return \Illuminate\Http\Response
+     */
+    public function togglePin(Galeri $galeri)
+    {
+        $galeri->update([
+            'is_pinned' => !$galeri->is_pinned
+        ]);
+
+        $status = $galeri->is_pinned ? 'di-pin' : 'dilepas dari pin';
+        return back()->with('success', "Foto berhasil $status.");
     }
 
     /**

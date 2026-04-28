@@ -97,14 +97,20 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <div class="flex space-x-3">
-                                    <a href="{{ route('admin.galeri.edit', $galeri) }}" class="text-blue-600 hover:text-blue-900 transition">
+                                <div class="flex space-x-3 items-center">
+                                    <form action="{{ route('admin.galeri.toggle-pin', $galeri) }}" method="POST" class="inline-block">
+                                        @csrf
+                                        <button type="submit" class="{{ $galeri->is_pinned ? 'text-orange-500' : 'text-gray-400' }} hover:text-orange-600 transition" title="{{ $galeri->is_pinned ? 'Lepaskan Pin' : 'Pin Foto' }}">
+                                            <i class="fas fa-thumbtack {{ $galeri->is_pinned ? '' : 'transform -rotate-45' }}"></i>
+                                        </button>
+                                    </form>
+                                    <a href="{{ route('admin.galeri.edit', $galeri) }}" class="text-blue-600 hover:text-blue-900 transition" title="Edit">
                                         <i class="fas fa-edit"></i>
                                     </a>
                                     <form action="{{ route('admin.galeri.destroy', $galeri) }}" method="POST" class="inline-block">
                                         @csrf
                                         @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-900 transition" onclick="return confirm('Apakah Anda yakin ingin menghapus galeri ini?')">
+                                        <button type="submit" class="text-red-600 hover:text-red-900 transition" onclick="return confirm('Apakah Anda yakin ingin menghapus galeri ini?')" title="Hapus">
                                             <i class="fas fa-trash"></i>
                                         </button>
                                     </form>

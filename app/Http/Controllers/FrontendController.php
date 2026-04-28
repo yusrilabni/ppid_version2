@@ -39,7 +39,7 @@ class FrontendController extends Controller
             $slider->informasi = Informasi::where('title', $slider->title)->first();
         }
         $berita = Berita::where('published', true)->orderBy('created_at', 'desc')->take(6)->get();
-        $galeri = Galeri::orderBy('created_at', 'desc')->take(8)->get();
+        $galeri = Galeri::orderBy('is_pinned', 'desc')->orderBy('created_at', 'desc')->take(8)->get();
         
         // --- START of Statistics Logic ---
         $informasiBerkalaCount = Informasi::where('category', 'Informasi Berkala')->count();
@@ -165,7 +165,7 @@ class FrontendController extends Controller
 
     public function allGaleri()
     {
-        $galeri = Galeri::orderBy('created_at', 'desc')->paginate(12); // Fetch all galleries, paginated
+        $galeri = Galeri::orderBy('is_pinned', 'desc')->orderBy('created_at', 'desc')->paginate(12); // Fetch all galleries, paginated
         
         $breadcrumbs = [
             ['title' => 'Beranda', 'url' => route('home'), 'icon' => 'fas fa-home'],

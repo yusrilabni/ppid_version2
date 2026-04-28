@@ -12,6 +12,7 @@ class Galeri extends Model
         'image',
         'video',
         'type',
+        'is_pinned',
         'category',
         'jenis_dokumen',
         'user_id',

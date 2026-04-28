@@ -415,6 +415,11 @@
                             <div
                                 class="bg-white rounded-lg overflow-hidden shadow-md hover:shadow-lg transition-shadow group">
                                 <div class="aspect-w-16 aspect-h-12 relative">
+                                    @if($item->is_pinned)
+                                        <div class="absolute top-2 left-2 bg-orange-500 text-white rounded-full p-1.5 z-10 shadow-md" title="Foto di-pin">
+                                            <i data-lucide="thumbtack" class="h-3 w-3 md:h-4 md:w-4"></i>
+                                        </div>
+                                    @endif
                                     @if ($item->type === 'foto')
                                         <a href="{{ $item->video ? $item->video : (asset('storage/' . $item->image) ?: '/placeholder.jpg') }}"
                                             {{ $item->video ? 'target="_blank"' : '' }} class="block">
