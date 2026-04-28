@@ -65,6 +65,8 @@ Route::prefix('v1')->group(function () {
         });
 
         Route::post('/logout', [App\Http\Controllers\Api\LoginController::class, 'logout']);
+    });
+
 });
 
 // Fallback rute lama (jika masih ada yang pakai, agar tidak langsung error)
