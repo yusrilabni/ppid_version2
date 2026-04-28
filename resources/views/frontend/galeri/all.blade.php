@@ -15,8 +15,8 @@
                     <div class="bg-white rounded-xl shadow-lg hover:shadow-xl transition-shadow duration-300 ease-in-out overflow-hidden flex flex-col h-full">
                         <div class="aspect-w-16 aspect-h-12 relative">
                             @if($item->is_pinned)
-                                <div class="absolute top-2 left-2 bg-orange-500 text-white rounded-full p-1.5 z-10 shadow-md" title="Foto di-pin">
-                                    <i data-lucide="thumbtack" class="h-3 w-3 md:h-4 md:w-4"></i>
+                                <div class="absolute top-2 left-2 bg-orange-500 text-white rounded-full p-2 z-10 shadow-md" title="Foto di-pin">
+                                    <i class="fas fa-thumbtack text-xs"></i>
                                 </div>
                             @endif
                             @if ($item->type === 'foto')
