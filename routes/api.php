@@ -53,7 +53,8 @@ Route::prefix('v1')->group(function () {
     Route::get('/profil', [App\Http\Controllers\Api\ProfilPpidController::class, 'index']);
 
     // Auth & Kontak
-    Route::post('/login', [LoginController::class, 'login']);
+    Route::post('/login', [App\Http\Controllers\Api\LoginController::class, 'login']);
+    Route::post('/register', [App\Http\Controllers\Api\RegisterController::class, 'register']);
     Route::post('/contact', [ContactController::class, 'store']);
 
     // --- PROTECTED ROUTES (Perlu Token Sanctum) ---
@@ -63,10 +64,7 @@ Route::prefix('v1')->group(function () {
             return $request->user();
         });
 
-        // Contoh rute untuk mengunggah data dari Android
-        Route::post('/informasi/upload', [InformasiController::class, 'store']);
-        Route::post('/laporan/upload', [LaporanController::class, 'store']);
-    });
+        Route::post('/logout', [App\Http\Controllers\Api\LoginController::class, 'logout']);
 });
 
 // Fallback rute lama (jika masih ada yang pakai, agar tidak langsung error)

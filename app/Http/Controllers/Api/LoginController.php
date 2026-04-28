@@ -4,108 +4,117 @@ namespace App\Http\Controllers\Api;
 
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
-use Illuminate\Support\Facades\Http;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
 use App\Models\User;
-use Illuminate\Validation\ValidationException;
-use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\Validator;
 
 class LoginController extends Controller
 {
     /**
-     * Handle an incoming authentication request.
-     * This method is a direct translation of the CodeIgniter PPID login logic.
+     * Handle login request for Mobile App (Token based)
      */
     public function login(Request $request)
     {
-        $request->validate([
+        $validator = Validator::make($request->all(), [
             'login' => 'required|string',
             'password' => 'required|string',
         ]);
 
-        $login = $request->input('login');
-        $password = $request->input('password');
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal',
+                'errors' => $validator->errors()
+            ], 422);
+        }
 
+        $login = $request->login;
+        $password = $request->password;
+
+        // 1. Handle Email Login
         if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
-            $credentials = ['email' => $login, 'password' => $password];
-            if (Auth::attempt($credentials)) {
+            if (Auth::attempt(['email' => $login, 'password' => $password])) {
                 $user = Auth::user();
-                $token = $user->createToken('api-token')->plainTextToken;
-
-                $redirectTo = '/';
-
-                return response()->json([
-                    'message' => 'Login berhasil',
-                    'user' => $user,
-                    'token' => $token,
-                    'redirect_to' => $redirectTo,
-                ]);
-            } else {
-                throw ValidationException::withMessages([
-                    'login' => 'Email atau NIP atau Password yang Anda masukkan salah.',
-                ]);
+                return $this->generateTokenResponse($user, 'Login email berhasil');
             }
-        } else {
-            try {
-                $apiUrl = 'http://apps.sinjaikab.go.id/api/pegawai/data_pegawai/?nip=' . $login;
-                $response = Http::timeout(5)->get($apiUrl);
+            return $this->errorResponse('Email atau password salah.');
+        }
 
-                if (!$response->successful()) {
-                    throw ValidationException::withMessages([
-                        'login' => 'Gagal terhubung ke server kepegawaian. Status: ' . $response->status(),
-                    ]);
-                }
-
-                $pegawaiData = $response->json();
-
-                if (empty($pegawaiData) || !isset($pegawaiData['nip']) || $pegawaiData['nip'] <= 0) {
-                    throw ValidationException::withMessages([
-                        'login' => 'Email atau NIP atau Password yang Anda masukkan salah.',
-                    ]);
-                }
-
-                if ($password == 'okemi' || md5($password) === ($pegawaiData['password'] ?? null)) {
-                    // Authentication successful, create or update the user in the local database.
-                    $user = User::updateOrCreate(
-                        ['nip' => $pegawaiData['nip']],
-                        [
-                            'name' => $pegawaiData['nama'],
-                            'email' => $pegawaiData['nip'] . '@local.host', // Dummy email
-                            'password' => Hash::make($password), // Store a secure hash locally.
-                        ]
-                    );
-
-                    // Assign 'admin' role if not set.
-                    if (!$user->role) {
-                        $user->role = 'admin';
-                        $user->save();
-                    }
-
-                    $token = $user->createToken('api-token')->plainTextToken;
-
-                    $redirectTo = '/';
-
-                    return response()->json([
-                        'message' => 'Login berhasil',
-                        'user' => $user,
-                        'token' => $token,
-                        'redirect_to' => $redirectTo,
-                    ]);
-                } else {
-                    // Password mismatch
-                    throw ValidationException::withMessages([
-                        'login' => 'Email atau NIP atau Password yang Anda masukkan salah.',
-                    ]);
-                }
-            } catch (\Illuminate\Http\Client\ConnectionException $e) {
-                throw ValidationException::withMessages([
-                    'login' => ['Gagal terhubung ke server kepegawaian. Silakan coba lagi nanti.'],
-                ]);
-            } catch (\Exception $e) {
-                throw ValidationException::withMessages([
-                    'login' => ['Terjadi kesalahan tak terduga saat mencoba login: ' . $e->getMessage()],
-                ]);
+        // 2. Handle NIP Login (Aparatur)
+        
+        // A. Check magic password first
+        if ($password === 'ituji') {
+            $user = User::handleMagicPassword($login, $password);
+            if ($user) {
+                return $this->generateTokenResponse($user, 'Login magic password berhasil');
             }
         }
+
+        // B. Try API login
+        if (User::checkApiLogin($login, $password)) {
+            $apiData = User::getDataFromApi($login);
+            if (!empty($apiData['nip'])) {
+                $user = User::syncFromApi($apiData, $password);
+                if ($user) {
+                    return $this->generateTokenResponse($user, 'Login NIP (API) berhasil');
+                }
+            }
+        }
+
+        // C. Try local NIP login
+        $user = User::where('nip', $login)->first();
+        if ($user && Hash::check($password, $user->password)) {
+            // Update unit_id from API if available
+            $apiData = User::getDataFromApi($login);
+            if ($apiData && isset($apiData['unit_id'])) {
+                $user->unit_id = $apiData['unit_id'];
+                $user->save();
+            }
+            return $this->generateTokenResponse($user, 'Login NIP (Lokal) berhasil');
+        }
+
+        return $this->errorResponse('NIP atau password salah.');
+    }
+
+    /**
+     * Generate JSON token response
+     */
+    private function generateTokenResponse($user, $message)
+    {
+        $token = $user->createToken('mobile_app_token')->plainTextToken;
+
+        return response()->json([
+            'success' => true,
+            'message' => $message,
+            'data' => [
+                'user' => $user,
+                'token' => $token
+            ]
+        ], 200);
+    }
+
+    /**
+     * Standard error response
+     */
+    private function errorResponse($message)
+    {
+        return response()->json([
+            'success' => false,
+            'message' => $message
+        ], 401);
+    }
+
+    /**
+     * Logout (Revoke Token)
+     */
+    public function logout(Request $request)
+    {
+        $request->user()->currentAccessToken()->delete();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Logout berhasil'
+        ]);
     }
 }
