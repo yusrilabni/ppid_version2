@@ -64,6 +64,10 @@ Route::prefix('v1')->group(function () {
             return $request->user();
         });
 
+        // Profile Management
+        Route::get('/profile', [App\Http\Controllers\Api\ProfileController::class, 'show']);
+        Route::post('/profile', [App\Http\Controllers\Api\ProfileController::class, 'update']);
+
         Route::post('/logout', [App\Http\Controllers\Api\LoginController::class, 'logout']);
     });
 
