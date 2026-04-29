@@ -125,12 +125,14 @@
                                             <div class="bg-indigo-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">B</div>
                                             <div>
                                                 <p class="text-xs font-bold text-slate-800">Biodata & NIP</p>
-                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Isi Nama Tanpa Gelar & Nama Lengkap dengan Gelar. Isi <strong>NIP</strong> tanpa spasi.</p>
+                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Isi <strong>Nama Lengkap Beserta Gelar</strong> yang benar. Isi <strong>NIP</strong> tanpa menggunakan spasi.</p>
                                             </div>
                                         </div>
                                         <div class="md:w-48 space-y-2 bg-slate-100 p-3 rounded-xl border border-slate-200 relative">
-                                            <div class="h-2 w-16 bg-slate-200 rounded"></div>
-                                            <div class="h-6 w-full bg-white border border-slate-300 rounded shadow-sm"></div>
+                                            <div class="h-2 w-24 bg-indigo-200 rounded"></div>
+                                            <div class="h-6 w-full bg-white border border-slate-300 rounded shadow-sm flex items-center px-2">
+                                                <span class="text-[8px] text-slate-400 font-bold">CONTOH: Dr. Nama Lengkap, M.Si</span>
+                                            </div>
                                             <div class="absolute -left-4 top-1/2 -translate-y-1/2">
                                                 <div class="w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-indigo-500"></div>
                                             </div>
