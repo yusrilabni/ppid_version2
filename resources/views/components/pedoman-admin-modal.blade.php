@@ -1,3 +1,4 @@
+<!-- Pedoman Admin Modal - Updated: 2024-04-29 16:15 -->
 <div x-show="$store.pedomanAdminModal.open" 
      x-transition:enter="transition ease-out duration-300"
      x-transition:enter-start="opacity-0 scale-95"
