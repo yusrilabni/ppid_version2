@@ -154,12 +154,12 @@
                             <p class="mb-4">Sebuah dokumen diklasifikasikan sebagai <strong>Informasi Berkala</strong> karena dokumen tersebut merupakan <strong>Kewajiban Rutin</strong> yang wajib diterbitkan secara terjadwal (tahunan/semesteran) tanpa harus ada yang memohon. Dokumen ini adalah "Wajah Anggaran & Kinerja" unit kerja Bapak.</p>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="bg-white/60 p-4 rounded-2xl border border-blue-100 text-xs">
-                                    <p class="font-black text-blue-700 mb-1 italic">Studi Kasus DIP:</p>
-                                    <p class="text-slate-600"><strong>Daftar Informasi Publik (DIP)</strong> wajib diperbarui setiap tahun. Karena ini adalah daftar menu informasi utama, maka diklasifikasikan sebagai <strong>BERKALA</strong>.</p>
+                                    <p class="font-black text-blue-700 mb-1 italic">Logika Dokumen Rutin:</p>
+                                    <p class="text-slate-600">Dokumen yang memiliki <strong>Siklus Waktu Tetap</strong> (seperti Rencana Strategis, Anggaran, atau Laporan Kinerja) diklasifikasikan sebagai <strong>BERKALA</strong> karena wajib ada di setiap periode tertentu.</p>
                                 </div>
                                 <div class="bg-white/60 p-4 rounded-2xl border border-blue-100 text-xs">
-                                    <p class="font-black text-blue-700 mb-1 italic">Studi Kasus Keuangan:</p>
-                                    <p class="text-slate-600"><strong>LRA, Neraca, dan DPA</strong> adalah laporan rutin keuangan tahunan. Maka secara hukum wajib masuk kategori <strong>BERKALA</strong>.</p>
+                                    <p class="font-black text-blue-700 mb-1 italic">Logika Update Data:</p>
+                                    <p class="text-slate-600">Karena sifatnya rutin, maka data terbaru (misal: Laporan 2024) otomatis membatalkan validitas data lama (Laporan 2023) sebagai informasi publik utama.</p>
                                 </div>
                             </div>
                         </div>
@@ -173,12 +173,12 @@
                             <p class="mb-4">Dokumen masuk kategori <strong>Informasi Setiap Saat</strong> karena sifatnya adalah <strong>Catatan Operasional & Bukti Kebijakan</strong>. Dokumen ini mungkin tidak rutin diterbitkan, tetapi harus siap sedia kapanpun masyarakat datang meminta. Ini adalah database sejarah aktivitas instansi Bapak.</p>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
                                 <div class="bg-white/60 p-4 rounded-2xl border border-emerald-100 text-xs">
-                                    <p class="font-black text-emerald-700 mb-1 italic">Studi Kasus SK:</p>
-                                    <p class="text-slate-600"><strong>SK Bupati/Kadis</strong> bukan dokumen berkala tahunan yang punya jadwal fixed, melainkan ketetapan hukum yang berlaku selama tidak dicabut. Maka diklasifikasikan sebagai <strong>SETIAP SAAT</strong>.</p>
+                                    <p class="font-black text-emerald-700 mb-1 italic">Logika Dokumen Kebijakan:</p>
+                                    <p class="text-slate-600">Dokumen berupa <strong>Ketetapan Hukum</strong> (seperti SK, Peraturan, atau MoU) diklasifikasikan sebagai <strong>SETIAP SAAT</strong> karena berlaku terus-menerus selama tidak dicabut.</p>
                                 </div>
                                 <div class="bg-white/60 p-4 rounded-2xl border border-emerald-100 text-xs">
-                                    <p class="font-black text-emerald-700 mb-1 italic">Studi Kasus Perjanjian:</p>
-                                    <p class="text-slate-600"><strong>MoU / Perjanjian Kerjasama</strong> dengan pihak ketiga merupakan catatan operasional yang menjadi hak publik untuk tahu isinya kapanpun diminta. Maka masuk <strong>SETIAP SAAT</strong>.</p>
+                                    <p class="font-black text-emerald-700 mb-1 italic">Logika Katalog Arsip:</p>
+                                    <p class="text-slate-600">Karena merupakan database sejarah, maka semua dokumen (dari tahun lama hingga sekarang) tetap penting untuk ditampilkan berdampingan tanpa perlu saling menggantikan.</p>
                                 </div>
                             </div>
                         </div>
