@@ -14,11 +14,11 @@
             <div class="flex flex-wrap gap-3">
                 <button @click="document.getElementById('panduan-teknis').scrollIntoView({ behavior: 'smooth' })" 
                         class="bg-white text-blue-600 border-2 border-blue-100 px-4 py-2 rounded-xl text-[9px] font-black hover:bg-blue-50 transition-all shadow-sm flex items-center gap-2 uppercase tracking-widest group">
-                    Lanjut ke Form <i class="fas fa-arrow-down group-hover:translate-y-1 transition-transform"></i>
+                    Langkah Pengisian Form <i class="fas fa-arrow-down group-hover:translate-y-1 transition-transform"></i>
                 </button>
                 <button @click="document.getElementById('daftar-dokumen-wajib').scrollIntoView({ behavior: 'smooth' })" 
                         class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-[9px] font-black hover:bg-indigo-700 transition-all shadow-md flex items-center gap-2 uppercase tracking-widest group">
-                    Daftar Dokumen Wajib <i class="fas fa-list-check"></i>
+                    Cek Daftar Dokumen <i class="fas fa-list-check"></i>
                 </button>
             </div>
         </div>
