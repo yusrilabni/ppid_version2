@@ -473,14 +473,13 @@
                             <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>APBDes / RKPDes (Jenis: Informasi Keuangan)</span></li>
                             <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>LPPD & Monografi (Jenis: Laporan Kinerja Instansi)</span></li>
                             <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>Laporan PATEN (Jenis: Laporan Kinerja Instansi)</span></li>
-                            <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>Realisasi Dana Desa (Jenis: Informasi Keuangan)</span></li>
+                            <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>Profil Desa & Sejarah (Jenis: Profil Badan Publik)</span></li>
                         </ul>
                     </div>
                     <div class="bg-orange-50/50 p-6 rounded-[2rem] border border-orange-100 space-y-4">
                         <p class="text-orange-700 border-b border-orange-200 pb-2 flex items-center gap-2 font-black"><i class="fas fa-archive"></i> INFORMASI SETIAP SAAT</p>
                         <ul class="space-y-3 list-none pl-1 text-slate-600">
                             <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>Peraturan Desa / Perdes (Jenis: Regulasi & Peraturan)</span></li>
-                            <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>Profil Desa & Sejarah (Jenis: Profil Badan Publik)</span></li>
                             <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>Daftar Penduduk & Statistik (Jenis: Pengumuman & Siaran Pers)</span></li>
                         </ul>
                     </div>
