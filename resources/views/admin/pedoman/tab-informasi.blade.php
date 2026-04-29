@@ -11,15 +11,21 @@
                 <h4 class="text-xl font-black text-slate-800 leading-none">Informasi Publik</h4>
                 <p class="text-[10px] text-slate-400 font-bold tracking-[0.2em] mt-1 italic">Classification & Lifecycle</p>
             </div>
-            <button @click="document.getElementById('panduan-teknis').scrollIntoView({ behavior: 'smooth' })" 
-                    class="bg-white text-blue-600 border-2 border-blue-100 px-4 py-2 rounded-xl text-[9px] font-black hover:bg-blue-50 transition-all shadow-sm flex items-center gap-2 uppercase tracking-widest group">
-                Lanjut ke Form <i class="fas fa-arrow-down group-hover:translate-y-1 transition-transform"></i>
-            </button>
+            <div class="flex flex-wrap gap-3">
+                <button @click="document.getElementById('panduan-teknis').scrollIntoView({ behavior: 'smooth' })" 
+                        class="bg-white text-blue-600 border-2 border-blue-100 px-4 py-2 rounded-xl text-[9px] font-black hover:bg-blue-50 transition-all shadow-sm flex items-center gap-2 uppercase tracking-widest group">
+                    Lanjut ke Form <i class="fas fa-arrow-down group-hover:translate-y-1 transition-transform"></i>
+                </button>
+                <button @click="document.getElementById('daftar-dokumen-wajib').scrollIntoView({ behavior: 'smooth' })" 
+                        class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-[9px] font-black hover:bg-indigo-700 transition-all shadow-md flex items-center gap-2 uppercase tracking-widest group">
+                    Daftar Dokumen Wajib <i class="fas fa-list-check"></i>
+                </button>
+            </div>
         </div>
     </div>
-    ...
-    <!-- TUTORIAL FORM (STEP BY STEP) -->
-    <div class="space-y-12 pt-10" id="panduan-teknis">
+
+    <!-- LOGIKA MENDALAM (WHY) -->
+    <div class="space-y-10">
         <div class="flex items-center justify-between border-b border-slate-100 pb-4">
             <h5 class="text-xs font-black flex items-center gap-3 text-slate-700 uppercase tracking-widest italic">
                 <span class="bg-slate-100 p-1.5 rounded-lg"><i class="fas fa-balance-scale text-blue-600"></i></span> 
@@ -213,7 +219,7 @@
     </div>
 
     <!-- TUTORIAL FORM (STEP BY STEP) -->
-    <div class="space-y-12">
+    <div class="space-y-12 pt-10" id="panduan-teknis">
         <div class="flex items-center gap-4 border-b-2 border-slate-100 pb-6">
             <div class="bg-indigo-600 p-3 rounded-2xl text-white shadow-lg">
                 <i class="fas fa-terminal text-xl"></i>
@@ -380,6 +386,117 @@
                         <span class="text-amber-400 font-black text-[9px] uppercase tracking-widest">Tahap 4</span>
                         <p class="text-[10px] font-bold leading-relaxed italic">Tekan Tombol Biru <strong class="text-amber-400">"ANALISA DOKUMEN"</strong>. AI akan langsung memberikan klasifikasi yang tepat!</p>
                     </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- DAFTAR DOKUMEN WAJIB PER UNIT (NEW SECTION) -->
+    <div class="space-y-10 pt-10" id="daftar-dokumen-wajib">
+        <div class="flex items-center gap-4 border-b-2 border-slate-100 pb-6">
+            <div class="bg-emerald-600 p-3 rounded-2xl text-white shadow-lg">
+                <i class="fas fa-file-invoice text-xl"></i>
+            </div>
+            <div>
+                <h5 class="text-base font-black text-slate-800 uppercase italic leading-none">Daftar Dokumen Wajib Unggah</h5>
+                <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Standar Layanan Informasi Publik per Unit Kerja (UU KIP)</p>
+            </div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-12">
+            <!-- 1. Dinas / Badan / RSUD -->
+            <div class="bg-white p-8 rounded-[3rem] border-2 border-slate-50 shadow-sm space-y-8">
+                <h6 class="text-sm font-black text-blue-700 uppercase italic border-l-4 border-blue-600 pl-4">Kelompok A: Dinas / Badan / RSUD</h6>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-[11px] font-bold uppercase italic tracking-tighter">
+                    <!-- Berkala -->
+                    <div class="bg-blue-50/50 p-6 rounded-[2rem] border border-blue-100 space-y-4">
+                        <p class="text-blue-700 border-b border-blue-200 pb-2 flex items-center gap-2 font-black"><i class="fas fa-sync-alt"></i> INFORMASI BERKALA</p>
+                        <ul class="space-y-3 list-none pl-1 text-slate-600">
+                            <li class="flex gap-2 border-b border-blue-50 pb-2"><i class="fas fa-check text-blue-400 mt-0.5"></i> <span>Renstra & Renja (Jenis: Perencanaan)</span></li>
+                            <li class="flex gap-2 border-b border-blue-50 pb-2"><i class="fas fa-check text-blue-400 mt-0.5"></i> <span>LRA & Neraca (Jenis: Keuangan)</span></li>
+                            <li class="flex gap-2 border-b border-blue-50 pb-2"><i class="fas fa-check text-blue-400 mt-0.5"></i> <span>DPA & RKA (Jenis: Anggaran)</span></li>
+                            <li class="flex gap-2 border-b border-blue-50 pb-2"><i class="fas fa-check text-blue-400 mt-0.5"></i> <span>LAKIP / LKjIP (Jenis: Kinerja)</span></li>
+                            <li class="flex gap-2 border-b border-blue-50 pb-2"><i class="fas fa-check text-blue-400 mt-0.5"></i> <span>Profil Pimpinan & Struktur (Jenis: Profil)</span></li>
+                        </ul>
+                    </div>
+                    <!-- Setiap Saat -->
+                    <div class="bg-emerald-50/50 p-6 rounded-[2rem] border border-emerald-100 space-y-4">
+                        <p class="text-emerald-700 border-b border-emerald-200 pb-2 flex items-center gap-2 font-black"><i class="fas fa-archive"></i> INFORMASI SETIAP SAAT</p>
+                        <ul class="space-y-3 list-none pl-1 text-slate-600">
+                            <li class="flex gap-2 border-b border-emerald-50 pb-2"><i class="fas fa-check text-emerald-400 mt-0.5"></i> <span>SK Pejabat & Pegawai (Jenis: Hukum)</span></li>
+                            <li class="flex gap-2 border-b border-emerald-50 pb-2"><i class="fas fa-check text-emerald-400 mt-0.5"></i> <span>MoU / Perjanjian Kerjasama (Jenis: Hukum)</span></li>
+                            <li class="flex gap-2 border-b border-emerald-50 pb-2"><i class="fas fa-check text-emerald-400 mt-0.5"></i> <span>Daftar Aset & Inventaris (Jenis: Barang)</span></li>
+                            <li class="flex gap-2 border-b border-emerald-50 pb-2"><i class="fas fa-check text-emerald-400 mt-0.5"></i> <span>SOP & Manual Prosedur (Jenis: Regulasi)</span></li>
+                            <li class="flex gap-2 border-b border-emerald-50 pb-2"><i class="fas fa-check text-emerald-400 mt-0.5"></i> <span>Tarif Layanan & SPM (Khusus RSUD/Layanan)</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 2. Inspektorat -->
+            <div class="bg-white p-8 rounded-[3rem] border-2 border-slate-50 shadow-sm space-y-8">
+                <h6 class="text-sm font-black text-indigo-700 uppercase italic border-l-4 border-indigo-600 pl-4">Kelompok B: Inspektorat</h6>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-[11px] font-bold uppercase italic tracking-tighter">
+                    <div class="bg-indigo-50/50 p-6 rounded-[2rem] border border-indigo-100 space-y-4">
+                        <p class="text-indigo-700 border-b border-indigo-200 pb-2 flex items-center gap-2 font-black"><i class="fas fa-sync-alt"></i> INFORMASI BERKALA</p>
+                        <ul class="space-y-3 list-none pl-1 text-slate-600">
+                            <li class="flex gap-2 border-b border-indigo-50 pb-2"><i class="fas fa-check text-indigo-400 mt-0.5"></i> <span>PKPT / Program Audit (Jenis: Pengawasan)</span></li>
+                            <li class="flex gap-2 border-b border-indigo-50 pb-2"><i class="fas fa-check text-indigo-400 mt-0.5"></i> <span>Ringkasan LHP (Jenis: Pengawasan)</span></li>
+                            <li class="flex gap-2 border-b border-indigo-50 pb-2"><i class="fas fa-check text-indigo-400 mt-0.5"></i> <span>Laporan Harta Kekayaan - LHKPN (Jenis: Kinerja)</span></li>
+                        </ul>
+                    </div>
+                    <div class="bg-indigo-50/50 p-6 rounded-[2rem] border border-indigo-100 space-y-4 opacity-70">
+                        <p class="text-slate-500 border-b border-slate-200 pb-2 flex items-center gap-2 font-black italic">Catatan Khusus</p>
+                        <p class="normal-case font-medium text-slate-400 leading-relaxed italic">Data Laporan Hasil Pemeriksaan (LHP) bersifat Dikecualikan jika masih dalam proses hukum atau mengandung rahasia negara.</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- 3. Kecamatan / Kelurahan / Desa -->
+            <div class="bg-white p-8 rounded-[3rem] border-2 border-slate-50 shadow-sm space-y-8">
+                <h6 class="text-sm font-black text-orange-700 uppercase italic border-l-4 border-orange-600 pl-4">Kelompok C: Kecamatan / Kelurahan / Desa</h6>
+                
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-[11px] font-bold uppercase italic tracking-tighter">
+                    <div class="bg-orange-50/50 p-6 rounded-[2rem] border border-orange-100 space-y-4">
+                        <p class="text-orange-700 border-b border-orange-200 pb-2 flex items-center gap-2 font-black"><i class="fas fa-sync-alt"></i> INFORMASI BERKALA</p>
+                        <ul class="space-y-3 list-none pl-1 text-slate-600">
+                            <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>APBDes / RKPDes (Jenis: Anggaran/Desa)</span></li>
+                            <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>LPPD & Monografi (Jenis: Kinerja)</span></li>
+                            <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>Laporan PATEN (Jenis: Layanan)</span></li>
+                            <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>Realisasi Dana Desa (Jenis: Keuangan)</span></li>
+                        </ul>
+                    </div>
+                    <div class="bg-orange-50/50 p-6 rounded-[2rem] border border-orange-100 space-y-4">
+                        <p class="text-orange-700 border-b border-orange-200 pb-2 flex items-center gap-2 font-black"><i class="fas fa-archive"></i> INFORMASI SETIAP SAAT</p>
+                        <ul class="space-y-3 list-none pl-1 text-slate-600">
+                            <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>Peraturan Desa / Perdes (Jenis: Hukum)</span></li>
+                            <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>Profil Desa & Sejarah (Jenis: Profil)</span></li>
+                            <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>Daftar Penduduk & Statistik (Jenis: Data)</span></li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- KEADAAN DARURAT (ALL UNITS) -->
+        <div class="bg-red-900 p-10 rounded-[3rem] text-white shadow-2xl border-4 border-white/10 relative overflow-hidden">
+            <div class="absolute top-0 right-0 p-10 opacity-10">
+                <i class="fas fa-bolt text-[120px]"></i>
+            </div>
+            <div class="relative z-10 space-y-6">
+                <h6 class="text-lg font-black uppercase italic leading-none border-b border-white/20 pb-4">Wajib Bagi Seluruh Unit (Informasi Serta Merta)</h6>
+                <p class="text-sm font-bold leading-relaxed italic opacity-80 uppercase tracking-tighter">"Wajib Di-upload Seketika Terjadi Kejadian Darurat Tanpa Menunda!"</p>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-[11px] font-black uppercase italic">
+                    <ul class="space-y-3">
+                        <li class="flex gap-3 items-center bg-white/10 p-3 rounded-xl border border-white/10"><i class="fas fa-exclamation-triangle text-yellow-400"></i> Peringatan Bencana Alam (Banjir, Longsor)</li>
+                        <li class="flex gap-3 items-center bg-white/10 p-3 rounded-xl border border-white/10"><i class="fas fa-exclamation-triangle text-yellow-400"></i> Informasi Wabah Penyakit Mendadak</li>
+                    </ul>
+                    <ul class="space-y-3">
+                        <li class="flex gap-3 items-center bg-white/10 p-3 rounded-xl border border-white/10"><i class="fas fa-exclamation-triangle text-yellow-400"></i> Gangguan Layanan Vital (Listrik/Air/Internet)</li>
+                        <li class="flex gap-3 items-center bg-white/10 p-3 rounded-xl border border-white/10"><i class="fas fa-exclamation-triangle text-yellow-400"></i> Pengumuman Jalur Evakuasi Darurat</li>
+                    </ul>
                 </div>
             </div>
         </div>
