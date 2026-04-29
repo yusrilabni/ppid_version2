@@ -2,20 +2,20 @@
      class="space-y-12">
     
     <!-- Header Tab -->
-    <div class="flex flex-col md:flex-row md:items-center justify-between gap-6 border-l-8 border-blue-600 pl-4 uppercase tracking-tighter">
-        <div class="flex items-center gap-4">
-            <div class="bg-blue-600 p-3 rounded-2xl text-white shadow-md">
-                <i class="fas fa-folder-tree text-2xl"></i>
-            </div>
-            <div>
-                <h4 class="text-xl font-black text-slate-800 leading-none">Manajemen Informasi Publik</h4>
-                <p class="text-[10px] text-slate-400 font-bold tracking-[0.2em] mt-1 italic">Panduan Komprehensif Klasifikasi & Siklus Hidup Dokumen</p>
-            </div>
+    <div class="flex items-center gap-4 border-l-8 border-blue-600 pl-4 uppercase tracking-tighter">
+        <div class="bg-blue-600 p-3 rounded-2xl text-white shadow-md">
+            <i class="fas fa-folder-tree text-2xl"></i>
         </div>
-        <button @click="document.getElementById('panduan-teknis').scrollIntoView({ behavior: 'smooth' })" 
-                class="bg-white text-blue-600 border-2 border-blue-100 px-5 py-2.5 rounded-xl text-[10px] font-black hover:bg-blue-50 transition-all shadow-sm flex items-center gap-2 uppercase tracking-widest self-start md:self-auto group">
-            Lompat ke Panduan Teknis <i class="fas fa-arrow-down group-hover:translate-y-1 transition-transform"></i>
-        </button>
+        <div class="flex flex-col md:flex-row md:items-center gap-4 md:gap-10">
+            <div>
+                <h4 class="text-xl font-black text-slate-800 leading-none">Informasi Publik</h4>
+                <p class="text-[10px] text-slate-400 font-bold tracking-[0.2em] mt-1 italic">Classification & Lifecycle</p>
+            </div>
+            <button @click="document.getElementById('panduan-teknis').scrollIntoView({ behavior: 'smooth' })" 
+                    class="bg-white text-blue-600 border-2 border-blue-100 px-4 py-2 rounded-xl text-[9px] font-black hover:bg-blue-50 transition-all shadow-sm flex items-center gap-2 uppercase tracking-widest group">
+                Lanjut ke Form <i class="fas fa-arrow-down group-hover:translate-y-1 transition-transform"></i>
+            </button>
+        </div>
     </div>
     ...
     <!-- TUTORIAL FORM (STEP BY STEP) -->
