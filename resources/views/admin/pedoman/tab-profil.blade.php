@@ -28,7 +28,7 @@
                 <div class="space-y-4 text-[11px] font-medium leading-relaxed italic">
                     <p class="flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/10">
                         <span class="bg-indigo-600 text-white w-6 h-6 rounded-lg flex items-center justify-center font-black flex-shrink-0 not-italic text-[10px]">1</span>
-                        <span>Klik menu <strong class="text-white uppercase font-black">PROFIL</strong> di Navbar (Menu Atas).</span>
+                        <span>Klik menu <strong class="text-white uppercase font-black">PROFIL</strong> pada Navbar Atas.</span>
                     </p>
                     <p class="flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/10">
                         <span class="bg-indigo-600 text-white w-6 h-6 rounded-lg flex items-center justify-center font-black flex-shrink-0 not-italic text-[10px]">2</span>
@@ -36,7 +36,7 @@
                     </p>
                     <p class="flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/10">
                         <span class="bg-indigo-600 text-white w-6 h-6 rounded-lg flex items-center justify-center font-black flex-shrink-0 not-italic text-[10px]">3</span>
-                        <span>Klik tombol <strong class="text-blue-400 underline uppercase italic font-black">KELOLA PROFIL UNIT</strong> pada baris nama unit Anda.</span>
+                        <span>Cari nama unit Anda di daftar, lalu klik tombol biru <strong class="text-blue-400 underline uppercase italic font-black">KELOLA PROFIL UNIT</strong>.</span>
                     </p>
                 </div>
             </div>
@@ -75,29 +75,32 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
             <!-- Navigasi 2 Sub Menu -->
             <div class="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden border-4 border-slate-800 shadow-xl">
-                <h6 class="text-xs font-black uppercase text-blue-400 mb-6 tracking-widest italic">Pilih Sub-Menu Yang Sesuai:</h6>
-                <div class="space-y-6">
-                    <div class="bg-white/5 p-5 rounded-[2rem] border border-white/10 space-y-3">
-                        <p class="text-[10px] font-black uppercase text-blue-300 italic"><i class="fas fa-landmark mr-2"></i> Pejabat Daerah</p>
-                        <p class="text-[9px] leading-relaxed text-slate-300 font-bold normal-case italic border-l-2 border-blue-600 pl-3">
-                            Wajib dipilih oleh Admin: <br> <strong>DINAS / BADAN / KANTOR / KECAMATAN</strong>.
-                        </p>
+                <h6 class="text-xs font-black uppercase text-blue-400 mb-6 tracking-widest italic">Alur Akses Kelola Pimpinan:</h6>
+                <div class="space-y-6 italic">
+                    <p class="text-[11px] leading-relaxed text-slate-300 font-medium">
+                        1. Klik menu <strong class="text-white uppercase">PROFIL</strong> di Navbar Atas.<br>
+                        2. Pilih sub-menu sesuai unit Anda:
+                    </p>
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-white/5 p-4 rounded-2xl border border-white/10 space-y-2">
+                            <p class="text-[9px] font-black uppercase text-blue-300 italic"><i class="fas fa-landmark mr-1.5"></i> Pejabat Daerah</p>
+                            <p class="text-[8px] text-slate-400 leading-tight">Dinas / Badan / Kantor / Kecamatan</p>
+                        </div>
+                        <div class="bg-white/5 p-4 rounded-2xl border border-white/10 space-y-2">
+                            <p class="text-[9px] font-black uppercase text-emerald-400 italic"><i class="fas fa-house-user mr-1.5"></i> Unit Lokal</p>
+                            <p class="text-[8px] text-slate-400 leading-tight">Kelurahan / Desa</p>
+                        </div>
                     </div>
-                    <div class="bg-white/5 p-5 rounded-[2rem] border border-white/10 space-y-3">
-                        <p class="text-[10px] font-black uppercase text-emerald-400 italic"><i class="fas fa-house-user mr-2"></i> Unit Lokal</p>
-                        <p class="text-[9px] leading-relaxed text-slate-300 font-bold normal-case italic border-l-2 border-emerald-500 pl-3">
-                            Wajib dipilih oleh Admin: <br> <strong>KELURAHAN / DESA</strong>.
-                        </p>
-                    </div>
-                    <p class="text-[11px] font-medium leading-relaxed italic text-slate-400 bg-black/20 p-4 rounded-2xl">
-                        Alur: Menu <strong class="text-white">PROFIL</strong> > Pilih <strong class="text-white">Pejabat Daerah</strong> / <strong class="text-white">Unit Lokal</strong> > Klik Tombol Biru <strong class="text-blue-400 underline">+ TAMBAH PROFIL PIMPINAN</strong>.
+                    <p class="flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/10 text-[11px] text-slate-300 font-medium">
+                        <span class="bg-blue-600 text-white w-6 h-6 rounded-lg flex items-center justify-center font-black flex-shrink-0 not-italic text-[10px]">3</span>
+                        <span>Cari nama pejabat/unit Anda pada daftar kartu yang muncul, lalu klik tombol Oranye <strong class="text-amber-400 underline uppercase italic font-black">KELOLA PIMPINAN</strong>.</span>
                     </p>
                 </div>
             </div>
 
             <!-- Detail Form Pimpinan -->
             <div class="bg-white p-8 rounded-[3rem] border-2 border-slate-100 shadow-sm space-y-6">
-                <h6 class="text-xs font-black text-blue-700 uppercase italic text-center">Simulasi Tab Identitas:</h6>
+                <h6 class="text-xs font-black text-blue-700 uppercase italic text-center">Simulasi Tab Identitas Form:</h6>
                 <div class="space-y-5">
                     <div class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-100 space-y-3">
                         <p class="text-[10px] font-black text-slate-800 uppercase italic">A. Nama Lengkap & Gelar <span class="text-red-500">*</span></p>
@@ -113,7 +116,7 @@
                             <div class="bg-green-600 text-white py-2 rounded-lg text-[8px] font-black uppercase flex items-center justify-center gap-2 italic">AKTIF <i class="fas fa-check-circle"></i></div>
                         </div>
                     </div>
-                    <div class="bg-blue-900 p-5 rounded-2xl flex items-center justify-center gap-3">
+                    <div class="bg-blue-950 p-5 rounded-2xl flex items-center justify-center gap-3">
                         <div class="bg-white text-blue-900 px-8 py-2 rounded-xl text-[10px] font-black uppercase italic tracking-widest flex items-center gap-2">
                             <i class="fas fa-save text-[9px]"></i> SIMPAN DATA PIMPINAN
                         </div>
@@ -132,7 +135,7 @@
         <div class="space-y-2">
             <h6 class="text-sm font-black uppercase italic tracking-widest text-indigo-300">Sinkronisasi Website:</h6>
             <p class="text-[11px] font-bold leading-relaxed text-slate-300 normal-case italic">
-                Data yang Anda isi melalui Navbar **PROFIL** ini akan otomatis merakit halaman publik unit Anda. Pastikan Status Pimpinan diatur ke **AKTIF** agar profil pejabat tersebut tampil sempurna di halaman depan warga.
+                Seluruh data profil yang Anda kelola melalui **Navbar Beranda** ini akan otomatis memperbarui tampilan publik. Warga dapat melihat identitas unit kerja dan profil pejabat Anda secara profesional.
             </p>
         </div>
     </div>
