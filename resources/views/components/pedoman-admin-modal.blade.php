@@ -90,9 +90,46 @@
                                 </li>
                                 <li class="flex gap-3">
                                     <i class="fas fa-save text-indigo-500 mt-1"></i>
-                                    <span>Lengkapi Biodata, Riwayat Karir, & Pendidikan. Klik <strong>Simpan Profil</strong> di bagian bawah.</span>
+                                    <span>Lengkapi formulir, lalu klik tombol <span class="bg-blue-600 text-white px-3 py-1 rounded shadow-sm text-xs font-bold inline-flex items-center gap-1"><i class="fas fa-save"></i> SIMPAN PROFIL</span> di bawah.</span>
                                 </li>
                             </ul>
+
+                            <!-- Detail Instruksi Formulir -->
+                            <div class="mt-6 p-5 bg-white border-2 border-indigo-50 rounded-2xl shadow-inner">
+                                <h6 class="text-xs font-black text-indigo-900 uppercase mb-4 tracking-widest border-b pb-2 flex items-center gap-2">
+                                    <i class="fas fa-list-check"></i> Panduan Isi Formulir:
+                                </h6>
+                                <div class="space-y-4">
+                                    <div class="flex gap-3">
+                                        <div class="bg-indigo-600 text-white w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold mt-0.5">A</div>
+                                        <div>
+                                            <p class="text-xs font-bold text-slate-800">Foto Resmi & Ukuran</p>
+                                            <p class="text-[11px] text-slate-500 mt-1">Gunakan foto berseragam dinas/formal dengan latar belakang polos. Pastikan ukuran file di bawah <strong>2MB</strong> agar tidak gagal simpan.</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-3">
+                                        <div class="bg-indigo-600 text-white w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold mt-0.5">B</div>
+                                        <div>
+                                            <p class="text-xs font-bold text-slate-800">Biodata Lengkap</p>
+                                            <p class="text-[11px] text-slate-500 mt-1">Isi Nama Tanpa Gelar (untuk sistem pencarian) dan Nama Lengkap dengan Gelar. Pastikan <strong>NIP</strong> diisi dengan benar tanpa spasi.</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-3">
+                                        <div class="bg-indigo-600 text-white w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold mt-0.5">C</div>
+                                        <div>
+                                            <p class="text-xs font-bold text-slate-800">Riwayat Karir & Pendidikan</p>
+                                            <p class="text-[11px] text-slate-500 mt-1">Gunakan tombol <span class="text-green-600 font-bold">+ Tambah</span> pada masing-masing tab. Isi tahun mulai dan tahun selesai dengan format angka 4 digit (contoh: 2024).</p>
+                                        </div>
+                                    </div>
+                                    <div class="flex gap-3">
+                                        <div class="bg-indigo-600 text-white w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold mt-0.5">D</div>
+                                        <div>
+                                            <p class="text-xs font-bold text-slate-800">Status Jabatan</p>
+                                            <p class="text-[11px] text-slate-500 mt-1">Pilih <strong>Aktif</strong> agar profil pimpinan muncul di halaman depan website.</p>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
