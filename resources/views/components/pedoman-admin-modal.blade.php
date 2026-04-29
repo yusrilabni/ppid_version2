@@ -97,119 +97,100 @@
                             <!-- Detail Instruksi Formulir -->
                             <div class="mt-6 p-5 bg-white border-2 border-indigo-50 rounded-2xl shadow-inner">
                                 <h6 class="text-xs font-black text-indigo-900 uppercase mb-4 tracking-widest border-b pb-2 flex items-center gap-2">
-                                    <i class="fas fa-list-check"></i> Panduan Isi Formulir:
+                                    <i class="fas fa-list-check"></i> Panduan Isi Formulir (Visual):
                                 </h6>
-                                <div class="space-y-4">
-                                    <div class="flex gap-3">
-                                        <div class="bg-indigo-600 text-white w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold mt-0.5">A</div>
-                                        <div>
-                                            <p class="text-xs font-bold text-slate-800">Foto Resmi & Ukuran</p>
-                                            <p class="text-[11px] text-slate-500 mt-1">Gunakan foto berseragam dinas/formal dengan latar belakang polos. Pastikan ukuran file di bawah <strong>2MB</strong> agar tidak gagal simpan.</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex gap-3">
-                                        <div class="bg-indigo-600 text-white w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold mt-0.5">B</div>
-                                        <div>
-                                            <p class="text-xs font-bold text-slate-800">Biodata Lengkap</p>
-                                            <p class="text-[11px] text-slate-500 mt-1">Isi Nama Tanpa Gelar (untuk sistem pencarian) dan Nama Lengkap dengan Gelar. Pastikan <strong>NIP</strong> diisi dengan benar tanpa spasi.</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex gap-3">
-                                        <div class="bg-indigo-600 text-white w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold mt-0.5">C</div>
-                                        <div>
-                                            <p class="text-xs font-bold text-slate-800">Riwayat Karir & Pendidikan</p>
-                                            <p class="text-[11px] text-slate-500 mt-1">Gunakan tombol <span class="text-green-600 font-bold">+ Tambah</span> pada masing-masing tab. Isi tahun mulai dan tahun selesai dengan format angka 4 digit (contoh: 2024).</p>
-                                        </div>
-                                    </div>
-                                    <div class="flex gap-3">
-                                        <div class="bg-indigo-600 text-white w-5 h-5 rounded-full flex-shrink-0 flex items-center justify-center text-[10px] font-bold mt-0.5">D</div>
-                                        <div>
-                                            <p class="text-xs font-bold text-slate-800">Status Jabatan</p>
-                                            <p class="text-[11px] text-slate-500 mt-1">Pilih <strong>Aktif</strong> agar profil pimpinan muncul di halaman depan website.</p>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <!-- PANDUAN VISUAL (MOCKUP FORM) -->
-                            <div class="mt-10 border-t-2 border-dashed border-indigo-100 pt-8">
-                                <h6 class="text-sm font-bold text-indigo-800 mb-6 flex items-center gap-2">
-                                    <i class="fas fa-eye"></i> Simulasi Visual Tampilan Form:
-                                </h6>
-                                
-                                <div class="relative bg-slate-200 p-4 md:p-8 rounded-3xl overflow-hidden shadow-inner group">
-                                    <!-- Overlay Untouchable -->
-                                    <div class="absolute inset-0 z-10 pointer-events-none"></div>
-                                    
-                                    <!-- Form Mockup (Replika Blade) -->
-                                    <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-300 opacity-90 scale-[0.98]">
-                                        <div class="bg-slate-50 border-b p-4 flex gap-4">
-                                            <div class="h-6 w-16 bg-blue-100 rounded border-b-2 border-blue-600"></div>
-                                            <div class="h-6 w-20 bg-slate-100 rounded"></div>
-                                            <div class="h-6 w-16 bg-slate-100 rounded"></div>
-                                        </div>
-                                        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
-                                            <div class="space-y-2 relative">
-                                                <div class="h-3 w-24 bg-slate-200 rounded"></div>
-                                                <div class="h-8 w-full bg-slate-50 border border-slate-300 rounded-lg"></div>
-                                                <!-- Arrow Pointer 1 -->
-                                                <div class="absolute -left-2 md:-left-8 top-10 flex items-center z-20">
-                                                    <div class="bg-red-500 text-white text-[8px] font-black px-2 py-1 rounded shadow-lg whitespace-nowrap animate-pulse">NAMA TANPA GELAR</div>
-                                                    <div class="w-2 md:w-4 h-[2px] bg-red-500"></div>
-                                                    <div class="w-0 h-0 border-y-4 border-y-transparent border-l-[6px] border-l-red-500"></div>
-                                                </div>
-                                            </div>
-                                            <div class="space-y-2 relative">
-                                                <div class="h-3 w-20 bg-slate-200 rounded"></div>
-                                                <div class="h-8 w-full bg-slate-50 border border-slate-300 rounded-lg flex items-center px-3 justify-between">
-                                                    <div class="h-2 w-16 bg-slate-300 rounded"></div>
-                                                    <i class="fas fa-chevron-down text-slate-400 text-[10px]"></i>
-                                                </div>
-                                                <!-- Arrow Pointer 2 -->
-                                                <div class="absolute -right-2 md:-right-8 top-10 flex items-center flex-row-reverse z-20">
-                                                    <div class="bg-blue-500 text-white text-[8px] font-black px-2 py-1 rounded shadow-lg whitespace-nowrap">PILIH JABATAN</div>
-                                                    <div class="w-2 md:w-4 h-[2px] bg-blue-500"></div>
-                                                    <div class="w-0 h-0 border-y-4 border-y-transparent border-r-[6px] border-r-blue-500"></div>
-                                                </div>
-                                            </div>
-                                            <div class="space-y-2 relative">
-                                                <div class="h-3 w-16 bg-slate-200 rounded"></div>
-                                                <div class="h-8 w-full bg-slate-50 border border-slate-300 rounded-lg"></div>
-                                                <!-- Arrow Pointer 3 -->
-                                                <div class="absolute -left-2 md:-left-8 top-10 flex items-center z-20">
-                                                    <div class="bg-indigo-600 text-white text-[8px] font-black px-2 py-1 rounded shadow-lg whitespace-nowrap">NIP TANPA SPASI</div>
-                                                    <div class="w-2 md:w-4 h-[2px] bg-indigo-600"></div>
-                                                    <div class="w-0 h-0 border-y-4 border-y-transparent border-l-[6px] border-l-indigo-600"></div>
-                                                </div>
-                                            </div>
-                                            <div class="space-y-2 relative">
-                                                <div class="h-3 w-16 bg-slate-200 rounded"></div>
-                                                <div class="h-8 w-full bg-slate-50 border-2 border-dashed border-slate-300 rounded-lg flex flex-col items-center justify-center">
-                                                    <i class="fas fa-camera text-slate-300 text-xs"></i>
-                                                </div>
-                                                <!-- Arrow Pointer 4 -->
-                                                <div class="absolute -right-2 md:-right-8 top-10 flex items-center flex-row-reverse z-20">
-                                                    <div class="bg-orange-500 text-white text-[8px] font-black px-2 py-1 rounded shadow-lg whitespace-nowrap">MAX 2MB</div>
-                                                    <div class="w-2 md:w-4 h-[2px] bg-orange-500"></div>
-                                                    <div class="w-0 h-0 border-y-4 border-y-transparent border-r-[6px] border-r-orange-500"></div>
-                                                </div>
+                                <div class="space-y-8">
+                                    <!-- A: FOTO -->
+                                    <div class="flex flex-col md:flex-row gap-6">
+                                        <div class="flex gap-3 flex-1">
+                                            <div class="bg-indigo-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">A</div>
+                                            <div>
+                                                <p class="text-xs font-bold text-slate-800">Foto Resmi & Ukuran</p>
+                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Gunakan foto berseragam dinas dengan latar belakang polos. Max <strong>2MB</strong> (Format JPG/PNG).</p>
                                             </div>
                                         </div>
-                                        <div class="p-4 border-t flex justify-end relative">
-                                            <div class="h-8 w-24 bg-blue-600 rounded-lg shadow-lg"></div>
-                                            <!-- Arrow Pointer 5 -->
-                                            <div class="absolute right-28 top-6 flex items-center flex-row-reverse z-20">
-                                                <div class="bg-green-600 text-white text-[8px] font-black px-2 py-1 rounded shadow-lg whitespace-nowrap animate-bounce">KLIK SIMPAN</div>
-                                                <div class="w-4 h-[2px] bg-green-600"></div>
-                                                <div class="w-0 h-0 border-y-4 border-y-transparent border-r-[6px] border-r-green-600"></div>
+                                        <div class="md:w-48 bg-slate-100 p-2 rounded-xl border border-slate-200 relative">
+                                            <div class="h-16 w-full border-2 border-dashed border-slate-300 rounded-lg flex items-center justify-center bg-white">
+                                                <i class="fas fa-camera text-slate-300"></i>
+                                            </div>
+                                            <div class="absolute -left-4 top-1/2 -translate-y-1/2">
+                                                <div class="w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-indigo-500"></div>
                                             </div>
                                         </div>
                                     </div>
 
-                                    <!-- Caption -->
-                                    <div class="mt-4 text-center">
-                                        <p class="text-[10px] text-slate-500 italic font-medium">Gambar di atas adalah ilustrasi simulasi form asli.</p>
+                                    <!-- B: BIODATA -->
+                                    <div class="flex flex-col md:flex-row gap-6">
+                                        <div class="flex gap-3 flex-1">
+                                            <div class="bg-indigo-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">B</div>
+                                            <div>
+                                                <p class="text-xs font-bold text-slate-800">Biodata & NIP</p>
+                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Isi Nama Tanpa Gelar & Nama Lengkap dengan Gelar. Isi <strong>NIP</strong> tanpa spasi.</p>
+                                            </div>
+                                        </div>
+                                        <div class="md:w-48 space-y-2 bg-slate-100 p-3 rounded-xl border border-slate-200 relative">
+                                            <div class="h-2 w-16 bg-slate-200 rounded"></div>
+                                            <div class="h-6 w-full bg-white border border-slate-300 rounded shadow-sm"></div>
+                                            <div class="absolute -left-4 top-1/2 -translate-y-1/2">
+                                                <div class="w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-indigo-500"></div>
+                                            </div>
+                                        </div>
                                     </div>
+
+                                    <!-- C: RIWAYAT -->
+                                    <div class="flex flex-col md:flex-row gap-6">
+                                        <div class="flex gap-3 flex-1">
+                                            <div class="bg-indigo-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">C</div>
+                                            <div>
+                                                <p class="text-xs font-bold text-slate-800">Riwayat Karir & Pendidikan</p>
+                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Gunakan tombol <span class="text-green-600 font-bold">+ Tambah</span>. Masukkan tahun 4 digit (contoh: 2024).</p>
+                                            </div>
+                                        </div>
+                                        <div class="md:w-48 bg-slate-100 p-3 rounded-xl border border-slate-200 relative flex justify-center">
+                                            <div class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-[9px] font-bold shadow-sm">+ TAMBAH DATA</div>
+                                            <div class="absolute -left-4 top-1/2 -translate-y-1/2">
+                                                <div class="w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-indigo-500"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- D: STATUS -->
+                                    <div class="flex flex-col md:flex-row gap-6">
+                                        <div class="flex gap-3 flex-1">
+                                            <div class="bg-indigo-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">D</div>
+                                            <div>
+                                                <p class="text-xs font-bold text-slate-800">Status Jabatan</p>
+                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Pilih <strong>Aktif</strong> agar profil muncul di website publik.</p>
+                                            </div>
+                                        </div>
+                                        <div class="md:w-48 bg-slate-100 p-3 rounded-xl border border-slate-200 relative flex flex-col gap-2">
+                                            <div class="h-6 w-full bg-white border border-slate-300 rounded shadow-sm flex items-center px-2 justify-between">
+                                                <span class="text-[9px] font-bold text-slate-800">Aktif</span>
+                                                <i class="fas fa-chevron-down text-[8px] text-slate-400"></i>
+                                            </div>
+                                            <div class="absolute -left-4 top-1/2 -translate-y-1/2">
+                                                <div class="w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-indigo-500"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- E: SIMPAN -->
+                                    <div class="flex flex-col md:flex-row gap-6">
+                                        <div class="flex gap-3 flex-1">
+                                            <div class="bg-blue-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">E</div>
+                                            <div>
+                                                <p class="text-xs font-bold text-blue-800">Simpan Perubahan</p>
+                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Setelah semua selesai, pastikan klik tombol simpan di paling bawah.</p>
+                                            </div>
+                                        </div>
+                                        <div class="md:w-48 bg-slate-100 p-3 rounded-xl border border-slate-200 relative flex justify-center">
+                                            <div class="bg-blue-600 text-white px-4 py-2 rounded-lg text-[9px] font-black shadow-md shadow-blue-200 animate-bounce">SIMPAN PROFIL</div>
+                                            <div class="absolute -left-4 top-1/2 -translate-y-1/2">
+                                                <div class="w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-blue-500"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
                                 </div>
                             </div>
                         </div>
