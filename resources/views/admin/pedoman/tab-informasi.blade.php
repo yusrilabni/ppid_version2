@@ -18,7 +18,7 @@
                 </button>
                 <button @click="document.getElementById('daftar-dokumen-wajib').scrollIntoView({ behavior: 'smooth' })" 
                         class="bg-indigo-600 text-white px-4 py-2 rounded-xl text-[9px] font-black hover:bg-indigo-700 transition-all shadow-md flex items-center gap-2 uppercase tracking-widest group">
-                    Cek Daftar Dokumen <i class="fas fa-list-check"></i>
+                    Cek Daftar Dokumen Wajib Upload <i class="fas fa-list-check"></i>
                 </button>
             </div>
         </div>
