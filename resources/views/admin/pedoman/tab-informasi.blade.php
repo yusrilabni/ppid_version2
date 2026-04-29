@@ -226,7 +226,7 @@
                     <div class="space-y-4">
                         <h6 class="text-sm font-black uppercase text-indigo-700 italic">Navigasi Menu Utama</h6>
                         <p class="text-[11px] text-slate-500 font-bold leading-relaxed italic">
-                            Akses Sidebar (Menu Samping) > Klik **KATEGORI INFORMASI** > Pilih Klasifikasi (Berkala/Setiap Saat/Serta Merta) > Klik Tombol Biru **+ TAMBAH INFORMASI**.
+                            Akses Navbar (Menu Atas) > Pilih salah satu Kategori (Berkala/Setiap Saat/Serta Merta) > Klik Tombol Biru **+ TAMBAH INFORMASI**.
                         </p>
                     </div>
                 </div>
@@ -303,13 +303,14 @@
                             </div>
                             <div class="space-y-3">
                                 <p class="text-[11px] font-black text-slate-700 uppercase italic">Input Berkas (Pilih Salah Satu)</p>
-                                <div class="bg-slate-900 p-4 rounded-2xl space-y-3">
-                                    <div class="flex gap-2 text-[8px] font-black text-white italic uppercase">
+                                <div class="bg-slate-900 p-5 rounded-2xl space-y-4 shadow-inner">
+                                    <div class="flex gap-2 text-[8px] font-black text-white italic uppercase mb-2">
                                         <span class="bg-blue-600 px-2 py-1 rounded">UPLOAD FILE (MAX 2MB)</span>
-                                        <span class="opacity-30">LINK DRIVE (> 2MB)</span>
+                                        <span class="opacity-40 border border-white/20 px-2 py-1 rounded">LINK DRIVE (> 2MB)</span>
                                     </div>
-                                    <div class="bg-white/10 border-2 border-dashed border-white/20 h-10 rounded-xl flex items-center justify-center">
-                                        <i class="fas fa-cloud-upload-alt text-white/30"></i>
+                                    <div class="bg-white/10 p-3 rounded-xl border border-white/10 text-slate-300 text-[10px] leading-relaxed italic">
+                                        <i class="fas fa-exclamation-triangle text-amber-400 mr-1"></i> Jika banyak file, **WAJIB MERGE PDF** jadi 1 file. <br>
+                                        <i class="fas fa-cloud-upload-alt text-blue-400 mr-1 mt-2"></i> Jika file di atas 2MB, simpan ke Google Drive unit Bapak/Ibu, lalu pilih opsi **Link Drive** dan copas linknya.
                                     </div>
                                 </div>
                             </div>
@@ -351,24 +352,27 @@
             </div>
 
             <div class="space-y-6">
-                <p class="text-[12px] leading-relaxed text-slate-300 font-bold normal-case italic">Ikuti langkah-langkah di bawah ini untuk mendapatkan rekomendasi klasifikasi otomatis:</p>
+                <p class="text-[12px] leading-relaxed text-slate-300 font-bold normal-case italic">Saat Bapak/Ibu sedang mengisi Form Tambah Informasi, Bapak/Ibu bisa langsung bertanya ke AI dengan alur berikut:</p>
                 
                 <div class="grid grid-cols-1 md:grid-cols-4 gap-6 text-center">
-                    <div class="bg-white/5 p-6 rounded-[2rem] border border-white/10 space-y-2">
+                    <div class="bg-white/5 p-6 rounded-[2rem] border border-white/10 space-y-2 relative">
                         <span class="text-indigo-400 font-black text-[9px] uppercase tracking-widest">Tahap 1</span>
-                        <p class="text-[10px] font-bold leading-relaxed italic">Buka Tab Biru <strong class="text-indigo-400">Tanya AI</strong> di kanan layar.</p>
+                        <p class="text-[10px] font-bold leading-relaxed italic">Klik tombol <strong class="text-indigo-400">"Tanya Pedoman"</strong> di bagian header biru pada form Tambah Informasi.</p>
+                        <i class="fas fa-arrow-right absolute -right-3 top-1/2 -translate-y-1/2 text-slate-600 hidden md:block"></i>
+                    </div>
+                    <div class="bg-white/5 p-6 rounded-[2rem] border border-white/10 space-y-2 relative">
+                        <span class="text-blue-400 font-black text-[9px] uppercase tracking-widest">Tahap 2</span>
+                        <p class="text-[10px] font-bold leading-relaxed italic">Akan muncul Pop-Up Pedoman ini. Di bagian bawahnya, klik tombol <strong class="text-blue-400">"Tanya AI"</strong>.</p>
+                        <i class="fas fa-arrow-right absolute -right-3 top-1/2 -translate-y-1/2 text-slate-600 hidden md:block"></i>
+                    </div>
+                    <div class="bg-white/5 p-6 rounded-[2rem] border border-white/10 space-y-2 relative">
+                        <span class="text-emerald-400 font-black text-[9px] uppercase tracking-widest">Tahap 3</span>
+                        <p class="text-[10px] font-bold leading-relaxed italic">Modal AI Analis akan terbuka. Ketikkan **Judul Dokumen** dan **Tahun** secara lengkap.</p>
+                        <i class="fas fa-arrow-right absolute -right-3 top-1/2 -translate-y-1/2 text-slate-600 hidden md:block"></i>
                     </div>
                     <div class="bg-white/5 p-6 rounded-[2rem] border border-white/10 space-y-2">
-                        <span class="text-green-400 font-black text-[9px] uppercase tracking-widest">Tahap 2</span>
-                        <p class="text-[10px] font-bold leading-relaxed italic">Masukkan **Judul Lengkap** dokumen Bapak/Ibu.</p>
-                    </div>
-                    <div class="bg-white/5 p-6 rounded-[2rem] border border-white/10 space-y-2">
-                        <span class="text-amber-400 font-black text-[9px] uppercase tracking-widest">Tahap 3</span>
-                        <p class="text-[10px] font-bold leading-relaxed italic">Masukkan **Tahun** dokumen tersebut.</p>
-                    </div>
-                    <div class="bg-white/5 p-6 rounded-[2rem] border border-white/10 space-y-2">
-                        <span class="text-blue-400 font-black text-[9px] uppercase tracking-widest">Tahap 4</span>
-                        <p class="text-[10px] font-bold leading-relaxed italic">Tekan Tombol Hijau <strong class="text-blue-400">ANALISA DOKUMEN</strong>.</p>
+                        <span class="text-amber-400 font-black text-[9px] uppercase tracking-widest">Tahap 4</span>
+                        <p class="text-[10px] font-bold leading-relaxed italic">Tekan Tombol Biru <strong class="text-amber-400">"ANALISA DOKUMEN"</strong>. AI akan langsung memberikan klasifikasi yang tepat!</p>
                     </div>
                 </div>
             </div>
