@@ -30,11 +30,11 @@
         </div>
 
         <!-- Tab Navigation (STICKY) -->
-        <div class="bg-slate-50 border-b border-slate-200 flex overflow-x-auto no-scrollbar scroll-smooth px-6 sticky top-0 z-20">
+        <div class="bg-slate-100 border-b border-slate-200 flex overflow-x-auto no-scrollbar scroll-smooth px-6 sticky top-0 z-30 shadow-sm">
             <template x-for="(tab, index) in $store.pedomanAdminModal.tabs" :key="index">
                 <button @click="$store.pedomanAdminModal.activeTab = index"
                         :class="$store.pedomanAdminModal.activeTab === index ? 'border-indigo-600 text-indigo-700 bg-white shadow-sm' : 'border-transparent text-slate-500 hover:text-slate-700'"
-                        class="px-6 py-4 border-b-4 font-bold text-sm whitespace-nowrap transition-all flex items-center gap-2">
+                        class="px-6 py-4 border-b-4 font-bold text-sm whitespace-nowrap transition-all flex items-center gap-2 min-h-[60px]">
                     <i :class="tab.icon"></i>
                     <span x-text="tab.title"></span>
                 </button>
@@ -45,7 +45,7 @@
         <div class="flex-1 overflow-y-auto p-6 md:p-10 bg-white">
             
             <!-- Tab 0: Menu Profil -->
-            <div x-show="$store.pedomanAdminModal.activeTab === 0" x-transition class="space-y-8">
+            <div x-show="$store.pedomanAdminModal.activeTab === 0" x-transition class="space-y-12">
                 <div class="flex items-center gap-4 border-l-4 border-indigo-600 pl-4 mb-6">
                     <h4 class="text-2xl font-bold text-slate-800">Pengelolaan Profil OPD & Pimpinan</h4>
                 </div>
@@ -57,7 +57,7 @@
                                 <span class="bg-indigo-100 w-6 h-6 rounded-full flex items-center justify-center text-xs">1</span>
                                 Mengelola Struktur & Website OPD
                             </h5>
-                            <ul class="space-y-4 text-sm text-slate-600">
+                            <ul class="space-y-4 text-sm text-slate-600 mb-6">
                                 <li class="flex gap-3">
                                     <i class="fas fa-mouse-pointer text-indigo-500 mt-1"></i>
                                     <span>Klik menu <strong>Profil</strong> > <strong>Tentang OPD</strong></span>
@@ -72,67 +72,21 @@
                                 </li>
                             </ul>
 
-                            <!-- Detail Instruksi Formulir OPD -->
-                            <div class="mt-6 p-5 bg-white border-2 border-indigo-50 rounded-2xl shadow-inner">
-                                <h6 class="text-xs font-black text-indigo-900 uppercase mb-4 tracking-widest border-b pb-2 flex items-center gap-2">
-                                    <i class="fas fa-list-check"></i> Panduan Form OPD (Visual):
-                                </h6>
-                                <div class="space-y-6">
-                                    <!-- A: STRUKTUR -->
-                                    <div class="flex flex-col md:flex-row gap-4">
-                                        <div class="flex gap-3 flex-1">
-                                            <div class="bg-indigo-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">A</div>
-                                            <div>
-                                                <p class="text-xs font-bold text-slate-800">Upload Struktur (Gambar)</p>
-                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Format: <strong>JPG, PNG, atau WEBP</strong>. Gambar ini akan tampil di profil OPD Anda di halaman depan.</p>
-                                            </div>
-                                        </div>
-                                        <div class="md:w-40 bg-slate-100 p-2 rounded-xl border border-slate-200 relative">
-                                            <div class="h-14 w-full border-2 border-dashed border-slate-300 rounded-lg flex flex-col items-center justify-center bg-white gap-1">
-                                                <i class="fas fa-cloud-upload-alt text-slate-300 text-xs"></i>
-                                                <span class="text-[6px] text-slate-400 font-bold uppercase">Pilih File</span>
-                                            </div>
-                                            <div class="absolute -left-4 top-1/2 -translate-y-1/2">
-                                                <div class="w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-indigo-500"></div>
-                                            </div>
-                                        </div>
+                            <div class="space-y-4">
+                                <!-- OPD Visual A -->
+                                <div class="flex flex-col md:flex-row gap-4 bg-white p-4 rounded-xl border border-slate-100">
+                                    <div class="flex-1 text-[11px] text-slate-500">Upload Gambar Struktur (JPG/PNG).</div>
+                                    <div class="md:w-32 bg-slate-100 p-2 rounded-lg border border-dashed border-slate-300 flex items-center justify-center relative">
+                                        <i class="fas fa-sitemap text-slate-300 text-xs"></i>
+                                        <div class="absolute -left-3 top-1/2 -translate-y-1/2 w-0 h-0 border-y-[4px] border-y-transparent border-r-[6px] border-r-indigo-500"></div>
                                     </div>
-
-                                    <!-- B: WEBSITE -->
-                                    <div class="flex flex-col md:flex-row gap-4">
-                                        <div class="flex gap-3 flex-1">
-                                            <div class="bg-indigo-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">B</div>
-                                            <div>
-                                                <p class="text-xs font-bold text-slate-800">Tautan Website OPD</p>
-                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Gunakan format lengkap (HTTP/HTTPS). Contoh: <strong>https://dinas.sinjaikab.go.id</strong></p>
-                                            </div>
-                                        </div>
-                                        <div class="md:w-40 space-y-1 bg-slate-100 p-3 rounded-xl border border-slate-200 relative">
-                                            <div class="h-1.5 w-10 bg-slate-200 rounded"></div>
-                                            <div class="h-6 w-full bg-white border border-slate-300 rounded shadow-sm flex items-center px-2">
-                                                <span class="text-[7px] text-indigo-500 font-bold">https://...</span>
-                                            </div>
-                                            <div class="absolute -left-4 top-1/2 -translate-y-1/2">
-                                                <div class="w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-indigo-500"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- C: SIMPAN -->
-                                    <div class="flex flex-col md:flex-row gap-4">
-                                        <div class="flex gap-3 flex-1">
-                                            <div class="bg-blue-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">C</div>
-                                            <div>
-                                                <p class="text-xs font-bold text-blue-800">Finalisasi</p>
-                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Pastikan semua data benar lalu tekan simpan.</p>
-                                            </div>
-                                        </div>
-                                        <div class="md:w-40 bg-slate-100 p-2 rounded-xl border border-slate-200 relative flex justify-center">
-                                            <div class="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-[8px] font-black shadow-md animate-pulse">SIMPAN PERUBAHAN</div>
-                                            <div class="absolute -left-4 top-1/2 -translate-y-1/2">
-                                                <div class="w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-blue-500"></div>
-                                            </div>
-                                        </div>
+                                </div>
+                                <!-- OPD Visual B -->
+                                <div class="flex flex-col md:flex-row gap-4 bg-white p-4 rounded-xl border border-slate-100">
+                                    <div class="flex-1 text-[11px] text-slate-500">Input URL Website Resmi.</div>
+                                    <div class="md:w-32 bg-white border border-slate-200 rounded p-1 flex items-center relative">
+                                        <span class="text-[6px] text-indigo-400 font-bold px-1">https://...</span>
+                                        <div class="absolute -left-3 top-1/2 -translate-y-1/2 w-0 h-0 border-y-[4px] border-y-transparent border-r-[6px] border-r-indigo-500"></div>
                                     </div>
                                 </div>
                             </div>
@@ -151,99 +105,27 @@
                                 </li>
                                 <li class="flex gap-3">
                                     <i class="fas fa-edit text-indigo-500 mt-1"></i>
-                                    <span>Cari nama pimpinan Anda, lalu klik tombol <span class="bg-amber-500 text-white px-2 py-0.5 rounded shadow-sm text-[10px] font-bold inline-flex items-center gap-1 uppercase tracking-tighter"><i class="fas fa-pencil-alt text-[8px]"></i> KELOLA PIMPINAN</span> pada kartu profil.</span>
+                                    <span>Cari nama pimpinan, klik tombol <span class="bg-amber-500 text-white px-2 py-0.5 rounded shadow-sm text-[10px] font-bold inline-flex items-center gap-1 uppercase tracking-tighter"><i class="fas fa-pencil-alt text-[8px]"></i> KELOLA PIMPINAN</span>.</span>
                                 </li>
-                                <li class="flex gap-3">
-                                    <i class="fas fa-save text-indigo-500 mt-1"></i>
-                                    <span>Lengkapi data pada <strong>Tab Identitas</strong> (Wajib), lalu klik tombol <span class="bg-blue-600 text-white px-3 py-1 rounded shadow-sm text-xs font-bold inline-flex items-center gap-1 uppercase"><i class="fas fa-save"></i> SIMPAN PROFIL</span>.</span>
+                                <li class="flex gap-3 text-amber-700 font-bold">
+                                    <i class="fas fa-info-circle mt-1"></i>
+                                    <span>Cukup isi Tab Identitas (Wajib *). Tab lain opsional.</span>
                                 </li>
                             </ul>
 
-                            <!-- Detail Instruksi Formulir -->
-                            <div class="mt-6 p-5 bg-white border-2 border-indigo-50 rounded-2xl shadow-inner">
-                                <h6 class="text-xs font-black text-indigo-900 uppercase mb-4 tracking-widest border-b pb-2 flex items-center gap-2">
-                                    <i class="fas fa-list-check"></i> Prioritas Pengisian (Tab Identitas):
-                                </h6>
-                                <div class="bg-amber-50 p-3 rounded-xl border border-amber-100 mb-6">
-                                    <p class="text-[10px] text-amber-800 leading-relaxed font-medium">
-                                        <i class="fas fa-info-circle mr-1"></i> Cukup isi <strong>Tab Identitas</strong> agar profil pimpinan tampil. Tab Biografi, Riwayat Karir, Pendidikan, & Penghargaan bersifat <strong>OPTIONAL (Boleh Dikosongkan)</strong>.
-                                    </p>
-                                </div>
-                                <div class="space-y-8">
-                                    <!-- A: FOTO -->
-                                    <div class="flex flex-col md:flex-row gap-6">
-                                        <div class="flex gap-3 flex-1">
-                                            <div class="bg-indigo-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">A</div>
-                                            <div>
-                                                <p class="text-xs font-bold text-slate-800">Foto (2MB)</p>
-                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Gunakan foto formal. Max 2MB. Format JPG, PNG, atau GIF.</p>
-                                            </div>
-                                        </div>
-                                        <div class="md:w-48 bg-slate-100 p-2 rounded-xl border border-slate-200 relative">
-                                            <div class="h-16 w-full border-2 border-dashed border-slate-300 rounded-lg flex items-center justify-center bg-white">
-                                                <i class="fas fa-camera text-slate-300"></i>
-                                            </div>
-                                            <div class="absolute -left-4 top-1/2 -translate-y-1/2">
-                                                <div class="w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-indigo-500"></div>
-                                            </div>
-                                        </div>
+                            <div class="mt-6 space-y-4">
+                                <!-- Pimpinan Visual -->
+                                <div class="bg-white p-4 rounded-xl border border-slate-200 space-y-3">
+                                    <div class="flex items-center gap-3">
+                                        <div class="bg-indigo-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold">A</div>
+                                        <p class="text-[10px] font-bold">Nama Lengkap + Gelar</p>
                                     </div>
-
-                                    <!-- B: BIODATA -->
-                                    <div class="flex flex-col md:flex-row gap-6">
-                                        <div class="flex gap-3 flex-1">
-                                            <div class="bg-indigo-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">B</div>
-                                            <div>
-                                                <p class="text-xs font-bold text-slate-800">Nama & NIP (Wajib *)</p>
-                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Wajib isi <strong>Nama Lengkap + Gelar</strong>. NIP diisi tanpa spasi.</p>
-                                            </div>
-                                        </div>
-                                        <div class="md:w-48 space-y-2 bg-slate-100 p-3 rounded-xl border border-slate-200 relative">
-                                            <div class="h-2 w-24 bg-indigo-200 rounded"></div>
-                                            <div class="h-6 w-full bg-white border border-slate-300 rounded shadow-sm flex items-center px-2">
-                                                <span class="text-[8px] text-slate-400 font-bold">CONTOH: Dr. Nama, M.Si</span>
-                                            </div>
-                                            <div class="absolute -left-4 top-1/2 -translate-y-1/2">
-                                                <div class="w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-indigo-500"></div>
-                                            </div>
-                                        </div>
+                                    <div class="flex items-center gap-3">
+                                        <div class="bg-indigo-600 text-white w-5 h-5 rounded-full flex items-center justify-center text-[10px] font-bold">B</div>
+                                        <p class="text-[10px] font-bold">Status: <span class="text-green-600 uppercase">Aktif</span></p>
                                     </div>
-
-                                    <!-- D: STATUS -->
-                                    <div class="flex flex-col md:flex-row gap-6">
-                                        <div class="flex gap-3 flex-1">
-                                            <div class="bg-indigo-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">C</div>
-                                            <div>
-                                                <p class="text-xs font-bold text-slate-800">Status Aktif (Wajib *)</p>
-                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Pastikan Status disetel ke <strong>Aktif</strong> agar pimpinan muncul di web.</p>
-                                            </div>
-                                        </div>
-                                        <div class="md:w-48 bg-slate-100 p-3 rounded-xl border border-slate-200 relative flex flex-col gap-2">
-                                            <div class="h-6 w-full bg-white border border-slate-300 rounded shadow-sm flex items-center px-2 justify-between">
-                                                <span class="text-[9px] font-bold text-green-600">Aktif</span>
-                                                <i class="fas fa-chevron-down text-[8px] text-slate-400"></i>
-                                            </div>
-                                            <div class="absolute -left-4 top-1/2 -translate-y-1/2">
-                                                <div class="w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-indigo-500"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- E: SIMPAN -->
-                                    <div class="flex flex-col md:flex-row gap-6">
-                                        <div class="flex gap-3 flex-1">
-                                            <div class="bg-blue-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">D</div>
-                                            <div>
-                                                <p class="text-xs font-bold text-blue-800">Simpan Profil</p>
-                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Klik simpan untuk menerapkan perubahan identitas pimpinan.</p>
-                                            </div>
-                                        </div>
-                                        <div class="md:w-48 bg-slate-100 p-3 rounded-xl border border-slate-200 relative flex justify-center">
-                                            <div class="bg-blue-600 text-white px-4 py-2 rounded-lg text-[9px] font-black shadow-md shadow-blue-200 animate-bounce uppercase">SIMPAN PROFIL</div>
-                                            <div class="absolute -left-4 top-1/2 -translate-y-1/2">
-                                                <div class="w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-blue-500"></div>
-                                            </div>
-                                        </div>
+                                    <div class="flex justify-center mt-2">
+                                        <div class="bg-blue-600 text-white px-4 py-1.5 rounded-lg text-[9px] font-black animate-bounce">SIMPAN PROFIL</div>
                                     </div>
                                 </div>
                             </div>
@@ -255,14 +137,14 @@
             <!-- Tab 1: Jenis Informasi -->
             <div x-show="$store.pedomanAdminModal.activeTab === 1" x-transition class="space-y-12 text-slate-800">
                 <div class="flex items-center gap-4 border-l-4 border-blue-600 pl-4 mb-6">
-                    <h4 class="text-2xl font-bold text-slate-800">Panduan Operasional & Manajemen Informasi</h4>
+                    <h4 class="text-2xl font-bold">Panduan Operasional & Manajemen Informasi</h4>
                 </div>
 
                 <!-- LANGKAH AWAL -->
                 <div class="bg-blue-50 p-6 rounded-3xl border border-blue-100 flex flex-col md:flex-row gap-6 items-center">
                     <div class="flex-1">
                         <h5 class="font-black text-blue-900 uppercase tracking-tighter mb-2">Langkah Awal: Memulai</h5>
-                        <p class="text-xs text-slate-600 leading-relaxed">Buka menu <strong>Informasi</strong> (Berkala/Setiap Saat), lalu klik tombol biru bertuliskan <span class="bg-blue-600 text-white px-2 py-0.5 rounded text-[10px] font-black tracking-widest">+ TAMBAH INFORMASI</span>.</p>
+                        <p class="text-xs text-slate-600 leading-relaxed">Buka menu <strong>Informasi</strong> (Berkala/Setiap Saat), lalu klik tombol biru besar bertuliskan <span class="bg-blue-600 text-white px-2 py-0.5 rounded text-[10px] font-black tracking-widest">+ TAMBAH INFORMASI</span>.</p>
                     </div>
                 </div>
 
@@ -288,14 +170,20 @@
                             </div>
                         </div>
 
-                        <!-- B: DESKRIPSI -->
+                        <!-- B: DESKRIPSI & DOKUMEN PELENGKAP -->
                         <div class="flex flex-col md:flex-row gap-8 items-start">
                             <div class="flex-1">
                                 <div class="flex gap-4 mb-3">
                                     <span class="w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-black text-sm">B</span>
-                                    <h6 class="font-bold text-slate-800 mt-1">Deskripsi & Lampiran</h6>
+                                    <h6 class="font-bold text-slate-800 mt-1">Deskripsi & Skenario Lampiran</h6>
                                 </div>
-                                <p class="text-[11px] text-slate-600 leading-relaxed ml-12">Jelaskan ringkasan dokumen. Jika banyak lampiran (Laporan Utama + Lampiran A-Z), **Gabungkan dalam 1 PDF** atau gunakan **Link Folder Google Drive**.</p>
+                                <div class="ml-12 space-y-4">
+                                    <p class="text-[11px] text-slate-600 leading-relaxed">Jelaskan ringkasan isi dokumen agar pemohon mudah memahami data.</p>
+                                    <div class="bg-amber-50 p-4 rounded-2xl border border-amber-200">
+                                        <p class="text-[10px] font-black text-amber-800 mb-2 uppercase tracking-widest underline italic">Skenario Dokumen Pelengkap:</p>
+                                        <p class="text-[10px] text-slate-600 leading-relaxed">Jika laporan memiliki banyak lampiran (Misal: LRA + Lampiran A, B, C), sangat disarankan untuk **menggabungkannya dalam 1 file PDF** (Max 2MB). Jika ukuran sangat besar, gunakan fitur **Link File** yang memuat URL ke satu folder penuh dokumen tersebut.</p>
+                                    </div>
+                                </div>
                             </div>
                             <div class="md:w-64 bg-slate-100 p-3 rounded-2xl border border-slate-200 relative">
                                 <div class="h-16 w-full border border-slate-300 rounded-lg bg-white flex flex-col p-2 gap-1 overflow-hidden">
@@ -360,7 +248,7 @@
                                     <span class="w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-black text-sm">F</span>
                                     <h6 class="font-bold text-slate-800 mt-1">Status (Berlaku / Arsip)</h6>
                                 </div>
-                                <p class="text-[11px] text-slate-600 leading-relaxed ml-12">Set ke **BERLAKU** untuk data aktif saat ini. Set ke **ARSIP** untuk dokumen lama yang hanya sebagai sejarah.</p>
+                                <p class="text-[11px] text-slate-600 leading-relaxed ml-12">Set ke **BERLAKU** untuk data aktif saat ini. Set ke **ARSIP** untuk dokumen lama.</p>
                             </div>
                             <div class="md:w-64 bg-slate-100 p-3 rounded-2xl border border-slate-200 relative flex gap-3 items-center">
                                 <div class="flex items-center gap-1"><div class="w-3 h-3 rounded-full border-2 border-indigo-600 flex items-center justify-center"><div class="w-1.5 h-1.5 bg-indigo-600 rounded-full"></div></div><span class="text-[7px] font-bold text-indigo-700 uppercase">Berlaku</span></div>
@@ -373,9 +261,9 @@
                             <div class="flex-1">
                                 <div class="flex gap-4 mb-3">
                                     <span class="w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-black text-sm">G</span>
-                                    <h6 class="font-bold text-slate-800 mt-1">Upload File (Max 2MB)</h6>
+                                    <h6 class="font-bold text-slate-800 mt-1">File Dokumen (Max 2MB)</h6>
                                 </div>
-                                <p class="text-[11px] text-slate-600 leading-relaxed ml-12">Jika file > 2MB, pilih **Link File** dan masukkan URL Google Drive/Cloud.</p>
+                                <p class="text-[11px] text-slate-600 leading-relaxed ml-12">Gunakan **Upload File** (< 2MB) atau **Link File** (URL Google Drive/Cloud) untuk file besar.</p>
                             </div>
                             <div class="md:w-64 bg-white border-2 border-dashed border-indigo-100 p-4 rounded-2xl relative flex flex-col items-center gap-1">
                                 <i class="fas fa-file-pdf text-indigo-300 text-xl"></i>
@@ -389,9 +277,9 @@
                             <div class="flex-1">
                                 <div class="flex gap-4 mb-3">
                                     <span class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-black text-sm">H</span>
-                                    <h6 class="font-bold text-blue-900 mt-1 italic">Check & Simpan (Berkala)</h6>
+                                    <h6 class="font-bold text-blue-900 mt-1 italic uppercase">Check & Simpan</h6>
                                 </div>
-                                <p class="text-[11px] text-slate-600 leading-relaxed ml-12">Khusus **Informasi Berkala**, wajib klik tombol <span class="bg-yellow-500 text-white px-1.5 py-0.5 rounded font-bold text-[8px] uppercase tracking-tighter">CHECK INFORMASI</span> untuk deteksi kemiripan data lama agar otomatis diarsipkan.</p>
+                                <p class="text-[11px] text-slate-600 leading-relaxed ml-12">Khusus **Informasi Berkala**, wajib klik tombol <span class="bg-yellow-500 text-white px-1.5 py-0.5 rounded font-bold text-[8px] uppercase tracking-tighter">CHECK INFORMASI</span> untuk mematikan data lama otomatis.</p>
                             </div>
                             <div class="md:w-64 bg-slate-100 p-3 rounded-2xl border border-slate-200 relative flex justify-center">
                                 <div class="bg-yellow-500 text-white px-4 py-2 rounded-lg text-[9px] font-black shadow shadow-yellow-200 animate-bounce uppercase">CHECK INFORMASI</div>
@@ -403,55 +291,55 @@
 
                 <div class="border-t-4 border-dashed border-slate-100 py-6"></div>
 
-                <!-- REFERENSI KLASIFIKASI -->
+                <!-- REFERENSI KLASIFIKASI & STUDI KASUS -->
                 <div class="space-y-10">
                     <h5 class="text-xl font-black text-center uppercase tracking-widest text-slate-400">Referensi Klasifikasi & Studi Kasus</h5>
                     
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <div class="bg-slate-900 text-white p-8 rounded-[3rem] shadow-xl relative overflow-hidden md:col-span-2">
-                            <h6 class="text-lg font-bold mb-6 border-b border-white/20 pb-4">Berkala (Update) vs Setiap Saat (Katalog)</h6>
+                            <h6 class="text-lg font-bold mb-6 border-b border-white/20 pb-4">Studi Kasus: Berkala vs Setiap Saat</h6>
                             <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
                                 <div>
-                                    <p class="text-indigo-400 font-black text-[10px] uppercase tracking-widest mb-2">Informasi Berkala (Ganti)</p>
-                                    <p class="text-[11px] text-slate-400 leading-relaxed"><strong>Skenario DPA:</strong> DPA 2024 menggantikan DPA 2023. Saat upload data baru, gunakan **Check Informasi** untuk mengarsipkan data lama otomatis.</p>
+                                    <p class="text-indigo-400 font-black text-[10px] uppercase tracking-widest mb-2">Berkala (Update Terkini)</p>
+                                    <p class="text-[11px] text-slate-400 leading-relaxed italic">"DPA 2024 menggantikan DPA 2023. Saat upload data baru, gunakan **Check Informasi** untuk mengarsipkan data lama otomatis."</p>
                                 </div>
                                 <div>
-                                    <p class="text-emerald-400 font-black text-[10px] uppercase tracking-widest mb-2">Informasi Setiap Saat (Menumpuk)</p>
-                                    <p class="text-[11px] text-slate-400 leading-relaxed"><strong>Skenario SK/MoU:</strong> SK Panitia 2023 tetap penting meskipun ada SK 2024. Langsung **SIMPAN** sebagai database riwayat sejarah unit Anda.</p>
+                                    <p class="text-emerald-400 font-black text-[10px] uppercase tracking-widest mb-2">Setiap Saat (Database Katalog)</p>
+                                    <p class="text-[11px] text-slate-400 leading-relaxed italic">"SK/MoU/Perjanjian 2023 tetap penting sebagai sejarah meskipun ada data 2024. Langsung **SIMPAN** tanpa arsip otomatis."</p>
                                 </div>
                             </div>
                         </div>
                         <div class="bg-red-50 p-6 rounded-[2.5rem] border border-red-100">
                             <h6 class="font-black text-red-900 text-xs mb-2 uppercase tracking-widest">⚠️ Serta Merta (Darurat)</h6>
-                            <p class="text-[10px] text-slate-600 leading-relaxed">Kejadian mendadak yang mengancam publik (Bencana, Wabah). Wajib diupload segera!</p>
+                            <p class="text-[10px] text-slate-600 leading-relaxed">Contoh: Peringatan Bencana, Wabah. Wajib upload segera!</p>
                         </div>
                         <div class="bg-slate-200 p-6 rounded-[2.5rem] border border-slate-300">
                             <h6 class="font-black text-slate-900 text-xs mb-2 uppercase tracking-widest">🔒 Dikecualikan (Rahasia)</h6>
-                            <p class="text-[10px] text-slate-600 leading-relaxed">Data rahasia jabatan, rekam medis, atau proses hukum. **TIDAK TAMPIL** di halaman publik.</p>
+                            <p class="text-[10px] text-slate-600 leading-relaxed">Contoh: Rekam Medis, Rahasia Bisnis. **TIDAK TAMPIL** di publik.</p>
                         </div>
                     </div>
 
-                    <!-- DOKUMEN WAJIB PER UNIT -->
-                    <div class="bg-white border-4 border-slate-100 rounded-[3rem] p-10">
+                    <!-- STANDAR DOKUMEN PER UNIT -->
+                    <div class="bg-white border-4 border-slate-100 rounded-[3rem] p-10 shadow-sm">
                         <h5 class="text-xl font-bold text-slate-800 mb-8 text-center uppercase tracking-widest border-b pb-4">Standar Dokumen Minimal Per Unit</h5>
                         <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
                             <div class="space-y-2">
                                 <p class="text-[10px] font-black text-blue-600 uppercase border-b pb-1">Dinas / Badan / RSUD</p>
                                 <ul class="text-[9px] text-slate-500 space-y-1 list-disc list-inside">
                                     <li>Renstra, Renja, DPA, RKA, LRA</li>
-                                    <li>Neraca, Tarif Layanan (RSUD), LHKPN</li>
+                                    <li>Neraca, Tarif Layanan, LHKPN</li>
                                 </ul>
                             </div>
                             <div class="space-y-2">
                                 <p class="text-[10px] font-black text-indigo-600 uppercase border-b pb-1">Inspektorat</p>
                                 <ul class="text-[9px] text-slate-500 space-y-1 list-disc list-inside">
-                                    <li>PKPT, Ringkasan LHP Publik, SOP Audit</li>
+                                    <li>PKPT, Ringkasan LHP, SOP Audit</li>
                                 </ul>
                             </div>
                             <div class="space-y-2">
                                 <p class="text-[10px] font-black text-green-600 uppercase border-b pb-1">Kecamatan / Desa / Kel</p>
                                 <ul class="text-[9px] text-slate-500 space-y-1 list-disc list-inside">
-                                    <li>APBDes, RPJMDes, RKPDes, LPPD, Monografi</li>
+                                    <li>APBDes, RPJMDes, LPPD, Monografi</li>
                                 </ul>
                             </div>
                         </div>
@@ -479,7 +367,7 @@
                                 <div class="w-8 h-8 bg-green-500 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-sm">1</div>
                                 <div>
                                     <p class="font-bold text-green-400 text-sm uppercase">Login Pemohon</p>
-                                    <p class="text-xs text-slate-300 mt-1">Minta warga login ke portal PPID (bisa pakai Google).</p>
+                                    <p class="text-xs text-slate-300 mt-1">Minta warga login ke portal PPID.</p>
                                 </div>
                             </div>
                             <div class="flex gap-4">
@@ -487,13 +375,6 @@
                                 <div>
                                     <p class="font-bold text-green-400 text-sm uppercase">Isi Formulir</p>
                                     <p class="text-xs text-slate-300 mt-1">Arahkan ke menu <strong>Transparansi</strong> > <strong>Permohonan Informasi</strong>.</p>
-                                </div>
-                            </div>
-                            <div class="flex gap-4">
-                                <div class="w-8 h-8 bg-green-500 rounded-full flex-shrink-0 flex items-center justify-center font-bold text-sm">3</div>
-                                <div>
-                                    <p class="font-bold text-green-400 text-sm uppercase">Kirim Formulir</p>
-                                    <p class="text-xs text-slate-300 mt-1">Klik tombol <span class="border border-green-500 px-2 py-0.5 rounded text-[10px]">BUAT PERMOHONAN</span>.</p>
                                 </div>
                             </div>
                         </div>
@@ -506,13 +387,10 @@
                         </h5>
                         <div class="space-y-6">
                             <div class="p-4 bg-blue-50 rounded-2xl border border-blue-100">
-                                <p class="text-sm font-bold text-blue-800 mb-2 underline italic">Langkah Pengiriman Dokumen:</p>
                                 <ol class="text-xs text-slate-600 space-y-3 list-decimal list-inside">
-                                    <li>Masuk ke Dashboard Admin Permohonan.</li>
-                                    <li>Pilih permohonan dengan status <span class="text-orange-600 font-bold uppercase">Pending</span>.</li>
-                                    <li>Klik tombol <span class="bg-blue-600 text-white px-2 py-0.5 rounded text-[10px] uppercase font-bold">Proses/Balas</span>.</li>
-                                    <li>Tulis pesan balasan, lampirkan link file dokumen yang diminta, atau upload dokumen langsung.</li>
-                                    <li>Klik <strong>Kirim Jawaban</strong>. Status akan berubah menjadi <span class="text-green-600 font-bold uppercase">Selesai</span>.</li>
+                                    <li>Pilih permohonan status <span class="text-orange-600 font-bold uppercase">Pending</span>.</li>
+                                    <li>Klik tombol <span class="bg-blue-600 text-white px-2 py-0.5 rounded text-[10px] font-bold">Proses/Balas</span>.</li>
+                                    <li>Tulis balasan & kirim dokumen.</li>
                                 </ol>
                             </div>
                         </div>
@@ -523,58 +401,26 @@
             <!-- Tab 3: PBJ (PU & Sekretariat) -->
             <div x-show="$store.pedomanAdminModal.activeTab === 3" x-transition class="space-y-8">
                 <div class="flex items-center gap-4 border-l-4 border-orange-600 pl-4 mb-6">
-                    <h4 class="text-2xl font-bold text-slate-800">Panduan Khusus PBJ (PU & Sekretariat)</h4>
+                    <h4 class="text-2xl font-bold text-slate-800">Panduan Khusus PBJ</h4>
                 </div>
 
                 <div class="bg-orange-50 p-6 rounded-2xl border border-orange-100 mb-8 flex gap-4 items-start">
-                    <div class="bg-orange-500 text-white p-3 rounded-xl">
-                        <i class="fas fa-exclamation-triangle"></i>
-                    </div>
+                    <div class="bg-orange-500 text-white p-3 rounded-xl"><i class="fas fa-exclamation-triangle"></i></div>
                     <div>
-                        <h6 class="font-bold text-orange-800">Perhatian Khusus Bagian PBJ!</h6>
-                        <p class="text-xs text-orange-700 leading-relaxed mt-1">Data PBJ wajib diupdate secara berkala sesuai progres tender yang berjalan untuk menjaga transparansi anggaran daerah.</p>
+                        <h6 class="font-bold text-orange-800">Perhatian Khusus PBJ!</h6>
+                        <p class="text-xs text-orange-700 leading-relaxed mt-1">Wajib upload RUP, KAK, Kontrak, dan BAST secara berkala.</p>
                     </div>
                 </div>
 
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                     <div class="space-y-4">
-                        <h5 class="font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fas fa-shopping-cart text-orange-500"></i>
-                            Langkah Input PBJ
-                        </h5>
+                        <h5 class="font-bold text-slate-800">Langkah Input PBJ</h5>
                         <ul class="text-sm text-slate-600 space-y-4">
-                            <li class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm flex gap-3">
+                            <li class="p-4 bg-white border border-slate-200 rounded-xl flex gap-3">
                                 <span class="text-orange-500 font-bold">01.</span>
-                                <span>Klik menu <strong>PBJ</strong> pada Dashboard Admin.</span>
-                            </li>
-                            <li class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm flex gap-3">
-                                <span class="text-orange-500 font-bold">02.</span>
-                                <span>Klik <span class="bg-blue-600 text-white px-2 py-0.5 rounded text-[10px] uppercase font-bold">Input Data Paket</span>.</span>
-                            </li>
-                            <li class="p-4 bg-white border border-slate-200 rounded-xl shadow-sm flex gap-3">
-                                <span class="text-orange-500 font-bold">03.</span>
-                                <span>Masukkan Nama Paket, Pagu, HPS, dan Nama Pemenang Tender.</span>
+                                <span>Klik menu <strong>PBJ</strong> > <strong>Input Data Paket</strong>.</span>
                             </li>
                         </ul>
-                    </div>
-                    <div class="space-y-4">
-                        <h5 class="font-bold text-slate-800 flex items-center gap-2">
-                            <i class="fas fa-file-pdf text-orange-500"></i>
-                            Dokumen Pendukung
-                        </h5>
-                        <div class="p-5 bg-slate-50 border border-slate-200 rounded-2xl">
-                            <p class="text-xs text-slate-500 mb-3 italic">Dokumen yang wajib disertakan untuk setiap paket:</p>
-                            <ul class="text-xs space-y-3">
-                                <li class="flex items-center gap-2"><i class="fas fa-check-circle text-green-500"></i> <span>Rencana Umum Pengadaan (RUP)</span></li>
-                                <li class="flex items-center gap-2"><i class="fas fa-check-circle text-green-500"></i> <span>Kerangka Acuan Kerja (KAK)</span></li>
-                                <li class="flex items-center gap-2"><i class="fas fa-check-circle text-green-500"></i> <span>Ringkasan Kontrak Kerja</span></li>
-                                <li class="flex items-center gap-2"><i class="fas fa-check-circle text-green-500"></i> <span>Berita Acara Serah Terima (BAST)</span></li>
-                            </ul>
-                            <div class="mt-4 p-3 bg-white rounded-xl border border-orange-100">
-                                <p class="text-[10px] text-orange-600 font-bold leading-tight uppercase">⚠️ Catatan Sekjretariat PBJ:</p>
-                                <p class="text-[10px] text-slate-500 mt-1">Pastikan file PDF tidak dikunci password agar bisa dibaca oleh pemohon.</p>
-                            </div>
-                        </div>
                     </div>
                 </div>
             </div>
@@ -586,24 +432,14 @@
             <div class="flex items-center gap-3">
                 <div class="flex -space-x-2">
                     <img src="https://ui-avatars.com/api/?name=Admin+PPID&background=4f46e5&color=fff" class="w-8 h-8 rounded-full border-2 border-white">
-                    <img src="https://ui-avatars.com/api/?name=Super+Admin&background=1e1b4b&color=fff" class="w-8 h-8 rounded-full border-2 border-white">
                 </div>
-                <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none">
-                    Dinas Kominfo & Persandian Sinjai
-                </div>
+                <div class="text-[10px] text-slate-400 font-bold uppercase tracking-widest leading-none">Dinas Kominfo & Persandian Sinjai</div>
             </div>
             
             <div class="flex gap-3 w-full md:w-auto">
-                <button @click="$store.pedomanAdminModal.prevTab()" 
-                        x-show="$store.pedomanAdminModal.activeTab > 0"
-                        class="px-6 py-3 bg-white text-slate-600 font-bold rounded-2xl border border-slate-200 text-sm hover:bg-slate-100 transition-all flex items-center gap-2">
-                    <i class="fas fa-arrow-left"></i> SEBELUMNYA
-                </button>
-
-                <button @click="$store.pedomanAdminModal.nextTab()" 
-                        class="flex-1 md:flex-none px-12 py-3 bg-indigo-700 text-white font-black rounded-2xl shadow-xl shadow-indigo-700/20 text-sm transition-all hover:bg-indigo-800 hover:scale-[1.02] active:scale-95 flex items-center justify-center gap-2">
-                    <span x-text="$store.pedomanAdminModal.activeTab === $store.pedomanAdminModal.tabs.length - 1 ? 'SAYA MENGERTI, TUTUP PANDUAN' : 'LANJUT KE LANGKAH BERIKUTNYA'"></span>
-                    <i :class="$store.pedomanAdminModal.activeTab === $store.pedomanAdminModal.tabs.length - 1 ? 'fas fa-check-double' : 'fas fa-arrow-right'"></i>
+                <button @click="$store.pedomanAdminModal.prevTab()" x-show="$store.pedomanAdminModal.activeTab > 0" class="px-6 py-3 bg-white text-slate-600 font-bold rounded-2xl border border-slate-200 text-sm">SEBELUMNYA</button>
+                <button @click="$store.pedomanAdminModal.nextTab()" class="flex-1 md:flex-none px-12 py-3 bg-indigo-700 text-white font-black rounded-2xl shadow-xl text-sm">
+                    <span x-text="$store.pedomanAdminModal.activeTab === $store.pedomanAdminModal.tabs.length - 1 ? 'TUTUP PANDUAN' : 'LANJUT'"></span>
                 </button>
             </div>
         </div>
