@@ -27,8 +27,8 @@
             </button>
         </div>
 
-        <!-- Tab Navigation: STICKY & HIGH Z-INDEX -->
-        <div class="bg-white border-b border-slate-200 flex overflow-x-auto no-scrollbar sticky top-0 z-[80] shadow-sm px-4">
+        <!-- Tab Navigation: FIXED POSITIONING ABOVE CONTENT -->
+        <div class="bg-white border-b border-slate-200 flex overflow-x-auto no-scrollbar relative z-[90] shadow-sm px-4 flex-shrink-0">
             <template x-for="(tab, index) in $store.pedomanAdminModal.tabs" :key="index">
                 <button @click="$store.pedomanAdminModal.activeTab = index"
                         :class="$store.pedomanAdminModal.activeTab === index ? 'border-indigo-600 text-indigo-700 bg-indigo-50/30' : 'border-transparent text-slate-400 hover:text-slate-600'"

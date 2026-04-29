@@ -1,5 +1,5 @@
 <div x-show="$store.pedomanAdminModal.activeTab === 1" 
-     class="space-y-12 animate-fadeIn">
+     class="space-y-12">
     
     <!-- Header Tab -->
     <div class="flex items-center gap-4 border-l-8 border-blue-600 pl-4 uppercase tracking-tighter">
