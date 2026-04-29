@@ -3,12 +3,12 @@
     
     <!-- Header Tab -->
     <div class="flex items-center gap-4 border-l-8 border-blue-600 pl-4 uppercase tracking-tighter">
-        <div class="bg-blue-600 p-3 rounded-2xl text-white shadow-lg shadow-blue-200">
+        <div class="bg-blue-600 p-3 rounded-2xl text-white shadow-md">
             <i class="fas fa-folder-tree text-2xl"></i>
         </div>
         <div>
             <h4 class="text-xl font-black text-slate-800 leading-none">Manajemen Informasi Publik</h4>
-            <p class="text-[10px] text-slate-400 font-bold tracking-[0.2em] mt-1 italic">Mastering Information Classification & Lifecycle</p>
+            <p class="text-[10px] text-slate-400 font-bold tracking-[0.2em] mt-1 italic">Classification & Information Lifecycle</p>
         </div>
     </div>
 
@@ -24,10 +24,10 @@
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <!-- BERKALA -->
-            <div class="group bg-white p-6 rounded-[2rem] border-2 border-slate-50 hover:border-blue-100 transition-all duration-300 shadow-sm hover:shadow-lg relative">
+            <div class="group bg-white p-6 rounded-[2rem] border-2 border-slate-50 hover:border-blue-100 transition-all duration-300 shadow-sm relative overflow-hidden">
                 <div class="relative z-10">
                     <div class="flex items-center gap-3 mb-4">
-                        <div class="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-blue-200">
+                        <div class="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-md">
                             <i class="fas fa-calendar-check"></i>
                         </div>
                         <h6 class="font-black text-blue-900 uppercase tracking-tighter text-sm">1. Informasi Berkala</h6>
@@ -37,22 +37,20 @@
                         Diterbitkan secara **rutin & terjadwal** (Bulanan, Triwulan, atau Tahunan). Fokus utama adalah memberikan gambaran kinerja organisasi saat ini.
                     </p>
 
-                    <div class="space-y-3">
-                        <div class="bg-blue-50/50 p-4 rounded-2xl border border-blue-100/50">
-                            <span class="text-[9px] font-black text-blue-700 uppercase block mb-1.5 italic tracking-widest">Karakteristik: "Update & Replace"</span>
-                            <p class="text-[10px] text-blue-900/80 leading-relaxed italic normal-case">
-                                Data terbaru **menggantikan** relevansi data lama di halaman utama. Contoh: Saat LRA 2024 naik, LRA 2023 menjadi arsip.
-                            </p>
-                        </div>
+                    <div class="bg-blue-50/50 p-4 rounded-2xl border border-blue-100/50">
+                        <span class="text-[9px] font-black text-blue-700 uppercase block mb-1.5 italic tracking-widest">Karakteristik: "Update & Replace"</span>
+                        <p class="text-[10px] text-blue-900/80 leading-relaxed italic normal-case">
+                            Data terbaru **menggantikan** relevansi data lama di halaman utama. Contoh: Saat LRA 2024 naik, LRA 2023 menjadi arsip.
+                        </p>
                     </div>
                 </div>
             </div>
 
             <!-- SETIAP SAAT -->
-            <div class="group bg-white p-6 rounded-[2rem] border-2 border-slate-50 hover:border-emerald-100 transition-all duration-300 shadow-sm hover:shadow-lg relative">
+            <div class="group bg-white p-6 rounded-[2rem] border-2 border-slate-50 hover:border-emerald-100 transition-all duration-300 shadow-sm relative overflow-hidden">
                 <div class="relative z-10">
                     <div class="flex items-center gap-3 mb-4">
-                        <div class="w-10 h-10 bg-emerald-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-emerald-200">
+                        <div class="w-10 h-10 bg-emerald-600 text-white rounded-xl flex items-center justify-center shadow-md">
                             <i class="fas fa-archive"></i>
                         </div>
                         <h6 class="font-black text-emerald-900 uppercase tracking-tighter text-sm">2. Informasi Setiap Saat</h6>
@@ -62,28 +60,30 @@
                         Dokumen yang **wajib tersedia setiap saat** jika diminta. Kategori ini mencakup **seluruh riwayat kebijakan, dokumen hukum, serta arsip penting** lainnya yang memiliki masa berlaku panjang.
                     </p>
 
-                    <div class="space-y-3">
-                        <div class="bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100/50">
-                            <span class="text-[9px] font-black text-emerald-700 uppercase block mb-1.5 italic tracking-widest">Karakteristik: "Historis & Akumulatif"</span>
-                            <p class="text-[10px] text-emerald-900/80 leading-relaxed italic normal-case">
-                                Sifatnya **akumulatif (menumpuk)**. Data lama TIDAK dihapus karena merupakan sejarah unit dan bukti akuntabilitas yang bisa diminta sewaktu-waktu.
-                            </p>
-                        </div>
+                    <div class="bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100/50">
+                        <span class="text-[9px] font-black text-emerald-700 uppercase block mb-1.5 italic tracking-widest">Karakteristik: "Historis & Akumulatif"</span>
+                        <p class="text-[10px] text-emerald-900/80 leading-relaxed italic normal-case">
+                            Sifatnya **akumulatif (menumpuk)**. Data lama TIDAK dihapus karena merupakan sejarah unit dan bukti akuntabilitas yang bisa diminta sewaktu-waktu.
+                        </p>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 uppercase font-black tracking-tighter text-[10px]">
-            <div class="group bg-gradient-to-r from-red-50 to-white p-5 rounded-3xl border border-red-100 flex items-center gap-4 transition-all">
-                <div class="bg-red-600 p-3 rounded-2xl text-white shadow-lg animate-pulse"><i class="fas fa-bolt"></i></div>
+            <div class="group bg-gradient-to-r from-red-50 to-white p-5 rounded-3xl border border-red-100 flex items-center gap-4 transition-colors">
+                <div class="w-10 h-10 bg-red-600 text-white rounded-xl flex items-center justify-center shadow-md flex-shrink-0">
+                    <i class="fas fa-bolt"></i>
+                </div>
                 <div>
                     <h6 class="text-red-900 font-black text-xs">3. Serta Merta (Darurat)</h6>
                     <p class="text-slate-500 font-bold italic lowercase mt-0.5 leading-tight">Wajib tayang INSTAN! Menyangkut hajat hidup & keamanan publik.</p>
                 </div>
             </div>
-            <div class="group bg-slate-900 p-5 rounded-3xl border border-slate-800 flex items-center gap-4 transition-all">
-                <div class="bg-slate-700 p-3 rounded-2xl text-slate-300"><i class="fas fa-user-secret"></i></div>
+            <div class="group bg-slate-900 p-5 rounded-3xl border border-slate-800 flex items-center gap-4 transition-colors">
+                <div class="w-10 h-10 bg-slate-700 text-slate-300 rounded-xl flex items-center justify-center shadow-md flex-shrink-0">
+                    <i class="fas fa-user-secret"></i>
+                </div>
                 <div>
                     <h6 class="text-slate-200 font-black text-xs">4. Dikecualikan (Rahasia)</h6>
                     <p class="text-slate-500 font-bold italic lowercase mt-0.5 leading-tight">Terbatas & Rahasia. Hanya untuk internal atau atas izin hukum.</p>
@@ -93,7 +93,7 @@
     </div>
 
     <!-- NEW SECTION: STUDI KASUS -->
-    <div class="bg-slate-50 rounded-[2.5rem] p-8 md:p-10 border border-slate-200 shadow-inner relative overflow-hidden">
+    <div class="bg-slate-100/50 rounded-[2.5rem] p-8 md:p-10 border border-slate-200 relative overflow-hidden">
         <div class="relative z-10 space-y-8">
             <div class="text-center space-y-2">
                 <h5 class="text-sm font-black uppercase tracking-[0.3em] text-indigo-700 italic">STUDI KASUS KLASIFIKASI</h5>
@@ -102,7 +102,7 @@
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <!-- Case 1 -->
-                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col h-full">
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col h-full hover:border-indigo-200 transition-colors">
                     <div class="bg-blue-50 text-blue-600 text-[9px] font-black px-3 py-1 rounded-full self-start mb-4 uppercase">Kasus A</div>
                     <p class="text-[11px] font-bold text-slate-700 mb-4 normal-case italic leading-relaxed">"Saya ingin upload **Laporan Realisasi Anggaran (LRA) Semester 1 2024**."</p>
                     <div class="mt-auto pt-4 border-t border-slate-50">
@@ -111,7 +111,7 @@
                 </div>
 
                 <!-- Case 2 -->
-                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col h-full">
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col h-full hover:border-emerald-200 transition-colors">
                     <div class="bg-emerald-50 text-emerald-600 text-[9px] font-black px-3 py-1 rounded-full self-start mb-4 uppercase">Kasus B</div>
                     <p class="text-[11px] font-bold text-slate-700 mb-4 normal-case italic leading-relaxed">"Saya ingin upload **SK Penetapan Tim Pelaksana Kegiatan** yang berlaku selamanya."</p>
                     <div class="mt-auto pt-4 border-t border-slate-50">
@@ -120,7 +120,7 @@
                 </div>
 
                 <!-- Case 3 -->
-                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col h-full">
+                <div class="bg-white p-6 rounded-3xl border border-slate-200 shadow-sm flex flex-col h-full hover:border-red-200 transition-colors">
                     <div class="bg-red-50 text-red-600 text-[9px] font-black px-3 py-1 rounded-full self-start mb-4 uppercase">Kasus C</div>
                     <p class="text-[11px] font-bold text-slate-700 mb-4 normal-case italic leading-relaxed">"Ada pengumuman **Penutupan Jalan Mendadak** karena tanah longsor."</p>
                     <div class="mt-auto pt-4 border-t border-slate-50">
@@ -129,14 +129,14 @@
                 </div>
             </div>
 
-            <div class="bg-indigo-950 p-6 rounded-[2rem] text-white flex items-center justify-between gap-6">
+            <div class="bg-indigo-950 p-6 rounded-2xl text-white flex items-center justify-between gap-6">
                 <div class="flex items-center gap-4">
-                    <div class="w-12 h-12 bg-white/10 rounded-2xl flex items-center justify-center text-indigo-400 border border-white/10">
-                        <i class="fas fa-question-circle text-xl"></i>
+                    <div class="w-10 h-10 bg-white/10 rounded-xl flex items-center justify-center text-indigo-400 border border-white/10 flex-shrink-0">
+                        <i class="fas fa-question-circle text-lg"></i>
                     </div>
                     <div>
-                        <p class="text-[11px] font-black uppercase tracking-widest leading-none">Masih Ragu?</p>
-                        <p class="text-[9px] text-indigo-300 font-bold mt-1 uppercase italic">Gunakan rumus: Rutin = Berkala, Hukum = Setiap Saat, Bahaya = Serta Merta.</p>
+                        <p class="text-[10px] font-black uppercase tracking-widest leading-none">Masih Ragu?</p>
+                        <p class="text-[9px] text-indigo-300 font-bold mt-1 uppercase italic leading-tight">Rumus: Rutin/Terjadwal = Berkala, Riwayat/Dokumen Penting = Setiap Saat, Darurat = Serta Merta.</p>
                     </div>
                 </div>
             </div>
@@ -154,12 +154,12 @@
 
         <div class="relative pl-6 space-y-6">
             <!-- Vertical Line Connector -->
-            <div class="absolute left-[29px] top-6 bottom-6 w-1 bg-gradient-to-b from-indigo-500 via-blue-400 to-indigo-500 rounded-full opacity-20"></div>
+            <div class="absolute left-[29px] top-6 bottom-6 w-1 bg-indigo-100 rounded-full opacity-50"></div>
 
             <!-- A: JUDUL -->
-            <div class="group relative flex flex-col md:flex-row gap-6 items-center bg-white p-6 rounded-[2rem] border-2 border-slate-50 hover:border-indigo-100 transition-all shadow-sm">
+            <div class="group relative flex flex-col md:flex-row gap-6 items-center bg-white p-6 rounded-2xl border-2 border-slate-50 shadow-sm transition-all hover:border-indigo-100">
                 <div class="flex-1 flex gap-5 relative z-10">
-                    <div class="w-10 h-10 bg-indigo-600 text-white rounded-2xl flex items-center justify-center font-black shadow-lg shadow-indigo-200 flex-shrink-0 text-sm">A</div>
+                    <div class="w-10 h-10 bg-indigo-600 text-white rounded-xl flex items-center justify-center font-black shadow-md flex-shrink-0 text-sm">A</div>
                     <div class="space-y-1">
                         <h6 class="text-xs font-black uppercase text-slate-800 italic">Judul Informasi</h6>
                         <p class="text-[10px] text-slate-400 font-bold normal-case italic leading-relaxed">
@@ -174,12 +174,12 @@
             </div>
 
             <!-- B: DESKRIPSI -->
-            <div class="group relative flex flex-col md:flex-row gap-6 items-start bg-white p-6 rounded-[2rem] border-2 border-slate-50 shadow-sm">
+            <div class="group relative flex flex-col md:flex-row gap-6 items-start bg-white p-6 rounded-2xl border-2 border-slate-50 shadow-sm transition-all hover:border-amber-100">
                 <div class="flex-1 flex gap-5 relative z-10">
-                    <div class="w-10 h-10 bg-indigo-600 text-white rounded-2xl flex items-center justify-center font-black shadow-lg flex-shrink-0 text-sm">B</div>
+                    <div class="w-10 h-10 bg-indigo-600 text-white rounded-xl flex items-center justify-center font-black shadow-md flex-shrink-0 text-sm">B</div>
                     <div class="space-y-3">
                         <h6 class="text-xs font-black uppercase text-slate-800 italic">Deskripsi & Pelengkap</h6>
-                        <div class="bg-amber-50 p-5 rounded-2xl border-2 border-amber-100/50 text-amber-900 leading-relaxed text-[10px] font-bold normal-case">
+                        <div class="bg-amber-50 p-5 rounded-2xl border border-amber-100 text-amber-900 leading-relaxed text-[10px] font-bold normal-case">
                             <div class="flex items-center gap-2 mb-2">
                                 <i class="fas fa-exclamation-circle text-amber-500"></i>
                                 <span class="uppercase tracking-widest text-[9px]">Penting!</span>
@@ -192,29 +192,28 @@
 
             <!-- C, D, E, F -->
             <div class="grid grid-cols-2 md:grid-cols-4 gap-4 relative z-10">
-                <div class="bg-white p-5 rounded-2xl border-2 border-slate-50 flex flex-col items-center gap-3 text-center shadow-sm">
-                    <span class="w-8 h-8 bg-indigo-500 text-white rounded-xl flex items-center justify-center text-[10px] font-black shadow-lg shadow-indigo-100">C</span>
+                <div class="bg-white p-5 rounded-xl border border-slate-100 flex flex-col items-center gap-3 text-center shadow-sm">
+                    <span class="w-8 h-8 bg-indigo-500 text-white rounded-lg flex items-center justify-center text-[10px] font-black shadow-md">C</span>
                     <span class="text-[9px] font-black text-slate-500 uppercase tracking-tighter italic">Kategori</span>
                 </div>
-                <div class="bg-white p-5 rounded-2xl border-2 border-slate-50 flex flex-col items-center gap-3 text-center shadow-sm">
-                    <span class="w-8 h-8 bg-indigo-500 text-white rounded-xl flex items-center justify-center text-[10px] font-black shadow-lg shadow-indigo-100">D</span>
+                <div class="bg-white p-5 rounded-xl border border-slate-100 flex flex-col items-center gap-3 text-center shadow-sm">
+                    <span class="w-8 h-8 bg-indigo-500 text-white rounded-lg flex items-center justify-center text-[10px] font-black shadow-md">D</span>
                     <span class="text-[9px] font-black text-slate-500 uppercase tracking-tighter italic">Jenis Info</span>
                 </div>
-                <div class="bg-white p-5 rounded-2xl border-2 border-slate-50 flex flex-col items-center gap-3 text-center shadow-sm">
-                    <span class="w-8 h-8 bg-indigo-500 text-white rounded-xl flex items-center justify-center text-[10px] font-black shadow-lg shadow-indigo-100">E</span>
+                <div class="bg-white p-5 rounded-xl border border-slate-100 flex flex-col items-center gap-3 text-center shadow-sm">
+                    <span class="w-8 h-8 bg-indigo-500 text-white rounded-lg flex items-center justify-center text-[10px] font-black shadow-md">E</span>
                     <span class="text-[9px] font-black text-slate-500 uppercase tracking-tighter italic">Tagging</span>
                 </div>
-                <div class="bg-white p-5 rounded-2xl border-2 border-slate-50 flex flex-col items-center gap-3 text-center shadow-sm">
-                    <span class="w-8 h-8 bg-indigo-500 text-white rounded-xl flex items-center justify-center text-[10px] font-black shadow-lg shadow-indigo-100">F</span>
+                <div class="bg-white p-5 rounded-xl border border-slate-100 flex flex-col items-center gap-3 text-center shadow-sm">
+                    <span class="w-8 h-8 bg-indigo-500 text-white rounded-lg flex items-center justify-center text-[10px] font-black shadow-md">F</span>
                     <span class="text-[9px] font-black text-slate-500 uppercase tracking-tighter italic">Cover</span>
                 </div>
             </div>
 
             <!-- H: FINAL -->
-            <div class="relative flex flex-col md:flex-row gap-6 items-center bg-indigo-900 p-6 rounded-[2.5rem] shadow-2xl border-4 border-white/10 overflow-hidden group">
-                <div class="absolute inset-0 bg-gradient-to-r from-indigo-950 to-indigo-800 opacity-50"></div>
+            <div class="relative flex flex-col md:flex-row gap-6 items-center bg-indigo-900 p-6 rounded-2xl shadow-xl border-4 border-white/10 overflow-hidden group">
                 <div class="flex-1 flex gap-5 relative z-10">
-                    <div class="w-12 h-12 bg-white text-indigo-900 rounded-2xl flex items-center justify-center font-black shadow-xl animate-bounce flex-shrink-0 text-lg">H</div>
+                    <div class="w-12 h-12 bg-white text-indigo-900 rounded-xl flex items-center justify-center font-black shadow-lg flex-shrink-0 text-lg">H</div>
                     <div class="space-y-1">
                         <h6 class="text-xs font-black uppercase text-indigo-300 italic tracking-widest">Langkah Final: Simpan</h6>
                         <p class="text-[10px] text-white font-bold normal-case leading-relaxed">
@@ -222,9 +221,9 @@
                         </p>
                     </div>
                 </div>
-                <div class="flex-shrink-0 relative z-10 scale-90 md:scale-100">
-                    <div class="bg-yellow-500 text-indigo-950 px-6 py-3 rounded-2xl text-[10px] font-black shadow-xl border-2 border-white/20 uppercase italic tracking-wider flex items-center gap-2">
-                        <i class="fas fa-check-double"></i> CHECK INFORMASI
+                <div class="flex-shrink-0 relative z-10">
+                    <div class="bg-yellow-500 text-indigo-950 px-6 py-3 rounded-xl text-[10px] font-black shadow-lg border border-white/20 uppercase italic tracking-wider flex items-center gap-2">
+                        <i class="fas fa-check-double text-xs"></i> CHECK INFORMASI
                     </div>
                 </div>
             </div>
@@ -232,11 +231,10 @@
     </div>
 
     <!-- BANTUAN AI (CLEAN) -->
-    <div class="bg-slate-900 text-white p-8 rounded-[2.5rem] shadow-2xl relative overflow-hidden border border-slate-800 group">
-        <div class="absolute top-0 right-0 w-64 h-64 bg-indigo-500/10 rounded-full blur-3xl -mr-32 -mt-32 transition-all group-hover:bg-indigo-500/20"></div>
+    <div class="bg-slate-900 text-white p-8 rounded-2xl shadow-xl relative overflow-hidden border border-slate-800">
         <div class="relative z-10 flex flex-col md:flex-row gap-8 items-center">
             <div class="flex items-center gap-4">
-                <div class="bg-gradient-to-tr from-indigo-600 to-blue-500 p-4 rounded-2xl text-white shadow-xl rotate-3 group-hover:rotate-0 transition-transform duration-500">
+                <div class="bg-gradient-to-tr from-indigo-600 to-blue-500 p-4 rounded-xl text-white shadow-lg flex-shrink-0">
                     <i class="fas fa-magic text-xl"></i>
                 </div>
                 <div>
@@ -245,11 +243,11 @@
                 </div>
             </div>
             <div class="flex-1 grid grid-cols-1 md:grid-cols-2 gap-4 text-[10px] tracking-widest uppercase font-black">
-                <div class="bg-white/5 p-4 rounded-2xl border border-white/10 flex items-center gap-3">
+                <div class="bg-white/5 p-4 rounded-xl border border-white/10 flex items-center gap-3">
                     <span class="text-indigo-400">01</span>
                     <span>Klik <span class="text-indigo-400">"Tanya Pedoman"</span></span>
                 </div>
-                <div class="bg-white/5 p-4 rounded-2xl border border-white/10 flex items-center gap-3">
+                <div class="bg-white/5 p-4 rounded-xl border border-white/10 flex items-center gap-3">
                     <span class="text-green-400">02</span>
                     <span>Ketik & Klik <span class="text-green-400 underline underline-offset-4">TANYA AI</span></span>
                 </div>
