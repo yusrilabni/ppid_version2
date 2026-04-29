@@ -22,26 +22,27 @@
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
-            <!-- Navigasi Beranda -->
+            <!-- Navigasi Navbar -->
             <div class="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden border-4 border-slate-800 shadow-xl">
-                <h6 class="text-xs font-black uppercase text-indigo-400 mb-6 tracking-widest italic">Alur Navigasi Beranda:</h6>
+                <h6 class="text-xs font-black uppercase text-indigo-400 mb-6 tracking-widest italic">Alur Navigasi Navbar:</h6>
                 <div class="space-y-4 text-[11px] font-medium leading-relaxed italic">
                     <p class="flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/10">
                         <span class="bg-indigo-600 text-white w-6 h-6 rounded-lg flex items-center justify-center font-black flex-shrink-0 not-italic text-[10px]">1</span>
-                        <span>Pada halaman **Beranda Admin**, scroll ke bawah ke grup <strong class="text-white">SDM & Struktur Organisasi</strong>.</span>
+                        <span>Pada Navbar (Menu Atas), klik menu <strong class="text-white uppercase">PROFIL</strong>.</span>
                     </p>
                     <p class="flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/10">
                         <span class="bg-indigo-600 text-white w-6 h-6 rounded-lg flex items-center justify-center font-black flex-shrink-0 not-italic text-[10px]">2</span>
-                        <span>Klik pada kartu <strong class="text-white">OPD / Unit</strong>. Daftar unit akan terbuka.</span>
+                        <span>Pilih sub-menu <strong class="text-white uppercase italic">Tentang OPD</strong>.</span>
                     </p>
                     <p class="flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/10">
                         <span class="bg-indigo-600 text-white w-6 h-6 rounded-lg flex items-center justify-center font-black flex-shrink-0 not-italic text-[10px]">3</span>
-                        <span>Cari nama unit Anda, klik ikon folder biru (<i class="fas fa-folder-open text-blue-400"></i>).</span>
+                        <span>Cari nama unit Anda di daftar, lalu klik tombol biru <strong class="text-blue-400 underline uppercase italic">KELOLA PROFIL UNIT</strong>.</span>
                     </p>
-                    <p class="flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/10">
-                        <span class="bg-indigo-600 text-white w-6 h-6 rounded-lg flex items-center justify-center font-black flex-shrink-0 not-italic text-[10px]">4</span>
-                        <span>Klik tombol <strong class="text-blue-400 underline uppercase italic">KELOLA OPD</strong> untuk mengedit struktur dan website.</span>
-                    </p>
+                    <div class="bg-blue-500/10 border-l-4 border-blue-500 p-4 rounded-r-2xl">
+                        <p class="text-[9px] text-blue-300 font-bold leading-relaxed uppercase tracking-tighter">
+                            INFO: Menu ini terbuka di halaman publik (Beranda) khusus untuk Admin yang sudah login.
+                        </p>
+                    </div>
                 </div>
             </div>
 
@@ -70,8 +71,8 @@
                     </div>
 
                     <div class="bg-indigo-900 p-5 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-indigo-200">
-                        <div class="bg-white text-indigo-900 px-8 py-2 rounded-xl text-[10px] font-black uppercase italic tracking-widest flex items-center gap-2">
-                            <i class="fas fa-save text-[9px]"></i> SIMPAN PROFIL
+                        <div class="bg-white text-indigo-900 px-6 py-2 rounded-xl text-[10px] font-black uppercase italic tracking-widest flex items-center gap-2">
+                            <i class="fas fa-save text-[9px]"></i> SIMPAN PROFIL UNIT
                         </div>
                     </div>
                 </div>
@@ -91,19 +92,19 @@
         <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
             <!-- Navigasi Pimpinan -->
             <div class="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden border-4 border-slate-800 shadow-xl">
-                <h6 class="text-xs font-black uppercase text-blue-400 mb-6 tracking-widest italic">Alur Navigasi Beranda:</h6>
+                <h6 class="text-xs font-black uppercase text-blue-400 mb-6 tracking-widest italic">Alur Navigasi Navbar:</h6>
                 <div class="space-y-4 text-[11px] font-medium leading-relaxed italic">
                     <p class="flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/10">
                         <span class="bg-blue-600 text-white w-6 h-6 rounded-lg flex items-center justify-center font-black flex-shrink-0 not-italic text-[10px]">1</span>
-                        <span>Pada **Beranda Admin**, buka grup <strong class="text-white">SDM & Struktur Organisasi</strong>.</span>
+                        <span>Pada Navbar (Menu Atas), klik menu <strong class="text-white uppercase">PROFIL</strong>.</span>
                     </p>
                     <p class="flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/10">
                         <span class="bg-blue-600 text-white w-6 h-6 rounded-lg flex items-center justify-center font-black flex-shrink-0 not-italic text-[10px]">2</span>
-                        <span>Klik pada kartu <strong class="text-white">Pimpinan</strong>. Daftar pejabat akan terbuka.</span>
+                        <span>Pilih sub-menu <strong class="text-white uppercase italic">Profil Pimpinan</strong>.</span>
                     </p>
                     <p class="flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/10">
                         <span class="bg-blue-600 text-white w-6 h-6 rounded-lg flex items-center justify-center font-black flex-shrink-0 not-italic text-[10px]">3</span>
-                        <span>Klik tombol biru <strong class="text-blue-400 underline uppercase italic">+ TAMBAH PROFIL PIMPINAN</strong> untuk data baru.</span>
+                        <span>Klik tombol biru <strong class="text-blue-400 underline uppercase italic">+ TAMBAH PROFIL PIMPINAN</strong> yang muncul di halaman tersebut.</span>
                     </p>
                 </div>
             </div>
@@ -129,7 +130,7 @@
                         </div>
                         <div class="bg-slate-50 p-4 rounded-2xl border-2 border-slate-100 space-y-3">
                             <p class="text-[10px] font-black text-slate-800 uppercase italic">Status <span class="text-red-500">*</span></p>
-                            <div class="bg-green-600 text-white py-2 rounded-lg text-[8px] font-black uppercase flex items-center justify-center gap-2 italic shadow-md shadow-green-100">
+                            <div class="bg-green-600 text-white py-2 rounded-lg text-[8px] font-black uppercase flex items-center justify-center gap-2 italic">
                                 AKTIF <i class="fas fa-check-circle"></i>
                             </div>
                         </div>
@@ -154,7 +155,7 @@
         <div class="space-y-2">
             <h6 class="text-sm font-black uppercase italic tracking-widest text-indigo-300">Sinkronisasi Website:</h6>
             <p class="text-[11px] font-bold leading-relaxed text-slate-300 normal-case italic">
-                Data yang Anda isi di Beranda Admin ini akan langsung merakit halaman **"PROFIL OPD"** di portal publik. Pastikan Gambar Struktur jernih dan Status Pimpinan diatur ke **AKTIF** agar profil pimpinan tampil sempurna di mata warga.
+                Seluruh data profil yang Anda kelola melalui **Navbar Beranda** ini akan otomatis memperbarui tampilan publik. Warga dapat melihat identitas unit kerja Anda secara transparan dan profesional.
             </p>
         </div>
     </div>

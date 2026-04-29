@@ -236,9 +236,9 @@
                 <div class="flex gap-6 items-start">
                     <span class="w-12 h-12 bg-slate-900 text-white rounded-2xl flex items-center justify-center font-black flex-shrink-0">01</span>
                     <div class="space-y-4">
-                        <h6 class="text-sm font-black uppercase text-indigo-700 italic">Navigasi Menu Utama</h6>
+                        <h6 class="text-sm font-black uppercase text-indigo-700 italic">Navigasi Navbar Beranda</h6>
                         <p class="text-[11px] text-slate-500 font-bold leading-relaxed italic">
-                            Akses Navbar (Menu Atas) > Pilih salah satu Kategori (Berkala/Setiap Saat/Serta Merta) > Klik Tombol Biru **+ TAMBAH INFORMASI**.
+                            Pada Navbar Atas, klik menu <strong class="text-indigo-600 uppercase">KATEGORI INFORMASI</strong> > Pilih salah satu Kategori (Berkala/Setiap Saat/Serta Merta) > Klik Tombol Biru **+ TAMBAH INFORMASI**.
                         </p>
                     </div>
                 </div>
@@ -504,6 +504,87 @@
                         <li class="flex gap-3 items-center bg-white/10 p-3 rounded-xl border border-white/10"><i class="fas fa-exclamation-triangle text-yellow-400"></i> Gangguan Layanan Vital <span class="text-white/50 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Informasi Serta Merta</li>
                         <li class="flex gap-3 items-center bg-white/10 p-3 rounded-xl border border-white/10"><i class="fas fa-exclamation-triangle text-yellow-400"></i> Jalur Evakuasi Darurat <span class="text-white/50 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Informasi Serta Merta</li>
                     </ul>
+                </div>
+            </div>
+        </div>
+
+        <!-- DAFTAR DOKUMEN SPESIFIK PER FUNGSI (NEW SECTION) -->
+        <div class="space-y-10 pt-10 border-t-4 border-emerald-50" id="daftar-spesifik-unit">
+            <div class="flex items-center gap-4 border-b-2 border-slate-100 pb-6">
+                <div class="bg-indigo-900 p-3 rounded-2xl text-white shadow-lg">
+                    <i class="fas fa-tags text-xl"></i>
+                </div>
+                <div>
+                    <h5 class="text-base font-black text-slate-800 uppercase italic leading-none">Daftar Dokumen Spesifik (Individu)</h5>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Dokumen Unik Berdasarkan Fungsi Layanan Masing-Masing Unit</p>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+                <!-- RSUD / PUSKESMAS -->
+                <div class="bg-white p-8 rounded-[3rem] border-2 border-emerald-50 shadow-sm space-y-6">
+                    <h6 class="text-xs font-black text-emerald-700 uppercase italic flex items-center gap-3">
+                        <span class="bg-emerald-600 text-white w-6 h-6 rounded-lg flex items-center justify-center font-black text-[10px]">1</span>
+                        Khusus Layanan Kesehatan (RSUD / PUSKESMAS)
+                    </h6>
+                    <ul class="space-y-3 list-none text-[10px] font-bold uppercase italic tracking-tighter text-slate-600">
+                        <li class="flex gap-2 border-b border-slate-50 pb-2"><i class="fas fa-hospital text-emerald-400"></i> <span>Izin Operasional RSUD/PKM <span class="text-emerald-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Standar Layanan & SOP PPID</span></li>
+                        <li class="flex gap-2 border-b border-slate-50 pb-2"><i class="fas fa-certificate text-emerald-400"></i> <span>Sertifikat Akreditasi Paripurna <span class="text-emerald-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Profil Badan Publik</span></li>
+                        <li class="flex gap-2 border-b border-slate-50 pb-2"><i class="fas fa-user-md text-emerald-400"></i> <span>Daftar Tenaga Medis & Spesialis <span class="text-emerald-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Informasi Organisasi & Kepegawaian</span></li>
+                        <li class="flex gap-2 border-b border-slate-50 pb-2"><i class="fas fa-file-invoice-dollar text-emerald-400"></i> <span>Tarif Layanan & Jenis Kamar <span class="text-emerald-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Standar Layanan & SOP PPID</span></li>
+                    </ul>
+                </div>
+
+                <!-- INSPEKTORAT -->
+                <div class="bg-white p-8 rounded-[3rem] border-2 border-indigo-50 shadow-sm space-y-6">
+                    <h6 class="text-xs font-black text-indigo-700 uppercase italic flex items-center gap-3">
+                        <span class="bg-indigo-600 text-white w-6 h-6 rounded-lg flex items-center justify-center font-black text-[10px]">2</span>
+                        Khusus Pengawasan (INSPEKTORAT)
+                    </h6>
+                    <ul class="space-y-3 list-none text-[10px] font-bold uppercase italic tracking-tighter text-slate-600">
+                        <li class="flex gap-2 border-b border-slate-50 pb-2"><i class="fas fa-search-dollar text-indigo-400"></i> <span>Ikhtisar Hasil Pemeriksaan (IHPS) <span class="text-indigo-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Laporan Kinerja Instansi</span></li>
+                        <li class="flex gap-2 border-b border-slate-50 pb-2"><i class="fas fa-user-check text-indigo-400"></i> <span>SOP Pengawasan & Audit <span class="text-indigo-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Standar Layanan & SOP PPID</span></li>
+                        <li class="flex gap-2 border-b border-slate-50 pb-2"><i class="fas fa-gavel text-indigo-400"></i> <span>Daftar LHP Selesai Ditindaklanjuti <span class="text-indigo-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Laporan Kinerja Instansi</span></li>
+                    </ul>
+                </div>
+
+                <!-- DINAS PENDIDIKAN -->
+                <div class="bg-white p-8 rounded-[3rem] border-2 border-blue-50 shadow-sm space-y-6">
+                    <h6 class="text-xs font-black text-blue-700 uppercase italic flex items-center gap-3">
+                        <span class="bg-blue-600 text-white w-6 h-6 rounded-lg flex items-center justify-center font-black text-[10px]">3</span>
+                        Khusus Pendidikan (DINAS PENDIDIKAN)
+                    </h6>
+                    <ul class="space-y-3 list-none text-[10px] font-bold uppercase italic tracking-tighter text-slate-600">
+                        <li class="flex gap-2 border-b border-slate-50 pb-2"><i class="fas fa-school text-blue-400"></i> <span>Daftar Sekolah & Guru <span class="text-blue-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Informasi Organisasi & Kepegawaian</span></li>
+                        <li class="flex gap-2 border-b border-slate-50 pb-2"><i class="fas fa-calendar-alt text-blue-400"></i> <span>Kalender Akademik Daerah <span class="text-blue-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Program & Kegiatan</span></li>
+                        <li class="flex gap-2 border-b border-slate-50 pb-2"><i class="fas fa-graduation-cap text-blue-400"></i> <span>Panduan PPDB Online <span class="text-blue-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Pengumuman & Siaran Pers</span></li>
+                    </ul>
+                </div>
+
+                <!-- DESA / KELURAHAN -->
+                <div class="bg-white p-8 rounded-[3rem] border-2 border-orange-50 shadow-sm space-y-6">
+                    <h6 class="text-xs font-black text-orange-700 uppercase italic flex items-center gap-3">
+                        <span class="bg-orange-600 text-white w-6 h-6 rounded-lg flex items-center justify-center font-black text-[10px]">4</span>
+                        Khusus Wilayah (DESA / KELURAHAN)
+                    </h6>
+                    <ul class="space-y-3 list-none text-[10px] font-bold uppercase italic tracking-tighter text-slate-600">
+                        <li class="flex gap-2 border-b border-slate-50 pb-2"><i class="fas fa-map-marked-alt text-orange-400"></i> <span>Peta Wilayah & Batas Desa <span class="text-orange-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Profil Badan Publik</span></li>
+                        <li class="flex gap-2 border-b border-slate-50 pb-2"><i class="fas fa-landmark text-orange-400"></i> <span>Daftar Tanah Kas Desa (TKD) <span class="text-orange-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Daftar Aset dan Inventaris</span></li>
+                        <li class="flex gap-2 border-b border-slate-50 pb-2"><i class="fas fa-users text-orange-400"></i> <span>Data Demografi Penduduk <span class="text-orange-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Pengumuman & Siaran Pers</span></li>
+                    </ul>
+                </div>
+            </div>
+
+            <!-- REMINDER PENTING -->
+            <div class="bg-slate-900 p-8 rounded-[2.5rem] text-white flex flex-col md:flex-row items-center gap-8 border-4 border-indigo-900/30">
+                <div class="w-16 h-16 bg-amber-500 text-slate-900 rounded-2xl flex items-center justify-center flex-shrink-0 animate-pulse">
+                    <i class="fas fa-lightbulb text-2xl"></i>
+                </div>
+                <div class="space-y-1">
+                    <p class="text-[12px] font-black uppercase italic tracking-widest text-amber-400 leading-none">Tips Efisiensi Admin:</p>
+                    <p class="text-[10px] text-slate-400 font-bold normal-case leading-relaxed">
+                        "Jika sebuah dokumen bisa masuk ke dua kategori (misal: SK Pimpinan yang diperbarui tiap tahun), prioritaskan landasan hukumnya. Gunakan **SETIAP SAAT** agar warga bisa melihat riwayat kebijakan unit Anda dari tahun ke tahun secara lengkap."
+                    </p>
                 </div>
             </div>
         </div>

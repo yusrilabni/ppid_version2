@@ -18,7 +18,7 @@
                 </div>
                 <div>
                     <h3 class="text-sm font-black uppercase tracking-wider leading-none">Pedoman Admin</h3>
-                    <p class="text-[9px] text-indigo-300 font-bold uppercase tracking-widest mt-1 opacity-80">Portal PPID v2.0</p>
+                    <p class="text-[9px] text-indigo-300 font-bold uppercase tracking-widest mt-1 opacity-80">Portal PPID Kabupaten Sinjai</p>
                 </div>
             </div>
             <button @click="$store.pedomanAdminModal.close()"
@@ -61,7 +61,7 @@
 
             <div class="flex items-center gap-3 order-1 md:order-2">
                 <div class="relative hidden sm:block">
-                    <img src="https://ui-avatars.com/api/?name=Admin+PPID&background=4f46e5&color=fff" class="w-8 h-8 rounded-xl border-2 border-white shadow-md ring-2 ring-indigo-50">
+                    <img src="https://ui-avatars.com/api/?name=Admin+PPID&background=4f46e5&color=fff" class="w-9 h-9 rounded-xl border-2 border-white shadow-md ring-2 ring-indigo-50">
                     <div class="absolute -bottom-0.5 -right-0.5 w-2.5 h-2.5 bg-green-500 border-2 border-white rounded-full"></div>
                 </div>
                 <div class="text-[9px] font-black uppercase tracking-widest text-slate-400 text-center md:text-left leading-tight">
@@ -95,8 +95,8 @@
         if (store) {
             store.tabs = [
                 { title: 'PROFIL', icon: 'fas fa-user-shield' },
-                { title: 'INFORMASI', icon: 'fas fa-folder-open' },
-                { title: 'LAYANAN', icon: 'fas fa-chart-line' },
+                { title: 'KATEGORI INFORMASI', icon: 'fas fa-folder-open' },
+                { title: 'TRANSPARANSI', icon: 'fas fa-chart-line' },
                 { title: 'PBJ', icon: 'fas fa-shopping-cart' }
             ];
         }
