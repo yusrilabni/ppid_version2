@@ -24,9 +24,7 @@
         
         <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <!-- BERKALA -->
-            <div class="group bg-white p-6 rounded-[2.5rem] border-2 border-slate-50 hover:border-blue-100 transition-all duration-500 shadow-sm hover:shadow-xl relative overflow-hidden">
-                <div class="absolute -top-10 -right-10 w-32 h-32 bg-blue-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-700"></div>
-                
+            <div class="group bg-white p-6 rounded-[2rem] border-2 border-slate-50 hover:border-blue-100 transition-all duration-300 shadow-sm hover:shadow-lg relative">
                 <div class="relative z-10">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-10 h-10 bg-blue-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-blue-200">
@@ -46,19 +44,12 @@
                                 Data terbaru **menggantikan** relevansi data lama di halaman utama. Contoh: Saat LRA 2024 naik, LRA 2023 menjadi arsip.
                             </p>
                         </div>
-                        <div class="flex flex-wrap gap-2 uppercase font-black text-[8px]">
-                            <span class="bg-slate-100 text-slate-500 px-2 py-1 rounded-md">RENSTRA</span>
-                            <span class="bg-slate-100 text-slate-500 px-2 py-1 rounded-md">LAPORAN KEUANGAN</span>
-                            <span class="bg-slate-100 text-slate-500 px-2 py-1 rounded-md">DPA</span>
-                        </div>
                     </div>
                 </div>
             </div>
 
             <!-- SETIAP SAAT -->
-            <div class="group bg-white p-6 rounded-[2.5rem] border-2 border-slate-50 hover:border-emerald-100 transition-all duration-500 shadow-sm hover:shadow-xl relative overflow-hidden">
-                <div class="absolute -top-10 -right-10 w-32 h-32 bg-emerald-50 rounded-full opacity-50 group-hover:scale-150 transition-transform duration-700"></div>
-                
+            <div class="group bg-white p-6 rounded-[2rem] border-2 border-slate-50 hover:border-emerald-100 transition-all duration-300 shadow-sm hover:shadow-lg relative">
                 <div class="relative z-10">
                     <div class="flex items-center gap-3 mb-4">
                         <div class="w-10 h-10 bg-emerald-600 text-white rounded-xl flex items-center justify-center shadow-lg shadow-emerald-200">
@@ -78,25 +69,20 @@
                                 Sifatnya **akumulatif (menumpuk)**. Semua riwayat dokumen tetap penting dan tidak saling menggantikan posisi hukumnya.
                             </p>
                         </div>
-                        <div class="flex flex-wrap gap-2 uppercase font-black text-[8px]">
-                            <span class="bg-slate-100 text-slate-500 px-2 py-1 rounded-md">SK PIMPINAN</span>
-                            <span class="bg-slate-100 text-slate-500 px-2 py-1 rounded-md">PERATURAN</span>
-                            <span class="bg-slate-100 text-slate-500 px-2 py-1 rounded-md">MOU</span>
-                        </div>
                     </div>
                 </div>
             </div>
         </div>
 
         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 uppercase font-black tracking-tighter text-[10px]">
-            <div class="group bg-gradient-to-r from-red-50 to-white p-5 rounded-3xl border border-red-100 flex items-center gap-4 transition-all hover:shadow-lg">
+            <div class="group bg-gradient-to-r from-red-50 to-white p-5 rounded-3xl border border-red-100 flex items-center gap-4 transition-all">
                 <div class="bg-red-600 p-3 rounded-2xl text-white shadow-lg animate-pulse"><i class="fas fa-bolt"></i></div>
                 <div>
                     <h6 class="text-red-900 font-black text-xs">3. Serta Merta (Darurat)</h6>
                     <p class="text-slate-500 font-bold italic lowercase mt-0.5 leading-tight">Wajib tayang INSTAN! Menyangkut hajat hidup & keamanan publik.</p>
                 </div>
             </div>
-            <div class="group bg-slate-900 p-5 rounded-3xl border border-slate-800 flex items-center gap-4 shadow-2xl">
+            <div class="group bg-slate-900 p-5 rounded-3xl border border-slate-800 flex items-center gap-4 transition-all">
                 <div class="bg-slate-700 p-3 rounded-2xl text-slate-300"><i class="fas fa-user-secret"></i></div>
                 <div>
                     <h6 class="text-slate-200 font-black text-xs">4. Dikecualikan (Rahasia)</h6>
@@ -107,11 +93,7 @@
     </div>
 
     <!-- NEW SECTION: STUDI KASUS -->
-    <div class="bg-slate-50 rounded-[3rem] p-8 md:p-10 border border-slate-200 shadow-inner relative overflow-hidden">
-        <div class="absolute top-0 right-0 p-4 opacity-5">
-            <i class="fas fa-lightbulb text-[150px]"></i>
-        </div>
-        
+    <div class="bg-slate-50 rounded-[2.5rem] p-8 md:p-10 border border-slate-200 shadow-inner relative overflow-hidden">
         <div class="relative z-10 space-y-8">
             <div class="text-center space-y-2">
                 <h5 class="text-sm font-black uppercase tracking-[0.3em] text-indigo-700 italic">STUDI KASUS KLASIFIKASI</h5>
@@ -125,7 +107,6 @@
                     <p class="text-[11px] font-bold text-slate-700 mb-4 normal-case italic leading-relaxed">"Saya ingin upload **Laporan Realisasi Anggaran (LRA) Semester 1 2024**."</p>
                     <div class="mt-auto pt-4 border-t border-slate-50">
                         <p class="text-[9px] font-black text-blue-600 uppercase mb-1">Klasifikasi: BERKALA</p>
-                        <p class="text-[9px] text-slate-400 font-medium italic normal-case leading-tight">Karena ini laporan rutin yang akan diperbarui setiap semester.</p>
                     </div>
                 </div>
 
@@ -135,7 +116,6 @@
                     <p class="text-[11px] font-bold text-slate-700 mb-4 normal-case italic leading-relaxed">"Saya ingin upload **SK Penetapan Tim Pelaksana Kegiatan** yang berlaku selamanya."</p>
                     <div class="mt-auto pt-4 border-t border-slate-50">
                         <p class="text-[9px] font-black text-emerald-600 uppercase mb-1">Klasifikasi: SETIAP SAAT</p>
-                        <p class="text-[9px] text-slate-400 font-medium italic normal-case leading-tight">Karena berupa ketetapan hukum yang harus siap sedia kapanpun diminta.</p>
                     </div>
                 </div>
 
@@ -145,7 +125,6 @@
                     <p class="text-[11px] font-bold text-slate-700 mb-4 normal-case italic leading-relaxed">"Ada pengumuman **Penutupan Jalan Mendadak** karena tanah longsor."</p>
                     <div class="mt-auto pt-4 border-t border-slate-50">
                         <p class="text-[9px] font-black text-red-600 uppercase mb-1">Klasifikasi: SERTA MERTA</p>
-                        <p class="text-[9px] text-slate-400 font-medium italic normal-case leading-tight">Karena informasi darurat yang mengancam keselamatan banyak orang.</p>
                     </div>
                 </div>
             </div>
@@ -274,40 +253,6 @@
                     <span class="text-green-400">02</span>
                     <span>Ketik & Klik <span class="text-green-400 underline underline-offset-4">TANYA AI</span></span>
                 </div>
-            </div>
-        </div>
-    </div>
-</div>
-
-    <!-- BANTUAN AI (CLEAN) -->
-    <div class="bg-slate-900 text-white p-6 rounded-3xl shadow-lg relative overflow-hidden border border-slate-800">
-        <div class="relative z-10 flex flex-col md:flex-row gap-6 items-center">
-            <div class="flex items-center gap-3">
-                <div class="bg-indigo-500 p-2 rounded-xl text-white shadow-lg"><i class="fas fa-magic text-sm"></i></div>
-                <h5 class="text-[11px] font-bold uppercase tracking-widest italic">Bingung Klasifikasi? Tanya AI!</h5>
-            </div>
-            <div class="flex-1 grid grid-cols-2 gap-4 text-[9px] tracking-wider uppercase font-medium">
-                <p>1. Klik <span class="text-indigo-400 font-bold">"Tanya Pedoman"</span>.</p>
-                <p>2. Ketik & Klik <span class="text-green-400 font-bold underline">TANYA AI</span>!</p>
-            </div>
-        </div>
-    </div>
-
-    <!-- REKAPITULASI DOKUMEN -->
-    <div class="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm font-medium text-slate-400 uppercase tracking-tighter">
-        <h5 class="text-[10px] text-slate-800 mb-4 text-center uppercase tracking-widest border-b pb-2 italic font-bold">Standar Dokumen Wajib Per Unit</h5>
-        <div class="grid grid-cols-1 md:grid-cols-3 gap-6 text-[8px] font-normal leading-loose">
-            <div class="space-y-1.5">
-                <p class="text-blue-500 border-b pb-0.5 flex items-center gap-2 uppercase font-bold italic"><i class="fas fa-building text-[10px]"></i> Dinas / RSUD</p>
-                <ul class="list-disc list-inside text-slate-500"><li>Renstra & Renja</li><li>DPA & RKA</li><li>LRA & Neraca</li><li>Tarif & SPM (RSUD)</li></ul>
-            </div>
-            <div class="space-y-1.5">
-                <p class="text-indigo-500 border-b pb-0.5 flex items-center gap-2 uppercase font-bold italic"><i class="fas fa-search-dollar text-[10px]"></i> Inspektorat</p>
-                <ul class="list-disc list-inside text-slate-500"><li>PKPT (Audit)</li><li>Ringkasan LHP</li><li>Laporan Akuntabilitas</li></ul>
-            </div>
-            <div class="space-y-1.5">
-                <p class="text-green-500 border-b pb-0.5 flex items-center gap-2 uppercase font-bold italic"><i class="fas fa-map-marked-alt text-[10px]"></i> Desa / Kel / Kec</p>
-                <ul class="list-disc list-inside text-slate-500"><li>APBDes / RKPDes</li><li>LPPD & Monografi</li><li>Laporan PATEN</li></ul>
             </div>
         </div>
     </div>
