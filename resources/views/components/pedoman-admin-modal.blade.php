@@ -151,7 +151,7 @@
                                 </li>
                                 <li class="flex gap-3">
                                     <i class="fas fa-edit text-indigo-500 mt-1"></i>
-                                    <span>Klik tombol <span class="text-indigo-600 border-b border-indigo-300 font-bold text-xs italic">Edit</span> pada baris nama pimpinan yang ingin diperbarui.</span>
+                                    <span>Cari nama pimpinan Anda, lalu klik tombol <span class="bg-amber-500 text-white px-2 py-0.5 rounded shadow-sm text-[10px] font-bold inline-flex items-center gap-1 uppercase tracking-tighter"><i class="fas fa-pencil-alt text-[8px]"></i> KELOLA PIMPINAN</span> pada kartu profil.</span>
                                 </li>
                                 <li class="flex gap-3">
                                     <i class="fas fa-save text-indigo-500 mt-1"></i>
