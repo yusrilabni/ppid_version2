@@ -155,23 +155,28 @@
                                 </li>
                                 <li class="flex gap-3">
                                     <i class="fas fa-save text-indigo-500 mt-1"></i>
-                                    <span>Lengkapi formulir, lalu klik tombol <span class="bg-blue-600 text-white px-3 py-1 rounded shadow-sm text-xs font-bold inline-flex items-center gap-1 uppercase"><i class="fas fa-save"></i> SIMPAN PROFIL</span> di bawah.</span>
+                                    <span>Lengkapi data pada <strong>Tab Identitas</strong> (Wajib), lalu klik tombol <span class="bg-blue-600 text-white px-3 py-1 rounded shadow-sm text-xs font-bold inline-flex items-center gap-1 uppercase"><i class="fas fa-save"></i> SIMPAN PROFIL</span>.</span>
                                 </li>
                             </ul>
 
                             <!-- Detail Instruksi Formulir -->
                             <div class="mt-6 p-5 bg-white border-2 border-indigo-50 rounded-2xl shadow-inner">
                                 <h6 class="text-xs font-black text-indigo-900 uppercase mb-4 tracking-widest border-b pb-2 flex items-center gap-2">
-                                    <i class="fas fa-list-check"></i> Panduan Isi Formulir (Visual):
+                                    <i class="fas fa-list-check"></i> Prioritas Pengisian (Tab Identitas):
                                 </h6>
+                                <div class="bg-amber-50 p-3 rounded-xl border border-amber-100 mb-6">
+                                    <p class="text-[10px] text-amber-800 leading-relaxed font-medium">
+                                        <i class="fas fa-info-circle mr-1"></i> Cukup isi <strong>Tab Identitas</strong> agar profil pimpinan tampil. Tab Biografi, Riwayat Karir, Pendidikan, & Penghargaan bersifat <strong>OPTIONAL (Boleh Dikosongkan)</strong>.
+                                    </p>
+                                </div>
                                 <div class="space-y-8">
                                     <!-- A: FOTO -->
                                     <div class="flex flex-col md:flex-row gap-6">
                                         <div class="flex gap-3 flex-1">
                                             <div class="bg-indigo-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">A</div>
                                             <div>
-                                                <p class="text-xs font-bold text-slate-800">Foto Resmi & Ukuran</p>
-                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Gunakan foto berseragam dinas dengan latar belakang polos. Max <strong>2MB</strong> (Format JPG/PNG).</p>
+                                                <p class="text-xs font-bold text-slate-800">Foto (2MB)</p>
+                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Gunakan foto formal. Max 2MB. Format JPG, PNG, atau GIF.</p>
                                             </div>
                                         </div>
                                         <div class="md:w-48 bg-slate-100 p-2 rounded-xl border border-slate-200 relative">
@@ -189,32 +194,15 @@
                                         <div class="flex gap-3 flex-1">
                                             <div class="bg-indigo-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">B</div>
                                             <div>
-                                                <p class="text-xs font-bold text-slate-800">Biodata & NIP</p>
-                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Isi <strong>Nama Lengkap Beserta Gelar</strong> yang benar. Isi <strong>NIP</strong> tanpa menggunakan spasi.</p>
+                                                <p class="text-xs font-bold text-slate-800">Nama & NIP (Wajib *)</p>
+                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Wajib isi <strong>Nama Lengkap + Gelar</strong>. NIP diisi tanpa spasi.</p>
                                             </div>
                                         </div>
                                         <div class="md:w-48 space-y-2 bg-slate-100 p-3 rounded-xl border border-slate-200 relative">
                                             <div class="h-2 w-24 bg-indigo-200 rounded"></div>
                                             <div class="h-6 w-full bg-white border border-slate-300 rounded shadow-sm flex items-center px-2">
-                                                <span class="text-[8px] text-slate-400 font-bold">CONTOH: Dr. Nama Lengkap, M.Si</span>
+                                                <span class="text-[8px] text-slate-400 font-bold">CONTOH: Dr. Nama, M.Si</span>
                                             </div>
-                                            <div class="absolute -left-4 top-1/2 -translate-y-1/2">
-                                                <div class="w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-indigo-500"></div>
-                                            </div>
-                                        </div>
-                                    </div>
-
-                                    <!-- C: RIWAYAT -->
-                                    <div class="flex flex-col md:flex-row gap-6">
-                                        <div class="flex gap-3 flex-1">
-                                            <div class="bg-indigo-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">C</div>
-                                            <div>
-                                                <p class="text-xs font-bold text-slate-800">Riwayat Karir & Pendidikan</p>
-                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Gunakan tombol <span class="text-green-600 font-bold">+ Tambah</span>. Masukkan tahun 4 digit (contoh: 2024).</p>
-                                            </div>
-                                        </div>
-                                        <div class="md:w-48 bg-slate-100 p-3 rounded-xl border border-slate-200 relative flex justify-center">
-                                            <div class="bg-green-600 text-white px-3 py-1.5 rounded-lg text-[9px] font-bold shadow-sm">+ TAMBAH DATA</div>
                                             <div class="absolute -left-4 top-1/2 -translate-y-1/2">
                                                 <div class="w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-indigo-500"></div>
                                             </div>
@@ -224,15 +212,15 @@
                                     <!-- D: STATUS -->
                                     <div class="flex flex-col md:flex-row gap-6">
                                         <div class="flex gap-3 flex-1">
-                                            <div class="bg-indigo-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">D</div>
+                                            <div class="bg-indigo-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">C</div>
                                             <div>
-                                                <p class="text-xs font-bold text-slate-800">Status Jabatan</p>
-                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Pilih <strong>Aktif</strong> agar profil muncul di website publik.</p>
+                                                <p class="text-xs font-bold text-slate-800">Status Aktif (Wajib *)</p>
+                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Pastikan Status disetel ke <strong>Aktif</strong> agar pimpinan muncul di web.</p>
                                             </div>
                                         </div>
                                         <div class="md:w-48 bg-slate-100 p-3 rounded-xl border border-slate-200 relative flex flex-col gap-2">
                                             <div class="h-6 w-full bg-white border border-slate-300 rounded shadow-sm flex items-center px-2 justify-between">
-                                                <span class="text-[9px] font-bold text-slate-800">Aktif</span>
+                                                <span class="text-[9px] font-bold text-green-600">Aktif</span>
                                                 <i class="fas fa-chevron-down text-[8px] text-slate-400"></i>
                                             </div>
                                             <div class="absolute -left-4 top-1/2 -translate-y-1/2">
@@ -244,14 +232,14 @@
                                     <!-- E: SIMPAN -->
                                     <div class="flex flex-col md:flex-row gap-6">
                                         <div class="flex gap-3 flex-1">
-                                            <div class="bg-blue-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">E</div>
+                                            <div class="bg-blue-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">D</div>
                                             <div>
-                                                <p class="text-xs font-bold text-blue-800">Simpan Perubahan</p>
-                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Setelah semua selesai, pastikan klik tombol simpan di paling bawah.</p>
+                                                <p class="text-xs font-bold text-blue-800">Simpan Profil</p>
+                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Klik simpan untuk menerapkan perubahan identitas pimpinan.</p>
                                             </div>
                                         </div>
                                         <div class="md:w-48 bg-slate-100 p-3 rounded-xl border border-slate-200 relative flex justify-center">
-                                            <div class="bg-blue-600 text-white px-4 py-2 rounded-lg text-[9px] font-black shadow-md shadow-blue-200 animate-bounce">SIMPAN PROFIL</div>
+                                            <div class="bg-blue-600 text-white px-4 py-2 rounded-lg text-[9px] font-black shadow-md shadow-blue-200 animate-bounce uppercase">SIMPAN PROFIL</div>
                                             <div class="absolute -left-4 top-1/2 -translate-y-1/2">
                                                 <div class="w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-blue-500"></div>
                                             </div>
