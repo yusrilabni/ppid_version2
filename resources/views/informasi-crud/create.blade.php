@@ -363,6 +363,22 @@
             checkButton.style.display = 'none';
             submitButton.style.display = 'inline-block';
         });
+
+        // Auto-show pedoman modal if triggered from session and not shown in current browser session
+        @if(isset($show_pedoman_modal) && $show_pedoman_modal)
+            if (!sessionStorage.getItem('pedoman_modal_shown')) {
+                if (window.Alpine && window.Alpine.store('pedomanModal')) {
+                    window.Alpine.store('pedomanModal').show();
+                    sessionStorage.setItem('pedoman_modal_shown', 'true');
+                } else {
+                    // Fallback if Alpine not ready
+                    document.addEventListener('alpine:init', () => {
+                        window.Alpine.store('pedomanModal').show();
+                        sessionStorage.setItem('pedoman_modal_shown', 'true');
+                    });
+                }
+            }
+        @endif
     });
 
     function informasiForm() {

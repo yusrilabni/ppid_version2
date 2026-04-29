@@ -118,9 +118,6 @@ class InformasiController extends Controller
         }
 
         $viewData['show_pedoman_modal'] = session('show_pedoman_modal', false);
-        if (session('show_pedoman_modal')) {
-            session()->forget('show_pedoman_modal');
-        }
 
         return view('informasi-crud.create', $viewData);
     }
