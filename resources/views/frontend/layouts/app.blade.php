@@ -115,6 +115,25 @@
                 enableClose() { this.allowClose = true; }
             });
 
+            Alpine.store('pedomanAdminModal', {
+                open: false,
+                activeTab: 0,
+                tabs: [], // Will be set by component
+                init() {
+                    const userRole = @json(auth()->user()?->role ?? 'guest');
+                    if ((userRole === 'admin' || userRole === 'superadmin') && !sessionStorage.getItem('pedoman_admin_shown')) {
+                        setTimeout(() => {
+                            this.show();
+                            sessionStorage.setItem('pedoman_admin_shown', 'true');
+                        }, 2000);
+                    }
+                },
+                show() { this.open = true; this.activeTab = 0; },
+                close() { this.open = false; },
+                nextTab() { if(this.activeTab < this.tabs.length - 1) this.activeTab++; else this.close(); },
+                prevTab() { if(this.activeTab > 0) this.activeTab--; }
+            });
+
             Alpine.store('aiAnalisModal', {
                 open: false,
                 show() { this.open = true; },
@@ -289,6 +308,7 @@
         
         <header id="main-navbar-container">
             @include('frontend.layouts.navbar')
+            <x-pedoman-admin-modal />
         </header>
 
         <main id="main-content">@yield('content')</main>
