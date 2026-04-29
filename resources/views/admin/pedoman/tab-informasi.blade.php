@@ -294,37 +294,36 @@
                 </div>
             </div>
 
-            <!-- C, D, E, F: MULTI-SELECT -->
+            <!-- C-F: MULTI-SELECT & OTHERS -->
             <div class="group relative flex flex-col md:flex-row gap-10 items-start bg-white p-10 rounded-[3rem] border-2 border-slate-50 shadow-sm transition-all hover:border-indigo-100 hover:shadow-2xl">
                 <div class="flex-1 flex gap-8 relative z-10">
                     <div class="w-14 h-14 bg-indigo-600 text-white rounded-[1.5rem] flex items-center justify-center font-black shadow-xl shadow-indigo-200 flex-shrink-0 text-xl">C-F</div>
                     <div class="space-y-4">
-                        <h6 class="text-base font-black uppercase text-slate-800 italic border-b-2 border-slate-50 pb-2">Kategori, Jenis, Tagging & Cover</h6>
+                        <h6 class="text-base font-black uppercase text-slate-800 italic border-b-2 border-slate-50 pb-2">Kategori, Jenis Dokumen & Status</h6>
                         <ul class="text-[11px] text-slate-500 font-bold normal-case italic space-y-3">
-                            <li class="flex gap-2 items-start"><i class="fas fa-check-circle text-indigo-500 mt-1"></i> <strong>Kategori:</strong> Harus dipilih (Berkala/Setiap Saat/Serta Merta).</li>
-                            <li class="flex gap-2 items-start"><i class="fas fa-check-circle text-indigo-500 mt-1"></i> <strong>Jenis Informasi:</strong> Pilih spesifikasi isi dokumen (Keuangan/Hukum/Program).</li>
-                            <li class="flex gap-2 items-start"><i class="fas fa-check-circle text-indigo-500 mt-1"></i> <strong>Tagging:</strong> Masukkan kata kunci (Contoh: "LRA", "Dinas Kominfo", "2024").</li>
-                            <li class="flex gap-2 items-start"><i class="fas fa-check-circle text-indigo-500 mt-1"></i> <strong>Upload Cover:</strong> Wajib pilih gambar format JPG/PNG yang rapi untuk tampilan di website utama.</li>
+                            <li class="flex gap-2 items-start"><i class="fas fa-check-circle text-indigo-500 mt-1"></i> <strong>Kategori Informasi:</strong> Harus dipilih (Berkala/Setiap Saat/Serta Merta).</li>
+                            <li class="flex gap-2 items-start"><i class="fas fa-check-circle text-indigo-500 mt-1"></i> <strong>Jenis Dokumen:</strong> Pilih spesifikasi isi dokumen (Keuangan/Hukum/Program).</li>
+                            <li class="flex gap-2 items-start"><i class="fas fa-check-circle text-indigo-500 mt-1"></i> <strong>Status:</strong> Pilih <strong>BERLAKU</strong> untuk dokumen aktif, atau <strong>ARSIP</strong> jika sudah kedaluwarsa.</li>
+                            <li class="flex gap-2 items-start"><i class="fas fa-check-circle text-indigo-500 mt-1"></i> <strong>Konten Lengkap:</strong> (Opsional) Jika ada teks tambahan panjang selain deskripsi.</li>
                         </ul>
                     </div>
                 </div>
                 <!-- Mockup Grid -->
                 <div class="w-full md:w-[24rem] grid grid-cols-2 gap-4 flex-shrink-0">
-                    <div class="space-y-1.5">
-                        <div class="text-[8px] font-black text-slate-400 uppercase italic">Kategori</div>
-                        <div class="h-9 bg-slate-50 border border-slate-200 rounded-lg flex items-center px-3 text-[9px] font-bold text-slate-700 italic">-- PILIH -- <i class="fas fa-caret-down ml-auto"></i></div>
+                    <div class="space-y-1.5 col-span-2">
+                        <div class="text-[8px] font-black text-slate-400 uppercase italic">Kategori Informasi</div>
+                        <div class="h-9 bg-slate-50 border border-slate-200 rounded-lg flex items-center px-3 text-[9px] font-bold text-slate-700 italic">-- PILIH KATEGORI -- <i class="fas fa-caret-down ml-auto"></i></div>
                     </div>
-                    <div class="space-y-1.5">
-                        <div class="text-[8px] font-black text-slate-400 uppercase italic">Jenis Info</div>
-                        <div class="h-9 bg-slate-50 border border-slate-200 rounded-lg flex items-center px-3 text-[9px] font-bold text-slate-700 italic">-- PILIH -- <i class="fas fa-caret-down ml-auto"></i></div>
+                    <div class="space-y-1.5 col-span-2">
+                        <div class="text-[8px] font-black text-slate-400 uppercase italic">Jenis Dokumen</div>
+                        <div class="h-9 bg-slate-50 border border-slate-200 rounded-lg flex items-center px-3 text-[9px] font-bold text-slate-700 italic">-- PILIH JENIS DOKUMEN -- <i class="fas fa-caret-down ml-auto"></i></div>
                     </div>
-                    <div class="space-y-1.5">
-                        <div class="text-[8px] font-black text-slate-400 uppercase italic">Tagging</div>
-                        <div class="h-9 bg-slate-50 border border-slate-200 rounded-lg flex items-center px-3 text-[9px] font-bold text-indigo-500 italic">#LRA #2024</div>
-                    </div>
-                    <div class="space-y-1.5">
-                        <div class="text-[8px] font-black text-slate-400 uppercase italic">Cover</div>
-                        <div class="h-9 bg-indigo-50 border border-indigo-200 rounded-lg flex items-center justify-center text-[9px] font-black text-indigo-600 italic">UPLOAD JPG <i class="fas fa-upload ml-2"></i></div>
+                    <div class="space-y-1.5 col-span-2">
+                        <div class="text-[8px] font-black text-slate-400 uppercase italic">Status</div>
+                        <div class="flex gap-4">
+                            <label class="flex items-center gap-2 text-[9px] font-bold text-slate-700 italic"><input type="radio" checked class="text-indigo-600"> BERLAKU</label>
+                            <label class="flex items-center gap-2 text-[9px] font-bold text-slate-700 italic"><input type="radio" class="text-indigo-600"> ARSIP</label>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -334,15 +333,15 @@
                 <div class="flex-1 flex gap-8 relative z-10">
                     <div class="w-14 h-14 bg-indigo-600 text-white rounded-[1.5rem] flex items-center justify-center font-black shadow-xl shadow-indigo-200 flex-shrink-0 text-xl">G</div>
                     <div class="space-y-4">
-                        <h6 class="text-base font-black uppercase text-slate-800 italic border-b-2 border-slate-50 pb-2">Tanggal Terbit</h6>
+                        <h6 class="text-base font-black uppercase text-slate-800 italic border-b-2 border-slate-50 pb-2">Tahun Dokumen</h6>
                         <p class="text-[12px] text-slate-500 font-bold normal-case italic leading-relaxed">
-                            Masukkan tanggal sesuai yang tertera pada dokumen fisik resmi unit Bapak/Ibu. Ini bukan tanggal Bapak/Ibu mengupload ke sistem, melainkan tanggal dokumen tersebut ditandatangani.
+                            Masukkan tanggal/tahun sesuai yang tertera pada dokumen fisik resmi unit Bapak/Ibu. Ini digunakan untuk pengurutan dan pencarian.
                         </p>
                     </div>
                 </div>
                 <!-- Mockup -->
                 <div class="w-full md:w-[24rem] space-y-2 flex-shrink-0">
-                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest italic ml-2">Label: Tanggal Terbit</label>
+                    <label class="text-[9px] font-black text-slate-400 uppercase tracking-widest italic ml-2">Label: Tahun Dokumen</label>
                     <div class="w-full h-12 bg-slate-50 border-2 border-indigo-200 rounded-2xl flex items-center px-5 text-[11px] text-slate-700 font-black italic shadow-inner">
                         29 / 04 / 2024 <i class="fas fa-calendar-day ml-auto text-indigo-400"></i>
                     </div>
@@ -354,17 +353,18 @@
                 <div class="flex-1 flex gap-8 relative z-10">
                     <div class="w-16 h-16 bg-white text-indigo-950 rounded-[1.5rem] flex items-center justify-center font-black shadow-2xl flex-shrink-0 text-2xl">H</div>
                     <div class="space-y-3">
-                        <h6 class="text-base font-black uppercase text-indigo-300 italic tracking-[0.2em] leading-none">Langkah Terakhir: Simpan & Validasi</h6>
+                        <h6 class="text-base font-black uppercase text-indigo-300 italic tracking-[0.2em] leading-none">Langkah Terakhir: Simpan & Check Kemiripan</h6>
                         <p class="text-[12px] text-white font-bold normal-case leading-relaxed">
-                            1. Pastikan semua kolom bertanda bintang merah <strong class="text-red-400">(*)</strong> telah terisi.<br>
-                            2. Klik tombol <strong class="text-blue-400">SIMPAN DATA</strong>.<br>
-                            3. **WAJIB:** Kembali ke menu daftar informasi, dan klik tombol kuning <strong class="text-yellow-400 uppercase italic">"Check Informasi"</strong> agar data lama terarsip otomatis dan data baru tayang di publik!
+                            Jika Status dokumen diset ke <strong class="text-indigo-300">BERLAKU</strong>, Bapak/Ibu wajib menekan tombol <strong class="text-yellow-400 uppercase italic">"Check Informasi"</strong>. Sistem akan mengecek apakah ada dokumen tahun lalu yang namanya mirip. Jika ada, sistem akan otomatis menawarkan Bapak/Ibu untuk mengganti (mengarsipkan) dokumen lama tersebut dengan dokumen baru ini!
                         </p>
                     </div>
                 </div>
-                <div class="flex-shrink-0 relative z-10">
-                    <div class="bg-blue-600 text-white px-10 py-5 rounded-2xl text-[12px] font-black shadow-2xl border-2 border-white/30 uppercase italic tracking-wider flex items-center gap-3 hover:scale-105 transition-transform">
-                        <i class="fas fa-save text-base"></i> SIMPAN DATA
+                <div class="flex-shrink-0 relative z-10 flex flex-col gap-3">
+                    <div class="bg-yellow-500 text-indigo-950 px-8 py-4 rounded-2xl text-[12px] font-black shadow-2xl border-2 border-white/30 uppercase italic tracking-wider flex items-center justify-center gap-3 hover:scale-105 transition-transform cursor-default">
+                        <i class="fas fa-search"></i> CHECK INFORMASI
+                    </div>
+                    <div class="bg-blue-600 text-white px-8 py-3 rounded-2xl text-[10px] font-black shadow-2xl border-2 border-white/10 uppercase italic tracking-wider flex items-center justify-center gap-3 opacity-50 cursor-not-allowed">
+                        <i class="fas fa-save"></i> SIMPAN INFORMASI
                     </div>
                 </div>
             </div>
@@ -391,15 +391,15 @@
                 <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
                     <div class="bg-white/5 p-6 rounded-[2rem] border border-white/10 space-y-3">
                         <span class="text-indigo-400 font-black text-xs uppercase tracking-widest">Tahap 1</span>
-                        <p class="text-[10px] font-bold leading-relaxed">Cari tombol <strong class="text-indigo-400 italic">"TANYA PEDOMAN"</strong> (tombol melayang atau di footer modal ini).</p>
+                        <p class="text-[10px] font-bold leading-relaxed">Klik tab biru bertuliskan <strong class="text-indigo-400 italic">"Tanya AI"</strong> yang berada di pojok kanan layar Bapak/Ibu.</p>
                     </div>
                     <div class="bg-white/5 p-6 rounded-[2rem] border border-white/10 space-y-3">
                         <span class="text-green-400 font-black text-xs uppercase tracking-widest">Tahap 2</span>
-                        <p class="text-[10px] font-bold leading-relaxed">Ketikkan judul dokumen Bapak/Ibu (misal: "Dokumen APBDes 2024") pada kolom pesan.</p>
+                        <p class="text-[10px] font-bold leading-relaxed">Masukkan **Judul Dokumen** beserta tahun pada kolom yang disediakan di dalam pop-up AI.</p>
                     </div>
                     <div class="bg-white/5 p-6 rounded-[2rem] border border-white/10 space-y-3">
                         <span class="text-amber-400 font-black text-xs uppercase tracking-widest">Tahap 3</span>
-                        <p class="text-[10px] font-bold leading-relaxed">Klik tombol <strong class="text-amber-400 underline italic">TANYA AI</strong>. AI akan menganalisis dan memberi saran klasifikasi detik itu juga!</p>
+                        <p class="text-[10px] font-bold leading-relaxed">Klik tombol hijau <strong class="text-amber-400 underline italic">Analisa Dokumen</strong>. AI akan memberikan rekomendasi klasifikasi secara otomatis!</p>
                     </div>
                 </div>
             </div>
