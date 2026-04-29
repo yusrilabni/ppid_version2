@@ -151,39 +151,51 @@
                 <p class="text-[11px] text-slate-500 font-bold uppercase tracking-widest leading-relaxed">Gunakan skenario di bawah ini sebagai panduan pengambilan keputusan</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
                 <!-- Case 1 -->
-                <div class="bg-white p-8 rounded-[2.5rem] border-2 border-slate-200 shadow-sm flex flex-col h-full hover:border-indigo-300 transition-all duration-300">
-                    <div class="bg-blue-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full self-start mb-6 uppercase shadow-md">SKENARIO A</div>
-                    <div class="flex-1 space-y-4">
-                        <p class="text-[12px] font-black text-slate-800 normal-case italic leading-relaxed">"Saya baru saja menyelesaikan **Laporan Realisasi Anggaran (LRA) Semester II Tahun 2024** untuk dinas saya. Di mana saya harus mengunggahnya?"</p>
-                        <div class="bg-slate-50 p-5 rounded-2xl border-l-4 border-blue-600">
-                            <p class="text-[10px] font-black text-blue-700 uppercase mb-2 tracking-widest italic leading-none">ANALISIS & KEPUTUSAN:</p>
-                            <p class="text-[10px] text-slate-600 font-bold normal-case leading-relaxed italic">Ini adalah dokumen kinerja rutin tahunan. Karena bersifat update berkala, pilih klasifikasi **BERKALA**. Setelah upload, jangan lupa klik 'Check Informasi' agar data LRA 2023 otomatis terarsip.</p>
+                <div class="bg-white p-6 rounded-[2rem] border-2 border-slate-200 shadow-sm flex flex-col h-full hover:border-indigo-300 transition-all duration-300">
+                    <div class="bg-blue-600 text-white text-[9px] font-black px-3 py-1 rounded-full self-start mb-4 uppercase shadow-md">SKENARIO A</div>
+                    <div class="flex-1 space-y-3">
+                        <p class="text-[11px] font-black text-slate-800 normal-case italic leading-relaxed">"Saya ingin upload **Laporan Realisasi Anggaran (LRA) Semester II 2024**."</p>
+                        <div class="bg-slate-50 p-4 rounded-xl border-l-4 border-blue-600">
+                            <p class="text-[9px] font-black text-blue-700 uppercase mb-1 tracking-widest italic leading-none">KEPUTUSAN:</p>
+                            <p class="text-[9px] text-slate-600 font-bold normal-case leading-relaxed italic">Pilih **BERKALA**. Data rutin tahunan yang akan diupdate secara terjadwal.</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Case 2 -->
-                <div class="bg-white p-8 rounded-[2.5rem] border-2 border-slate-200 shadow-sm flex flex-col h-full hover:border-emerald-300 transition-all duration-300">
-                    <div class="bg-emerald-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full self-start mb-6 uppercase shadow-md">SKENARIO B</div>
-                    <div class="flex-1 space-y-4">
-                        <p class="text-[12px] font-black text-slate-800 normal-case italic leading-relaxed">"Kepala Dinas mengeluarkan **SK Tim Pelaksana Kegiatan** yang menjadi dasar hukum tim kami bekerja selama setahun penuh atau lebih."</p>
-                        <div class="bg-slate-50 p-5 rounded-2xl border-l-4 border-emerald-600">
-                            <p class="text-[10px] font-black text-emerald-700 uppercase mb-2 tracking-widest italic leading-none">ANALISIS & KEPUTUSAN:</p>
-                            <p class="text-[10px] text-slate-600 font-bold normal-case leading-relaxed italic">Ini adalah produk hukum/kebijakan pimpinan yang harus siap diakses sebagai riwayat hukum organisasi. Pilih klasifikasi **SETIAP SAAT**. Dokumen ini akan tetap tayang berdampingan dengan SK-SK lainnya secara akumulatif.</p>
+                <div class="bg-white p-6 rounded-[2rem] border-2 border-slate-200 shadow-sm flex flex-col h-full hover:border-emerald-300 transition-all duration-300">
+                    <div class="bg-emerald-600 text-white text-[9px] font-black px-3 py-1 rounded-full self-start mb-4 uppercase shadow-md">SKENARIO B</div>
+                    <div class="flex-1 space-y-3">
+                        <p class="text-[11px] font-black text-slate-800 normal-case italic leading-relaxed">"Kepala Dinas mengeluarkan **SK Tim Pelaksana Kegiatan** yang berlaku permanen."</p>
+                        <div class="bg-slate-50 p-4 rounded-xl border-l-4 border-emerald-600">
+                            <p class="text-[9px] font-black text-emerald-700 uppercase mb-1 tracking-widest italic leading-none">KEPUTUSAN:</p>
+                            <p class="text-[9px] text-slate-600 font-bold normal-case leading-relaxed italic">Pilih **SETIAP SAAT**. Dokumen hukum/kebijakan pimpinan yang akumulatif.</p>
                         </div>
                     </div>
                 </div>
 
                 <!-- Case 3 -->
-                <div class="bg-white p-8 rounded-[2.5rem] border-2 border-slate-200 shadow-sm flex flex-col h-full hover:border-red-300 transition-all duration-300">
-                    <div class="bg-red-600 text-white text-[10px] font-black px-4 py-1.5 rounded-full self-start mb-6 uppercase shadow-md">SKENARIO C</div>
-                    <div class="flex-1 space-y-4">
-                        <p class="text-[12px] font-black text-slate-800 normal-case italic leading-relaxed">"Terjadi **Kebakaran Hebat** di wilayah pasar yang mengancam keselamatan banyak warga. Humas ingin mengumumkan jalur evakuasi."</p>
-                        <div class="bg-slate-50 p-5 rounded-2xl border-l-4 border-red-600">
-                            <p class="text-[10px] font-black text-red-700 uppercase mb-2 tracking-widest italic leading-none">ANALISIS & KEPUTUSAN:</p>
-                            <p class="text-[10px] text-slate-600 font-bold normal-case leading-relaxed italic">Keadaan darurat! Informasi ini bersifat vital untuk keselamatan jiwa. Wajib pilih klasifikasi **SERTA MERTA**. Upload segera tanpa menunggu persetujuan birokrasi yang panjang demi keamanan publik.</p>
+                <div class="bg-white p-6 rounded-[2rem] border-2 border-slate-200 shadow-sm flex flex-col h-full hover:border-red-300 transition-all duration-300">
+                    <div class="bg-red-600 text-white text-[9px] font-black px-3 py-1 rounded-full self-start mb-4 uppercase shadow-md">SKENARIO C</div>
+                    <div class="flex-1 space-y-3">
+                        <p class="text-[11px] font-black text-slate-800 normal-case italic leading-relaxed">"Terjadi **Bencana Alam / Wabah** yang butuh pengumuman evakuasi segera."</p>
+                        <div class="bg-slate-50 p-4 rounded-xl border-l-4 border-red-600">
+                            <p class="text-[9px] font-black text-red-700 uppercase mb-1 tracking-widest italic leading-none">KEPUTUSAN:</p>
+                            <p class="text-[9px] text-slate-600 font-bold normal-case leading-relaxed italic">Pilih **SERTA MERTA**. Informasi vital untuk keselamatan publik detik itu juga.</p>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Case 4 (NEW: SK TIM PPID) -->
+                <div class="bg-white p-6 rounded-[2rem] border-2 border-indigo-200 shadow-sm flex flex-col h-full hover:border-indigo-400 transition-all duration-300">
+                    <div class="bg-indigo-600 text-white text-[9px] font-black px-3 py-1 rounded-full self-start mb-4 uppercase shadow-md">SKENARIO D</div>
+                    <div class="flex-1 space-y-3">
+                        <p class="text-[11px] font-black text-slate-800 normal-case italic leading-relaxed">"Saya memegang **SK Tim PPID Unit Kerja** yang diperbaharui setiap awal tahun."</p>
+                        <div class="bg-slate-50 p-4 rounded-xl border-l-4 border-indigo-600">
+                            <p class="text-[9px] font-black text-indigo-700 uppercase mb-1 tracking-widest italic leading-none">ANALISIS & KEPUTUSAN:</p>
+                            <p class="text-[9px] text-slate-600 font-bold normal-case leading-relaxed italic">Karena **diperbaharui setiap tahun** (Rutin), maka pilih klasifikasi **BERKALA**. Data tahun lalu tetap ada sebagai arsip, data tahun ini menjadi info utama.</p>
                         </div>
                     </div>
                 </div>
