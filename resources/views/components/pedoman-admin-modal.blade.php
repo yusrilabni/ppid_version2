@@ -71,6 +71,69 @@
                                     <span>Unggah Gambar Struktur & masukkan URL Website OPD, lalu klik <strong>Simpan Perubahan</strong>.</span>
                                 </li>
                             </ul>
+
+                            <!-- Detail Instruksi Formulir OPD -->
+                            <div class="mt-6 p-5 bg-white border-2 border-indigo-50 rounded-2xl shadow-inner">
+                                <h6 class="text-xs font-black text-indigo-900 uppercase mb-4 tracking-widest border-b pb-2 flex items-center gap-2">
+                                    <i class="fas fa-list-check"></i> Panduan Form OPD (Visual):
+                                </h6>
+                                <div class="space-y-6">
+                                    <!-- A: STRUKTUR -->
+                                    <div class="flex flex-col md:flex-row gap-4">
+                                        <div class="flex gap-3 flex-1">
+                                            <div class="bg-indigo-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">A</div>
+                                            <div>
+                                                <p class="text-xs font-bold text-slate-800">Gambar Struktur Organisasi</p>
+                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Upload gambar struktur dalam format <strong>JPG/PNG/WEBP</strong>. Pastikan teks di gambar terbaca jelas.</p>
+                                            </div>
+                                        </div>
+                                        <div class="md:w-40 bg-slate-100 p-2 rounded-xl border border-slate-200 relative">
+                                            <div class="h-12 w-full border-2 border-dashed border-slate-300 rounded-lg flex items-center justify-center bg-white">
+                                                <i class="fas fa-sitemap text-slate-300 text-xs"></i>
+                                            </div>
+                                            <div class="absolute -left-4 top-1/2 -translate-y-1/2">
+                                                <div class="w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-indigo-500"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- B: WEBSITE -->
+                                    <div class="flex flex-col md:flex-row gap-4">
+                                        <div class="flex gap-3 flex-1">
+                                            <div class="bg-indigo-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">B</div>
+                                            <div>
+                                                <p class="text-xs font-bold text-slate-800">URL Website Resmi</p>
+                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Masukkan alamat website OPD yang aktif (Contoh: https://opd.sinjaikab.go.id).</p>
+                                            </div>
+                                        </div>
+                                        <div class="md:w-40 bg-slate-100 p-2 rounded-xl border border-slate-200 relative">
+                                            <div class="h-6 w-full bg-white border border-slate-300 rounded shadow-sm flex items-center px-2">
+                                                <span class="text-[8px] text-slate-400">https://...</span>
+                                            </div>
+                                            <div class="absolute -left-4 top-1/2 -translate-y-1/2">
+                                                <div class="w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-indigo-500"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- C: SIMPAN -->
+                                    <div class="flex flex-col md:flex-row gap-4">
+                                        <div class="flex gap-3 flex-1">
+                                            <div class="bg-blue-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">C</div>
+                                            <div>
+                                                <p class="text-xs font-bold text-blue-800">Simpan Perubahan</p>
+                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Klik tombol simpan untuk memperbarui data OPD secara publik.</p>
+                                            </div>
+                                        </div>
+                                        <div class="md:w-40 bg-slate-100 p-2 rounded-xl border border-slate-200 relative flex justify-center">
+                                            <div class="bg-blue-600 text-white px-3 py-1 rounded-lg text-[8px] font-black shadow-md">SIMPAN</div>
+                                            <div class="absolute -left-4 top-1/2 -translate-y-1/2">
+                                                <div class="w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-blue-500"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                     <div class="space-y-6">
