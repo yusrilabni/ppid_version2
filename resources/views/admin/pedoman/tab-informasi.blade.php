@@ -59,14 +59,14 @@
                     </div>
                     
                     <p class="text-[11px] leading-relaxed text-slate-600 mb-5 font-medium normal-case">
-                        Dokumen yang **wajib tersedia setiap saat** jika diminta. Biasanya berupa produk hukum atau dokumen kebijakan yang memiliki masa berlaku panjang.
+                        Dokumen yang **wajib tersedia setiap saat** jika diminta. Kategori ini mencakup **seluruh riwayat kebijakan, dokumen hukum, serta arsip penting** lainnya yang memiliki masa berlaku panjang.
                     </p>
 
                     <div class="space-y-3">
                         <div class="bg-emerald-50/50 p-4 rounded-2xl border border-emerald-100/50">
-                            <span class="text-[9px] font-black text-emerald-700 uppercase block mb-1.5 italic tracking-widest">Karakteristik: "Add & Accumulate"</span>
+                            <span class="text-[9px] font-black text-emerald-700 uppercase block mb-1.5 italic tracking-widest">Karakteristik: "Historis & Akumulatif"</span>
                             <p class="text-[10px] text-emerald-900/80 leading-relaxed italic normal-case">
-                                Sifatnya **akumulatif (menumpuk)**. Semua riwayat dokumen tetap penting dan tidak saling menggantikan posisi hukumnya.
+                                Sifatnya **akumulatif (menumpuk)**. Data lama TIDAK dihapus karena merupakan sejarah unit dan bukti akuntabilitas yang bisa diminta sewaktu-waktu.
                             </p>
                         </div>
                     </div>
