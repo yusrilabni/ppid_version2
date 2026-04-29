@@ -341,7 +341,7 @@
                             Klik tombol kuning **CHECK INFORMASI**. Sistem akan menganalisis judul dokumen. Jika terdeteksi dokumen sejenis dari tahun lalu, klik **GANTI** agar data lama masuk arsip secara otomatis.
                         </p>
                         <div class="bg-yellow-500 text-indigo-950 px-8 py-3 rounded-xl text-[11px] font-black uppercase inline-flex items-center gap-2 italic">
-                            <i class="fas fa-search"></i> CHECK INFORMASI
+                            <i class="fas fa-search"></i> CHECK INFORMASI <i class="fas fa-arrow-right text-[10px] mx-1"></i> SIMPAN INFORMASI
                         </div>
                     </div>
                 </div>

@@ -1,5 +1,5 @@
 <div x-show="$store.pedomanAdminModal.activeTab === 0" 
-     class="space-y-8">
+     class="space-y-12">
     
     <!-- Header Tab -->
     <div class="flex items-center gap-4 border-l-8 border-indigo-600 pl-4 uppercase tracking-tighter">
@@ -7,91 +7,165 @@
             <i class="fas fa-user-shield text-2xl"></i>
         </div>
         <div>
-            <h4 class="text-xl font-black text-slate-800 leading-none">Pengelolaan Profil OPD & Pimpinan</h4>
-            <p class="text-[10px] text-slate-400 font-bold tracking-[0.2em] mt-1 italic">Identity & Organizational Structure</p>
+            <h4 class="text-xl font-black text-slate-800 leading-none">Manajemen Profil & Struktur</h4>
+            <p class="text-[10px] text-slate-400 font-bold tracking-[0.2em] mt-1 italic">Identity & Organizational Management</p>
         </div>
     </div>
     
-    <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
-        <!-- 1. Struktur & Website -->
-        <div class="bg-white p-6 rounded-[2rem] border-2 border-slate-50 shadow-sm relative overflow-hidden">
-            <div class="relative z-10">
-                <h5 class="font-black text-indigo-700 mb-6 flex items-center gap-3 uppercase text-xs tracking-wider italic">
-                    <span class="bg-indigo-600 text-white w-8 h-8 rounded-xl flex items-center justify-center font-black text-sm shadow-md">1</span>
-                    Struktur & Website OPD
-                </h5>
+    <!-- 1. PENGELOLAAN PROFIL OPD -->
+    <div class="space-y-8">
+        <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+            <h5 class="text-xs font-black flex items-center gap-3 text-slate-700 uppercase tracking-widest italic">
+                <span class="bg-slate-100 p-1.5 rounded-lg"><i class="fas fa-building text-indigo-600"></i></span> 
+                01. Pengelolaan Profil OPD (Tentang OPD)
+            </h5>
+        </div>
+
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <!-- Navigasi Profil -->
+            <div class="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden border-4 border-slate-800 shadow-xl">
+                <h6 class="text-xs font-black uppercase text-indigo-400 mb-6 tracking-widest italic">Alur Navigasi:</h6>
+                <div class="space-y-4 text-[11px] font-medium leading-relaxed italic">
+                    <p class="flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/10">
+                        <span class="bg-indigo-600 text-white w-6 h-6 rounded-lg flex items-center justify-center font-black flex-shrink-0 not-italic text-[10px]">1</span>
+                        <span>Pada Sidebar, buka kelompok <strong class="text-white">Manajemen Struktur</strong>.</span>
+                    </p>
+                    <p class="flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/10">
+                        <span class="bg-indigo-600 text-white w-6 h-6 rounded-lg flex items-center justify-center font-black flex-shrink-0 not-italic text-[10px]">2</span>
+                        <span>Pilih menu <strong class="text-white">Organisasi</strong>. Akan muncul daftar unit.</span>
+                    </p>
+                    <p class="flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/10">
+                        <span class="bg-indigo-600 text-white w-6 h-6 rounded-lg flex items-center justify-center font-black flex-shrink-0 not-italic text-[10px]">3</span>
+                        <span>Klik ikon folder biru (<i class="fas fa-folder-open text-blue-400"></i>) pada baris unit Anda.</span>
+                    </p>
+                    <p class="flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/10">
+                        <span class="bg-indigo-600 text-white w-6 h-6 rounded-lg flex items-center justify-center font-black flex-shrink-0 not-italic text-[10px]">4</span>
+                        <span>Klik tombol biru <strong class="text-blue-400 underline uppercase italic">KELOLA OPD</strong> untuk masuk ke formulir.</span>
+                    </p>
+                </div>
+            </div>
+
+            <!-- Detail Form Profil -->
+            <div class="bg-white p-8 rounded-[3rem] border-2 border-slate-100 shadow-sm space-y-6">
+                <h6 class="text-xs font-black text-indigo-700 uppercase italic">Rincian Pengisian Formulir:</h6>
                 
-                <ul class="space-y-4 text-[11px] mb-8 font-bold text-slate-600 uppercase tracking-tight">
-                    <li class="flex gap-3 items-center">
-                        <div class="w-6 h-6 bg-indigo-50 text-indigo-500 rounded-lg flex items-center justify-center flex-shrink-0"><i class="fas fa-mouse-pointer text-[10px]"></i></div>
-                        <span>Menu <strong class="text-slate-900">Profil</strong> > <strong class="text-slate-900">Tentang OPD</strong></span>
-                    </li>
-                    <li class="flex gap-3 items-center">
-                        <div class="w-6 h-6 bg-indigo-50 text-indigo-500 rounded-lg flex items-center justify-center flex-shrink-0"><i class="fas fa-search text-[10px]"></i></div>
-                        <span>Cari unit, klik <span class="text-blue-600 underline decoration-blue-200">KELOLA PROFIL UNIT</span></span>
-                    </li>
-                </ul>
-
-                <!-- Mockup Form -->
-                <div class="space-y-4 border-t border-slate-50 pt-6">
-                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex gap-4 items-center">
-                        <div class="flex-1">
-                            <p class="text-[10px] font-black text-slate-700 uppercase italic">A. Upload Gambar Struktur</p>
+                <div class="space-y-5">
+                    <div class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-100 space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+                            <p class="text-[10px] font-black text-slate-800 uppercase italic">A. Gambar Struktur Organisasi</p>
+                            <span class="text-[8px] bg-indigo-100 text-indigo-600 px-2 py-0.5 rounded font-black italic">IMAGE</span>
                         </div>
-                        <div class="w-20 h-12 bg-white border-2 border-dashed border-indigo-200 rounded-xl flex items-center justify-center relative">
-                            <i class="fas fa-sitemap text-indigo-200 text-sm"></i>
+                        <div class="w-full h-24 bg-white border-2 border-dashed border-indigo-200 rounded-2xl flex flex-col items-center justify-center gap-2">
+                            <i class="fas fa-sitemap text-2xl text-indigo-200"></i>
+                            <span class="text-[8px] font-bold text-slate-400">Unggah file JPG/PNG Struktur Unit</span>
                         </div>
                     </div>
 
-                    <div class="bg-slate-50 p-4 rounded-2xl border border-slate-200 flex gap-4 items-center">
-                        <div class="flex-1">
-                            <p class="text-[10px] font-black text-slate-700 uppercase italic">B. URL Website Resmi</p>
+                    <div class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-100 space-y-4">
+                        <div class="flex items-center justify-between border-b border-slate-200 pb-2">
+                            <p class="text-[10px] font-black text-slate-800 uppercase italic">B. URL Website Resmi</p>
+                            <span class="text-[8px] bg-blue-100 text-blue-600 px-2 py-0.5 rounded font-black italic">LINK</span>
                         </div>
-                        <div class="w-20 bg-white border border-indigo-100 rounded-lg px-2 py-1.5">
-                            <span class="text-[8px] text-indigo-300 italic truncate block font-bold">https://...</span>
+                        <div class="w-full h-10 bg-white border-2 border-blue-100 rounded-xl flex items-center px-4 text-[9px] text-blue-600 font-bold italic">
+                            https://namadinas.sinjaikab.go.id
                         </div>
                     </div>
 
-                    <div class="flex justify-center pt-2">
-                        <div class="bg-blue-600 text-white px-8 py-2.5 rounded-xl text-[10px] font-black shadow-lg shadow-blue-200 uppercase flex items-center gap-2 italic">
-                            <i class="fas fa-save"></i> Simpan
+                    <div class="bg-indigo-900 p-5 rounded-2xl flex items-center justify-center gap-3 shadow-lg shadow-indigo-200">
+                        <div class="bg-white text-indigo-900 px-6 py-2 rounded-xl text-[10px] font-black uppercase italic tracking-widest flex items-center gap-2">
+                            <i class="fas fa-save text-[9px]"></i> SIMPAN PROFIL
                         </div>
                     </div>
                 </div>
             </div>
         </div>
+    </div>
 
-        <!-- 2. Data Pimpinan -->
-        <div class="bg-white p-6 rounded-[2rem] border-2 border-slate-50 shadow-sm relative overflow-hidden">
-            <h5 class="font-black text-indigo-700 mb-6 flex items-center gap-3 uppercase text-xs tracking-wider italic">
-                <span class="bg-indigo-600 text-white w-8 h-8 rounded-xl flex items-center justify-center font-black text-sm shadow-md">2</span>
-                Data Pimpinan & Pejabat
+    <!-- 2. PENGELOLAAN PROFIL PIMPINAN -->
+    <div class="space-y-8 pt-10 border-t-4 border-slate-100">
+        <div class="flex items-center gap-3 border-b border-slate-100 pb-4">
+            <h5 class="text-xs font-black flex items-center gap-3 text-slate-700 uppercase tracking-widest italic">
+                <span class="bg-slate-100 p-1.5 rounded-lg"><i class="fas fa-user-tie text-blue-600"></i></span> 
+                02. Pengelolaan Profil Pimpinan & Pejabat
             </h5>
+        </div>
 
-            <div class="bg-amber-50 p-5 rounded-2xl border border-amber-100 mb-8 flex items-start gap-4">
-                <div class="bg-amber-500 text-white p-2 rounded-lg shadow-sm flex-shrink-0"><i class="fas fa-info-circle text-xs"></i></div>
-                <p class="text-[10px] leading-relaxed uppercase tracking-tight text-amber-900 font-black italic">
-                    Wajib isi <span class="underline decoration-amber-300">Tab Identitas</span> (Nama + Gelar & Status AKTIF).
-                </p>
-            </div>
-
-            <div class="space-y-5 border-t border-slate-50 pt-6">
-                <div class="bg-slate-50 p-5 rounded-[2rem] border border-slate-200 space-y-4">
-                    <div class="space-y-1.5">
-                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest italic">Nama & Gelar</p>
-                        <div class="h-10 w-full bg-white border-2 border-slate-200 rounded-xl flex items-center px-4 text-[10px] text-slate-400 italic font-bold">Dr. Nama Pimpinan, M.Si</div>
-                    </div>
-                    <div class="space-y-1.5">
-                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-widest italic">Status Pimpinan</p>
-                        <div class="h-10 w-full bg-green-50 border-2 border-green-200 rounded-xl flex items-center px-4 text-[10px] text-green-700 font-black uppercase justify-between italic">
-                            AKTIF <i class="fas fa-check-circle"></i>
-                        </div>
-                    </div>
-                    <div class="flex justify-center pt-2">
-                        <div class="bg-indigo-600 text-white px-8 py-2.5 rounded-xl text-[10px] font-black uppercase shadow-lg shadow-indigo-200 italic">Simpan Profil</div>
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-10">
+            <!-- Navigasi Pimpinan -->
+            <div class="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden border-4 border-slate-800 shadow-xl">
+                <h6 class="text-xs font-black uppercase text-blue-400 mb-6 tracking-widest italic">Alur Navigasi:</h6>
+                <div class="space-y-4 text-[11px] font-medium leading-relaxed italic">
+                    <p class="flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/10">
+                        <span class="bg-blue-600 text-white w-6 h-6 rounded-lg flex items-center justify-center font-black flex-shrink-0 not-italic text-[10px]">1</span>
+                        <span>Buka Sidebar > Manajemen Struktur > <strong class="text-white">Profil Pimpinan</strong>.</span>
+                    </p>
+                    <p class="flex items-start gap-3 bg-white/5 p-4 rounded-2xl border border-white/10">
+                        <span class="bg-blue-600 text-white w-6 h-6 rounded-lg flex items-center justify-center font-black flex-shrink-0 not-italic text-[10px]">2</span>
+                        <span>Klik tombol biru <strong class="text-blue-400 underline uppercase italic">+ TAMBAH PROFIL PIMPINAN</strong>.</span>
+                    </p>
+                    <div class="bg-amber-500/10 border-l-4 border-amber-500 p-4 rounded-r-2xl">
+                        <p class="text-[10px] text-amber-400 font-black uppercase tracking-tight leading-relaxed">
+                            PENTING: Form ini menggunakan Sistem TAB. Wajib isi minimal **Tab Identitas** secara lengkap!
+                        </p>
                     </div>
                 </div>
             </div>
+
+            <!-- Detail Form Pimpinan -->
+            <div class="bg-white p-8 rounded-[3rem] border-2 border-slate-100 shadow-sm space-y-6">
+                <h6 class="text-xs font-black text-blue-700 uppercase italic">Panduan Pengisian (Tab Identitas):</h6>
+                
+                <div class="space-y-5">
+                    <div class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-100 space-y-3">
+                        <p class="text-[10px] font-black text-slate-800 uppercase italic">A. Nama Lengkap & Gelar <span class="text-red-500">*</span></p>
+                        <div class="w-full h-10 bg-white border-2 border-slate-200 rounded-xl flex items-center px-4 text-[9px] text-slate-400 font-bold italic">
+                            Dr. Nama Pimpinan, M.Si
+                        </div>
+                    </div>
+
+                    <div class="bg-slate-50 p-5 rounded-2xl border-2 border-slate-100 space-y-3">
+                        <p class="text-[10px] font-black text-slate-800 uppercase italic">B. Jabatan & Unit Kerja <span class="text-red-500">*</span></p>
+                        <div class="w-full h-10 bg-indigo-50 border-2 border-indigo-100 rounded-xl flex items-center justify-between px-4 text-[9px] text-indigo-700 font-black uppercase italic">
+                            KEPALA DINAS <i class="fas fa-caret-down"></i>
+                        </div>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-4">
+                        <div class="bg-slate-50 p-4 rounded-2xl border-2 border-slate-100 space-y-3">
+                            <p class="text-[10px] font-black text-slate-800 uppercase italic">C. Foto <span class="text-red-500">*</span></p>
+                            <div class="bg-blue-600 text-white py-2 rounded-lg text-[8px] font-black uppercase flex items-center justify-center gap-2 italic">
+                                <i class="fas fa-camera"></i> UNGGAH FOTO
+                            </div>
+                        </div>
+                        <div class="bg-slate-50 p-4 rounded-2xl border-2 border-slate-100 space-y-3">
+                            <p class="text-[10px] font-black text-slate-800 uppercase italic">D. Status <span class="text-red-500">*</span></p>
+                            <div class="bg-green-600 text-white py-2 rounded-lg text-[8px] font-black uppercase flex items-center justify-center gap-2 italic">
+                                AKTIF <i class="fas fa-check-circle"></i>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="bg-blue-900 p-5 rounded-2xl flex items-center justify-center gap-3">
+                        <div class="bg-white text-blue-900 px-8 py-2 rounded-xl text-[10px] font-black uppercase italic tracking-widest flex items-center gap-2">
+                            <i class="fas fa-save text-[9px]"></i> SIMPAN PIMPINAN
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- REMINDER FINAL -->
+    <div class="bg-indigo-950 p-10 rounded-[3rem] text-white flex flex-col md:flex-row items-center gap-10 shadow-2xl border-4 border-white/10 relative overflow-hidden">
+        <div class="absolute -bottom-10 -left-10 w-48 h-48 bg-blue-500/10 rounded-full blur-3xl"></div>
+        <div class="w-16 h-16 bg-white text-indigo-900 rounded-2xl flex items-center justify-center flex-shrink-0 shadow-xl rotate-3">
+            <i class="fas fa-flag-checkered text-2xl"></i>
+        </div>
+        <div class="space-y-2">
+            <h6 class="text-sm font-black uppercase italic tracking-widest text-indigo-300">Hasil Akhir:</h6>
+            <p class="text-[11px] font-bold leading-relaxed text-slate-300 normal-case italic">
+                Setelah semua data di atas disimpan dengan benar, sistem akan secara otomatis merakit halaman **"PROFIL OPD"** di website utama. Warga dapat melihat Struktur Organisasi, Link Website, dan Profil Pejabat Anda secara profesional dan transparan.
+            </p>
         </div>
     </div>
 </div>
