@@ -706,14 +706,14 @@ class FrontendController extends Controller
             ['content' => 'struktur_organisasi_' . $organization->id]
         );
 
-        // Update always to ensure consistency
+        // Update always to ensure consistency and visibility in "Informasi Berkala"
         $informasi->title = 'Profil ' . $organization->name;
         $informasi->deskripsi = 'Informasi mengenai profil ' . $organization->name . ', termasuk struktur organisasi dan tautan situs web.';
         $informasi->status = 'aktif';
         $informasi->category = 'Informasi Berkala';
         $informasi->jenis_dokumen = 'Profil Badan Publik';
         $informasi->user_id = Auth::id();
-        $informasi->unit_id = $organization->remote_id ?? Auth::user()->unit_id;
+        $informasi->unit_id = $organization->unit_id; // Gunakan unit_id organisasi
         $informasi->tahun = $informasi->tahun ?? now()->year;
         $informasi->tanggal_upload = $informasi->tanggal_upload ?? now()->toDateString();
 
@@ -1099,7 +1099,7 @@ class FrontendController extends Controller
             $informasi->tahun = $official->start_term ? date('Y', strtotime($official->start_term)) : date('Y');
             $informasi->tanggal_upload = $official->start_term ?? now();
             $informasi->user_id = Auth::id();
-            $informasi->unit_id = $official->organization->remote_id ?? Auth::user()->unit_id;
+            $informasi->unit_id = $official->organization->unit_id; // Gunakan unit_id organisasi dari official
             $informasi->save();
         });
 

@@ -339,14 +339,6 @@ class InformasiController extends Controller
             Informasi::create($dataToSave);
             \Log::info('STORE_COMPLETE');
 
-            // Clear caches to ensure data visibility
-            try {
-                \Illuminate\Support\Facades\Artisan::call('route:clear');
-                \Illuminate\Support\Facades\Artisan::call('view:clear');
-            } catch (\Exception $e) {
-                \Log::error('Cache Clear Error: ' . $e->getMessage());
-            }
-
             return redirect()->route('frontend.informasi.category', ['category' => Str::slug(str_replace('Informasi ', '', $dataToSave['category']))])
                 ->with('success', 'Data berhasil disimpan.');
 
@@ -459,14 +451,6 @@ class InformasiController extends Controller
                 }
 
                 $informasi->update($dataToUpdate);
-                
-                // Clear caches to ensure data visibility
-                try {
-                    \Illuminate\Support\Facades\Artisan::call('route:clear');
-                    \Illuminate\Support\Facades\Artisan::call('view:clear');
-                } catch (\Exception $e) {
-                    \Log::error('Cache Clear Error: ' . $e->getMessage());
-                }
             });
         } catch (AuthorizationException $e) {
             return redirect()->route('informasi-crud.edit', ['informasi' => $informasi->id])
@@ -596,14 +580,6 @@ class InformasiController extends Controller
             }
 
             $informasi->delete();
-            
-            // Clear caches to ensure data visibility
-            try {
-                \Illuminate\Support\Facades\Artisan::call('route:clear');
-                \Illuminate\Support\Facades\Artisan::call('view:clear');
-            } catch (\Exception $e) {
-                \Log::error('Cache Clear Error: ' . $e->getMessage());
-            }
         });
 
         Cache::forget('dip_years');
