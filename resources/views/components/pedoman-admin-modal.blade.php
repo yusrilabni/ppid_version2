@@ -130,6 +130,88 @@
                                     </div>
                                 </div>
                             </div>
+
+                            <!-- PANDUAN VISUAL (MOCKUP FORM) -->
+                            <div class="mt-10 border-t-2 border-dashed border-indigo-100 pt-8">
+                                <h6 class="text-sm font-bold text-indigo-800 mb-6 flex items-center gap-2">
+                                    <i class="fas fa-eye"></i> Simulasi Visual Tampilan Form:
+                                </h6>
+                                
+                                <div class="relative bg-slate-200 p-4 md:p-8 rounded-3xl overflow-hidden shadow-inner group">
+                                    <!-- Overlay Untouchable -->
+                                    <div class="absolute inset-0 z-10 pointer-events-none"></div>
+                                    
+                                    <!-- Form Mockup (Replika Blade) -->
+                                    <div class="bg-white rounded-2xl shadow-xl overflow-hidden border border-slate-300 opacity-90 scale-[0.98]">
+                                        <div class="bg-slate-50 border-b p-4 flex gap-4">
+                                            <div class="h-6 w-16 bg-blue-100 rounded border-b-2 border-blue-600"></div>
+                                            <div class="h-6 w-20 bg-slate-100 rounded"></div>
+                                            <div class="h-6 w-16 bg-slate-100 rounded"></div>
+                                        </div>
+                                        <div class="p-6 grid grid-cols-1 md:grid-cols-2 gap-6">
+                                            <div class="space-y-2 relative">
+                                                <div class="h-3 w-24 bg-slate-200 rounded"></div>
+                                                <div class="h-8 w-full bg-slate-50 border border-slate-300 rounded-lg"></div>
+                                                <!-- Arrow Pointer 1 -->
+                                                <div class="absolute -left-2 md:-left-8 top-10 flex items-center z-20">
+                                                    <div class="bg-red-500 text-white text-[8px] font-black px-2 py-1 rounded shadow-lg whitespace-nowrap animate-pulse">NAMA TANPA GELAR</div>
+                                                    <div class="w-2 md:w-4 h-[2px] bg-red-500"></div>
+                                                    <div class="w-0 h-0 border-y-4 border-y-transparent border-l-[6px] border-l-red-500"></div>
+                                                </div>
+                                            </div>
+                                            <div class="space-y-2 relative">
+                                                <div class="h-3 w-20 bg-slate-200 rounded"></div>
+                                                <div class="h-8 w-full bg-slate-50 border border-slate-300 rounded-lg flex items-center px-3 justify-between">
+                                                    <div class="h-2 w-16 bg-slate-300 rounded"></div>
+                                                    <i class="fas fa-chevron-down text-slate-400 text-[10px]"></i>
+                                                </div>
+                                                <!-- Arrow Pointer 2 -->
+                                                <div class="absolute -right-2 md:-right-8 top-10 flex items-center flex-row-reverse z-20">
+                                                    <div class="bg-blue-500 text-white text-[8px] font-black px-2 py-1 rounded shadow-lg whitespace-nowrap">PILIH JABATAN</div>
+                                                    <div class="w-2 md:w-4 h-[2px] bg-blue-500"></div>
+                                                    <div class="w-0 h-0 border-y-4 border-y-transparent border-r-[6px] border-r-blue-500"></div>
+                                                </div>
+                                            </div>
+                                            <div class="space-y-2 relative">
+                                                <div class="h-3 w-16 bg-slate-200 rounded"></div>
+                                                <div class="h-8 w-full bg-slate-50 border border-slate-300 rounded-lg"></div>
+                                                <!-- Arrow Pointer 3 -->
+                                                <div class="absolute -left-2 md:-left-8 top-10 flex items-center z-20">
+                                                    <div class="bg-indigo-600 text-white text-[8px] font-black px-2 py-1 rounded shadow-lg whitespace-nowrap">NIP TANPA SPASI</div>
+                                                    <div class="w-2 md:w-4 h-[2px] bg-indigo-600"></div>
+                                                    <div class="w-0 h-0 border-y-4 border-y-transparent border-l-[6px] border-l-indigo-600"></div>
+                                                </div>
+                                            </div>
+                                            <div class="space-y-2 relative">
+                                                <div class="h-3 w-16 bg-slate-200 rounded"></div>
+                                                <div class="h-8 w-full bg-slate-50 border-2 border-dashed border-slate-300 rounded-lg flex flex-col items-center justify-center">
+                                                    <i class="fas fa-camera text-slate-300 text-xs"></i>
+                                                </div>
+                                                <!-- Arrow Pointer 4 -->
+                                                <div class="absolute -right-2 md:-right-8 top-10 flex items-center flex-row-reverse z-20">
+                                                    <div class="bg-orange-500 text-white text-[8px] font-black px-2 py-1 rounded shadow-lg whitespace-nowrap">MAX 2MB</div>
+                                                    <div class="w-2 md:w-4 h-[2px] bg-orange-500"></div>
+                                                    <div class="w-0 h-0 border-y-4 border-y-transparent border-r-[6px] border-r-orange-500"></div>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="p-4 border-t flex justify-end relative">
+                                            <div class="h-8 w-24 bg-blue-600 rounded-lg shadow-lg"></div>
+                                            <!-- Arrow Pointer 5 -->
+                                            <div class="absolute right-28 top-6 flex items-center flex-row-reverse z-20">
+                                                <div class="bg-green-600 text-white text-[8px] font-black px-2 py-1 rounded shadow-lg whitespace-nowrap animate-bounce">KLIK SIMPAN</div>
+                                                <div class="w-4 h-[2px] bg-green-600"></div>
+                                                <div class="w-0 h-0 border-y-4 border-y-transparent border-r-[6px] border-r-green-600"></div>
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Caption -->
+                                    <div class="mt-4 text-center">
+                                        <p class="text-[10px] text-slate-500 italic font-medium">Gambar di atas adalah ilustrasi simulasi form asli.</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>
