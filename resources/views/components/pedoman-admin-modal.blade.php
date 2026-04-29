@@ -254,91 +254,226 @@
             </div>
 
             <!-- Tab 1: Jenis Informasi -->
-            <div x-show="$store.pedomanAdminModal.activeTab === 1" x-transition class="space-y-8">
+            <div x-show="$store.pedomanAdminModal.activeTab === 1" x-transition class="space-y-10">
                 <div class="flex items-center gap-4 border-l-4 border-blue-600 pl-4 mb-6">
-                    <h4 class="text-2xl font-bold text-slate-800">Manajemen Informasi & Panduan AI Analis</h4>
+                    <h4 class="text-2xl font-bold text-slate-800">Panduan Manajemen & Standar Dokumen Wajib</h4>
                 </div>
-                
-                <!-- Bantuan AI Analis -->
-                <div class="bg-indigo-900 text-white p-6 rounded-2xl shadow-lg relative overflow-hidden mb-8">
-                    <div class="absolute -right-4 -bottom-4 opacity-20">
-                        <i class="fas fa-robot text-9xl"></i>
-                    </div>
-                    <div class="relative z-10">
-                        <h5 class="text-lg font-bold mb-2 flex items-center gap-2">
-                            <i class="fas fa-magic text-indigo-300"></i> Bingung Mengklasifikasikan Dokumen? Tanya AI Analis!
-                        </h5>
-                        <p class="text-sm text-indigo-100 mb-4 leading-relaxed">
-                            Jika Anda tidak yakin apakah sebuah dokumen masuk dalam kategori <strong>Berkala, Setiap Saat, Serta Merta, atau Dikecualikan</strong> (Sesuai PERKI 1/2021), sistem kami dilengkapi dengan asisten AI cerdas.
+
+                <!-- BAGIAN 1: PENGERTIAN UMUM -->
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                    <div class="bg-blue-50 p-6 rounded-3xl border border-blue-100">
+                        <h6 class="font-black text-blue-900 mb-3 uppercase tracking-tight flex items-center gap-2">
+                            <i class="fas fa-history"></i> Informasi Berkala
+                        </h6>
+                        <p class="text-xs text-slate-700 leading-relaxed">
+                            Informasi Berkala adalah dokumen yang wajib disediakan dan diumumkan secara rutin oleh Badan Publik. Sifat dokumen ini adalah <strong>"Update Terkini" atau Saling Menggantikan</strong>. Artinya, jika Anda mengupload data tahun terbaru (misal: LRA 2024), maka data tahun sebelumnya (LRA 2023) harus diubah statusnya menjadi <strong>ARSIP</strong> agar publik selalu mendapatkan informasi yang paling relevan dan valid saat ini.
                         </p>
-                        <ul class="text-xs text-indigo-50 space-y-3 mb-4 list-disc list-inside">
-                            <li>Buka halaman <strong>Tambah Informasi Baru</strong> (Misal dari menu <em>Informasi > Berkala > + Tambah</em>).</li>
-                            <li>Klik tombol <span class="bg-indigo-500 text-white px-2 py-1 rounded shadow-sm text-[10px] font-bold tracking-widest"><i class="fas fa-question-circle"></i> TANYA PEDOMAN</span> di pojok kanan atas formulir.</li>
-                            <li>Ketik pertanyaan Anda (Misal: <em>"RPJMD dan DPA masuk kategori informasi apa?"</em>). AI akan langsung memberikan jawaban klasifikasinya sesuai Undang-Undang KIP.</li>
-                        </ul>
+                    </div>
+                    <div class="bg-emerald-50 p-6 rounded-3xl border border-emerald-100">
+                        <h6 class="font-black text-emerald-900 mb-3 uppercase tracking-tight flex items-center gap-2">
+                            <i class="fas fa-layer-group"></i> Informasi Setiap Saat
+                        </h6>
+                        <p class="text-xs text-slate-700 leading-relaxed">
+                            Informasi Setiap Saat adalah dokumen yang wajib tersedia dan diberikan kapan saja ketika ada pemohon informasi. Sifat dokumen ini adalah <strong>"Akumulatif" atau Katalog Arsip</strong>. Anda dapat mengupload dokumen dari tahun-tahun sebelumnya maupun tahun berjalan secara bersamaan. Semua dokumen disetel sebagai <strong>BERLAKU</strong> tanpa perlu mengarsipkan data lama, karena fungsinya adalah sebagai database sejarah operasional instansi.
+                        </p>
                     </div>
                 </div>
 
-                <!-- Klasifikasi & Siklus Dokumen (PERKI) -->
-                <div class="space-y-6">
-                    <h5 class="font-bold text-slate-800 border-b pb-2">Klasifikasi Utama (Menurut UU KIP & PERKI No. 1 Tahun 2021)</h5>
+                <!-- BAGIAN 2: DAFTAR DOKUMEN WAJIB PER INSTANSI -->
+                <div class="bg-slate-900 rounded-[2.5rem] p-8 text-white relative overflow-hidden">
+                    <div class="absolute top-0 right-0 p-10 opacity-10"><i class="fas fa-file-invoice text-9xl"></i></div>
+                    <h5 class="text-xl font-bold mb-8 flex items-center gap-3"><i class="fas fa-clipboard-list text-yellow-400"></i> Daftar Dokumen Wajib (Standar PERKI)</h5>
                     
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <!-- INFORMASI BERKALA -->
-                        <div class="bg-blue-50 border border-blue-200 rounded-2xl p-5">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-8 h-8 bg-blue-600 text-white rounded-lg flex items-center justify-center"><i class="fas fa-calendar-alt"></i></div>
-                                <h6 class="font-black text-blue-900">INFORMASI BERKALA</h6>
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+                        <div class="space-y-4">
+                            <div class="border-l-2 border-indigo-500 pl-4">
+                                <p class="text-indigo-400 font-black text-[10px] uppercase tracking-widest mb-1">Dinas / Badan / Kantor</p>
+                                <p class="text-[11px] text-slate-300 leading-relaxed">Renstra, Renja, DPA, RKA, LRA, Neraca, LKjIP, LKPJ, Profil Pimpinan, Struktur Organisasi, LHKPN/LHKASN.</p>
                             </div>
-                            <p class="text-xs text-slate-600 mb-3 leading-relaxed">Dokumen yang wajib disediakan secara rutin (Tahunan/Semesteran).</p>
-                            <ul class="text-[11px] text-slate-500 space-y-1 mb-4 list-disc list-inside">
-                                <li>Profil, Visi Misi, Tupoksi, Struktur Organisasi.</li>
-                                <li>Program Kerja, Renstra, Renja, DPA.</li>
-                                <li>Laporan Kinerja (LKjIP, LAKIP).</li>
-                                <li>Laporan Keuangan (RKA, LRA, Neraca, CaLK, Opini BPK).</li>
-                            </ul>
-                            <div class="bg-white p-3 rounded-xl border border-blue-100">
-                                <p class="text-[10px] font-bold text-blue-800 mb-1"><i class="fas fa-sync-alt mr-1"></i> Siklus Update (Gunakan Tombol Check):</p>
-                                <p class="text-[10px] text-slate-600">Dokumen berkala <strong>bersifat menggantikan (Update Terkini)</strong>. Jika Anda mengupload "LRA 2024", pastikan status disetel <strong>BERLAKU</strong>, lalu klik tombol <span class="bg-yellow-500 text-white px-1.5 py-0.5 rounded font-bold text-[8px] uppercase">CHECK INFORMASI</span>. Sistem akan otomatis mendeteksi jika ada "LRA 2023" milik unit Anda, lalu menawarkan untuk mengubah status dokumen lama tersebut menjadi <strong>ARSIP</strong> agar publik selalu melihat data terbaru tanpa ada redudansi.</p>
+                            <div class="border-l-2 border-orange-500 pl-4">
+                                <p class="text-orange-400 font-black text-[10px] uppercase tracking-widest mb-1">Inspektorat</p>
+                                <p class="text-[11px] text-slate-300 leading-relaxed">PKPT (Program Kerja), Ringkasan LHP (yang sudah dipublikasi), Laporan Akuntabilitas, Standar Audit.</p>
                             </div>
                         </div>
-
-                        <!-- INFORMASI SETIAP SAAT -->
-                        <div class="bg-emerald-50 border border-emerald-200 rounded-2xl p-5">
-                            <div class="flex items-center gap-3 mb-3">
-                                <div class="w-8 h-8 bg-emerald-600 text-white rounded-lg flex items-center justify-center"><i class="fas fa-clock"></i></div>
-                                <h6 class="font-black text-emerald-900">INFORMASI SETIAP SAAT</h6>
+                        <div class="space-y-4">
+                            <div class="border-l-2 border-pink-500 pl-4">
+                                <p class="text-pink-400 font-black text-[10px] uppercase tracking-widest mb-1">RSUD (Rumah Sakit)</p>
+                                <p class="text-[11px] text-slate-300 leading-relaxed">Profil Layanan, Tarif Layanan, Standar Pelayanan Minimal (SPM), Maklumat Pelayanan Kesehatan, LRA BLUD.</p>
                             </div>
-                            <p class="text-xs text-slate-600 mb-3 leading-relaxed">Dokumen historis dan operasional yang wajib ada jika diminta masyarakat.</p>
-                            <ul class="text-[11px] text-slate-500 space-y-1 mb-4 list-disc list-inside">
-                                <li>Daftar Informasi Publik (DIP) Tahunan.</li>
-                                <li>Hasil Keputusan, Peraturan, Kebijakan Daerah.</li>
-                                <li>Perjanjian Kerja Sama / MoU dengan Pihak Ketiga.</li>
-                                <li>Surat-Menyurat Pimpinan, Data Perbendaharaan, RUP.</li>
-                            </ul>
-                            <div class="bg-white p-3 rounded-xl border border-emerald-100">
-                                <p class="text-[10px] font-bold text-emerald-800 mb-1"><i class="fas fa-layer-group mr-1"></i> Siklus Update (Akumulatif / Menumpuk):</p>
-                                <p class="text-[10px] text-slate-600">Dokumen ini <strong>tidak saling menggantikan</strong>. Anda dapat mengupload dokumen dari <em>tahun-tahun sebelumnya</em> maupun <em>tahun saat ini</em>, dan semuanya akan tampil bersamaan di riwayat publik. Selalu set status sebagai <strong>BERLAKU</strong> dan simpan langsung (tidak perlu menggunakan Check Similarity) agar menjadi katalog arsip permanen yang bisa dicari masyarakat.</p>
+                            <div class="border-l-2 border-blue-400 pl-4">
+                                <p class="text-blue-400 font-black text-[10px] uppercase tracking-widest mb-1">Kecamatan</p>
+                                <p class="text-[11px] text-slate-300 leading-relaxed">Profil Wilayah, Data Monografi, DPA Kecamatan, Laporan Pelayanan PATEN, Laporan Trantibum.</p>
+                            </div>
+                        </div>
+                        <div class="space-y-4">
+                            <div class="border-l-2 border-green-500 pl-4">
+                                <p class="text-green-400 font-black text-[10px] uppercase tracking-widest mb-1">Desa / Kelurahan</p>
+                                <p class="text-[11px] text-slate-300 leading-relaxed">RPJMDes, RKPDes, APBDes, LPPD (Laporan Penyelenggaraan), Profil Desa, Daftar Inventaris Desa.</p>
+                            </div>
+                            <div class="bg-white/5 p-3 rounded-2xl border border-white/10">
+                                <p class="text-[9px] text-slate-400 italic">"Gunakan bantuan <strong>AI Analis</strong> jika ragu menempatkan jenis dokumen di atas."</p>
                             </div>
                         </div>
                     </div>
+                </div>
 
-                    <!-- SERTA MERTA & DIKECUALIKAN -->
-                    <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                        <div class="bg-red-50 border border-red-200 rounded-2xl p-5">
-                            <div class="flex items-center gap-2 mb-2">
-                                <i class="fas fa-bolt text-red-600"></i>
-                                <h6 class="font-black text-red-900 text-sm">SERTA MERTA</h6>
-                            </div>
-                            <p class="text-[11px] text-slate-600">Informasi darurat yang dapat mengancam hajat hidup orang banyak. Contoh: Peringatan Dini Bencana Alam, Wabah Penyakit, Keracunan Massal, Gangguan Keamanan/Pelayanan Publik. Wajib diupload dan dipublikasi secepatnya!</p>
+                <!-- BAGIAN 3: PANDUAN TEKNIS PENGISIAN FORM -->
+                <div class="space-y-6">
+                    <div class="flex items-center gap-3">
+                        <div class="w-10 h-10 bg-indigo-600 text-white rounded-xl flex items-center justify-center shadow-lg"><i class="fas fa-edit"></i></div>
+                        <div>
+                            <h5 class="font-bold text-slate-800 leading-tight">Langkah-Langkah Pembuatan Informasi</h5>
+                            <p class="text-[10px] text-slate-500 uppercase font-bold tracking-widest">Tutorial Form Lengkap (A - H)</p>
                         </div>
-                        <div class="bg-slate-100 border border-slate-300 rounded-2xl p-5">
-                            <div class="flex items-center gap-2 mb-2">
-                                <i class="fas fa-lock text-slate-600"></i>
-                                <h6 class="font-black text-slate-900 text-sm">DIKECUALIKAN</h6>
+                    </div>
+
+                    <div class="bg-slate-50 rounded-[2rem] border border-slate-200 p-8 space-y-10">
+                        <!-- A: JUDUL -->
+                        <div class="flex flex-col md:flex-row gap-8">
+                            <div class="flex-1">
+                                <div class="flex gap-4 mb-3">
+                                    <span class="w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-black text-sm">A</span>
+                                    <h6 class="font-bold text-slate-800 mt-1">Judul Informasi</h6>
+                                </div>
+                                <p class="text-[11px] text-slate-600 leading-relaxed ml-12">Tuliskan judul yang spesifik dan mudah dicari. <br>Contoh: <strong>"Laporan Realisasi Anggaran (LRA) Tahun 2024"</strong>.</p>
                             </div>
-                            <p class="text-[11px] text-slate-600">Informasi rahasia negara, rahasia bisnis (HAKI), data pribadi warga negara, atau proses penegakan hukum yang belum selesai. Dokumen ini <strong>Tidak akan ditampilkan</strong> ke publik, hanya tersimpan sebagai arsip rahasia internal PPID.</p>
+                            <div class="md:w-64 bg-white p-3 rounded-2xl border border-slate-200 shadow-sm relative">
+                                <div class="h-2 w-16 bg-slate-100 rounded mb-2"></div>
+                                <div class="h-8 w-full border border-indigo-200 rounded-lg bg-indigo-50/30 flex items-center px-3">
+                                    <span class="text-[8px] text-indigo-400 font-bold">LRA Tahun 2024...</span>
+                                </div>
+                                <div class="absolute -left-3 top-1/2 -translate-y-1/2 w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-indigo-500"></div>
+                            </div>
                         </div>
+
+                        <!-- B: DESKRIPSI -->
+                        <div class="flex flex-col md:flex-row gap-8">
+                            <div class="flex-1">
+                                <div class="flex gap-4 mb-3">
+                                    <span class="w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-black text-sm">B</span>
+                                    <h6 class="font-bold text-slate-800 mt-1">Deskripsi Singkat & Konten</h6>
+                                </div>
+                                <p class="text-[11px] text-slate-600 leading-relaxed ml-12">Berikan penjelasan ringkas mengenai isi dokumen agar pemohon paham kegunaan data tersebut sebelum mengunduh.</p>
+                            </div>
+                            <div class="md:w-64 bg-white p-3 rounded-2xl border border-slate-200 shadow-sm relative">
+                                <div class="h-14 w-full border border-slate-200 rounded-lg bg-slate-50 flex flex-col p-2 gap-1">
+                                    <div class="h-1 w-full bg-slate-200 rounded"></div>
+                                    <div class="h-1 w-4/5 bg-slate-200 rounded"></div>
+                                </div>
+                                <div class="absolute -left-3 top-1/2 -translate-y-1/2 w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-indigo-500"></div>
+                            </div>
+                        </div>
+
+                        <!-- C: KATEGORI & UNIT -->
+                        <div class="flex flex-col md:flex-row gap-8">
+                            <div class="flex-1">
+                                <div class="flex gap-4 mb-3">
+                                    <span class="w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-black text-sm">C</span>
+                                    <h6 class="font-bold text-slate-800 mt-1">Kategori & Unit Kerja</h6>
+                                </div>
+                                <p class="text-[11px] text-slate-600 leading-relaxed ml-12">Pilih kategori (Berkala/Setiap Saat). Untuk Unit Kerja akan terisi otomatis sesuai akun Anda.</p>
+                            </div>
+                            <div class="md:w-64 space-y-2 relative">
+                                <div class="bg-white p-2 rounded-xl border border-slate-200 flex justify-between items-center">
+                                    <span class="text-[8px] font-bold text-slate-700">Informasi Berkala</span>
+                                    <i class="fas fa-chevron-down text-[7px] text-slate-400"></i>
+                                </div>
+                                <div class="bg-slate-100 p-2 rounded-xl border border-slate-200">
+                                    <span class="text-[7px] font-bold text-slate-500 italic">Nama Unit Kerja Anda...</span>
+                                </div>
+                                <div class="absolute -left-3 top-1/2 -translate-y-1/2 w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-indigo-500"></div>
+                            </div>
+                        </div>
+
+                        <!-- D: JENIS DOKUMEN -->
+                        <div class="flex flex-col md:flex-row gap-8">
+                            <div class="flex-1">
+                                <div class="flex gap-4 mb-3">
+                                    <span class="w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-black text-sm">D</span>
+                                    <h6 class="font-bold text-slate-800 mt-1">Klasifikasi Jenis Dokumen</h6>
+                                </div>
+                                <p class="text-[11px] text-slate-600 leading-relaxed ml-12">Sangat penting untuk pengelompokan otomatis. Pilih jenis yang paling sesuai (misal: Keuangan, Strategis).</p>
+                            </div>
+                            <div class="md:w-64 bg-white p-3 rounded-2xl border border-slate-200 shadow-sm relative">
+                                <div class="h-8 w-full border border-blue-200 rounded-lg bg-blue-50/50 flex items-center px-3 justify-between">
+                                    <span class="text-[8px] text-blue-600 font-black">Informasi Keuangan</span>
+                                    <i class="fas fa-check-circle text-blue-500 text-[8px]"></i>
+                                </div>
+                                <div class="absolute -left-3 top-1/2 -translate-y-1/2 w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-indigo-500"></div>
+                            </div>
+                        </div>
+
+                        <!-- E: TAHUN -->
+                        <div class="flex flex-col md:flex-row gap-8">
+                            <div class="flex-1">
+                                <div class="flex gap-4 mb-3">
+                                    <span class="w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-black text-sm">E</span>
+                                    <h6 class="font-bold text-slate-800 mt-1">Tahun Dokumen</h6>
+                                </div>
+                                <p class="text-[11px] text-slate-600 leading-relaxed ml-12">Pilih tanggal atau tahun terbit dokumen. Format yang digunakan adalah <strong>YYYY-MM-DD</strong>.</p>
+                            </div>
+                            <div class="md:w-64 bg-white p-3 rounded-2xl border border-slate-200 shadow-sm relative flex items-center">
+                                <div class="h-8 w-full border border-slate-200 rounded-lg flex items-center px-3 gap-2">
+                                    <i class="fas fa-calendar text-[8px] text-slate-400"></i>
+                                    <span class="text-[8px] text-slate-700">2024-04-29</span>
+                                </div>
+                                <div class="absolute -left-3 top-1/2 -translate-y-1/2 w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-indigo-500"></div>
+                            </div>
+                        </div>
+
+                        <!-- F: STATUS -->
+                        <div class="flex flex-col md:flex-row gap-8">
+                            <div class="flex-1">
+                                <div class="flex gap-4 mb-3">
+                                    <span class="w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-black text-sm">F</span>
+                                    <h6 class="font-bold text-slate-800 mt-1">Status (Berlaku / Arsip)</h6>
+                                </div>
+                                <p class="text-[11px] text-slate-600 leading-relaxed ml-12">Setel ke <strong>BERLAKU</strong> untuk data aktif. Setel ke <strong>ARSIP</strong> jika data tersebut sudah kedaluwarsa.</p>
+                            </div>
+                            <div class="md:w-64 bg-white p-3 rounded-2xl border border-slate-200 shadow-sm relative flex gap-4">
+                                <div class="flex items-center gap-1">
+                                    <div class="w-3 h-3 rounded-full border-2 border-indigo-600 flex items-center justify-center"><div class="w-1.5 h-1.5 bg-indigo-600 rounded-full"></div></div>
+                                    <span class="text-[8px] font-bold text-indigo-700 uppercase">Berlaku</span>
+                                </div>
+                                <div class="flex items-center gap-1 opacity-40">
+                                    <div class="w-3 h-3 rounded-full border-2 border-slate-300"></div>
+                                    <span class="text-[8px] font-bold text-slate-500 uppercase">Arsip</span>
+                                </div>
+                                <div class="absolute -left-3 top-1/2 -translate-y-1/2 w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-indigo-500"></div>
+                            </div>
+                        </div>
+
+                        <!-- G: FILE UPLOAD -->
+                        <div class="flex flex-col md:flex-row gap-8">
+                            <div class="flex-1">
+                                <div class="flex gap-4 mb-3">
+                                    <span class="w-8 h-8 bg-indigo-600 text-white rounded-full flex items-center justify-center font-black text-sm">G</span>
+                                    <h6 class="font-bold text-slate-800 mt-1">Upload File atau Link</h6>
+                                </div>
+                                <p class="text-[11px] text-slate-600 leading-relaxed ml-12">Upload file langsung (Max <strong>2MB</strong>). Jika file besar (misal Video/Laporan Tebal), pilih <strong>Link File</strong> dan masukkan URL Google Drive/Cloud.</p>
+                            </div>
+                            <div class="md:w-64 bg-white p-3 rounded-2xl border-2 border-dashed border-indigo-100 relative flex flex-col items-center justify-center gap-1 py-4">
+                                <i class="fas fa-file-pdf text-indigo-400 text-xl"></i>
+                                <span class="text-[7px] text-slate-400 font-bold uppercase">Maksimal 2MB</span>
+                                <div class="absolute -left-3 top-1/2 -translate-y-1/2 w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-indigo-500"></div>
+                            </div>
+                        </div>
+
+                        <!-- H: FINALISASI -->
+                        <div class="flex flex-col md:flex-row gap-8">
+                            <div class="flex-1">
+                                <div class="flex gap-4 mb-3">
+                                    <span class="w-8 h-8 bg-blue-600 text-white rounded-full flex items-center justify-center font-black text-sm">H</span>
+                                    <h6 class="font-bold text-blue-900 mt-1 uppercase italic">Check & Simpan</h6>
+                                </div>
+                                <p class="text-[11px] text-slate-600 leading-relaxed ml-12">Khusus <strong>Informasi Berkala</strong>, wajib klik tombol <span class="bg-yellow-500 text-white px-1.5 py-0.5 rounded font-bold text-[8px] uppercase tracking-tighter">CHECK INFORMASI</span> untuk mendeteksi data lama agar otomatis diarsipkan.</p>
+                            </div>
+                            <div class="md:w-64 bg-white p-3 rounded-2xl border border-slate-200 shadow-sm relative flex justify-center">
+                                <div class="bg-yellow-500 text-white px-4 py-2 rounded-xl text-[9px] font-black shadow-lg shadow-yellow-100 animate-pulse uppercase tracking-tighter">CHECK INFORMASI</div>
+                                <div class="absolute -left-3 top-1/2 -translate-y-1/2 w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-yellow-500"></div>
+                            </div>
+                        </div>
+
                     </div>
                 </div>
             </div>
