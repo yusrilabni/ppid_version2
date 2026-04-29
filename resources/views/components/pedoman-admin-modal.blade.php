@@ -64,11 +64,11 @@
                                 </li>
                                 <li class="flex gap-3">
                                     <i class="fas fa-search text-indigo-500 mt-1"></i>
-                                    <span>Cari OPD Anda di daftar, lalu klik tombol <span class="bg-blue-600 text-white px-2 py-0.5 rounded text-[10px] uppercase font-bold">Kelola Profil</span></span>
+                                    <span>Cari OPD Anda, lalu klik tombol <span class="bg-white text-blue-600 border border-blue-200 px-2 py-0.5 rounded shadow-sm text-[10px] font-bold inline-flex items-center gap-1 uppercase tracking-tighter"><i class="fas fa-edit text-[8px]"></i> KELOLA PROFIL UNIT</span></span>
                                 </li>
                                 <li class="flex gap-3">
                                     <i class="fas fa-upload text-indigo-500 mt-1"></i>
-                                    <span>Unggah Gambar Struktur & masukkan URL Website OPD, lalu klik <strong>Simpan Perubahan</strong>.</span>
+                                    <span>Lengkapi form, lalu klik tombol <span class="bg-blue-600 text-white px-2 py-0.5 rounded shadow-sm text-[10px] font-bold inline-flex items-center gap-1 uppercase"><i class="fas fa-save text-[8px]"></i> SIMPAN PERUBAHAN</span>.</span>
                                 </li>
                             </ul>
 
@@ -83,13 +83,14 @@
                                         <div class="flex gap-3 flex-1">
                                             <div class="bg-indigo-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">A</div>
                                             <div>
-                                                <p class="text-xs font-bold text-slate-800">Gambar Struktur Organisasi</p>
-                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Upload gambar struktur dalam format <strong>JPG/PNG/WEBP</strong>. Pastikan teks di gambar terbaca jelas.</p>
+                                                <p class="text-xs font-bold text-slate-800">Upload Struktur (Gambar)</p>
+                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Format: <strong>JPG, PNG, atau WEBP</strong>. Gambar ini akan tampil di profil OPD Anda di halaman depan.</p>
                                             </div>
                                         </div>
                                         <div class="md:w-40 bg-slate-100 p-2 rounded-xl border border-slate-200 relative">
-                                            <div class="h-12 w-full border-2 border-dashed border-slate-300 rounded-lg flex items-center justify-center bg-white">
-                                                <i class="fas fa-sitemap text-slate-300 text-xs"></i>
+                                            <div class="h-14 w-full border-2 border-dashed border-slate-300 rounded-lg flex flex-col items-center justify-center bg-white gap-1">
+                                                <i class="fas fa-cloud-upload-alt text-slate-300 text-xs"></i>
+                                                <span class="text-[6px] text-slate-400 font-bold uppercase">Pilih File</span>
                                             </div>
                                             <div class="absolute -left-4 top-1/2 -translate-y-1/2">
                                                 <div class="w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-indigo-500"></div>
@@ -102,13 +103,14 @@
                                         <div class="flex gap-3 flex-1">
                                             <div class="bg-indigo-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">B</div>
                                             <div>
-                                                <p class="text-xs font-bold text-slate-800">URL Website Resmi</p>
-                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Masukkan alamat website OPD yang aktif (Contoh: https://opd.sinjaikab.go.id).</p>
+                                                <p class="text-xs font-bold text-slate-800">Tautan Website OPD</p>
+                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Gunakan format lengkap (HTTP/HTTPS). Contoh: <strong>https://dinas.sinjaikab.go.id</strong></p>
                                             </div>
                                         </div>
-                                        <div class="md:w-40 bg-slate-100 p-2 rounded-xl border border-slate-200 relative">
+                                        <div class="md:w-40 space-y-1 bg-slate-100 p-3 rounded-xl border border-slate-200 relative">
+                                            <div class="h-1.5 w-10 bg-slate-200 rounded"></div>
                                             <div class="h-6 w-full bg-white border border-slate-300 rounded shadow-sm flex items-center px-2">
-                                                <span class="text-[8px] text-slate-400">https://...</span>
+                                                <span class="text-[7px] text-indigo-500 font-bold">https://...</span>
                                             </div>
                                             <div class="absolute -left-4 top-1/2 -translate-y-1/2">
                                                 <div class="w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-indigo-500"></div>
@@ -121,12 +123,12 @@
                                         <div class="flex gap-3 flex-1">
                                             <div class="bg-blue-600 text-white w-6 h-6 rounded-full flex-shrink-0 flex items-center justify-center text-xs font-bold mt-0.5">C</div>
                                             <div>
-                                                <p class="text-xs font-bold text-blue-800">Simpan Perubahan</p>
-                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Klik tombol simpan untuk memperbarui data OPD secara publik.</p>
+                                                <p class="text-xs font-bold text-blue-800">Finalisasi</p>
+                                                <p class="text-[11px] text-slate-500 mt-1 leading-relaxed">Pastikan semua data benar lalu tekan simpan.</p>
                                             </div>
                                         </div>
                                         <div class="md:w-40 bg-slate-100 p-2 rounded-xl border border-slate-200 relative flex justify-center">
-                                            <div class="bg-blue-600 text-white px-3 py-1 rounded-lg text-[8px] font-black shadow-md">SIMPAN</div>
+                                            <div class="bg-blue-600 text-white px-3 py-1.5 rounded-lg text-[8px] font-black shadow-md animate-pulse">SIMPAN PERUBAHAN</div>
                                             <div class="absolute -left-4 top-1/2 -translate-y-1/2">
                                                 <div class="w-0 h-0 border-y-[6px] border-y-transparent border-r-[8px] border-r-blue-500"></div>
                                             </div>
@@ -145,15 +147,15 @@
                             <ul class="space-y-4 text-sm text-slate-600">
                                 <li class="flex gap-3">
                                     <i class="fas fa-mouse-pointer text-indigo-500 mt-1"></i>
-                                    <span>Klik menu <strong>Profil</strong> > <strong>Pejabat Daerah</strong> (untuk OPD) atau <strong>Unit Lokal</strong> (untuk Desa/Kel)</span>
+                                    <span>Klik menu <strong>Profil</strong> > <strong>Pejabat Daerah</strong> (OPD) atau <strong>Unit Lokal</strong> (Desa/Kel)</span>
                                 </li>
                                 <li class="flex gap-3">
                                     <i class="fas fa-edit text-indigo-500 mt-1"></i>
-                                    <span>Klik icon <i class="fas fa-edit text-yellow-600"></i> pada nama pimpinan yang ingin diperbarui.</span>
+                                    <span>Klik tombol <span class="text-indigo-600 border-b border-indigo-300 font-bold text-xs italic">Edit</span> pada baris nama pimpinan yang ingin diperbarui.</span>
                                 </li>
                                 <li class="flex gap-3">
                                     <i class="fas fa-save text-indigo-500 mt-1"></i>
-                                    <span>Lengkapi formulir, lalu klik tombol <span class="bg-blue-600 text-white px-3 py-1 rounded shadow-sm text-xs font-bold inline-flex items-center gap-1"><i class="fas fa-save"></i> SIMPAN PROFIL</span> di bawah.</span>
+                                    <span>Lengkapi formulir, lalu klik tombol <span class="bg-blue-600 text-white px-3 py-1 rounded shadow-sm text-xs font-bold inline-flex items-center gap-1 uppercase"><i class="fas fa-save"></i> SIMPAN PROFIL</span> di bawah.</span>
                                 </li>
                             </ul>
 
