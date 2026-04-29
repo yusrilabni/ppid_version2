@@ -192,25 +192,32 @@ class FrontendController extends Controller
     {
         $pageTitle = 'Informasi ' . ucwords(str_replace('-', ' ', $category));
         
-        $query = Informasi::query()->where('category', $pageTitle);
+        // Normalize category title for comparison
+        $query = Informasi::query()->where(function($q) use ($pageTitle) {
+            $q->where('category', $pageTitle)
+              ->orWhere('category', str_replace('Informasi ', '', $pageTitle));
+        });
 
-        $unitMap = $this->getUnitData(); // Moved this line here
-
-
-        // Check for status filter first
+        // Selalu sertakan status AKTIF/BERLAKU secara default jika tidak ada filter pencarian status spesifik
         $searchTerm = $request->input('search');
         $isStatusFilter = false;
         if ($searchTerm) {
             $lowerSearchTerm = strtolower(trim($searchTerm));
-            // Only treat as status filter if the term is EXACTLY 'berlaku' or 'arsip'
             if ($lowerSearchTerm === 'berlaku') {
-                $query->where('status', 'BERLAKU');
+                $query->whereIn('status', ['BERLAKU', 'aktif', 'AKTIF']);
                 $isStatusFilter = true;
             } elseif ($lowerSearchTerm === 'arsip') {
                 $query->where('status', 'ARSIP');
                 $isStatusFilter = true;
             }
         }
+
+        if (!$isStatusFilter) {
+            // Jika tidak sedang mencari 'arsip', tampilkan yang berlaku/aktif
+            $query->whereIn('status', ['BERLAKU', 'aktif', 'AKTIF']);
+        }
+
+        $unitMap = $this->getUnitData(); 
 
         // Apply title/description search filter only if it's not a strict status filter
         if ($request->has('search') && $request->search != '' && !$isStatusFilter) {
