@@ -413,30 +413,30 @@
                     <div class="bg-blue-50/50 p-6 rounded-[2rem] border border-blue-100 space-y-4">
                         <p class="text-blue-700 border-b border-blue-200 pb-2 flex items-center gap-2 font-black"><i class="fas fa-sync-alt"></i> INFORMASI BERKALA</p>
                         <ul class="space-y-3 list-none pl-1 text-slate-600">
-                            <li class="flex gap-2 border-b border-blue-50 pb-2"><i class="fas fa-check text-blue-400 mt-0.5"></i> <span>Renstra & Renja (Jenis: Dokumen Strategis)</span></li>
-                            <li class="flex gap-2 border-b border-blue-50 pb-2"><i class="fas fa-check text-blue-400 mt-0.5"></i> <span>LRA & Neraca (Jenis: Informasi Keuangan)</span></li>
-                            <li class="flex gap-2 border-b border-blue-50 pb-2"><i class="fas fa-check text-blue-400 mt-0.5"></i> <span>DPA & RKA (Jenis: Program & Kegiatan)</span></li>
-                            <li class="flex gap-2 border-b border-blue-50 pb-2"><i class="fas fa-check text-blue-400 mt-0.5"></i> <span>LAKIP / LKjIP (Jenis: Laporan Kinerja Instansi)</span></li>
-                            <li class="flex gap-2 border-b border-blue-50 pb-2"><i class="fas fa-check text-blue-400 mt-0.5"></i> <span>Profil Pimpinan & Struktur (Jenis: Profil Badan Publik)</span></li>
+                            <li class="flex gap-2 border-b border-blue-50 pb-2"><i class="fas fa-check text-blue-400 mt-0.5"></i> <span>Renstra & Renja <span class="text-blue-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Dokumen Strategis</span></li>
+                            <li class="flex gap-2 border-b border-blue-50 pb-2"><i class="fas fa-check text-blue-400 mt-0.5"></i> <span>LRA & Neraca <span class="text-blue-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Informasi Keuangan</span></li>
+                            <li class="flex gap-2 border-b border-blue-50 pb-2"><i class="fas fa-check text-blue-400 mt-0.5"></i> <span>DPA & RKA <span class="text-blue-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Program & Kegiatan</span></li>
+                            <li class="flex gap-2 border-b border-blue-50 pb-2"><i class="fas fa-check text-blue-400 mt-0.5"></i> <span>LAKIP / LKjIP <span class="text-blue-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Laporan Kinerja Instansi</span></li>
+                            <li class="flex gap-2 border-b border-blue-50 pb-2"><i class="fas fa-check text-blue-400 mt-0.5"></i> <span>Profil Pimpinan & Struktur <span class="text-blue-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Profil Badan Publik</span></li>
                         </ul>
                     </div>
                     <!-- Setiap Saat -->
                     <div class="bg-emerald-50/50 p-6 rounded-[2rem] border border-emerald-100 space-y-4">
                         <p class="text-emerald-700 border-b border-emerald-200 pb-2 flex items-center gap-2 font-black"><i class="fas fa-archive"></i> INFORMASI SETIAP SAAT</p>
                         <ul class="space-y-3 list-none pl-1 text-slate-600">
-                            <li class="flex gap-2 border-b border-emerald-50 pb-2"><i class="fas fa-check text-emerald-400 mt-0.5"></i> <span>SK Pejabat & Pegawai (Jenis: Regulasi & Peraturan)</span></li>
+                            <li class="flex gap-2 border-b border-emerald-50 pb-2"><i class="fas fa-check text-emerald-400 mt-0.5"></i> <span>SK Pejabat & Pegawai <span class="text-emerald-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Regulasi & Peraturan</span></li>
                             <li class="flex gap-2 border-b border-emerald-50 pb-2">
                                 <i class="fas fa-check text-emerald-400 mt-0.5"></i> 
                                 <div class="flex flex-col gap-1">
-                                    <span>SK Tim PPID Unit Kerja (Jenis: Regulasi & Peraturan)</span>
+                                    <span>SK Tim PPID Unit Kerja <span class="text-emerald-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Regulasi & Peraturan</span>
                                     <span class="text-[8px] text-red-500 normal-case font-black bg-white px-2 py-1 rounded-lg border border-red-100 shadow-sm leading-tight">
                                         PENTING: Jika SK ini diperbaharui setiap tahun, ia tetap masuk kategori **SETIAP SAAT** karena merupakan landasan hukum operasional yang akumulatif (rekam jejak kebijakan).
                                     </span>
                                 </div>
                             </li>
-                            <li class="flex gap-2 border-b border-emerald-50 pb-2"><i class="fas fa-check text-emerald-400 mt-0.5"></i> <span>MoU / Kerjasama (Jenis: Peranjian Kerja Sama / MoU)</span></li>
-                            <li class="flex gap-2 border-b border-emerald-50 pb-2"><i class="fas fa-check text-emerald-400 mt-0.5"></i> <span>Daftar Aset & Inventaris (Jenis: Daftar Aset dan Inventaris)</span></li>
-                            <li class="flex gap-2 border-b border-emerald-50 pb-2"><i class="fas fa-check text-emerald-400 mt-0.5"></i> <span>SOP & Standar Pelayanan (Jenis: Standar Layanan & SOP PPID)</span></li>
+                            <li class="flex gap-2 border-b border-emerald-50 pb-2"><i class="fas fa-check text-emerald-400 mt-0.5"></i> <span>MoU / Kerjasama <span class="text-emerald-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Peranjian Kerja Sama / MoU</span></li>
+                            <li class="flex gap-2 border-b border-emerald-50 pb-2"><i class="fas fa-check text-emerald-400 mt-0.5"></i> <span>Daftar Aset & Inventaris <span class="text-emerald-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Daftar Aset dan Inventaris</span></li>
+                            <li class="flex gap-2 border-b border-emerald-50 pb-2"><i class="fas fa-check text-emerald-400 mt-0.5"></i> <span>SOP & Standar Pelayanan <span class="text-emerald-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Standar Layanan & SOP PPID</span></li>
                         </ul>
                     </div>
                 </div>
@@ -450,9 +450,9 @@
                     <div class="bg-indigo-50/50 p-6 rounded-[2rem] border border-indigo-100 space-y-4">
                         <p class="text-indigo-700 border-b border-indigo-200 pb-2 flex items-center gap-2 font-black"><i class="fas fa-sync-alt"></i> INFORMASI BERKALA</p>
                         <ul class="space-y-3 list-none pl-1 text-slate-600">
-                            <li class="flex gap-2 border-b border-indigo-50 pb-2"><i class="fas fa-check text-indigo-400 mt-0.5"></i> <span>PKPT / Program Audit (Jenis: Program & Kegiatan)</span></li>
-                            <li class="flex gap-2 border-b border-indigo-50 pb-2"><i class="fas fa-check text-indigo-400 mt-0.5"></i> <span>Ringkasan LHP (Jenis: Laporan Kinerja Instansi)</span></li>
-                            <li class="flex gap-2 border-b border-indigo-50 pb-2"><i class="fas fa-check text-indigo-400 mt-0.5"></i> <span>Laporan Harta Kekayaan (Jenis: Informasi Organisasi & Kepegawaian)</span></li>
+                            <li class="flex gap-2 border-b border-indigo-50 pb-2"><i class="fas fa-check text-indigo-400 mt-0.5"></i> <span>PKPT / Program Audit <span class="text-indigo-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Program & Kegiatan</span></li>
+                            <li class="flex gap-2 border-b border-indigo-50 pb-2"><i class="fas fa-check text-indigo-400 mt-0.5"></i> <span>Ringkasan LHP <span class="text-indigo-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Laporan Kinerja Instansi</span></li>
+                            <li class="flex gap-2 border-b border-indigo-50 pb-2"><i class="fas fa-check text-indigo-400 mt-0.5"></i> <span>Laporan Harta Kekayaan <span class="text-indigo-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Informasi Organisasi & Kepegawaian</span></li>
                         </ul>
                     </div>
                     <div class="bg-indigo-50/50 p-6 rounded-[2rem] border border-indigo-100 space-y-4 opacity-70">
@@ -470,17 +470,17 @@
                     <div class="bg-orange-50/50 p-6 rounded-[2rem] border border-orange-100 space-y-4">
                         <p class="text-orange-700 border-b border-orange-200 pb-2 flex items-center gap-2 font-black"><i class="fas fa-sync-alt"></i> INFORMASI BERKALA</p>
                         <ul class="space-y-3 list-none pl-1 text-slate-600">
-                            <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>APBDes / RKPDes (Jenis: Informasi Keuangan)</span></li>
-                            <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>LPPD & Monografi (Jenis: Laporan Kinerja Instansi)</span></li>
-                            <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>Laporan PATEN (Jenis: Laporan Kinerja Instansi)</span></li>
-                            <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>Profil Desa & Sejarah (Jenis: Profil Badan Publik)</span></li>
+                            <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>APBDes / RKPDes <span class="text-orange-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Informasi Keuangan</span></li>
+                            <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>LPPD & Monografi <span class="text-orange-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Laporan Kinerja Instansi</span></li>
+                            <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>Laporan PATEN <span class="text-orange-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Laporan Kinerja Instansi</span></li>
+                            <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>Profil Desa & Sejarah <span class="text-orange-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Profil Badan Publik</span></li>
                         </ul>
                     </div>
                     <div class="bg-orange-50/50 p-6 rounded-[2rem] border border-orange-100 space-y-4">
                         <p class="text-orange-700 border-b border-orange-200 pb-2 flex items-center gap-2 font-black"><i class="fas fa-archive"></i> INFORMASI SETIAP SAAT</p>
                         <ul class="space-y-3 list-none pl-1 text-slate-600">
-                            <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>Peraturan Desa / Perdes (Jenis: Regulasi & Peraturan)</span></li>
-                            <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>Daftar Penduduk & Statistik (Jenis: Pengumuman & Siaran Pers)</span></li>
+                            <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>Peraturan Desa / Perdes <span class="text-orange-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Regulasi & Peraturan</span></li>
+                            <li class="flex gap-2 border-b border-orange-50 pb-2"><i class="fas fa-check text-orange-400 mt-0.5"></i> <span>Daftar Penduduk & Statistik <span class="text-orange-400 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Pengumuman & Siaran Pers</span></li>
                         </ul>
                     </div>
                 </div>
@@ -497,12 +497,12 @@
                 <p class="text-sm font-bold leading-relaxed italic opacity-80 uppercase tracking-tighter">"Wajib Di-upload Seketika Terjadi Kejadian Darurat Tanpa Menunda!"</p>
                 <div class="grid grid-cols-1 md:grid-cols-2 gap-8 text-[11px] font-black uppercase italic">
                     <ul class="space-y-3">
-                        <li class="flex gap-3 items-center bg-white/10 p-3 rounded-xl border border-white/10"><i class="fas fa-exclamation-triangle text-yellow-400"></i> Peringatan Bencana Alam (Jenis: Informasi Serta Merta)</li>
-                        <li class="flex gap-3 items-center bg-white/10 p-3 rounded-xl border border-white/10"><i class="fas fa-exclamation-triangle text-yellow-400"></i> Informasi Wabah Penyakit (Jenis: Informasi Serta Merta)</li>
+                        <li class="flex gap-3 items-center bg-white/10 p-3 rounded-xl border border-white/10"><i class="fas fa-exclamation-triangle text-yellow-400"></i> Peringatan Bencana Alam <span class="text-white/50 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Informasi Serta Merta</li>
+                        <li class="flex gap-3 items-center bg-white/10 p-3 rounded-xl border border-white/10"><i class="fas fa-exclamation-triangle text-yellow-400"></i> Informasi Wabah Penyakit <span class="text-white/50 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Informasi Serta Merta</li>
                     </ul>
                     <ul class="space-y-3">
-                        <li class="flex gap-3 items-center bg-white/10 p-3 rounded-xl border border-white/10"><i class="fas fa-exclamation-triangle text-yellow-400"></i> Gangguan Layanan Vital (Jenis: Informasi Serta Merta)</li>
-                        <li class="flex gap-3 items-center bg-white/10 p-3 rounded-xl border border-white/10"><i class="fas fa-exclamation-triangle text-yellow-400"></i> Jalur Evakuasi Darurat (Jenis: Informasi Serta Merta)</li>
+                        <li class="flex gap-3 items-center bg-white/10 p-3 rounded-xl border border-white/10"><i class="fas fa-exclamation-triangle text-yellow-400"></i> Gangguan Layanan Vital <span class="text-white/50 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Informasi Serta Merta</li>
+                        <li class="flex gap-3 items-center bg-white/10 p-3 rounded-xl border border-white/10"><i class="fas fa-exclamation-triangle text-yellow-400"></i> Jalur Evakuasi Darurat <span class="text-white/50 mx-1">→</span> <span class="text-[8px] opacity-70 italic">Jenis Dokumen:</span> Informasi Serta Merta</li>
                     </ul>
                 </div>
             </div>
