@@ -138,37 +138,77 @@
                     <h4 class="text-2xl font-bold">Logika Klasifikasi & Panduan Operasional Informasi</h4>
                 </div>
 
-                <!-- BAGIAN: PENJELASAN UMUM (PARAGRAF & STUDI KASUS) -->
+                <!-- BAGIAN: PENJELASAN UMUM (LOGIKA KLASIFIKASI) -->
                 <div class="space-y-8">
                     <h5 class="text-xl font-black text-slate-800 flex items-center gap-3 border-b-2 pb-2">
-                        <i class="fas fa-info-circle text-blue-600"></i> Kapan Sebuah Dokumen Diklasifikasikan?
+                        <i class="fas fa-info-circle text-blue-600"></i> Logika Dasar Klasifikasi Informasi
                     </h5>
                     
-                    <div class="space-y-6 text-sm text-slate-700 leading-relaxed">
+                    <div class="space-y-8 text-sm text-slate-700 leading-relaxed">
+                        <!-- BERKALA -->
                         <div class="bg-blue-50 p-8 rounded-[2.5rem] border border-blue-200 relative overflow-hidden shadow-sm">
                             <div class="absolute top-0 right-0 p-8 opacity-5"><i class="fas fa-sync-alt text-9xl text-blue-900"></i></div>
-                            <p class="mb-4 font-medium"><strong>1. Informasi Berkala:</strong> Kategori ini digunakan untuk dokumen strategis yang diterbitkan secara rutin (setiap tahun, semester, atau kuartal) sesuai siklus anggaran dan kinerja. Dokumen ini wajib diumumkan tanpa perlu diminta. Sifat operasionalnya adalah <strong>"Update Terkini"</strong>, yang berarti data terbaru akan menggantikan data lama agar publik tidak bingung melihat riwayat yang tidak relevan.</p>
-                            <p class="bg-white/60 p-4 rounded-2xl border border-blue-100 text-xs italic font-bold">
-                                <i class="fas fa-lightbulb text-blue-600"></i> Studi Kasus (DPA/LRA): Saat Bapak mengupload <strong>DPA Tahun 2024</strong>, sistem akan meminta Bapak menggunakan fitur <strong>"Check Informasi"</strong> untuk mencari DPA Tahun 2023. Dokumen lama tersebut harus diubah statusnya menjadi <strong>ARSIP</strong>, sementara DPA 2024 menjadi data utama yang tampil.
-                            </p>
+                            <h6 class="font-black text-blue-900 mb-4 uppercase tracking-widest flex items-center gap-2 text-base">
+                                <i class="fas fa-calendar-check"></i> 1. Mengapa "Informasi Berkala"?
+                            </h6>
+                            <p class="mb-4">Sebuah dokumen diklasifikasikan sebagai <strong>Informasi Berkala</strong> karena dokumen tersebut merupakan <strong>Kewajiban Rutin</strong> yang wajib diterbitkan secara terjadwal (tahunan/semesteran) tanpa harus ada yang memohon. Dokumen ini adalah "Wajah Anggaran & Kinerja" unit kerja Bapak.</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-white/60 p-4 rounded-2xl border border-blue-100 text-xs">
+                                    <p class="font-black text-blue-700 mb-1 italic">Studi Kasus DIP:</p>
+                                    <p class="text-slate-600"><strong>Daftar Informasi Publik (DIP)</strong> wajib diperbarui setiap tahun. Karena ini adalah daftar menu informasi utama, maka diklasifikasikan sebagai <strong>BERKALA</strong>.</p>
+                                </div>
+                                <div class="bg-white/60 p-4 rounded-2xl border border-blue-100 text-xs">
+                                    <p class="font-black text-blue-700 mb-1 italic">Studi Kasus Keuangan:</p>
+                                    <p class="text-slate-600"><strong>LRA, Neraca, dan DPA</strong> adalah laporan rutin keuangan tahunan. Maka secara hukum wajib masuk kategori <strong>BERKALA</strong>.</p>
+                                </div>
+                            </div>
                         </div>
 
+                        <!-- SETIAP SAAT -->
                         <div class="bg-emerald-50 p-8 rounded-[2.5rem] border border-emerald-200 relative overflow-hidden shadow-sm">
                             <div class="absolute top-0 right-0 p-8 opacity-5"><i class="fas fa-layer-group text-9xl text-emerald-900"></i></div>
-                            <p class="mb-4 font-medium"><strong>2. Informasi Setiap Saat:</strong> Kategori ini diperuntukkan bagi dokumen operasional, kebijakan, dan historis yang harus selalu tersedia jika diminta oleh pemohon informasi. Berbeda dengan berkala, dokumen ini bersifat <strong>"Akumulatif (Database Katalog)"</strong>. Dokumen lama tidak perlu diarsipkan meskipun ada dokumen baru yang serupa, karena fungsinya adalah membangun riwayat sejarah instansi yang lengkap.</p>
-                            <p class="bg-white/60 p-4 rounded-2xl border border-emerald-100 text-xs italic font-bold">
-                                <i class="fas fa-lightbulb text-emerald-600"></i> Studi Kasus (SK/MoU): Bapak mengunggah <strong>SK Pembentukan Tim Tahun 2023</strong> dan kemudian ada <strong>SK Baru Tahun 2024</strong>. Keduanya harus tetap berstatus <strong>BERLAKU</strong> di website agar masyarakat dapat menelusuri riwayat kebijakan unit kerja Bapak secara berkelanjutan.
-                            </p>
+                            <h6 class="font-black text-emerald-900 mb-4 uppercase tracking-widest flex items-center gap-2 text-base">
+                                <i class="fas fa-archive"></i> 2. Mengapa "Informasi Setiap Saat"?
+                            </h6>
+                            <p class="mb-4">Dokumen masuk kategori <strong>Informasi Setiap Saat</strong> karena sifatnya adalah <strong>Catatan Operasional & Bukti Kebijakan</strong>. Dokumen ini mungkin tidak rutin diterbitkan, tetapi harus siap sedia kapanpun masyarakat datang meminta. Ini adalah database sejarah aktivitas instansi Bapak.</p>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                                <div class="bg-white/60 p-4 rounded-2xl border border-emerald-100 text-xs">
+                                    <p class="font-black text-emerald-700 mb-1 italic">Studi Kasus SK:</p>
+                                    <p class="text-slate-600"><strong>SK Bupati/Kadis</strong> bukan dokumen berkala tahunan yang punya jadwal fixed, melainkan ketetapan hukum yang berlaku selama tidak dicabut. Maka diklasifikasikan sebagai <strong>SETIAP SAAT</strong>.</p>
+                                </div>
+                                <div class="bg-white/60 p-4 rounded-2xl border border-emerald-100 text-xs">
+                                    <p class="font-black text-emerald-700 mb-1 italic">Studi Kasus Perjanjian:</p>
+                                    <p class="text-slate-600"><strong>MoU / Perjanjian Kerjasama</strong> dengan pihak ketiga merupakan catatan operasional yang menjadi hak publik untuk tahu isinya kapanpun diminta. Maka masuk <strong>SETIAP SAAT</strong>.</p>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- CATATAN MANAJEMEN STATUS -->
+                        <div class="bg-amber-900 text-white p-8 rounded-[2.5rem] shadow-xl relative overflow-hidden">
+                            <div class="absolute -right-4 -bottom-4 opacity-10 rotate-12"><i class="fas fa-exclamation-triangle text-9xl"></i></div>
+                            <h6 class="text-lg font-black mb-4 uppercase tracking-tighter flex items-center gap-3">
+                                <i class="fas fa-tools text-amber-400"></i> Penting: Manajemen Siklus Hidup Dokumen (Ganti/Arsip)
+                            </h6>
+                            <p class="text-sm text-amber-100 leading-relaxed mb-6">Setelah Bapak berhasil menentukan klasifikasinya, langkah terakhir yang sangat krusial adalah **Menjaga Keakuratan Data Publik** melalui pengaturan status:</p>
+                            <div class="space-y-4">
+                                <div class="flex gap-4 items-start bg-white/10 p-4 rounded-2xl border border-white/10">
+                                    <div class="bg-amber-500 text-white w-8 h-8 rounded-full flex-shrink-0 flex items-center justify-center font-black">!</div>
+                                    <div>
+                                        <p class="text-xs font-bold text-amber-300 uppercase mb-1">Kapan Dokumen Menjadi ARSIP?</p>
+                                        <p class="text-[11px] leading-relaxed italic text-slate-200">"Setiap kali ada dokumen terbaru yang diterbitkan (Update), maka dokumen versi lama yang serupa <strong>WAJIB diubah statusnya menjadi ARSIP</strong>. Hal ini untuk memastikan warga tidak salah mengambil data tahun lama sebagai referensi terkini."</p>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
 
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
                             <div class="bg-red-50 p-6 rounded-[2.5rem] border border-red-200 shadow-sm">
-                                <p class="mb-3 font-medium text-red-900"><strong>3. Informasi Serta Merta:</strong> Klasifikasi ini digunakan secara khusus untuk informasi yang bersifat <strong>Darurat dan Mendesak</strong> yang dapat mengancam hajat hidup orang banyak jika tidak segera diumumkan.</p>
-                                <p class="text-xs text-red-800 italic border-t border-red-100 pt-2 font-bold">Studi Kasus: Peringatan dini banjir bandang, pengumuman wabah penyakit, atau gangguan layanan publik massal. Dokumen wajib terbit menit itu juga!</p>
+                                <p class="mb-3 font-black text-red-900 uppercase text-xs tracking-widest"><i class="fas fa-bolt"></i> 3. Serta Merta (Emergency)</p>
+                                <p class="text-xs text-slate-700 leading-relaxed font-medium">Diklasifikasikan ke sini karena dokumen bersifat <strong>Mendesak & Mengancam Keselamatan</strong>. <br><span class="italic font-bold text-red-700">Contoh: Info Banjir, Wabah, Gangguan Layanan Vital.</span></p>
                             </div>
                             <div class="bg-slate-900 p-6 rounded-[2.5rem] border border-slate-700 shadow-sm text-white">
-                                <p class="mb-3 font-medium text-slate-300"><strong>4. Informasi Dikecualikan:</strong> Dokumen yang bersifat <strong>Rahasia Internal</strong> sesuai Pasal 17 UU KIP. Dokumen ini tidak akan ditampilkan di halaman depan publik sama sekali.</p>
-                                <p class="text-xs text-slate-400 italic border-t border-white/10 pt-2 font-bold">Studi Kasus: Rekam medis pegawai, data pribadi warga, atau dokumen proses penegakan hukum yang belum selesai (Penyidikan).</p>
+                                <p class="mb-3 font-black text-slate-300 uppercase text-xs tracking-widest"><i class="fas fa-lock"></i> 4. Dikecualikan (Confidential)</p>
+                                <p class="text-xs text-slate-400 leading-relaxed font-medium">Diklasifikasikan ke sini karena dokumen berisi <strong>Data Rahasia/Pribadi</strong> yang dilindungi UU KIP Pasal 17. <br><span class="italic font-bold text-indigo-400">Contoh: Rekam Medis, Rahasia Bisnis, Penyelidikan Polisi.</span></p>
                             </div>
                         </div>
                     </div>
