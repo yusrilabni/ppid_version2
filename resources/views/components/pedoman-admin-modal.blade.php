@@ -289,6 +289,18 @@
     </div>
 </div>
 
+@if(auth()->check() && (auth()->user()->role === 'admin' || auth()->user()->role === 'superadmin'))
+    <div class="fixed z-[105] bottom-6 right-6" x-data x-cloak>
+        <button @click="$store.pedomanAdminModal.show()" 
+                class="w-16 h-16 bg-indigo-700 hover:bg-indigo-800 text-white rounded-full shadow-2xl flex items-center justify-center transition-all duration-300 hover:scale-110 active:scale-95 group relative border-4 border-white">
+            <i class="fas fa-book-reader text-2xl"></i>
+            <div class="absolute bottom-full right-0 mb-4 px-4 py-2 bg-indigo-900 text-white text-[10px] font-bold rounded-xl opacity-0 group-hover:opacity-100 transition-all transform translate-y-2 group-hover:translate-y-0 whitespace-nowrap pointer-events-none shadow-xl border border-indigo-800 uppercase tracking-widest">
+                <i class="fas fa-chalkboard-teacher mr-2"></i> Panduan Operasional Admin
+            </div>
+        </button>
+    </div>
+@endif
+
 <script>
     document.addEventListener('alpine:init', () => {
         const store = Alpine.store('pedomanAdminModal');
