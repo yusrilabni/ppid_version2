@@ -40,7 +40,7 @@
         </div>
 
         <!-- Content Area: Modular Includes -->
-        <div class="flex-1 overflow-y-auto p-5 md:p-10 bg-white bg-[radial-gradient(#e5e7eb_1px,transparent_1px)] [background-size:24px_24px] relative z-10">
+        <div class="flex-1 overflow-y-auto p-5 md:p-10 bg-slate-50 relative z-10 scroll-smooth">
             <div class="max-w-5xl mx-auto space-y-12 pb-10">
                 @include('admin.pedoman.tab-profil')
                 @include('admin.pedoman.tab-informasi')
