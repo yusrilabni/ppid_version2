@@ -112,7 +112,7 @@
                                         <i class="fas fa-building text-[10px] text-gray-400 transition-all duration-300"></i>
                                     </div>
                                     <span class="text-[10px] font-black uppercase tracking-[0.15em]">
-                                        {{ request('filter_unit', '1') == '1' ? 'Hanya Unit Saya' : 'Semua Unit Kerja' }}
+                                        {{ request('filter_unit', '1') == '1' ? 'Tampilkan Semua Unit' : 'Hanya Unit Saya' }}
                                     </span>
                                 </div>
                             </label>
@@ -132,7 +132,7 @@
                                     <i class="fas fa-bolt text-[10px] text-gray-400 transition-all duration-300"></i>
                                 </div>
                                 <span class="text-[10px] font-black uppercase tracking-[0.15em]">
-                                    {{ request('sort_created', '1') == '1' ? 'Waktu Sistem Terbaru' : 'Gunakan Urutan Input' }}
+                                    {{ request('sort_created', '1') == '1' ? 'Gunakan Urutan Input' : 'Waktu Sistem Terbaru' }}
                                 </span>
                             </div>
                         </label>
