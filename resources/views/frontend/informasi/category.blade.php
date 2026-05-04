@@ -55,6 +55,19 @@
                         </div>
 
                         <!-- Grid Controls -->
+                        @php
+                            $sortOptions = [
+                                ['value' => 'tanggal_upload_desc', 'label' => 'Terbaru'],
+                                ['value' => 'tanggal_upload_asc', 'label' => 'Terlama'],
+                                ['value' => 'title_asc', 'label' => 'Judul (A-Z)'],
+                                ['value' => 'title_desc', 'label' => 'Judul (Z-A)'],
+                            ];
+                            $perPageOptions = [
+                                ['value' => '10', 'label' => '10 Baris'],
+                                ['value' => '20', 'label' => '20 Baris'],
+                                ['value' => '50', 'label' => '50 Baris'],
+                            ];
+                        @endphp
                         <div class="grid grid-cols-2 md:grid-cols-4 gap-3 lg:w-auto">
                             <div class="min-w-[140px]">
                                 <label class="block text-[10px] font-black text-blue-900/40 mb-2 uppercase tracking-[0.2em] ml-2">Mulai</label>
