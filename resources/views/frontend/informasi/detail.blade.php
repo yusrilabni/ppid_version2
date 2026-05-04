@@ -3,10 +3,21 @@
 @section('title', $informasi->title)
 
 @section('meta')
+    @php
+        $shareImage = asset('storage/logo/ppid.webp');
+        if ($informasi->file) {
+            $ext = strtolower(pathinfo($informasi->file, PATHINFO_EXTENSION));
+            if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'])) {
+                $shareImage = asset('storage/' . $informasi->file);
+            }
+        }
+    @endphp
     <meta property="og:title" content="{{ $informasi->title }} - PPID Kabupaten Sinjai">
     <meta property="og:description" content="{{ Str::limit(strip_tags($informasi->deskripsi), 160) }}">
+    <meta property="og:image" content="{{ $shareImage }}">
     <meta property="twitter:title" content="{{ $informasi->title }} - PPID Kabupaten Sinjai">
     <meta property="twitter:description" content="{{ Str::limit(strip_tags($informasi->deskripsi), 160) }}">
+    <meta property="twitter:image" content="{{ $shareImage }}">
 @endsection
 
 @section('content')

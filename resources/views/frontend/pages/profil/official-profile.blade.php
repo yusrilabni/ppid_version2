@@ -35,6 +35,15 @@
 
 @section('title', 'Profil ' . $jabatan . ' - ' . $official->full_name)
 
+@section('meta')
+    <meta property="og:title" content="Profil {{ $jabatan }} - {{ $official->full_name }}">
+    <meta property="og:description" content="Profil resmi {{ $official->full_name }} sebagai {{ $jabatan }} Kabupaten Sinjai.">
+    <meta property="og:image" content="{{ $official->photo ? asset('storage/' . $official->photo) : asset('storage/logo/ppid.webp') }}">
+    <meta property="twitter:title" content="Profil {{ $jabatan }} - {{ $official->full_name }}">
+    <meta property="twitter:description" content="Profil resmi {{ $official->full_name }} sebagai {{ $jabatan }} Kabupaten Sinjai.">
+    <meta property="twitter:image" content="{{ $official->photo ? asset('storage/' . $official->photo) : asset('storage/logo/ppid.webp') }}">
+@endsection
+
 @section('content')
     <div class="py-8 bg-gradient-to-b from-gray-50 to-gray-100">
         <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

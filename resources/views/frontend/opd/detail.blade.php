@@ -2,6 +2,15 @@
 
 @section('title', 'Tentang OPD ' . $organization->name)
 
+@section('meta')
+    <meta property="og:title" content="Profil {{ $organization->name }} - Kabupaten Sinjai">
+    <meta property="og:description" content="Profil resmi dan struktur organisasi {{ $organization->name }} Kabupaten Sinjai.">
+    <meta property="og:image" content="{{ ($informasi && $informasi->file) ? asset('storage/' . $informasi->file) : asset('storage/logo/ppid.webp') }}">
+    <meta property="twitter:title" content="Profil {{ $organization->name }} - Kabupaten Sinjai">
+    <meta property="twitter:description" content="Profil resmi dan struktur organisasi {{ $organization->name }} Kabupaten Sinjai.">
+    <meta property="twitter:image" content="{{ ($informasi && $informasi->file) ? asset('storage/' . $informasi->file) : asset('storage/logo/ppid.webp') }}">
+@endsection
+
 @section('content')
 <div class="py-8 md:py-12 bg-gray-50 min-h-screen">
     <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
