@@ -96,27 +96,23 @@
                     </div>
 
                     <!-- 2. Minimalist Toggles (PRECISE OVER TABLE) -->
-                    <div class="flex flex-wrap items-center gap-3 px-2">
+                    <div class="flex flex-wrap items-center gap-4 px-2">
                         @auth
                             @if(!auth()->user()->isSuperAdmin())
-                            <label class="relative flex items-center cursor-pointer group">
+                            <label class="relative flex items-center cursor-pointer group bg-white px-4 py-2 rounded-full border border-gray-100 shadow-sm hover:border-blue-300 transition-all">
                                 <input type="hidden" name="filter_unit" value="0">
-                                <input type="checkbox" name="filter_unit" value="1" {{ request('filter_unit', '1') == '1' ? 'checked' : '' }} onchange="this.form.submit()" class="sr-only peer">
-                                <div class="px-5 py-2.5 rounded-full bg-white border border-gray-100 shadow-sm flex items-center gap-2 peer-checked:bg-blue-600 peer-checked:text-white transition-all hover:border-blue-200">
-                                    <div class="w-2 h-2 rounded-full bg-gray-300 peer-checked:bg-white animate-pulse"></div>
-                                    <span class="text-[10px] font-black uppercase tracking-widest">Unit Saya</span>
-                                </div>
+                                <input type="checkbox" name="filter_unit" value="1" {{ request('filter_unit', '1') == '1' ? 'checked' : '' }} onchange="this.form.submit()" 
+                                    class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 transition-all cursor-pointer">
+                                <span class="ml-3 text-[10px] font-black uppercase tracking-widest text-gray-700">Hanya Unit Saya</span>
                             </label>
                             @endif
                         @endauth
 
-                        <label class="relative flex items-center cursor-pointer group">
+                        <label class="relative flex items-center cursor-pointer group bg-white px-4 py-2 rounded-full border border-gray-100 shadow-sm hover:border-indigo-300 transition-all">
                             <input type="hidden" name="sort_created" value="0">
-                            <input type="checkbox" name="sort_created" value="1" {{ request('sort_created', '1') == '1' ? 'checked' : '' }} onchange="this.form.submit()" class="sr-only peer">
-                            <div class="px-5 py-2.5 rounded-full bg-white border border-gray-100 shadow-sm flex items-center gap-2 peer-checked:bg-indigo-600 peer-checked:text-white transition-all hover:border-indigo-200">
-                                <i class="fas fa-bolt text-[10px] text-gray-300 peer-checked:text-white"></i>
-                                <span class="text-[10px] font-black uppercase tracking-widest">Terbaru Upload</span>
-                            </div>
+                            <input type="checkbox" name="sort_created" value="1" {{ request('sort_created', '1') == '1' ? 'checked' : '' }} onchange="this.form.submit()" 
+                                class="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 transition-all cursor-pointer">
+                            <span class="ml-3 text-[10px] font-black uppercase tracking-widest text-gray-700">Upload/Edit Terbaru</span>
                         </label>
 
                         <button type="button" onclick="clearFilters()" class="px-5 py-2.5 rounded-full bg-gray-100 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-all flex items-center gap-2 ml-auto group">
@@ -134,7 +130,7 @@
             <div class="hidden md:block overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-100">
                     <thead>
-                        <tr class="bg-gradient-to-r from-slate-800 to-slate-900 text-white">
+                        <tr class="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
                             <th class="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em]">No.</th>
                             <th class="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em]">Dokumen / Judul</th>
                             <th class="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em]">Deskripsi Ringkas</th>
