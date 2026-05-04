@@ -40,283 +40,197 @@
             <!-- Search and Filter Controls -->
             <div class="mt-6 mb-8">
                 <form id="searchForm" method="GET" action="">
-                    <!-- Real-time Quick Filters (Separate Cards) -->
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
-                        @auth
-                            @if(!auth()->user()->isSuperAdmin())
-                            <div class="flex items-center p-4 bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-blue-200 transition-all group">
-                                <label class="flex items-center cursor-pointer w-full">
-                                    <div class="relative flex items-center">
-                                        <input type="hidden" name="filter_unit" value="0">
-                                        <input type="checkbox" name="filter_unit" value="1" 
-                                            {{ request('filter_unit', '1') == '1' ? 'checked' : '' }}
-                                            onchange="this.form.submit()"
-                                            class="w-6 h-6 rounded-lg border-gray-300 text-blue-600 focus:ring-blue-500/20 transition-all cursor-pointer">
-                                    </div>
-                                    <div class="ml-4">
-                                        <span class="block text-sm font-black text-gray-800 group-hover:text-blue-600 transition-colors uppercase tracking-tight">Hanya Unit Saya</span>
-                                        <span class="block text-[10px] text-gray-400 font-medium uppercase tracking-wider">Tampilkan dokumen dari unit kerja Anda saja</span>
+                    <!-- 1. Main Search Row -->
+                    <div class="p-6 bg-white rounded-t-3xl border-x border-t border-gray-100 shadow-sm">
+                        <div class="flex flex-col lg:flex-row gap-4 lg:items-end">
+                            <!-- Search Input -->
+                            <div class="w-full lg:flex-1">
+                                <label for="search" class="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Pencarian Kata Kunci</label>
+                                <div class="relative group">
+                                    <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400 group-focus-within:text-blue-600 transition-colors">
+                                        <i class="fas fa-search text-sm"></i>
+                                    </span>
+                                    <input type="text" id="search" name="search" value="{{ request('search') ?? '' }}" placeholder="Cari judul atau unit kerja..."
+                                        class="w-full pl-12 pr-4 py-3.5 text-sm border-2 border-gray-50 rounded-2xl bg-gray-50/30 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder:text-gray-400 font-medium">
+                                </div>
+                            </div>
+
+                            <!-- Controls Grid -->
+                            <div class="grid grid-cols-2 md:grid-cols-4 lg:contents gap-3">
+                                <div class="w-full">
+                                    <label for="date_from" class="block text-[10px] font-black text-gray-400 mb-2 uppercase tracking-widest">Tgl Awal</label>
+                                    <input type="date" id="date_from" name="date_from" value="{{ request('date_from') ?? '' }}"
+                                        class="w-full px-4 py-3.5 text-xs border-2 border-gray-50 rounded-2xl bg-gray-50/30 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold text-gray-700">
+                                </div>
+                                <div class="w-full">
+                                    <label for="date_to" class="block text-[10px] font-black text-gray-400 mb-2 uppercase tracking-widest">Tgl Akhir</label>
+                                    <input type="date" id="date_to" name="date_to" value="{{ request('date_to') ?? '' }}"
+                                        class="w-full px-4 py-3.5 text-xs border-2 border-gray-50 rounded-2xl bg-gray-50/30 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold text-gray-700">
+                                </div>
+                                <div class="w-full">
+                                    <label class="block text-[10px] font-black text-gray-400 mb-2 uppercase tracking-widest">Urutkan</label>
+                                    @php
+                                        $sortOptions = [['value' => 'tanggal_upload_desc', 'label' => 'Terbaru'], ['value' => 'tanggal_upload_asc', 'label' => 'Terlama'], ['value' => 'title_asc', 'label' => 'Judul (A-Z)'], ['value' => 'title_desc', 'label' => 'Judul (Z-A)']];
+                                    @endphp
+                                    <x-custom-select name="sort" :options="$sortOptions" :value="request('sort', 'tanggal_upload_desc')" :searchable="false" />
+                                </div>
+                                <div class="w-full">
+                                    <label class="block text-[10px] font-black text-gray-400 mb-2 uppercase tracking-widest">Tampilan</label>
+                                    @php
+                                        $perPageOptions = [['value' => '10', 'label' => '10 Baris'], ['value' => '20', 'label' => '20 Baris'], ['value' => '50', 'label' => '50 Baris']];
+                                    @endphp
+                                    <x-custom-select name="per_page" :options="$perPageOptions" :value="request('per_page', '10')" :searchable="false" />
+                                </div>
+                            </div>
+
+                            <!-- Buttons -->
+                            <div class="flex flex-row gap-2 lg:flex-shrink-0">
+                                <button type="submit" class="flex-1 lg:flex-none bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-black py-4 px-8 rounded-2xl transition-all shadow-xl shadow-blue-100 uppercase tracking-widest flex items-center justify-center min-w-[120px]">
+                                    <i class="fas fa-search mr-2"></i> Cari
+                                </button>
+                                <button type="button" onclick="clearFilters()" class="flex-1 lg:flex-none bg-gray-100 hover:bg-gray-200 text-gray-600 text-[11px] font-black py-4 px-8 rounded-2xl transition-all uppercase tracking-widest flex items-center justify-center min-w-[120px]">
+                                    <i class="fas fa-eraser mr-2"></i> Reset
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- 2. Real-time Quick Checkboxes Row (PRECISE POSITION) -->
+                    <div class="flex flex-col md:flex-row items-center justify-between gap-4 p-4 bg-gray-50 rounded-b-3xl border-x border-b border-gray-100">
+                        <div class="flex flex-wrap items-center gap-4">
+                            @auth
+                                @if(!auth()->user()->isSuperAdmin())
+                                <label class="relative flex items-center cursor-pointer group bg-white px-5 py-2.5 rounded-xl border border-gray-200 shadow-sm hover:border-blue-400 transition-all">
+                                    <input type="hidden" name="filter_unit" value="0">
+                                    <input type="checkbox" name="filter_unit" value="1" {{ request('filter_unit', '1') == '1' ? 'checked' : '' }} onchange="this.form.submit()"
+                                        class="w-5 h-5 rounded-md border-gray-300 text-blue-600 focus:ring-blue-500/20 transition-all cursor-pointer">
+                                    <div class="ml-3">
+                                        <span class="block text-xs font-black text-gray-700 group-hover:text-blue-600 transition-colors uppercase tracking-widest">Hanya Unit Saya</span>
                                     </div>
                                 </label>
-                            </div>
-                            @endif
-                        @endauth
+                                @endif
+                            @endauth
 
-                        <div class="flex items-center p-4 bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-blue-200 transition-all group {{ (Auth::check() && !Auth::user()->isSuperAdmin()) ? '' : 'sm:col-span-2' }}">
-                            <label class="flex items-center cursor-pointer w-full">
-                                <div class="relative flex items-center">
-                                    <input type="hidden" name="sort_created" value="0">
-                                    <input type="checkbox" name="sort_created" value="1" 
-                                        {{ request('sort_created', '1') == '1' ? 'checked' : '' }}
-                                        onchange="this.form.submit()"
-                                        class="w-6 h-6 rounded-lg border-gray-300 text-blue-600 focus:ring-blue-500/20 transition-all cursor-pointer">
-                                </div>
-                                <div class="ml-4">
-                                    <span class="block text-sm font-black text-gray-800 group-hover:text-blue-600 transition-colors uppercase tracking-tight">Upload/Edit Terbaru</span>
-                                    <span class="block text-[10px] text-gray-400 font-medium uppercase tracking-wider">Urutkan berdasarkan waktu upload sistem (Real-time)</span>
+                            <label class="relative flex items-center cursor-pointer group bg-white px-5 py-2.5 rounded-xl border border-gray-200 shadow-sm hover:border-blue-400 transition-all">
+                                <input type="hidden" name="sort_created" value="0">
+                                <input type="checkbox" name="sort_created" value="1" {{ request('sort_created', '1') == '1' ? 'checked' : '' }} onchange="this.form.submit()"
+                                    class="w-5 h-5 rounded-md border-gray-300 text-blue-600 focus:ring-blue-500/20 transition-all cursor-pointer">
+                                <div class="ml-3">
+                                    <span class="block text-xs font-black text-gray-700 group-hover:text-blue-600 transition-colors uppercase tracking-widest">Upload/Edit Terbaru</span>
                                 </div>
                             </label>
                         </div>
-                    </div>
-
-                    <div class="p-6 bg-gray-50/50 rounded-[2rem] border border-gray-100 shadow-inner">
-                        <div class="flex flex-col lg:flex-row gap-4 lg:items-end">
-                        <!-- Combined Search Input (Title/Description/Unit) -->
-                        <div class="w-full lg:flex-1 lg:min-w-[200px]">
-                            <label for="search" class="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wider">Pencarian</label>
-                            <div class="relative group">
-                                <span class="absolute inset-y-0 left-0 pl-3.5 flex items-center text-gray-400 group-focus-within:text-blue-500 transition-colors">
-                                    <i class="fas fa-search text-xs"></i>
-                                </span>
-                                <input
-                                    type="text"
-                                    id="search"
-                                    name="search"
-                                    value="{{ request('search') ?? '' }}"
-                                    placeholder="Cari judul, unit..."
-                                    class="w-full pl-10 pr-4 py-3 text-sm border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all"
-                                >
-                            </div>
+                        
+                        <div class="text-[10px] font-bold text-blue-400 uppercase tracking-[0.2em] bg-blue-50 px-4 py-2 rounded-lg border border-blue-100/50">
+                            <i class="fas fa-bolt mr-1"></i> Update Real-time
                         </div>
-
-                        <div class="grid grid-cols-2 md:grid-cols-4 lg:contents gap-2">
-                            <!-- Date From Filter -->
-                            <div class="w-full">
-                                <label for="date_from" class="block text-[10px] font-medium text-gray-600 mb-1 uppercase tracking-wider">Tgl Awal</label>
-                                <div class="relative">
-                                    <input
-                                        type="date"
-                                        id="date_from"
-                                        name="date_from"
-                                        value="{{ request('date_from') ?? '' }}"
-                                        class="w-full pl-3 pr-3 py-3 text-xs border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all uppercase"
-                                    >
-                                </div>
-                            </div>
-
-                            <!-- Date To Filter -->
-                            <div class="w-full">
-                                <label for="date_to" class="block text-[10px] font-medium text-gray-600 mb-1 uppercase tracking-wider">Tgl Akhir</label>
-                                <div class="relative">
-                                    <input
-                                        type="date"
-                                        id="date_to"
-                                        name="date_to"
-                                        value="{{ request('date_to') ?? '' }}"
-                                        class="w-full pl-3 pr-3 py-3 text-xs border border-gray-300 rounded-xl shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all uppercase"
-                                    >
-                                </div>
-                            </div>
-
-                            <!-- Sort Control -->
-                            <div class="w-full">
-                                <label for="sort" class="block text-[10px] font-medium text-gray-600 mb-1 uppercase">Urutkan</label>
-                                @php
-                                    $sortOptions = [
-                                        ['value' => 'tanggal_upload_desc', 'label' => 'Terbaru'],
-                                        ['value' => 'tanggal_upload_asc', 'label' => 'Terlama'],
-                                        ['value' => 'title_asc', 'label' => 'Judul (A-Z)'],
-                                        ['value' => 'title_desc', 'label' => 'Judul (Z-A)'],
-                                    ];
-                                @endphp
-                                <x-custom-select 
-                                    name="sort" 
-                                    :options="$sortOptions" 
-                                    :value="request('sort', 'tanggal_upload_desc')"
-                                    placeholder="Urutkan"
-                                    :searchable="false"
-                                />
-                            </div>
-
-                            <!-- Items Per Page Control -->
-                            <div class="w-full">
-                                <label for="per_page" class="block text-[10px] font-medium text-gray-600 mb-1 uppercase">Tampilan</label>
-                                @php
-                                    $perPageOptions = [
-                                        ['value' => '10', 'label' => '10/hal'],
-                                        ['value' => '20', 'label' => '20/hal'],
-                                        ['value' => '50', 'label' => '50/hal'],
-                                    ];
-                                @endphp
-                                <x-custom-select 
-                                    name="per_page" 
-                                    :options="$perPageOptions" 
-                                    :value="request('per_page', '10')"
-                                    placeholder="Tampilan"
-                                    :searchable="false"
-                                />
-                            </div>
-                        </div>
-
-                        <!-- Action Buttons -->
-                        <div class="flex flex-row gap-2 mt-4 lg:mt-0 lg:flex-shrink-0">
-                            <button type="submit" class="flex-1 lg:flex-none bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-bold py-2.5 px-5 rounded-lg transition-all shadow-md flex items-center justify-center min-w-[100px]">
-                                <i class="fas fa-search mr-2 text-[10px]"></i> CARI
-                            </button>
-                            <button type="button" onclick="clearFilters()" class="flex-1 lg:flex-none bg-gray-600 hover:bg-gray-700 text-white text-[11px] font-bold py-2.5 px-5 rounded-lg transition-all shadow-md flex items-center justify-center min-w-[100px]">
-                                <i class="fas fa-eraser mr-2 text-[10px]"></i> RESET
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Results Info -->
-                    <div class="mt-2 text-xs text-gray-600">
-                        Menampilkan {{ $informasis->firstItem() ?? 0 }} - {{ $informasis->lastItem() ?? 0 }} dari {{ $informasis->total() }} data
-                        @if(request('search') || request('date_from') || request('date_to'))
-                            <span class="ml-2 text-blue-600">
-                                Filter aktif:
-                                @if(request('search')) "{{ request('search') }}" @endif
-                                @if(request('date_from') || request('date_to'))
-                                    Tgl:
-                                    @if(request('date_from')) {{ request('date_from') }} @endif
-                                    @if(request('date_from') && request('date_to'))-@endif
-                                    @if(request('date_to')) {{ request('date_to') }} @endif
-                                @endif
-                            </span>
-                        @endif
                     </div>
                 </form>
             </div>
         </div>
 
         <!-- Tabel/Mobile Cards -->
-        <div class="bg-white rounded-xl shadow-lg overflow-hidden border border-gray-200">
+        <div class="bg-white rounded-[2.5rem] shadow-xl overflow-hidden border border-gray-100">
             <!-- Desktop Table View -->
             <div class="hidden md:block overflow-x-auto">
-                <table class="min-w-full divide-y divide-gray-200">
-                    <thead class="bg-gradient-to-r from-blue-600 to-blue-800 text-white">
-                        <tr>
-                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">No.</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Judul</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Deskripsi</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Unit Kerja / OPD</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Tgl. Upload</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Aktivitas</th>
-                            <th class="px-6 py-4 text-left text-sm font-semibold uppercase tracking-wider">Aksi</th>
+                <table class="min-w-full divide-y divide-gray-100">
+                    <thead>
+                        <tr class="bg-gradient-to-r from-slate-800 to-slate-900 text-white">
+                            <th class="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em]">No.</th>
+                            <th class="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em]">Dokumen / Judul</th>
+                            <th class="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em]">Deskripsi Ringkas</th>
+                            <th class="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em]">Unit Kerja</th>
+                            <th class="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em]">Tgl Upload</th>
+                            <th class="px-6 py-5 text-left text-[10px] font-black uppercase tracking-[0.2em]">Aktivitas</th>
+                            <th class="px-6 py-5 text-center text-[10px] font-black uppercase tracking-[0.2em]">Opsi</th>
                         </tr>
                     </thead>
-                    <tbody class="bg-white divide-y divide-gray-200">
+                    <tbody class="divide-y divide-gray-50">
                         @forelse ($informasis as $index => $informasi)
-                            <tr class="hover:bg-gray-50 transition duration-150 {{ $informasi->status == 'ARSIP' ? 'bg-gray-50 opacity-70' : '' }}">
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">{{ $informasis->firstItem() + $index }}</td>
+                            <tr class="hover:bg-blue-50/30 transition-colors {{ $informasi->status == 'ARSIP' ? 'bg-gray-50/50 opacity-70' : '' }}">
+                                <td class="px-6 py-4 whitespace-nowrap text-xs font-bold text-gray-400 text-center">{{ $informasis->firstItem() + $index }}</td>
                                 <td class="px-6 py-4">
                                     @php
                                         $primaryLink = route('frontend.informasi.detail', $informasi->slug);
-                                        
-                                        // Priority 1: Official Profile Link
                                         if ($informasi->official) {
-                                            $official = $informasi->official;
-                                            $posSlug = $official->position->slug ?? '';
+                                            $posSlug = $informasi->official->position->slug ?? '';
                                             if ($posSlug === 'bupati-sinjai') $primaryLink = route('official.bupati');
                                             elseif ($posSlug === 'wakil-bupati-sinjai') $primaryLink = route('official.wakil-bupati');
                                             elseif ($posSlug === 'sekretaris-daerah-sinjai') $primaryLink = route('official.sekretaris-daerah');
-                                            else $primaryLink = route('official.profile.show', $official->slug);
-                                        }
-                                        // Priority 2: Organization Profile Link (Struktur Organisasi)
-                                        elseif (strpos($informasi->content, 'struktur_organisasi_') === 0) {
+                                            else $primaryLink = route('official.profile.show', $informasi->official->slug);
+                                        } elseif (strpos($informasi->content, 'struktur_organisasi_') === 0) {
                                             $orgId = str_replace('struktur_organisasi_', '', $informasi->content);
                                             $organization = \App\Models\Organization::find($orgId);
-                                            if ($organization) {
-                                                $primaryLink = route('opd.detail', $organization->slug);
-                                            }
-                                        }
-                                        // Priority 3: Halaman Detail (termasuk yang menggunakan URL Luar agar mampir ke detail dulu)
-                                        else {
-                                            $primaryLink = route('frontend.informasi.detail', $informasi->slug);
+                                            if ($organization) $primaryLink = route('opd.detail', $organization->slug);
                                         }
                                     @endphp
-                                    <a href="{{ $primaryLink }}" class="text-sm font-semibold text-gray-900 hover:text-blue-700">
+                                    <a href="{{ $primaryLink }}" class="text-sm font-black text-gray-900 hover:text-blue-600 block leading-tight mb-1">
                                         {{ $informasi->title }}
                                     </a>
-                                    <div class="mt-1">
+                                    <div class="flex items-center gap-2">
                                         @if($informasi->status == 'ARSIP')
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-gray-200 text-gray-800">ARSIP</span>
+                                            <span class="inline-block px-2 py-0.5 rounded bg-gray-100 text-gray-500 text-[9px] font-black uppercase tracking-widest">ARSIP</span>
                                         @elseif(in_array($informasi->status, ['BERLAKU', 'aktif']))
-                                            <span class="inline-flex items-center px-2 py-0.5 rounded-full text-xs font-medium bg-green-100 text-green-800">BERLAKU</span>
+                                            <span class="inline-block px-2 py-0.5 rounded bg-green-100 text-green-700 text-[9px] font-black uppercase tracking-widest">BERLAKU</span>
                                         @endif
+                                        <span class="text-[9px] text-gray-300 font-bold uppercase tracking-tighter">ID: {{ $informasi->id }}</span>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 text-sm text-gray-600 max-w-sm">{{ Str::limit($informasi->deskripsi, 80) }}</td>
+                                <td class="px-6 py-4 text-xs text-gray-500 leading-relaxed max-w-xs">{{ Str::limit($informasi->deskripsi, 80) }}</td>
                                 <td class="px-6 py-4">
                                     @php
                                         $unitId = trim((string)$informasi->unit_id);
                                         $unit = $unitMap->get($unitId);
                                         $unitName = $unit['unit_nama'] ?? 'Unit Tidak Terdaftar';
                                     @endphp
-                                    <span class="inline-block px-2.5 py-1 rounded-md text-xs font-medium bg-blue-100 text-blue-800">
+                                    <span class="px-3 py-1.5 rounded-xl bg-blue-50 text-blue-700 text-[10px] font-black uppercase tracking-tight inline-block border border-blue-100/50">
                                         {{ $unitName }}
                                     </span>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-600">
-                                    <div class="flex items-center">
-                                        <i class="fas fa-calendar text-blue-500 mr-2"></i>
-                                        {{ \Carbon\Carbon::parse($informasi->tanggal_upload)->format('d M Y') }}
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex flex-col">
+                                        <span class="text-xs font-bold text-gray-700">{{ \Carbon\Carbon::parse($informasi->tanggal_upload)->translatedFormat('d M Y') }}</span>
+                                        <span class="text-[9px] text-gray-400 uppercase tracking-widest">Tahun: {{ $informasi->tahun }}</span>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                    <div class="flex flex-col space-y-1">
-                                        <div class="flex items-center">
-                                            <i class="fas fa-eye text-purple-500 mr-2 text-xs"></i>
-                                            <span class="text-xs">Lihat: {{ $informasi->views_count ?? 0 }}</span>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center gap-4">
+                                        <div class="flex items-center gap-1.5" title="Dilihat">
+                                            <i class="fas fa-eye text-indigo-400 text-xs"></i>
+                                            <span class="text-xs font-bold text-gray-600">{{ $informasi->views_count ?? 0 }}</span>
                                         </div>
-                                        <div class="flex items-center">
-                                            <i class="fas fa-download text-blue-500 mr-2 text-xs"></i>
-                                            <span class="text-xs">Unduh: {{ $informasi->download_count ?? 0 }}</span>
+                                        <div class="flex items-center gap-1.5" title="Diunduh/Dikunjungi">
+                                            <i class="fas fa-download text-blue-400 text-xs"></i>
+                                            <span class="text-xs font-bold text-gray-600">{{ $informasi->download_count ?? 0 }}</span>
                                         </div>
                                     </div>
                                 </td>
-                                <td class="px-6 py-4 whitespace-nowrap text-sm font-medium">
-                                    <div class="flex items-center gap-2">
-                                        {{-- Always show View Detail button, but with direct profile link if applicable --}}
-                                        <a href="{{ $primaryLink }}" class="text-blue-600 bg-blue-50 hover:bg-blue-100 p-2 rounded transition-colors" title="Lihat Detail">
-                                            <i class="fas fa-eye"></i>
+                                <td class="px-6 py-4 whitespace-nowrap">
+                                    <div class="flex items-center justify-center gap-2">
+                                        <a href="{{ $primaryLink }}" class="w-9 h-9 flex items-center justify-center bg-blue-50 text-blue-600 rounded-xl hover:bg-blue-600 hover:text-white transition-all shadow-sm" title="Detail">
+                                            <i class="fas fa-eye text-sm"></i>
                                         </a>
-
-                                        @php
-                                            $isProfile = $informasi->official || (strpos($informasi->content, 'struktur_organisasi_') === 0);
-                                        @endphp
-
-                                        @if(!$isProfile)
+                                        @if(!$informasi->official && strpos($informasi->content, 'struktur_organisasi_') !== 0)
                                             @if($informasi->url)
-                                                <a href="{{ route('frontend.informasi.visit-url', $informasi->id) }}" target="_blank" class="text-green-600 bg-green-50 hover:bg-green-100 p-2 rounded transition-colors" title="Buka Tautan Luar">
-                                                    <i class="fas fa-external-link-alt"></i>
+                                                <a href="{{ route('frontend.informasi.visit-url', $informasi->id) }}" target="_blank" class="w-9 h-9 flex items-center justify-center bg-green-50 text-green-600 rounded-xl hover:bg-green-600 hover:text-white transition-all shadow-sm" title="Buka Link">
+                                                    <i class="fas fa-external-link-alt text-sm"></i>
                                                 </a>
                                             @elseif($informasi->file)
-                                                <a href="{{ route('frontend.informasi.download', $informasi->id) }}" target="_blank" class="text-green-600 bg-green-50 hover:bg-green-100 p-2 rounded transition-colors" title="Unduh File">
-                                                    <i class="fas fa-download"></i>
+                                                <a href="{{ route('frontend.informasi.download', $informasi->id) }}" target="_blank" class="w-9 h-9 flex items-center justify-center bg-green-50 text-green-600 rounded-xl hover:bg-green-600 hover:text-white transition-all shadow-sm" title="Download">
+                                                    <i class="fas fa-download text-sm"></i>
                                                 </a>
                                             @endif
                                         @endif
                                         @can('update', $informasi)
-                                            <a href="{{ route('informasi-crud.edit', $informasi) }}" class="text-yellow-600 bg-yellow-50 hover:bg-yellow-100 p-2 rounded transition-colors" title="Edit">
-                                                <i class="fas fa-edit"></i>
+                                            <a href="{{ route('informasi-crud.edit', $informasi) }}" class="w-9 h-9 flex items-center justify-center bg-yellow-50 text-yellow-600 rounded-xl hover:bg-yellow-600 hover:text-white transition-all shadow-sm" title="Edit">
+                                                <i class="fas fa-edit text-sm"></i>
                                             </a>
                                         @endcan
                                         @can('delete', $informasi)
-                                            <form action="{{ route('informasi-crud.destroy', $informasi) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus?')">
+                                            <form action="{{ route('informasi-crud.destroy', $informasi) }}" method="POST" onsubmit="return confirm('Hapus informasi ini?')">
                                                 @csrf @method('DELETE')
-                                                <button type="submit" class="text-red-600 bg-red-50 hover:bg-red-100 p-2 rounded transition-colors" title="Hapus">
-                                                    <i class="fas fa-trash"></i>
+                                                <button type="submit" class="w-9 h-9 flex items-center justify-center bg-red-50 text-red-600 rounded-xl hover:bg-red-600 hover:text-white transition-all shadow-sm" title="Hapus">
+                                                    <i class="fas fa-trash text-sm"></i>
                                                 </button>
                                             </form>
                                         @endcan
@@ -325,8 +239,13 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="7" class="px-6 py-12 text-center text-gray-500">
-                                    Tidak ada data ditemukan
+                                <td colspan="7" class="px-6 py-20 text-center">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <div class="w-16 h-16 bg-gray-100 rounded-full flex items-center justify-center mb-4 text-gray-300">
+                                            <i class="fas fa-search-minus text-2xl"></i>
+                                        </div>
+                                        <p class="text-sm font-bold text-gray-400 uppercase tracking-widest">Tidak ada data ditemukan</p>
+                                    </div>
                                 </td>
                             </tr>
                         @endforelse
@@ -335,104 +254,47 @@
             </div>
 
             <!-- Mobile Card View -->
-            <div class="md:hidden divide-y divide-gray-100">
+            <div class="md:hidden divide-y divide-gray-50">
                 @forelse ($informasis as $informasi)
-                    <div class="p-4 bg-white hover:bg-gray-50 transition-colors {{ $informasi->status == 'ARSIP' ? 'bg-gray-50 opacity-80' : '' }}">
-                        <div class="flex justify-between items-start mb-2">
-                            <span class="text-[10px] font-bold text-blue-600 uppercase tracking-wider">
-                                @php
-                                    $unitId = trim((string)$informasi->unit_id);
-                                    $unit = $unitMap->get($unitId);
-                                    echo $unit['unit_nama'] ?? 'Unit Tidak Terdaftar';
-                                @endphp
-                            </span>
+                    <div class="p-5 bg-white hover:bg-blue-50/20 transition-colors {{ $informasi->status == 'ARSIP' ? 'opacity-80' : '' }}">
+                        <div class="flex justify-between items-start mb-3">
+                            @php
+                                $unitId = trim((string)$informasi->unit_id);
+                                $unit = $unitMap->get($unitId);
+                                $unitName = $unit['unit_nama'] ?? 'Unit Tidak Terdaftar';
+                            @endphp
+                            <span class="text-[9px] font-black text-blue-600 uppercase tracking-wider bg-blue-50 px-2.5 py-1 rounded-lg border border-blue-100/50 leading-none">{{ $unitName }}</span>
                             @if($informasi->status == 'ARSIP')
-                                <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-gray-200 text-gray-700">ARSIP</span>
-                            @elseif(in_array($informasi->status, ['BERLAKU', 'aktif']))
-                                <span class="px-1.5 py-0.5 rounded-full text-[9px] font-bold bg-green-100 text-green-700">BERLAKU</span>
+                                <span class="px-1.5 py-0.5 rounded bg-gray-100 text-gray-400 text-[8px] font-black uppercase tracking-widest">ARSIP</span>
                             @endif
                         </div>
                         
-                        @php
-                            $primaryLink = route('frontend.informasi.detail', $informasi->slug);
-                            if ($informasi->official) {
-                                $official = $informasi->official;
-                                $posSlug = $official->position->slug ?? '';
-                                if ($posSlug === 'bupati-sinjai') $primaryLink = route('official.bupati');
-                                elseif ($posSlug === 'wakil-bupati-sinjai') $primaryLink = route('official.wakil-bupati');
-                                elseif ($posSlug === 'sekretaris-daerah-sinjai') $primaryLink = route('official.sekretaris-daerah');
-                                else $primaryLink = route('official.profile.show', $official->slug);
-                            } 
-                            elseif (strpos($informasi->content, 'struktur_organisasi_') === 0) {
-                                $orgId = str_replace('struktur_organisasi_', '', $informasi->content);
-                                $organization = \App\Models\Organization::find($orgId);
-                                if ($organization) {
-                                    $primaryLink = route('opd.detail', $organization->slug);
-                                }
-                            }
-                            // Default: Halaman Detail
-                            else {
-                                $primaryLink = route('frontend.informasi.detail', $informasi->slug);
-                            }
-                        @endphp
-                        <a href="{{ $primaryLink }}" class="block mb-2">
-                            <h3 class="text-sm font-bold text-gray-900 leading-tight mb-1 break-words">{{ $informasi->title }}</h3>
-                            <p class="text-xs text-gray-500 line-clamp-2 leading-relaxed break-words">{{ $informasi->deskripsi }}</p>
+                        <a href="{{ $primaryLink ?? '#' }}" class="block mb-4">
+                            <h3 class="text-sm font-black text-gray-900 leading-snug mb-2">{{ $informasi->title }}</h3>
+                            <p class="text-[11px] text-gray-400 line-clamp-2 leading-relaxed">{{ $informasi->deskripsi }}</p>
                         </a>
 
-                        <div class="flex items-center justify-between mt-4 pt-3 border-t border-gray-50">
-                            <div class="flex items-center gap-4 text-[10px] text-gray-500">
-                                <span class="flex items-center"><i class="far fa-calendar-alt mr-1"></i> {{ \Carbon\Carbon::parse($informasi->tanggal_upload)->format('d/m/y') }}</span>
-                                <span class="flex items-center"><i class="far fa-eye mr-1"></i> {{ $informasi->views_count ?? 0 }}</span>
-                                <span class="flex items-center"><i class="far fa-arrow-alt-circle-down mr-1"></i> {{ $informasi->download_count ?? 0 }}</span>
+                        <div class="flex items-center justify-between mt-4 pt-4 border-t border-gray-50">
+                            <div class="flex items-center gap-3 text-[9px] font-bold text-gray-400 uppercase tracking-tight">
+                                <span class="flex items-center gap-1"><i class="far fa-calendar-alt text-blue-400"></i> {{ \Carbon\Carbon::parse($informasi->tanggal_upload)->format('d/m/y') }}</span>
+                                <span class="flex items-center gap-1"><i class="far fa-eye text-indigo-400"></i> {{ $informasi->views_count ?? 0 }}</span>
                             </div>
-                            
                             <div class="flex items-center gap-1.5">
-                                <a href="{{ $primaryLink }}" class="p-2 text-blue-600 bg-blue-50 rounded-md" title="Lihat Detail">
-                                    <i class="fas fa-eye text-sm"></i>
-                                </a>
-
-                                @php
-                                    $isProfile = $informasi->official || (strpos($informasi->content, 'struktur_organisasi_') === 0);
-                                @endphp
-
-                                @if(!$isProfile)
-                                    @if($informasi->url)
-                                        <a href="{{ route('frontend.informasi.visit-url', $informasi->id) }}" target="_blank" class="p-2 text-green-600 bg-green-50 rounded-md" title="Buka Tautan">
-                                            <i class="fas fa-external-link-alt text-sm"></i>
-                                        </a>
-                                    @elseif($informasi->file)
-                                        <a href="{{ route('frontend.informasi.download', $informasi->id) }}" target="_blank" class="p-2 text-green-600 bg-green-50 rounded-md" title="Unduh File">
-                                            <i class="fas fa-download text-sm"></i>
-                                        </a>
-                                    @endif
-                                @endif
+                                <a href="{{ $primaryLink ?? '#' }}" class="w-8 h-8 flex items-center justify-center bg-blue-50 text-blue-600 rounded-lg shadow-sm"><i class="fas fa-eye text-xs"></i></a>
                                 @can('update', $informasi)
-                                    <a href="{{ route('informasi-crud.edit', $informasi) }}" class="p-2 text-yellow-600 bg-yellow-50 rounded-md">
-                                        <i class="fas fa-edit text-sm"></i>
-                                    </a>
-                                @endcan
-                                @can('delete', $informasi)
-                                    <form action="{{ route('informasi-crud.destroy', $informasi) }}" method="POST" class="inline-block" onsubmit="return confirm('Apakah Anda yakin ingin menghapus?')">
-                                        @csrf @method('DELETE')
-                                        <button type="submit" class="p-2 text-red-600 bg-red-50 rounded-md">
-                                            <i class="fas fa-trash text-sm"></i>
-                                        </button>
-                                    </form>
+                                    <a href="{{ route('informasi-crud.edit', $informasi) }}" class="w-8 h-8 flex items-center justify-center bg-yellow-50 text-yellow-600 rounded-lg shadow-sm"><i class="fas fa-edit text-xs"></i></a>
                                 @endcan
                             </div>
                         </div>
                     </div>
                 @empty
-                    <div class="p-8 text-center text-gray-500 text-sm">
-                        Tidak ada data ditemukan
-                    </div>
+                    <div class="p-10 text-center text-gray-400 font-bold uppercase tracking-widest text-xs">Kosong</div>
                 @endforelse
             </div>
         </div>
 
         <!-- Pagination -->
-        <div class="mt-6 flex justify-center">
+        <div class="mt-8 flex justify-center">
             {{ $informasis->appends(request()->query())->links() }}
         </div>
     </div>
