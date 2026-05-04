@@ -5,16 +5,38 @@
 @section('meta')
     @php
         $shareImage = asset('storage/logo/ppid.webp');
+        $isImage = false;
         if ($informasi->file) {
             $ext = strtolower(pathinfo($informasi->file, PATHINFO_EXTENSION));
             if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'])) {
                 $shareImage = asset('storage/' . $informasi->file);
+                $isImage = true;
+            }
+        }
+
+        // Jika bukan gambar, gunakan desain icon per kategori
+        if (!$isImage) {
+            $category = strtolower($informasi->category);
+            if (str_contains($category, 'berkala')) {
+                // Biru - Berkala
+                $shareImage = "https://placehold.co/1200x630/2563eb/ffffff?text=INFORMASI+BERKALA\\nPPID+KABUPATEN+SINJAI";
+            } elseif (str_contains($category, 'setiap saat')) {
+                // Hijau - Setiap Saat
+                $shareImage = "https://placehold.co/1200x630/16a34a/ffffff?text=INFORMASI+SETIAP+SAAT\\nPPID+KABUPATEN+SINJAI";
+            } elseif (str_contains($category, 'serta merta')) {
+                // Oranye - Serta Merta
+                $shareImage = "https://placehold.co/1200x630/ea580c/ffffff?text=INFORMASI+SERTA+MERTA\\nPPID+KABUPATEN+SINJAI";
+            } elseif (str_contains($category, 'dikecualikan')) {
+                // Merah/Gelap - Dikecualikan
+                $shareImage = "https://placehold.co/1200x630/1e293b/ffffff?text=INFORMASI+DIKECUALIKAN\\nPPID+KABUPATEN+SINJAI";
             }
         }
     @endphp
     <meta property="og:title" content="{{ $informasi->title }} - PPID Kabupaten Sinjai">
     <meta property="og:description" content="{{ Str::limit(strip_tags($informasi->deskripsi), 160) }}">
     <meta property="og:image" content="{{ $shareImage }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
     <meta property="twitter:title" content="{{ $informasi->title }} - PPID Kabupaten Sinjai">
     <meta property="twitter:description" content="{{ Str::limit(strip_tags($informasi->deskripsi), 160) }}">
     <meta property="twitter:image" content="{{ $shareImage }}">
