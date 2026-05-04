@@ -95,29 +95,45 @@
                         </button>
                     </div>
 
-                    <!-- 2. Minimalist Toggles (PRECISE OVER TABLE) -->
+                    <!-- 2. Premium Toggles (PRECISE OVER TABLE) -->
                     <div class="flex flex-wrap items-center gap-4 px-2">
                         @auth
                             @if(!auth()->user()->isSuperAdmin())
-                            <label class="relative flex items-center cursor-pointer group bg-white px-4 py-2 rounded-full border border-gray-100 shadow-sm hover:border-blue-300 transition-all">
+                            <label class="relative flex items-center cursor-pointer group select-none">
                                 <input type="hidden" name="filter_unit" value="0">
-                                <input type="checkbox" name="filter_unit" value="1" {{ request('filter_unit', '1') == '1' ? 'checked' : '' }} onchange="this.form.submit()" 
-                                    class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 transition-all cursor-pointer">
-                                <span class="ml-3 text-[10px] font-black uppercase tracking-widest text-gray-700">Hanya Unit Saya</span>
+                                <input type="checkbox" name="filter_unit" value="1" {{ request('filter_unit', '1') == '1' ? 'checked' : '' }} onchange="this.form.submit()" class="sr-only peer">
+                                <div class="px-6 py-3 rounded-2xl bg-white border border-gray-100 shadow-sm transition-all duration-300 flex items-center gap-3 
+                                    peer-checked:bg-gradient-to-r peer-checked:from-blue-600 peer-checked:to-blue-500 peer-checked:text-white peer-checked:shadow-lg peer-checked:shadow-blue-200 peer-checked:border-transparent
+                                    hover:border-blue-300 hover:shadow-md active:scale-95">
+                                    
+                                    <div class="relative w-5 h-5 flex items-center justify-center rounded-lg bg-gray-100 peer-checked:bg-white/20 transition-colors">
+                                        <i class="fas fa-check text-[10px] text-gray-300 peer-checked:text-white transition-all scale-0 peer-checked:scale-100"></i>
+                                        <i class="fas fa-building text-[10px] text-gray-400 peer-checked:hidden transition-all"></i>
+                                    </div>
+                                    <span class="text-[10px] font-black uppercase tracking-[0.15em]">Hanya Unit Saya</span>
+                                </div>
                             </label>
                             @endif
                         @endauth
 
-                        <label class="relative flex items-center cursor-pointer group bg-white px-4 py-2 rounded-full border border-gray-100 shadow-sm hover:border-indigo-300 transition-all">
+                        <label class="relative flex items-center cursor-pointer group select-none">
                             <input type="hidden" name="sort_created" value="0">
-                            <input type="checkbox" name="sort_created" value="1" {{ request('sort_created', '1') == '1' ? 'checked' : '' }} onchange="this.form.submit()" 
-                                class="w-5 h-5 rounded border-gray-300 text-indigo-600 focus:ring-indigo-500 transition-all cursor-pointer">
-                            <span class="ml-3 text-[10px] font-black uppercase tracking-widest text-gray-700">Upload/Edit Terbaru</span>
+                            <input type="checkbox" name="sort_created" value="1" {{ request('sort_created', '1') == '1' ? 'checked' : '' }} onchange="this.form.submit()" class="sr-only peer">
+                            <div class="px-6 py-3 rounded-2xl bg-white border border-gray-100 shadow-sm transition-all duration-300 flex items-center gap-3 
+                                peer-checked:bg-gradient-to-r peer-checked:from-indigo-600 peer-checked:to-purple-500 peer-checked:text-white peer-checked:shadow-lg peer-checked:shadow-indigo-200 peer-checked:border-transparent
+                                hover:border-indigo-300 hover:shadow-md active:scale-95">
+                                
+                                <div class="relative w-5 h-5 flex items-center justify-center rounded-lg bg-gray-100 peer-checked:bg-white/20 transition-colors">
+                                    <i class="fas fa-check text-[10px] text-gray-300 peer-checked:text-white transition-all scale-0 peer-checked:scale-100"></i>
+                                    <i class="fas fa-bolt text-[10px] text-gray-400 peer-checked:hidden transition-all"></i>
+                                </div>
+                                <span class="text-[10px] font-black uppercase tracking-[0.15em]">Upload/Edit Terbaru</span>
+                            </div>
                         </label>
 
-                        <button type="button" onclick="clearFilters()" class="px-5 py-2.5 rounded-full bg-gray-100 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-all flex items-center gap-2 ml-auto group">
-                            <i class="fas fa-undo text-[10px] group-hover:rotate-[-45deg] transition-transform"></i>
-                            <span class="text-[10px] font-black uppercase tracking-widest">Reset</span>
+                        <button type="button" onclick="clearFilters()" class="px-6 py-3 rounded-2xl bg-gray-50 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-all duration-300 flex items-center gap-2 ml-auto group border border-transparent hover:border-red-100 shadow-sm">
+                            <i class="fas fa-sync-alt text-[10px] group-hover:rotate-180 transition-transform duration-500"></i>
+                            <span class="text-[10px] font-black uppercase tracking-widest">Reset Filter</span>
                         </button>
                     </div>
                 </form>
