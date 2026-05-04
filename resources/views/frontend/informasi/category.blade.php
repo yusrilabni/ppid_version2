@@ -95,20 +95,21 @@
                         </button>
                     </div>
 
-                    <!-- 2. Premium Toggles (PRECISE OVER TABLE) -->
+                    <!-- 2. Premium Toggles (REPAIRED & FUNCTIONAL) -->
                     <div class="flex flex-wrap items-center gap-4 px-2">
                         @auth
                             @if(!auth()->user()->isSuperAdmin())
                             <label class="relative flex items-center cursor-pointer group select-none">
                                 <input type="hidden" name="filter_unit" value="0">
-                                <input type="checkbox" name="filter_unit" value="1" {{ request('filter_unit', '1') == '1' ? 'checked' : '' }} onchange="this.form.submit()" class="sr-only peer">
+                                <input type="checkbox" id="check_unit" name="filter_unit" value="1" {{ request('filter_unit', '1') == '1' ? 'checked' : '' }} onchange="this.form.submit()" class="sr-only peer">
                                 <div class="px-6 py-3 rounded-2xl bg-white border border-gray-100 shadow-sm transition-all duration-300 flex items-center gap-3 
                                     peer-checked:bg-gradient-to-r peer-checked:from-blue-600 peer-checked:to-blue-500 peer-checked:text-white peer-checked:shadow-lg peer-checked:shadow-blue-200 peer-checked:border-transparent
-                                    hover:border-blue-300 hover:shadow-md active:scale-95">
+                                    hover:border-blue-300 hover:shadow-md active:scale-95
+                                    peer-checked:[&_.icon-box]:bg-white/20 peer-checked:[&_.fa-check]:scale-100 peer-checked:[&_.fa-check]:opacity-100 peer-checked:[&_.fa-building]:scale-0 peer-checked:[&_.fa-building]:opacity-0">
                                     
-                                    <div class="relative w-5 h-5 flex items-center justify-center rounded-lg bg-gray-100 peer-checked:bg-white/20 transition-colors">
-                                        <i class="fas fa-check text-[10px] text-gray-300 peer-checked:text-white transition-all scale-0 peer-checked:scale-100"></i>
-                                        <i class="fas fa-building text-[10px] text-gray-400 peer-checked:hidden transition-all"></i>
+                                    <div class="icon-box relative w-5 h-5 flex items-center justify-center rounded-lg bg-gray-100 transition-all duration-300">
+                                        <i class="fas fa-check absolute text-[10px] opacity-0 scale-0 transition-all duration-300"></i>
+                                        <i class="fas fa-building text-[10px] text-gray-400 transition-all duration-300"></i>
                                     </div>
                                     <span class="text-[10px] font-black uppercase tracking-[0.15em]">Hanya Unit Saya</span>
                                 </div>
@@ -118,14 +119,15 @@
 
                         <label class="relative flex items-center cursor-pointer group select-none">
                             <input type="hidden" name="sort_created" value="0">
-                            <input type="checkbox" name="sort_created" value="1" {{ request('sort_created', '1') == '1' ? 'checked' : '' }} onchange="this.form.submit()" class="sr-only peer">
+                            <input type="checkbox" id="check_created" name="sort_created" value="1" {{ request('sort_created', '1') == '1' ? 'checked' : '' }} onchange="this.form.submit()" class="sr-only peer">
                             <div class="px-6 py-3 rounded-2xl bg-white border border-gray-100 shadow-sm transition-all duration-300 flex items-center gap-3 
                                 peer-checked:bg-gradient-to-r peer-checked:from-indigo-600 peer-checked:to-purple-500 peer-checked:text-white peer-checked:shadow-lg peer-checked:shadow-indigo-200 peer-checked:border-transparent
-                                hover:border-indigo-300 hover:shadow-md active:scale-95">
+                                hover:border-indigo-300 hover:shadow-md active:scale-95
+                                peer-checked:[&_.icon-box]:bg-white/20 peer-checked:[&_.fa-check]:scale-100 peer-checked:[&_.fa-check]:opacity-100 peer-checked:[&_.fa-bolt]:scale-0 peer-checked:[&_.fa-bolt]:opacity-0">
                                 
-                                <div class="relative w-5 h-5 flex items-center justify-center rounded-lg bg-gray-100 peer-checked:bg-white/20 transition-colors">
-                                    <i class="fas fa-check text-[10px] text-gray-300 peer-checked:text-white transition-all scale-0 peer-checked:scale-100"></i>
-                                    <i class="fas fa-bolt text-[10px] text-gray-400 peer-checked:hidden transition-all"></i>
+                                <div class="icon-box relative w-5 h-5 flex items-center justify-center rounded-lg bg-gray-100 transition-all duration-300">
+                                    <i class="fas fa-check absolute text-[10px] opacity-0 scale-0 transition-all duration-300"></i>
+                                    <i class="fas fa-bolt text-[10px] text-gray-400 transition-all duration-300"></i>
                                 </div>
                                 <span class="text-[10px] font-black uppercase tracking-[0.15em]">Upload/Edit Terbaru</span>
                             </div>
