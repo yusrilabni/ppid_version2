@@ -214,6 +214,14 @@ class FrontendController extends Controller
               ->orWhere('category', 'like', '%' . $cleanTitle . '%');
         });
 
+        // FILTER UNIT ADMIN (Default Active if filter_unit=1)
+        if ($request->get('filter_unit', 1) == 1 && Auth::check() && !Auth::user()->isSuperAdmin()) {
+            $userUnitId = Auth::user()->unit_id;
+            if ($userUnitId) {
+                $query->where('unit_id', $userUnitId);
+            }
+        }
+
         $unitMap = $this->getUnitData(); 
 
         // Check for status filter first
@@ -287,23 +295,28 @@ class FrontendController extends Controller
         }
         
         // Apply sorting
-        $sort = $request->get('sort', 'tanggal_upload_desc');
-        switch ($sort) {
-            case 'title_asc':
-                $query->orderBy('title', 'asc');
-                break;
-            case 'title_desc':
-                $query->orderBy('title', 'desc');
-                break;
-            case 'tanggal_upload_asc':
-                $query->orderBy('tanggal_upload', 'asc');
-                break;
-            case 'tanggal_upload_desc':
-                $query->orderBy('tanggal_upload', 'desc');
-                break;
-            default:
-                $query->orderBy('tanggal_upload', 'desc');
-                break;
+        if ($request->get('sort_created', 1) == 1) {
+            // Urutkan berdasarkan waktu upload/edit terbaru (created_at)
+            $query->orderBy('created_at', 'desc');
+        } else {
+            $sort = $request->get('sort', 'tanggal_upload_desc');
+            switch ($sort) {
+                case 'title_asc':
+                    $query->orderBy('title', 'asc');
+                    break;
+                case 'title_desc':
+                    $query->orderBy('title', 'desc');
+                    break;
+                case 'tanggal_upload_asc':
+                    $query->orderBy('tanggal_upload', 'asc');
+                    break;
+                case 'tanggal_upload_desc':
+                    $query->orderBy('tanggal_upload', 'desc');
+                    break;
+                default:
+                    $query->orderBy('tanggal_upload', 'desc');
+                    break;
+            }
         }
 
         $perPage = $request->get('per_page', 10);

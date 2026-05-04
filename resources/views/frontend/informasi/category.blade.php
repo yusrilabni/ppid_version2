@@ -38,8 +38,33 @@
             </div>
 
             <!-- Search and Filter Controls -->
-            <div class="mt-6 p-3 bg-gray-50 rounded-lg border border-gray-200 relative z-20">
+            <div class="mt-6 p-4 bg-white rounded-2xl shadow-sm border border-gray-100 relative z-20">
                 <form id="searchForm" method="GET" action="">
+                    <!-- Real-time Quick Filters (Checkboxes) -->
+                    <div class="flex flex-wrap items-center gap-6 mb-4 pb-4 border-b border-gray-50">
+                        @auth
+                            @if(!auth()->user()->isSuperAdmin())
+                            <label class="relative flex items-center cursor-pointer group">
+                                <input type="hidden" name="filter_unit" value="0">
+                                <input type="checkbox" name="filter_unit" value="1" 
+                                    {{ request('filter_unit', '1') == '1' ? 'checked' : '' }}
+                                    onchange="this.form.submit()"
+                                    class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 transition-all">
+                                <span class="ml-2 text-sm font-bold text-gray-700 group-hover:text-blue-600 transition-colors uppercase tracking-tight">Hanya Unit Saya</span>
+                            </label>
+                            @endif
+                        @endauth
+
+                        <label class="relative flex items-center cursor-pointer group">
+                            <input type="hidden" name="sort_created" value="0">
+                            <input type="checkbox" name="sort_created" value="1" 
+                                {{ request('sort_created', '1') == '1' ? 'checked' : '' }}
+                                onchange="this.form.submit()"
+                                class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 transition-all">
+                            <span class="ml-2 text-sm font-bold text-gray-700 group-hover:text-blue-600 transition-colors uppercase tracking-tight">Upload/Edit Terbaru</span>
+                        </label>
+                    </div>
+
                     <div class="flex flex-col lg:flex-row gap-3 lg:items-end">
                         <!-- Combined Search Input (Title/Description/Unit) -->
                         <div class="w-full lg:flex-1 lg:min-w-[200px]">
@@ -405,6 +430,14 @@
         document.getElementById('date_to').value = '';
         document.getElementById('sort').value = 'tanggal_upload_desc';
         document.getElementById('per_page').value = '10';
+        
+        // Reset Checkboxes to default (checked)
+        const filterUnit = document.querySelector('input[name="filter_unit"][type="checkbox"]');
+        if (filterUnit) filterUnit.checked = true;
+        
+        const sortCreated = document.querySelector('input[name="sort_created"][type="checkbox"]');
+        if (sortCreated) sortCreated.checked = true;
+
         document.getElementById('searchForm').submit();
     }
 </script>
