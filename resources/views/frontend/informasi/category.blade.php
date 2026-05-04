@@ -38,34 +38,49 @@
             </div>
 
             <!-- Search and Filter Controls -->
-            <div class="mt-6 p-4 bg-white rounded-2xl shadow-sm border border-gray-100 relative z-20">
+            <div class="mt-6 mb-8">
                 <form id="searchForm" method="GET" action="">
-                    <!-- Real-time Quick Filters (Checkboxes) -->
-                    <div class="flex flex-wrap items-center gap-6 mb-4 pb-4 border-b border-gray-50">
+                    <!-- Real-time Quick Filters (Separate Cards) -->
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-6">
                         @auth
                             @if(!auth()->user()->isSuperAdmin())
-                            <label class="relative flex items-center cursor-pointer group">
-                                <input type="hidden" name="filter_unit" value="0">
-                                <input type="checkbox" name="filter_unit" value="1" 
-                                    {{ request('filter_unit', '1') == '1' ? 'checked' : '' }}
-                                    onchange="this.form.submit()"
-                                    class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 transition-all">
-                                <span class="ml-2 text-sm font-bold text-gray-700 group-hover:text-blue-600 transition-colors uppercase tracking-tight">Hanya Unit Saya</span>
-                            </label>
+                            <div class="flex items-center p-4 bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-blue-200 transition-all group">
+                                <label class="flex items-center cursor-pointer w-full">
+                                    <div class="relative flex items-center">
+                                        <input type="hidden" name="filter_unit" value="0">
+                                        <input type="checkbox" name="filter_unit" value="1" 
+                                            {{ request('filter_unit', '1') == '1' ? 'checked' : '' }}
+                                            onchange="this.form.submit()"
+                                            class="w-6 h-6 rounded-lg border-gray-300 text-blue-600 focus:ring-blue-500/20 transition-all cursor-pointer">
+                                    </div>
+                                    <div class="ml-4">
+                                        <span class="block text-sm font-black text-gray-800 group-hover:text-blue-600 transition-colors uppercase tracking-tight">Hanya Unit Saya</span>
+                                        <span class="block text-[10px] text-gray-400 font-medium uppercase tracking-wider">Tampilkan dokumen dari unit kerja Anda saja</span>
+                                    </div>
+                                </label>
+                            </div>
                             @endif
                         @endauth
 
-                        <label class="relative flex items-center cursor-pointer group">
-                            <input type="hidden" name="sort_created" value="0">
-                            <input type="checkbox" name="sort_created" value="1" 
-                                {{ request('sort_created', '1') == '1' ? 'checked' : '' }}
-                                onchange="this.form.submit()"
-                                class="w-5 h-5 rounded border-gray-300 text-blue-600 focus:ring-blue-500 transition-all">
-                            <span class="ml-2 text-sm font-bold text-gray-700 group-hover:text-blue-600 transition-colors uppercase tracking-tight">Upload/Edit Terbaru</span>
-                        </label>
+                        <div class="flex items-center p-4 bg-white rounded-2xl shadow-sm border border-gray-100 hover:border-blue-200 transition-all group {{ (Auth::check() && !Auth::user()->isSuperAdmin()) ? '' : 'sm:col-span-2' }}">
+                            <label class="flex items-center cursor-pointer w-full">
+                                <div class="relative flex items-center">
+                                    <input type="hidden" name="sort_created" value="0">
+                                    <input type="checkbox" name="sort_created" value="1" 
+                                        {{ request('sort_created', '1') == '1' ? 'checked' : '' }}
+                                        onchange="this.form.submit()"
+                                        class="w-6 h-6 rounded-lg border-gray-300 text-blue-600 focus:ring-blue-500/20 transition-all cursor-pointer">
+                                </div>
+                                <div class="ml-4">
+                                    <span class="block text-sm font-black text-gray-800 group-hover:text-blue-600 transition-colors uppercase tracking-tight">Upload/Edit Terbaru</span>
+                                    <span class="block text-[10px] text-gray-400 font-medium uppercase tracking-wider">Urutkan berdasarkan waktu upload sistem (Real-time)</span>
+                                </div>
+                            </label>
+                        </div>
                     </div>
 
-                    <div class="flex flex-col lg:flex-row gap-3 lg:items-end">
+                    <div class="p-6 bg-gray-50/50 rounded-[2rem] border border-gray-100 shadow-inner">
+                        <div class="flex flex-col lg:flex-row gap-4 lg:items-end">
                         <!-- Combined Search Input (Title/Description/Unit) -->
                         <div class="w-full lg:flex-1 lg:min-w-[200px]">
                             <label for="search" class="block text-xs font-medium text-gray-600 mb-1 uppercase tracking-wider">Pencarian</label>
