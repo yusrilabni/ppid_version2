@@ -28,7 +28,7 @@ Route::get('/', [FrontendController::class, 'home'])->name('home');
 Route::get('/search', [FrontendController::class, 'search'])->name('frontend.informasi.search');
 Route::post('/contact', [FrontendController::class, 'submitContactForm'])->name('contact.submit');
 Route::get('/galeri/all', [FrontendController::class, 'allGaleri'])->name('frontend.galeri.all');
-Route::get('/galeri/detail/{galeri}', [FrontendController::class, 'showGaleri'])->name('frontend.galeri.show');
+Route::get('/galeri/detail/{hash}', [FrontendController::class, 'showGaleri'])->name('frontend.galeri.show');
 
 // DIP (Daftar Informasi Publik) Routes
 Route::get('/dip', [DIPController::class, 'index'])->name('dip.index');

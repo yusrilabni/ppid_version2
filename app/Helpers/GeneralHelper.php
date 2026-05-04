@@ -220,4 +220,29 @@ class GeneralHelper
         // Kita akan menggunakan nama parameter yang berbeda di form untuk menghindari WAF 403.
         return self::getUnitData();
     }
+
+    /**
+     * Encode numeric ID to a short unique alphanumeric string.
+     */
+    public static function encodeId($id)
+    {
+        // Salt for slight obfuscation
+        $salt = 778899;
+        $encoded = base_convert(($id + $salt) * 3, 10, 36);
+        return strtoupper($encoded);
+    }
+
+    /**
+     * Decode the alphanumeric string back to numeric ID.
+     */
+    public static function decodeId($encoded)
+    {
+        try {
+            $salt = 778899;
+            $decoded = (base_convert(strtolower($encoded), 36, 10) / 3) - $salt;
+            return (int) $decoded;
+        } catch (\Exception $e) {
+            return null;
+        }
+    }
 }
