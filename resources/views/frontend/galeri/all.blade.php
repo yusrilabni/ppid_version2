@@ -20,8 +20,7 @@
                                 </div>
                             @endif
                             @if ($item->type === 'foto')
-                                <a href="{{ $item->video ? $item->video : (asset('storage/' . $item->image) ?: '/placeholder.jpg') }}"
-                                    {{ $item->video ? 'target="_blank"' : '' }} class="block">
+                                <a href="{{ route('frontend.galeri.show', $item->id) }}" class="block">
                                     <img src="{{ asset('storage/' . $item->image) ?: '/placeholder.jpg' }}"
                                         alt="{{ $item->title }}"
                                         class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
@@ -49,7 +48,7 @@
                                     }
                                 @endphp
                                 @if ($videoId)
-                                    <a href="{{ $item->video }}" target="_blank" class="block">
+                                    <a href="{{ route('frontend.galeri.show', $item->id) }}" class="block">
                                         <img src="https://img.youtube.com/vi/{{ $videoId }}/default.jpg"
                                             alt="{{ $item->title }}"
                                             class="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300" />
@@ -59,7 +58,7 @@
                                         </div>
                                     </a>
                                 @else
-                                    <a href="{{ $item->video }}" target="_blank" class="block">
+                                    <a href="{{ route('frontend.galeri.show', $item->id) }}" class="block">
                                         <div class="w-full h-48 bg-gray-200 flex items-center justify-center">
                                             <i data-lucide="video" class="h-12 w-12 text-gray-400"></i>
                                             <div

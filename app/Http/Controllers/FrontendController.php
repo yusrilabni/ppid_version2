@@ -174,6 +174,17 @@ class FrontendController extends Controller
 
         return view('frontend.galeri.all', compact('galeri', 'breadcrumbs'));
     }
+
+    public function showGaleri(Galeri $galeri)
+    {
+        $breadcrumbs = [
+            ['title' => 'Beranda', 'url' => route('home'), 'icon' => 'fas fa-home'],
+            ['title' => 'Galeri', 'url' => route('frontend.galeri.all'), 'icon' => 'fas fa-images'],
+            ['title' => $galeri->title, 'url' => '#', 'icon' => 'fas fa-image'],
+        ];
+
+        return view('frontend.galeri.show', compact('galeri', 'breadcrumbs'));
+    }
     
     // ... (rest of the controller methods remain the same)
     
