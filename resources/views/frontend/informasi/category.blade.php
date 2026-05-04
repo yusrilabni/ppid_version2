@@ -105,7 +105,7 @@
                                 <div class="px-6 py-3 rounded-2xl bg-white border border-gray-100 shadow-sm transition-all duration-300 flex items-center gap-3 
                                     peer-checked:bg-gradient-to-r peer-checked:from-blue-600 peer-checked:to-blue-500 peer-checked:text-white peer-checked:shadow-lg peer-checked:shadow-blue-200 peer-checked:border-transparent
                                     hover:border-blue-300 hover:shadow-md active:scale-95
-                                    peer-checked:[&_.icon-box]:bg-white/20 peer-checked:[&_.fa-check]:scale-100 peer-checked:[&_.fa-check]:opacity-100 peer-checked:[&_.fa-building]:scale-0 peer-checked:[&_.fa-building]:opacity-0">
+                                    peer-checked:[&_.icon-box]:bg-white peer-checked:[&_.fa-check]:scale-100 peer-checked:[&_.fa-check]:opacity-100 peer-checked:[&_.fa-check]:text-emerald-500 peer-checked:[&_.fa-building]:scale-0 peer-checked:[&_.fa-building]:opacity-0">
                                     
                                     <div class="icon-box relative w-5 h-5 flex items-center justify-center rounded-lg bg-gray-100 transition-all duration-300">
                                         <i class="fas fa-check absolute text-[10px] opacity-0 scale-0 transition-all duration-300"></i>
@@ -123,7 +123,7 @@
                             <div class="px-6 py-3 rounded-2xl bg-white border border-gray-100 shadow-sm transition-all duration-300 flex items-center gap-3 
                                 peer-checked:bg-gradient-to-r peer-checked:from-indigo-600 peer-checked:to-purple-500 peer-checked:text-white peer-checked:shadow-lg peer-checked:shadow-indigo-200 peer-checked:border-transparent
                                 hover:border-indigo-300 hover:shadow-md active:scale-95
-                                peer-checked:[&_.icon-box]:bg-white/20 peer-checked:[&_.fa-check]:scale-100 peer-checked:[&_.fa-check]:opacity-100 peer-checked:[&_.fa-bolt]:scale-0 peer-checked:[&_.fa-bolt]:opacity-0">
+                                peer-checked:[&_.icon-box]:bg-white peer-checked:[&_.fa-check]:scale-100 peer-checked:[&_.fa-check]:opacity-100 peer-checked:[&_.fa-check]:text-emerald-500 peer-checked:[&_.fa-bolt]:scale-0 peer-checked:[&_.fa-bolt]:opacity-0">
                                 
                                 <div class="icon-box relative w-5 h-5 flex items-center justify-center rounded-lg bg-gray-100 transition-all duration-300">
                                     <i class="fas fa-check absolute text-[10px] opacity-0 scale-0 transition-all duration-300"></i>
