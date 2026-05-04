@@ -143,7 +143,7 @@
         </div>
 
         <!-- Tabel/Mobile Cards -->
-        <div class="mt-4 bg-white rounded-[3rem] shadow-2xl shadow-blue-900/5 overflow-hidden border border-gray-50">
+        <div class="mt-4 bg-white rounded-t-2xl rounded-b-[3rem] shadow-2xl shadow-blue-900/5 overflow-hidden border border-gray-50">
             <!-- Desktop Table View -->
             <div class="hidden md:block overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-100">
