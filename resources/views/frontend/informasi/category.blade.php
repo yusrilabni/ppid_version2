@@ -2,6 +2,13 @@
 
 @section('title', $pageTitle ?? 'Informasi')
 
+@section('meta')
+    <meta property="og:title" content="{{ $pageTitle }} - PPID Kabupaten Sinjai">
+    <meta property="og:description" content="Daftar {{ $pageTitle }} Kabupaten Sinjai. Transparansi Informasi Publik untuk Masyarakat.">
+    <meta property="twitter:title" content="{{ $pageTitle }} - PPID Kabupaten Sinjai">
+    <meta property="twitter:description" content="Daftar {{ $pageTitle }} Kabupaten Sinjai. Transparansi Informasi Publik untuk Masyarakat.">
+@endsection
+
 @section('content')
 <div class="container mx-auto py-8 px-4 overflow-x-hidden">
     <div class="max-w-7xl mx-auto w-full">

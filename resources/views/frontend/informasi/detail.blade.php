@@ -2,6 +2,13 @@
 
 @section('title', $informasi->title)
 
+@section('meta')
+    <meta property="og:title" content="{{ $informasi->title }} - PPID Kabupaten Sinjai">
+    <meta property="og:description" content="{{ Str::limit(strip_tags($informasi->deskripsi), 160) }}">
+    <meta property="twitter:title" content="{{ $informasi->title }} - PPID Kabupaten Sinjai">
+    <meta property="twitter:description" content="{{ Str::limit(strip_tags($informasi->deskripsi), 160) }}">
+@endsection
+
 @section('content')
 <div class="bg-gray-50 min-h-screen" x-data="{ sideMenuOpen: false }">
     <div class="container mx-auto py-4 pb-24 lg:pb-8 px-4">

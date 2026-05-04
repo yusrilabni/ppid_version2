@@ -113,9 +113,8 @@
 
                 <!-- HEADER (COMPACT) -->
                 <div class="text-center mb-4">
-                    <img src="{{ asset('storage/logo/Logo PPID With Caption.png') }}" alt="PPID" class="ppid-logo"
-                        fetchpriority="high" loading="eager"
-                        onerror="this.onerror=null; this.src='{{ asset('storage/logo/ppid.webp') }}'">
+                    <img src="{{ asset('storage/logo/ppid.webp') }}" alt="PPID" class="ppid-logo"
+                        fetchpriority="high" loading="eager">
 
                     <h1 class="login-title text-2xl font-bold text-gray-800">
                         LOGIN PPID

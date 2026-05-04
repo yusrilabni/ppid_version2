@@ -2,6 +2,13 @@
 
 @section('title', 'Daftar Informasi Publik (DIP) Tahun ' . $year)
 
+@section('meta')
+    <meta property="og:title" content="Daftar Informasi Publik (DIP) Tahun {{ $year }} - PPID Kabupaten Sinjai">
+    <meta property="og:description" content="Lihat Daftar Informasi Publik (DIP) Kabupaten Sinjai tahun {{ $year }}. Akses informasi publik secara transparan.">
+    <meta property="twitter:title" content="Daftar Informasi Publik (DIP) Tahun {{ $year }} - PPID Kabupaten Sinjai">
+    <meta property="twitter:description" content="Lihat Daftar Informasi Publik (DIP) Kabupaten Sinjai tahun {{ $year }}. Akses informasi publik secara transparan.">
+@endsection
+
 @section('content')
     <div class="py-8 bg-gray-50 min-h-screen">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

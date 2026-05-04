@@ -2,6 +2,13 @@
 
 @section('title', 'Profil PPID')
 
+@section('meta')
+    <meta property="og:title" content="Profil PPID Kabupaten Sinjai">
+    <meta property="og:description" content="Profil Pejabat Pengelola Informasi dan Dokumentasi (PPID) Kabupaten Sinjai. Melayani permintaan informasi publik dengan transparan.">
+    <meta property="twitter:title" content="Profil PPID Kabupaten Sinjai">
+    <meta property="twitter:description" content="Profil Pejabat Pengelola Informasi dan Dokumentasi (PPID) Kabupaten Sinjai. Melayani permintaan informasi publik dengan transparan.">
+@endsection
+
 @section('content')
     <div class="min-h-screen bg-gradient-to-br from-gray-50 to-blue-50 py-8">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">

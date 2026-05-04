@@ -10,7 +10,7 @@
                     <div
                         class="transform origin-left scale-[1.4] xl:scale-150 group-hover:scale-[1.5] xl:group-hover:scale-[1.6] transition-transform duration-300">
                         <img class="w-auto h-16 xl:h-20" src="{{ asset('storage/logo/ppid.webp') }}"
-                            alt="PPID" onerror="this.onerror=null; this.src='{{ asset('storage/logo/ppid.png') }}'">
+                            alt="PPID">
                     </div>
                 </a>
             </div>
