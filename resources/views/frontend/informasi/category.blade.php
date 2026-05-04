@@ -38,99 +38,85 @@
             </div>
 
             <!-- Search and Filter Controls -->
-            <div class="mt-6 mb-8">
+            <div class="mt-8 mb-10">
                 <form id="searchForm" method="GET" action="">
-                    <!-- 1. Main Search Row -->
-                    <div class="p-6 bg-white rounded-t-3xl border-x border-t border-gray-100 shadow-sm">
-                        <div class="flex flex-col lg:flex-row gap-4 lg:items-end">
-                            <!-- Search Input -->
-                            <div class="w-full lg:flex-1">
-                                <label for="search" class="block text-xs font-black text-gray-400 mb-2 uppercase tracking-widest">Pencarian Kata Kunci</label>
-                                <div class="relative group">
-                                    <span class="absolute inset-y-0 left-0 pl-4 flex items-center text-gray-400 group-focus-within:text-blue-600 transition-colors">
-                                        <i class="fas fa-search text-sm"></i>
-                                    </span>
-                                    <input type="text" id="search" name="search" value="{{ request('search') ?? '' }}" placeholder="Cari judul atau unit kerja..."
-                                        class="w-full pl-12 pr-4 py-3.5 text-sm border-2 border-gray-50 rounded-2xl bg-gray-50/30 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all placeholder:text-gray-400 font-medium">
-                                </div>
-                            </div>
-
-                            <!-- Controls Grid -->
-                            <div class="grid grid-cols-2 md:grid-cols-4 lg:contents gap-3">
-                                <div class="w-full">
-                                    <label for="date_from" class="block text-[10px] font-black text-gray-400 mb-2 uppercase tracking-widest">Tgl Awal</label>
-                                    <input type="date" id="date_from" name="date_from" value="{{ request('date_from') ?? '' }}"
-                                        class="w-full px-4 py-3.5 text-xs border-2 border-gray-50 rounded-2xl bg-gray-50/30 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold text-gray-700">
-                                </div>
-                                <div class="w-full">
-                                    <label for="date_to" class="block text-[10px] font-black text-gray-400 mb-2 uppercase tracking-widest">Tgl Akhir</label>
-                                    <input type="date" id="date_to" name="date_to" value="{{ request('date_to') ?? '' }}"
-                                        class="w-full px-4 py-3.5 text-xs border-2 border-gray-50 rounded-2xl bg-gray-50/30 focus:bg-white focus:outline-none focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all font-bold text-gray-700">
-                                </div>
-                                <div class="w-full">
-                                    <label class="block text-[10px] font-black text-gray-400 mb-2 uppercase tracking-widest">Urutkan</label>
-                                    @php
-                                        $sortOptions = [['value' => 'tanggal_upload_desc', 'label' => 'Terbaru'], ['value' => 'tanggal_upload_asc', 'label' => 'Terlama'], ['value' => 'title_asc', 'label' => 'Judul (A-Z)'], ['value' => 'title_desc', 'label' => 'Judul (Z-A)']];
-                                    @endphp
-                                    <x-custom-select name="sort" :options="$sortOptions" :value="request('sort', 'tanggal_upload_desc')" :searchable="false" />
-                                </div>
-                                <div class="w-full">
-                                    <label class="block text-[10px] font-black text-gray-400 mb-2 uppercase tracking-widest">Tampilan</label>
-                                    @php
-                                        $perPageOptions = [['value' => '10', 'label' => '10 Baris'], ['value' => '20', 'label' => '20 Baris'], ['value' => '50', 'label' => '50 Baris']];
-                                    @endphp
-                                    <x-custom-select name="per_page" :options="$perPageOptions" :value="request('per_page', '10')" :searchable="false" />
-                                </div>
-                            </div>
-
-                            <!-- Buttons -->
-                            <div class="flex flex-row gap-2 lg:flex-shrink-0">
-                                <button type="submit" class="flex-1 lg:flex-none bg-blue-600 hover:bg-blue-700 text-white text-[11px] font-black py-4 px-8 rounded-2xl transition-all shadow-xl shadow-blue-100 uppercase tracking-widest flex items-center justify-center min-w-[120px]">
-                                    <i class="fas fa-search mr-2"></i> Cari
-                                </button>
-                                <button type="button" onclick="clearFilters()" class="flex-1 lg:flex-none bg-gray-100 hover:bg-gray-200 text-gray-600 text-[11px] font-black py-4 px-8 rounded-2xl transition-all uppercase tracking-widest flex items-center justify-center min-w-[120px]">
-                                    <i class="fas fa-eraser mr-2"></i> Reset
-                                </button>
+                    <!-- 1. Minimalist Search Bar -->
+                    <div class="flex flex-col lg:flex-row gap-4 items-stretch lg:items-end bg-white/80 backdrop-blur-md p-6 rounded-[2.5rem] shadow-xl shadow-blue-500/5 border border-white mb-6">
+                        <!-- Search Input -->
+                        <div class="flex-1">
+                            <label for="search" class="block text-[10px] font-black text-blue-900/40 mb-2 uppercase tracking-[0.2em] ml-4">Pencarian Pintar</label>
+                            <div class="relative group">
+                                <span class="absolute inset-y-0 left-0 pl-5 flex items-center text-blue-400 group-focus-within:text-blue-600 transition-colors">
+                                    <i class="fas fa-search"></i>
+                                </span>
+                                <input type="text" id="search" name="search" value="{{ request('search') ?? '' }}" placeholder="Ketik kata kunci atau nama unit..."
+                                    class="w-full pl-14 pr-6 py-4 text-sm border-none bg-gray-50/50 rounded-2xl focus:ring-4 focus:ring-blue-500/10 transition-all placeholder:text-gray-300 font-bold text-gray-700">
                             </div>
                         </div>
+
+                        <!-- Grid Controls -->
+                        <div class="grid grid-cols-2 md:grid-cols-4 gap-3 lg:w-auto">
+                            <div class="min-w-[140px]">
+                                <label class="block text-[10px] font-black text-blue-900/40 mb-2 uppercase tracking-[0.2em] ml-2">Mulai</label>
+                                <input type="date" name="date_from" value="{{ request('date_from') ?? '' }}" 
+                                    class="w-full px-4 py-4 text-xs border-none bg-gray-50/50 rounded-2xl focus:ring-4 focus:ring-blue-500/10 font-bold text-gray-600">
+                            </div>
+                            <div class="min-w-[140px]">
+                                <label class="block text-[10px] font-black text-blue-900/40 mb-2 uppercase tracking-[0.2em] ml-2">Sampai</label>
+                                <input type="date" name="date_to" value="{{ request('date_to') ?? '' }}" 
+                                    class="w-full px-4 py-4 text-xs border-none bg-gray-50/50 rounded-2xl focus:ring-4 focus:ring-blue-500/10 font-bold text-gray-600">
+                            </div>
+                            <div class="min-w-[120px]">
+                                <label class="block text-[10px] font-black text-blue-900/40 mb-2 uppercase tracking-[0.2em] ml-2">Urutan</label>
+                                <x-custom-select name="sort" :options="$sortOptions" :value="request('sort', 'tanggal_upload_desc')" :searchable="false" />
+                            </div>
+                            <div class="min-w-[100px]">
+                                <label class="block text-[10px] font-black text-blue-900/40 mb-2 uppercase tracking-[0.2em] ml-2">Limit</label>
+                                <x-custom-select name="per_page" :options="$perPageOptions" :value="request('per_page', '10')" :searchable="false" />
+                            </div>
+                        </div>
+
+                        <!-- Search Button -->
+                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white w-full lg:w-14 h-14 rounded-2xl transition-all shadow-lg shadow-blue-600/20 flex items-center justify-center group">
+                            <i class="fas fa-arrow-right group-hover:translate-x-1 transition-transform"></i>
+                        </button>
                     </div>
 
-                    <!-- 2. Real-time Quick Checkboxes Row (PRECISE POSITION) -->
-                    <div class="flex flex-col md:flex-row items-center justify-between gap-4 p-4 bg-gray-50 rounded-b-3xl border-x border-b border-gray-100">
-                        <div class="flex flex-wrap items-center gap-4">
-                            @auth
-                                @if(!auth()->user()->isSuperAdmin())
-                                <label class="relative flex items-center cursor-pointer group bg-white px-5 py-2.5 rounded-xl border border-gray-200 shadow-sm hover:border-blue-400 transition-all">
-                                    <input type="hidden" name="filter_unit" value="0">
-                                    <input type="checkbox" name="filter_unit" value="1" {{ request('filter_unit', '1') == '1' ? 'checked' : '' }} onchange="this.form.submit()"
-                                        class="w-5 h-5 rounded-md border-gray-300 text-blue-600 focus:ring-blue-500/20 transition-all cursor-pointer">
-                                    <div class="ml-3">
-                                        <span class="block text-xs font-black text-gray-700 group-hover:text-blue-600 transition-colors uppercase tracking-widest">Hanya Unit Saya</span>
-                                    </div>
-                                </label>
-                                @endif
-                            @endauth
-
-                            <label class="relative flex items-center cursor-pointer group bg-white px-5 py-2.5 rounded-xl border border-gray-200 shadow-sm hover:border-blue-400 transition-all">
-                                <input type="hidden" name="sort_created" value="0">
-                                <input type="checkbox" name="sort_created" value="1" {{ request('sort_created', '1') == '1' ? 'checked' : '' }} onchange="this.form.submit()"
-                                    class="w-5 h-5 rounded-md border-gray-300 text-blue-600 focus:ring-blue-500/20 transition-all cursor-pointer">
-                                <div class="ml-3">
-                                    <span class="block text-xs font-black text-gray-700 group-hover:text-blue-600 transition-colors uppercase tracking-widest">Upload/Edit Terbaru</span>
+                    <!-- 2. Minimalist Toggles (PRECISE OVER TABLE) -->
+                    <div class="flex flex-wrap items-center gap-3 px-2">
+                        @auth
+                            @if(!auth()->user()->isSuperAdmin())
+                            <label class="relative flex items-center cursor-pointer group">
+                                <input type="hidden" name="filter_unit" value="0">
+                                <input type="checkbox" name="filter_unit" value="1" {{ request('filter_unit', '1') == '1' ? 'checked' : '' }} onchange="this.form.submit()" class="sr-only peer">
+                                <div class="px-5 py-2.5 rounded-full bg-white border border-gray-100 shadow-sm flex items-center gap-2 peer-checked:bg-blue-600 peer-checked:text-white transition-all hover:border-blue-200">
+                                    <div class="w-2 h-2 rounded-full bg-gray-300 peer-checked:bg-white animate-pulse"></div>
+                                    <span class="text-[10px] font-black uppercase tracking-widest">Unit Saya</span>
                                 </div>
                             </label>
-                        </div>
-                        
-                        <div class="text-[10px] font-bold text-blue-400 uppercase tracking-[0.2em] bg-blue-50 px-4 py-2 rounded-lg border border-blue-100/50">
-                            <i class="fas fa-bolt mr-1"></i> Update Real-time
-                        </div>
+                            @endif
+                        @endauth
+
+                        <label class="relative flex items-center cursor-pointer group">
+                            <input type="hidden" name="sort_created" value="0">
+                            <input type="checkbox" name="sort_created" value="1" {{ request('sort_created', '1') == '1' ? 'checked' : '' }} onchange="this.form.submit()" class="sr-only peer">
+                            <div class="px-5 py-2.5 rounded-full bg-white border border-gray-100 shadow-sm flex items-center gap-2 peer-checked:bg-indigo-600 peer-checked:text-white transition-all hover:border-indigo-200">
+                                <i class="fas fa-bolt text-[10px] text-gray-300 peer-checked:text-white"></i>
+                                <span class="text-[10px] font-black uppercase tracking-widest">Terbaru Upload</span>
+                            </div>
+                        </label>
+
+                        <button type="button" onclick="clearFilters()" class="px-5 py-2.5 rounded-full bg-gray-100 text-gray-400 hover:bg-red-50 hover:text-red-500 transition-all flex items-center gap-2 ml-auto group">
+                            <i class="fas fa-undo text-[10px] group-hover:rotate-[-45deg] transition-transform"></i>
+                            <span class="text-[10px] font-black uppercase tracking-widest">Reset</span>
+                        </button>
                     </div>
                 </form>
             </div>
         </div>
 
         <!-- Tabel/Mobile Cards -->
-        <div class="bg-white rounded-[2.5rem] shadow-xl overflow-hidden border border-gray-100">
+        <div class="mt-4 bg-white rounded-[3rem] shadow-2xl shadow-blue-900/5 overflow-hidden border border-gray-50">
             <!-- Desktop Table View -->
             <div class="hidden md:block overflow-x-auto">
                 <table class="min-w-full divide-y divide-gray-100">
