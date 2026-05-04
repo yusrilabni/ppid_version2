@@ -132,7 +132,7 @@
                                     <i class="fas fa-bolt text-[10px] text-gray-400 transition-all duration-300"></i>
                                 </div>
                                 <span class="text-[10px] font-black uppercase tracking-[0.15em]">
-                                    {{ request('sort_created', '1') == '1' ? 'Gunakan Urutan Input' : 'Waktu Sistem Terbaru' }}
+                                    {{ request('sort_created', '1') == '1' ? 'Urutkan Tgl Dokumen' : 'Waktu Sistem Terbaru' }}
                                 </span>
                             </div>
                         </label>
