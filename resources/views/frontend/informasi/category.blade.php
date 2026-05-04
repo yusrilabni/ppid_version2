@@ -111,7 +111,9 @@
                                         <i class="fas fa-check absolute text-[10px] opacity-0 scale-0 transition-all duration-300"></i>
                                         <i class="fas fa-building text-[10px] text-gray-400 transition-all duration-300"></i>
                                     </div>
-                                    <span class="text-[10px] font-black uppercase tracking-[0.15em]">Hanya Unit Saya</span>
+                                    <span class="text-[10px] font-black uppercase tracking-[0.15em]">
+                                        {{ request('filter_unit', '1') == '1' ? 'Hanya Unit Saya' : 'Semua Unit Kerja' }}
+                                    </span>
                                 </div>
                             </label>
                             @endif
@@ -129,7 +131,9 @@
                                     <i class="fas fa-check absolute text-[10px] opacity-0 scale-0 transition-all duration-300"></i>
                                     <i class="fas fa-bolt text-[10px] text-gray-400 transition-all duration-300"></i>
                                 </div>
-                                <span class="text-[10px] font-black uppercase tracking-[0.15em]">Upload/Edit Terbaru</span>
+                                <span class="text-[10px] font-black uppercase tracking-[0.15em]">
+                                    {{ request('sort_created', '1') == '1' ? 'Waktu Sistem Terbaru' : 'Gunakan Urutan Input' }}
+                                </span>
                             </div>
                         </label>
 
