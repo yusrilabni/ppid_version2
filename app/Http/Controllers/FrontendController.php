@@ -909,8 +909,9 @@ class FrontendController extends Controller
         }
 
         $positions = \App\Models\Position::orderBy('name')->get();
+        $organizations = \App\Models\Organization::orderBy('name')->get();
 
-        return view('frontend.profil.edit-pimpinan', compact('official', 'positions'));
+        return view('frontend.profil.edit-pimpinan', compact('official', 'positions', 'organizations'));
     }
 
 
