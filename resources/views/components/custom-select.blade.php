@@ -22,17 +22,32 @@
     $shouldShowSearch = $searchable && count($normalizedOptions) > 5;
 @endphp
 
-<div {{ $attributes->merge(['class' => 'relative w-full']) }}
+<div {{ $attributes->merge(['class' => 'relative w-full custom-select-root']) }}
     x-data="customSelectComponent({ 
     data: {{ json_encode($normalizedOptions) }}, 
     selectedValue: '{{ old($name, $value) }}' 
 })" 
 :class="open ? 'custom-select-open' : ''"
-:style="open ? 'z-index: 9999 !important;' : ''" 
+:style="open ? 'z-index: 100 !important;' : ''" 
 @click.away="open = false"
 x-init="$watch('open', value => {
-    let card = $el.closest('.question-card');
-    if(card) card.style.zIndex = value ? '9999' : '';
+    // Elevate parent containers to avoid stacking context issues (e.g. from backdrop-blur or overflow-hidden)
+    let p = $el.parentElement;
+    while(p && p !== document.body) {
+        // Look for common wrapper classes that might have lower z-index or overflow issues
+        if (p.classList.contains('rounded-2xl') || p.classList.contains('rounded-3xl') || 
+            p.classList.contains('shadow-sm') || p.tagName === 'FORM' || p.id === 'contentArea') {
+            if(value) {
+                p.classList.add('promote-z-index');
+            } else {
+                // Only remove if no other custom-selects are open in this parent
+                if (!p.querySelector('.custom-select-open')) {
+                    p.classList.remove('promote-z-index');
+                }
+            }
+        }
+        p = p.parentElement;
+    }
 })">
     
     @if($required)
@@ -171,6 +186,17 @@ x-init="$watch('open', value => {
     }
     .custom-scrollbar::-webkit-scrollbar-thumb:hover {
         background: #cbd5e1;
+    }
+    
+    /* Dynamic Z-Index Promotion */
+    .promote-z-index {
+        z-index: 60 !important;
+        position: relative !important;
+        overflow: visible !important;
+    }
+
+    .custom-select-root.custom-select-open {
+        z-index: 70 !important;
     }
 </style>
 @endonce
