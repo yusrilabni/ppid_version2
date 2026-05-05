@@ -40,10 +40,10 @@
 
         .ppid-logo {
             display: block;
-            height: 130px;
+            height: 90px;
             width: auto;
-            margin: 0 auto -20px;
-            line-height: 0;
+            margin: 0 auto 1.5rem;
+            line-height: 1;
         }
 
         .login-title {

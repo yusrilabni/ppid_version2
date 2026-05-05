@@ -41,15 +41,13 @@
             padding: 1.2rem 2.5rem 2.6rem;
         }
 
-        /* LOGO — RAPAT KE ATAS */
+        /* LOGO — PROPORSIAL */
         .ppid-logo {
             display: block;
-            height: 130px;
+            height: 90px;
             width: auto;
-
-            /* JARAK YANG LEBIH PROPORSIAL */
-            margin: 0 auto -20px;
-            line-height: 0;
+            margin: 0 auto 1.5rem;
+            line-height: 1;
         }
 
         .login-title {
