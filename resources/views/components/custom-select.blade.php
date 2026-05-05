@@ -23,6 +23,7 @@
 @endphp
 
 <div {{ $attributes->merge(['class' => 'relative w-full custom-select-root']) }}
+    id="container_{{ $id ?? $name }}"
     x-data="customSelectComponent({ 
     data: {{ json_encode($normalizedOptions) }}, 
     selectedValue: '{{ old($name, $value) }}' 
@@ -51,9 +52,9 @@ x-init="$watch('open', value => {
 })">
     
     @if($required)
-        <input type="hidden" name="{{ $name }}" x-model="selectedValue" required>
+        <input type="hidden" name="{{ $name }}" id="{{ $id ?? $name }}" x-model="selectedValue" required>
     @else
-        <input type="hidden" name="{{ $name }}" x-model="selectedValue">
+        <input type="hidden" name="{{ $name }}" id="{{ $id ?? $name }}" x-model="selectedValue">
     @endif
 
     {{-- Trigger Button --}}

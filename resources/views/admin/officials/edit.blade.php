@@ -91,15 +91,10 @@
 
                         <div class="space-y-1">
                             <label class="block text-sm font-semibold text-gray-700">Jabatan Utama <span class="text-red-500">*</span></label>
-                            <select name="position_id" id="position_id" required
-                                    class="w-full px-4 py-3 rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition-all duration-200 @error('position_id') border-red-500 @enderror">
-                                <option value="">Pilih Jabatan</option>
-                                @foreach($positions as $position)
-                                    <option value="{{ $position->id }}" {{ old('position_id', $official->position_id) == $position->id ? 'selected' : '' }}>
-                                        {{ $position->name }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            @php
+                                $posOptions = $positions->map(fn($p) => ['value' => $p->id, 'label' => $p->name])->toArray();
+                            @endphp
+                            <x-custom-select name="position_id" id="position_id" :options="$posOptions" :value="old('position_id', $official->position_id)" placeholder="Pilih Jabatan" :required="true" />
                             @error('position_id') <p class="mt-1 text-xs text-red-600 font-medium">{{ $message }}</p> @enderror
                         </div>
 
@@ -113,38 +108,32 @@
 
                         <div class="space-y-1">
                             <label class="block text-sm font-semibold text-gray-700">Status Jabatan</label>
-                            <select name="status_jabatan"
-                                    class="w-full px-4 py-3 rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition-all duration-200">
-                                <option value="Definitif" {{ old('status_jabatan', $official->status_jabatan) == 'Definitif' ? 'selected' : '' }}>Definitif</option>
-                                <option value="Penjabat (Pj)" {{ old('status_jabatan', $official->status_jabatan) == 'Penjabat (Pj)' ? 'selected' : '' }}>Penjabat (Pj)</option>
-                                <option value="Pelaksana Tugas (Plt)" {{ old('status_jabatan', $official->status_jabatan) == 'Pelaksana Tugas (Plt)' ? 'selected' : '' }}>Pelaksana Tugas (Plt)</option>
-                                <option value="Pelaksana Harian (Plh)" {{ old('status_jabatan', $official->status_jabatan) == 'Pelaksana Harian (Plh)' ? 'selected' : '' }}>Pelaksana Harian (Plh)</option>
-                                <option value="Pejabat Sementara (Pjs)" {{ old('status_jabatan', $official->status_jabatan) == 'Pejabat Sementara (Pjs)' ? 'selected' : '' }}>Pejabat Sementara (Pjs)</option>
-                            </select>
+                            @php
+                                $statusJabatanOptions = [
+                                    ['value' => 'Definitif', 'label' => 'Definitif'],
+                                    ['value' => 'Penjabat (Pj)', 'label' => 'Penjabat (Pj)'],
+                                    ['value' => 'Pelaksana Tugas (Plt)', 'label' => 'Pelaksana Tugas (Plt)'],
+                                    ['value' => 'Pelaksana Harian (Plh)', 'label' => 'Pelaksana Harian (Plh)'],
+                                    ['value' => 'Pejabat Sementara (Pjs)', 'label' => 'Pejabat Sementara (Pjs)'],
+                                ];
+                            @endphp
+                            <x-custom-select name="status_jabatan" id="status_jabatan" :options="$statusJabatanOptions" :value="old('status_jabatan', $official->status_jabatan)" placeholder="Pilih Status Jabatan" />
                         </div>
 
                         <div id="organization_field" class="{{ (old('position_id', $official->position_id) && ($positions->firstWhere('id', old('position_id', $official->position_id))->name ?? '') === 'Kepala OPD') ? '' : 'hidden' }} space-y-1">
                             <label class="block text-sm font-semibold text-gray-700">OPD / Organisasi <span class="text-red-500">*</span></label>
-                            <select name="organization_id"
-                                    class="w-full px-4 py-3 rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition-all duration-200">
-                                <option value="">Pilih OPD</option>
-                                @foreach($organizations as $organization)
-                                    <option value="{{ $organization->id }}" {{ old('organization_id', $official->organization_id) == $organization->id ? 'selected' : '' }}>
-                                        {{ $organization->name }}
-                                    </option>
-                                @endforeach
-                            </select>
+                            @php
+                                $orgOptions = $organizations->map(fn($o) => ['value' => $o->id, 'label' => $o->name])->toArray();
+                            @endphp
+                            <x-custom-select name="organization_id" id="organization_id" :options="$orgOptions" :value="old('organization_id', $official->organization_id)" placeholder="Pilih OPD" />
                         </div>
 
                         <div class="space-y-1">
                             <label class="block text-sm font-semibold text-gray-700">Agama</label>
-                            <select name="religion" id="religion"
-                                    class="w-full px-4 py-3 rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition-all duration-200">
-                                <option value="">Pilih Agama</option>
-                                @foreach(['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Khonghucu'] as $agm)
-                                    <option value="{{ $agm }}" {{ old('religion', $official->religion) == $agm ? 'selected' : '' }}>{{ $agm }}</option>
-                                @endforeach
-                            </select>
+                            @php
+                                $agamaOptions = collect(['Islam', 'Kristen', 'Katolik', 'Hindu', 'Buddha', 'Khonghucu'])->map(fn($a) => ['value' => $a, 'label' => $a])->toArray();
+                            @endphp
+                            <x-custom-select name="religion" id="religion" :options="$agamaOptions" :value="old('religion', $official->religion)" placeholder="Pilih Agama" />
                         </div>
 
                         <div class="space-y-1">
@@ -161,23 +150,18 @@
 
                         <div class="space-y-1">
                             <label class="block text-sm font-semibold text-gray-700">Status Pernikahan</label>
-                            <select name="marital_status" id="marital_status"
-                                    class="w-full px-4 py-3 rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition-all duration-200">
-                                <option value="">Pilih Status</option>
-                                @foreach(['Belum Menikah', 'Menikah', 'Cerai Hidup', 'Cerai Mati'] as $mrt)
-                                    <option value="{{ $mrt }}" {{ old('marital_status', $official->marital_status) == $mrt ? 'selected' : '' }}>{{ $mrt }}</option>
-                                @endforeach
-                            </select>
+                            @php
+                                $maritalOptions = collect(['Belum Menikah', 'Menikah', 'Cerai Hidup', 'Cerai Mati'])->map(fn($m) => ['value' => $m, 'label' => $m])->toArray();
+                            @endphp
+                            <x-custom-select name="marital_status" id="marital_status" :options="$maritalOptions" :value="old('marital_status', $official->marital_status)" placeholder="Pilih Status" />
                         </div>
 
                         <div class="space-y-1">
                             <label class="block text-sm font-semibold text-gray-700">Jenis Kelamin</label>
-                            <select name="jenis_kelamin" id="jenis_kelamin"
-                                    class="w-full px-4 py-3 rounded-xl border-gray-200 shadow-sm focus:border-blue-500 focus:ring focus:ring-blue-200 transition-all duration-200">
-                                <option value="">Pilih Jenis Kelamin</option>
-                                <option value="Laki-laki" {{ old('jenis_kelamin', $official->jenis_kelamin) == 'Laki-laki' ? 'selected' : '' }}>Laki-laki</option>
-                                <option value="Perempuan" {{ old('jenis_kelamin', $official->jenis_kelamin) == 'Perempuan' ? 'selected' : '' }}>Perempuan</option>
-                            </select>
+                            @php
+                                $genderOptions = [['value' => 'Laki-laki', 'label' => 'Laki-laki'], ['value' => 'Perempuan', 'label' => 'Perempuan']];
+                            @endphp
+                            <x-custom-select name="jenis_kelamin" id="jenis_kelamin" :options="$genderOptions" :value="old('jenis_kelamin', $official->jenis_kelamin)" placeholder="Pilih Jenis Kelamin" />
                         </div>
 
                         <div class="space-y-1">
@@ -334,7 +318,6 @@
                                 </div>
                             </div>
                         @empty
-                            <!-- Empty career block as before -->
                         @endforelse
                     </div>
 
@@ -365,9 +348,7 @@
                     </div>
                 </div>
 
-                <!-- Pendidikan, Diklat, Organisasi, Penghargaan tabs would follow a similar pattern -->
-                <!-- I will implement Pendidikan now as it is another main section -->
-
+                <!-- Pendidikan Tab -->
                 <div id="pendidikan" class="tab-content hidden animate-fadeIn space-y-6">
                     <div class="flex items-center justify-between">
                         <h3 class="text-lg font-bold text-gray-800">Riwayat Pendidikan Formal</h3>
@@ -420,7 +401,6 @@
                     </div>
                 </div>
 
-                <!-- Implementing Diklat, Organisasi, Penghargaan with same styling -->
                 <div id="diklat" class="tab-content hidden animate-fadeIn space-y-6">
                     <div class="flex items-center justify-between"><h3 class="text-lg font-bold text-gray-800">Riwayat Diklat & Kursus</h3><button type="button" id="add_training" class="bg-blue-600 text-white px-4 py-2 rounded-xl text-sm font-bold shadow-lg shadow-blue-100">Tambah Diklat</button></div>
                     <div id="training_fields" class="space-y-4">
