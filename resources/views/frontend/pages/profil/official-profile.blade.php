@@ -207,38 +207,45 @@
 
                     <!-- Family -->
                     @if ($official->spouse_name || $official->children->count() > 0)
-                        <div class="mb-8">
-                            <h2 class="text-2xl font-bold text-gray-800 mb-4 flex items-center">
+                        <div class="mb-10">
+                            <h2 class="text-2xl font-bold text-gray-800 mb-6 flex items-center">
                                 <i class="fas fa-users text-blue-500 mr-3"></i>
                                 Keluarga
                             </h2>
-                            <div class="space-y-6">
+                            <div class="grid grid-cols-1 gap-6">
                                 @if ($official->spouse_name)
                                     @php
                                         $spouse_label = ($official->jenis_kelamin === 'Perempuan') ? 'Nama Suami' : 'Nama Istri';
-                                        $spouse_bg = ($official->jenis_kelamin === 'Perempuan') ? 'bg-blue-50' : 'bg-pink-50';
-                                        $spouse_text = ($official->jenis_kelamin === 'Perempuan') ? 'text-blue-800' : 'text-pink-800';
-                                        $spouse_border = ($official->jenis_kelamin === 'Perempuan') ? 'border-blue-100' : 'border-pink-100';
                                     @endphp
-                                    <div class="{{ $spouse_bg }} p-5 rounded-2xl border {{ $spouse_border }}">
-                                        <h3 class="font-black {{ $spouse_text }} mb-1 text-xs uppercase tracking-widest">{{ $spouse_label }}:</h3>
-                                        <p class="text-gray-800 text-xl font-bold">{{ $official->spouse_name }}</p>
+                                    <div class="bg-white p-6 rounded-[1.5rem] border border-gray-100 shadow-sm flex items-center gap-5 hover:border-blue-200 transition-all group">
+                                        <div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-500 group-hover:bg-blue-600 group-hover:text-white transition-all duration-300">
+                                            <i class="fas fa-heart text-xl"></i>
+                                        </div>
+                                        <div>
+                                            <h3 class="text-xs font-bold text-gray-400 mb-1">{{ $spouse_label }}</h3>
+                                            <p class="text-xl font-black text-gray-800">{{ $official->spouse_name }}</p>
+                                        </div>
                                     </div>
                                 @endif
 
                                 @if ($official->children->count() > 0)
-                                    <div class="bg-gray-50 p-4 rounded-lg">
-                                        <h3 class="font-bold text-gray-800 mb-3 text-lg">Anak:</h3>
-                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-3">
-                                            @foreach ($official->children as $index => $child)
-                                                <div class="bg-white p-3 rounded border border-gray-200">
-                                                    <span class="font-medium text-gray-700">{{ $loop->iteration }}.</span>
-                                                    {{ $child->name }}
+                                    <div class="bg-gray-50/50 p-6 rounded-[2rem] border border-gray-100">
+                                        <h3 class="text-xs font-black text-gray-400 uppercase tracking-[0.2em] mb-5 flex items-center gap-2">
+                                            <i class="fas fa-child text-blue-400"></i> Daftar Anak ({{ $official->children->count() }})
+                                        </h3>
+                                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                                            @foreach ($official->children as $child)
+                                                <div class="bg-white p-5 rounded-2xl border border-gray-200/60 shadow-sm hover:border-blue-300 hover:shadow-md transition-all group">
+                                                    <div class="flex items-center gap-3">
+                                                        <span class="w-8 h-8 rounded-full bg-gray-50 flex items-center justify-center text-[10px] font-black text-gray-400 group-hover:bg-blue-600 group-hover:text-white transition-colors">
+                                                            {{ $loop->iteration }}
+                                                        </span>
+                                                        <p class="font-bold text-gray-800">{{ $child->name }}</p>
+                                                    </div>
                                                     @if ($child->birth_place || $child->birth_date)
-                                                        <div class="text-sm text-gray-500 mt-1">
-                                                            Lahir di {{ $child->birth_place }},
-                                                            {{ $child->birth_date->format('d/m/Y') }}
-                                                        </div>
+                                                        <p class="text-[10px] text-gray-400 mt-2 ml-11 font-medium italic">
+                                                            Lahir: {{ $child->birth_place ?? '-' }}, {{ $child->birth_date ? $child->birth_date->format('d/m/Y') : '-' }}
+                                                        </p>
                                                     @endif
                                                 </div>
                                             @endforeach
