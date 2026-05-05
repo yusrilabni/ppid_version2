@@ -214,9 +214,15 @@
                             </h2>
                             <div class="space-y-6">
                                 @if ($official->spouse_name)
-                                    <div class="bg-blue-50 p-4 rounded-lg">
-                                        <h3 class="font-bold text-gray-800 mb-2 text-lg">Suami:</h3>
-                                        <p class="text-gray-700 text-lg">{{ $official->spouse_name }}</p>
+                                    @php
+                                        $spouse_label = ($official->jenis_kelamin === 'Perempuan') ? 'Nama Suami' : 'Nama Istri';
+                                        $spouse_bg = ($official->jenis_kelamin === 'Perempuan') ? 'bg-blue-50' : 'bg-pink-50';
+                                        $spouse_text = ($official->jenis_kelamin === 'Perempuan') ? 'text-blue-800' : 'text-pink-800';
+                                        $spouse_border = ($official->jenis_kelamin === 'Perempuan') ? 'border-blue-100' : 'border-pink-100';
+                                    @endphp
+                                    <div class="{{ $spouse_bg }} p-5 rounded-2xl border {{ $spouse_border }}">
+                                        <h3 class="font-black {{ $spouse_text }} mb-1 text-xs uppercase tracking-widest">{{ $spouse_label }}:</h3>
+                                        <p class="text-gray-800 text-xl font-bold">{{ $official->spouse_name }}</p>
                                     </div>
                                 @endif
 
