@@ -44,11 +44,11 @@
         /* LOGO — RAPAT KE ATAS */
         .ppid-logo {
             display: block;
-            height: 210px;
+            height: 130px;
             width: auto;
 
-            /* HAMPIR TANPA JARAK ATAS */
-            margin: 0 auto -50px;
+            /* JARAK YANG LEBIH PROPORSIAL */
+            margin: 0 auto -20px;
             line-height: 0;
         }
 
