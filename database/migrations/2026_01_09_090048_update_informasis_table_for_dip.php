@@ -17,7 +17,9 @@ return new class extends Migration
             $table->integer('tahun_berakhir_pengecualian')->nullable()->after('status_keterbukaan');
         });
 
-        DB::statement("ALTER TABLE informasis MODIFY COLUMN category ENUM('Informasi Berkala', 'Informasi Serta Merta', 'Informasi Setiap Saat', 'Informasi Dikecualikan') NULL DEFAULT NULL");
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE informasis MODIFY COLUMN category ENUM('Informasi Berkala', 'Informasi Serta Merta', 'Informasi Setiap Saat', 'Informasi Dikecualikan') NULL DEFAULT NULL");
+        }
     }
 
     /**
@@ -29,6 +31,9 @@ return new class extends Migration
             $table->dropColumn('status_keterbukaan');
             $table->dropColumn('tahun_berakhir_pengecualian');
         });
-        DB::statement("ALTER TABLE informasis MODIFY COLUMN category VARCHAR(255) NULL DEFAULT NULL");
+        
+        if (DB::getDriverName() === 'mysql') {
+            DB::statement("ALTER TABLE informasis MODIFY COLUMN category VARCHAR(255) NULL DEFAULT NULL");
+        }
     }
 };
