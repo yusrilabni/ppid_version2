@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('sub_standar_layanans', function (Blueprint $table) {
-            $table->date('tahun_dokumen')->after('file');
+            $table->date('tahun_dokumen')->after('file')->nullable();
         });
     }
 
