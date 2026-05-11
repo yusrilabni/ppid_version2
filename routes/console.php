@@ -9,3 +9,6 @@ Artisan::command('inspire', function () {
 })->purpose('Display an inspiring quote');
 
 Schedule::command('permohonan:complete-old')->daily()->at('01:00');
+
+// Refresh Redis Cache every hour
+Schedule::job(new \App\Jobs\OptimizedCacheWarmup)->hourly();
