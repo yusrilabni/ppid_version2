@@ -138,9 +138,6 @@ Route::get('/laporan/ppid/file/{id}', [FrontendController::class, 'serveLaporanF
 // Storage & Fallback
 Route::get('storage/{path}', [App\Http\Controllers\StorageController::class, 'show'])->where('path', '.*')->name('storage.fallback');
 
-// Redis Monitoring (Superadmin Only)
-Route::get('/redis-check', [App\Http\Controllers\Admin\RedisMonitorController::class, 'check'])->middleware(['auth']);
-
 // CATCH-ALL ROUTE (MUST BE LAST)
 Route::get('/{page}/{subpage?}', [FrontendController::class, 'page'])->where(['page' => '[a-z-]+', 'subpage' => '[a-z-]+'])->name('page.show');
 

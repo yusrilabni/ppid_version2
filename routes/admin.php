@@ -72,6 +72,9 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
 // KHUSUS SUPERADMIN
 Route::middleware(['auth', SuperadminMiddleware::class])->group(function () {
     Route::resource('users', UserController::class);
+    // Redis Monitoring
+    Route::get('/redis-check', [App\Http\Controllers\Admin\RedisMonitorController::class, 'check'])->name('redis.check');
+
     Route::resource('profil-ppid', ProfilPpidController::class);
     
     // Sliders & Settings
