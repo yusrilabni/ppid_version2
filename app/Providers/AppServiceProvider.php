@@ -33,6 +33,10 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Register Observers
+        \App\Models\Berita::observe(\App\Observers\BeritaObserver::class);
+        \App\Models\Informasi::observe(\App\Observers\InformasiObserver::class);
+
         // Paksa HTTPS jika di production
         if (config('app.env') === 'production') {
             \Illuminate\Support\Facades\URL::forceScheme('https');

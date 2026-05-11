@@ -34,130 +34,155 @@ class FrontendController extends Controller
     public function home()
     {
         $this->recordVisit(); // Record a visit when the home page is accessed.
-        $sliders = Slider::where('active', true)->orderBy('order', 'asc')->get();
-        foreach ($sliders as $slider) {
-            $slider->informasi = Informasi::where('title', $slider->title)->first();
-        }
-        $berita = Berita::where('published', true)->orderBy('created_at', 'desc')->take(6)->get();
-        $galeri = Galeri::orderBy('is_pinned', 'desc')->orderBy('created_at', 'desc')->take(8)->get();
+
+        $sliders = Cache::remember('home_sliders', 3600, function () {
+            $items = Slider::where('active', true)->orderBy('order', 'asc')->get();
+            foreach ($items as $slider) {
+                $slider->informasi = Informasi::where('title', $slider->title)->first();
+            }
+            return $items;
+        });
+
+        $berita = Cache::remember('berita_home_latest', 3600, function () {
+            return Berita::where('published', true)->orderBy('created_at', 'desc')->take(6)->get();
+        });
+
+        $galeri = Cache::remember('galeri_home_pinned', 3600, function () {
+            return Galeri::orderBy('is_pinned', 'desc')->orderBy('created_at', 'desc')->take(8)->get();
+        });
         
         // --- START of Statistics Logic ---
-        $informasiBerkalaCount = Informasi::where('category', 'Informasi Berkala')->count();
-        $informasiSetiapSaatCount = Informasi::where('category', 'Informasi Setiap Saat')->count();
-        $informasiSertaMertaCount = Informasi::where('category', 'Informasi Serta Merta')->count();
-        $informasiDikecualikanCount = Informasi::where('category', 'Informasi Dikecualikan')->count();
-        $totalInformasi = $informasiBerkalaCount + $informasiSetiapSaatCount + $informasiSertaMertaCount + $informasiDikecualikanCount; // Sum all active categories
+        $frontendStats = Cache::remember('home_stats', 3600, function () {
+            $informasiBerkalaCount = Informasi::where('category', 'Informasi Berkala')->count();
+            $informasiSetiapSaatCount = Informasi::where('category', 'Informasi Setiap Saat')->count();
+            $informasiSertaMertaCount = Informasi::where('category', 'Informasi Serta Merta')->count();
+            $informasiDikecualikanCount = Informasi::where('category', 'Informasi Dikecualikan')->count();
+            $totalInformasi = $informasiBerkalaCount + $informasiSetiapSaatCount + $informasiSertaMertaCount + $informasiDikecualikanCount;
 
-        $totalGaleri = Galeri::count();
-        $totalPermohonans = \App\Models\PermohonanInformasi::count(); // Calculate total permohonan
-        $totalSurveyResponses = \App\Models\SurveyResponse::count(); // Calculate total survey responses
-        
-        // Merge into a single stats array if needed, or pass separately
-        $frontendStats = [
-            'informasi' => [
-                'berkala' => $informasiBerkalaCount,
-                'setiap_saat' => $informasiSetiapSaatCount,
-                'serta_merta' => $informasiSertaMertaCount,
-                'total' => $totalInformasi,
-            ],
-            'galeri' => $totalGaleri,
-            'permohonan' => $totalPermohonans, // Add total permohonan
-            'survey_responses' => $totalSurveyResponses, // Add total survey responses
-        ];
+            return [
+                'informasi' => [
+                    'berkala' => $informasiBerkalaCount,
+                    'setiap_saat' => $informasiSetiapSaatCount,
+                    'serta_merta' => $informasiSertaMertaCount,
+                    'total' => $totalInformasi,
+                ],
+                'galeri' => Galeri::count(),
+                'permohonan' => \App\Models\PermohonanInformasi::count(),
+                'survey_responses' => \App\Models\SurveyResponse::count(),
+            ];
+        });
         // --- END of Statistics Logic ---
 
         // --- START of Contact Info Logic ---
-        $profilPpid = ProfilPpid::where('status', true)->first();
-        $contactInfo = [
-            'address' => $profilPpid->address ?? 'Alamat belum diatur',
-            'phone' => $profilPpid->phone ?? 'Telepon belum diatur',
-            'email' => $profilPpid->email ?? 'Email belum diatur',
-            'service_hours_weekday' => '08:00 - 16:00 WITA',
-            'service_hours_friday' => '08:00 - 11:30 WITA',
-            'service_hours_weekend' => 'Tutup',
-        ];
+        $contactInfo = Cache::remember('contact_info_active', 86400, function () {
+            $profilPpid = ProfilPpid::where('status', true)->first();
+            return [
+                'address' => $profilPpid->address ?? 'Alamat belum diatur',
+                'phone' => $profilPpid->phone ?? 'Telepon belum diatur',
+                'email' => $profilPpid->email ?? 'Email belum diatur',
+                'service_hours_weekday' => '08:00 - 16:00 WITA',
+                'service_hours_friday' => '08:00 - 11:30 WITA',
+                'service_hours_weekend' => 'Tutup',
+            ];
+        });
         // --- END of Contact Info Logic ---
 
         $api_url = 'https://humas.sinjaikab.go.id/v1/rss-widget/index.php';
-        $rss_items = [];
-        try {
-            $response = Http::get($api_url);
-            if ($response->successful()) {
-                $data = $response->json();
-                if (is_array($data)) {
-                    foreach (array_slice($data, 0, 16) as $item) {
-                        $rss_items[] = [
-                            'title' => $item['title'] ?? '',
-                            'link' => $item['link'] ?? '#',
-                            'pubDate' => $item['pubDate'] ?? '',
-                            'description' => $item['description'] ?? '',
-                            'image' => $item['thumbnail'] ?? '',
-                        ];
+        $rss_items = Cache::remember('rss_humas_items', 1800, function () use ($api_url) {
+            $items = [];
+            try {
+                $response = Http::get($api_url);
+                if ($response->successful()) {
+                    $data = $response->json();
+                    if (is_array($data)) {
+                        foreach (array_slice($data, 0, 16) as $item) {
+                            $items[] = [
+                                'title' => $item['title'] ?? '',
+                                'link' => $item['link'] ?? '#',
+                                'pubDate' => $item['pubDate'] ?? '',
+                                'description' => $item['description'] ?? '',
+                                'image' => $item['thumbnail'] ?? '',
+                            ];
+                        }
                     }
                 }
+            } catch (\Exception $e) {
+                \Illuminate\Support\Facades\Log::error('Error fetching or parsing JSON feed: ' . $e->getMessage());
             }
-        } catch (\Exception $e) {
-            \Illuminate\Support\Facades\Log::error('Error fetching or parsing JSON feed: ' . $e->getMessage());
-        }
+            return $items;
+        });
 
-        $globalSliderTransitionDuration = Setting::where('key', 'slider_transition_duration_ms')->first();
+        $globalSliderTransitionDuration = Cache::remember('setting_slider_duration', 86400, function () {
+            return Setting::where('key', 'slider_transition_duration_ms')->first();
+        });
         $transitionDuration = $globalSliderTransitionDuration ? (int)$globalSliderTransitionDuration->value : 5000;
 
-        $sliderAspectRatio = Setting::where('key', 'slider_aspect_ratio')->first()->value ?? 'aspect-video';
-        $sliderAnimationType = Setting::where('key', 'slider_animation_type')->first()->value ?? 'slide';
+        $sliderAspectRatio = Cache::remember('setting_slider_aspect_ratio', 86400, function () {
+            return Setting::where('key', 'slider_aspect_ratio')->first()->value ?? 'aspect-video';
+        });
+        $sliderAnimationType = Cache::remember('setting_slider_animation', 86400, function () {
+            return Setting::where('key', 'slider_animation_type')->first()->value ?? 'slide';
+        });
 
         // --- START of Laporan Kinerja Logic ---
-        $allPermohonans = \App\Models\PermohonanInformasi::all();
-        $totalPermohonans = $allPermohonans->count();
+        // Caching performance metrics for 1 hour
+        $performanceMetrics = Cache::remember('home_performance_metrics', 3600, function () {
+            $allPermohonans = \App\Models\PermohonanInformasi::all();
+            $totalPermohonans = $allPermohonans->count();
 
-        // Ambil 10 Penilaian (Rating) Terbaru untuk Running Ticker
-        $latestRatings = \App\Models\PermohonanInformasi::whereNotNull('rating')
-            ->with(['user', 'responses' => function($query) {
-                $query->orderBy('created_at', 'desc');
-            }])
-            ->orderBy('updated_at', 'desc')
-            ->take(10)
-            ->get()
-            ->map(function($permohonan) {
-                // Cari pesan terakhir dari pemohon (ini ulasan ratingnya)
-                $ratingComment = $permohonan->responses
-                    ->where('user_id', $permohonan->user_id)
-                    ->first();
-                
-                $permohonan->rating_comment = $ratingComment ? $ratingComment->message : 'Memberikan penilaian tanpa komentar.';
-                return $permohonan;
-            });
+            $totalRatings = \App\Models\PermohonanInformasi::whereNotNull('rating')->count();
+            $averageRating = \App\Models\PermohonanInformasi::whereNotNull('rating')->avg('rating');
+            $tingkatKepuasan = $averageRating !== null ? round(($averageRating / 5) * 100) : 0; 
 
-        // Ambil pemohon yang memberikan rating untuk avatar
+            $completedPermohonans = $allPermohonans->where('status_permohonan', 'selesai');
+            $totalResponseTime = 0;
+            $completedCount = $completedPermohonans->count();
+
+            foreach ($completedPermohonans as $permohonan) {
+                $createdAt = \Carbon\Carbon::parse($permohonan->created_at);
+                $updatedAt = \Carbon\Carbon::parse($permohonan->updated_at);
+                $diff = $updatedAt->diffInDays($createdAt);
+                $totalResponseTime += max(1, $diff);
+            }
+            $rataRataWaktuRespon = $completedCount > 0 ? round($totalResponseTime / $completedCount) : 0;
+            if ($rataRataWaktuRespon === 0 && $completedCount > 0) {
+                $rataRataWaktuRespon = 1;
+            }
+
+            $tingkatPenyelesaian = $totalPermohonans > 0 ? round(($completedCount / $totalPermohonans) * 100) : 0;
+
+            return compact('tingkatKepuasan', 'rataRataWaktuRespon', 'tingkatPenyelesaian');
+        });
+
+        $tingkatKepuasan = $performanceMetrics['tingkatKepuasan'];
+        $rataRataWaktuRespon = $performanceMetrics['rataRataWaktuRespon'];
+        $tingkatPenyelesaian = $performanceMetrics['tingkatPenyelesaian'];
+
+        $latestRatings = Cache::remember('home_latest_ratings', 1800, function () {
+            return \App\Models\PermohonanInformasi::whereNotNull('rating')
+                ->with(['user', 'responses' => function($query) {
+                    $query->orderBy('created_at', 'desc');
+                }])
+                ->orderBy('updated_at', 'desc')
+                ->take(10)
+                ->get()
+                ->map(function($permohonan) {
+                    $ratingComment = $permohonan->responses
+                        ->where('user_id', $permohonan->user_id)
+                        ->first();
+                    
+                    $permohonan->rating_comment = $ratingComment ? $ratingComment->message : 'Memberikan penilaian tanpa komentar.';
+                    return $permohonan;
+                });
+        });
+
         $ratedPermohonans = $latestRatings->take(3);
-        
-        $totalRatings = \App\Models\PermohonanInformasi::whereNotNull('rating')->count();
-        $averageRating = \App\Models\PermohonanInformasi::whereNotNull('rating')->avg('rating');
-        $tingkatKepuasan = $averageRating !== null ? round(($averageRating / 5) * 100) : 0; 
-
-        // Rata-rata Waktu Respon (Average Response Time)
-        $completedPermohonans = $allPermohonans->where('status_permohonan', 'selesai');
-        $totalResponseTime = 0;
-        $completedCount = $completedPermohonans->count();
-
-        foreach ($completedPermohonans as $permohonan) {
-            // Assuming updated_at is the completion timestamp
-            $createdAt = \Carbon\Carbon::parse($permohonan->created_at);
-            $updatedAt = \Carbon\Carbon::parse($permohonan->updated_at);
-            // Use diffInDays and ensure at least 1 day if it's the same day
-            $diff = $updatedAt->diffInDays($createdAt);
-            $totalResponseTime += max(1, $diff);
-        }
-        $rataRataWaktuRespon = $completedCount > 0 ? round($totalResponseTime / $completedCount) : 0; // In days
-        if ($rataRataWaktuRespon === 0 && $completedCount > 0) {
-            $rataRataWaktuRespon = 1;
-        }
-
-        // Tingkat Penyelesaian Permohonan (Request Completion Rate)
-        $tingkatPenyelesaian = $totalPermohonans > 0 ? round(($completedCount / $totalPermohonans) * 100) : 0;
         // --- END of Laporan Kinerja Logic ---
 
-        $latestInformasis = Informasi::with(['user', 'organization'])->latest()->take(16)->get();
+        $latestInformasis = Cache::remember('informasi_latest_home', 3600, function () {
+            return Informasi::with(['user', 'organization'])->latest()->take(16)->get();
+        });
+
         $unitMap = collect($this->getUnitData());
 
         return view('frontend.home', compact('sliders', 'berita', 'galeri', 'frontendStats', 'rss_items', 'contactInfo', 'transitionDuration', 'tingkatKepuasan', 'rataRataWaktuRespon', 'tingkatPenyelesaian', 'latestInformasis', 'unitMap', 'sliderAspectRatio', 'sliderAnimationType', 'ratedPermohonans', 'latestRatings'));
@@ -359,7 +384,9 @@ class FrontendController extends Controller
 
     public function detailBySlug($slug)
     {
-        $informasi = Informasi::with(['official.position', 'organization'])->where('slug', $slug)->firstOrFail();
+        $informasi = Cache::remember('informasi_detail_slug_' . $slug, 3600, function () use ($slug) {
+            return Informasi::with(['official.position', 'organization'])->where('slug', $slug)->firstOrFail();
+        });
         
         // 1. If this is an official profile, redirect directly to the official's profile page
         if ($informasi->official) {
