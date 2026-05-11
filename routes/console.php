@@ -10,5 +10,5 @@ Artisan::command('inspire', function () {
 
 Schedule::command('permohonan:complete-old')->daily()->at('01:00');
 
-// Refresh Redis Cache every hour
-Schedule::job(new \App\Jobs\OptimizedCacheWarmup)->hourly();
+// Refresh Redis Cache every 8 hours
+Schedule::job(new \App\Jobs\OptimizedCacheWarmup)->cron('0 */8 * * *');
