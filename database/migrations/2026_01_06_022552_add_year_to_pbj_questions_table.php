@@ -12,7 +12,7 @@ return new class extends Migration
     public function up(): void
     {
         Schema::table('pbj_questions', function (Blueprint $table) {
-            $table->integer('year')->after('order');
+            $table->integer('year')->after('order')->nullable();
             $table->index('year');
         });
     }
