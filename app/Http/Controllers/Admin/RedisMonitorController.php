@@ -22,14 +22,34 @@ class RedisMonitorController extends Controller
         $results = [
             'status' => 'Unknown',
             'driver' => config('cache.default'),
+            'php_version' => PHP_VERSION,
+            'extensions' => [
+                'redis' => extension_loaded('redis'),
+                'igbinary' => extension_loaded('igbinary'),
+            ],
             'redis_config' => [
                 'client' => config('database.redis.client'),
                 'host' => config('database.redis.default.host'),
                 'port' => config('database.redis.default.port'),
+                'database' => config('database.redis.default.database'),
             ],
             'test_results' => [],
+            'possible_sockets' => [],
             'info' => null,
         ];
+
+        // Diagnostic: Check for common cPanel redis sockets
+        $user = get_current_user();
+        $commonSockets = [
+            "/home/$user/.redis/redis.sock",
+            "/var/run/redis/redis.sock",
+            "/tmp/redis.sock",
+        ];
+        foreach ($commonSockets as $socket) {
+            if (file_exists($socket)) {
+                $results['possible_sockets'][] = $socket;
+            }
+        }
 
         try {
             // Test 1: Ping Redis
