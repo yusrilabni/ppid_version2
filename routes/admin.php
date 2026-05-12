@@ -57,6 +57,9 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     Route::resource('laporan', LaporanController::class);
     Route::resource('standar-layanan', SubStandarLayananController::class);
     Route::resource('permohonan-informasi', PermohonanInformasiController::class);
+    Route::post('permohonan-informasi/{permohonan_informasi}/complete', [PermohonanInformasiController::class, 'complete'])->name('permohonan-informasi.complete');
+    Route::post('permohonan-informasi/{permohonan_informasi}/reject', [PermohonanInformasiController::class, 'reject'])->name('permohonan-informasi.reject');
+    Route::post('permohonan-response/{response}/resend', [PermohonanInformasiController::class, 'resendNotification'])->name('permohonan-response.resend');
 
     // LHKPN
     Route::get('lhkpn', [LhkpnController::class, 'index'])->name('lhkpn.index');
