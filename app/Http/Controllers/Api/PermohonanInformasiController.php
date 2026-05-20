@@ -25,9 +25,10 @@ class PermohonanInformasiController extends Controller
                 'email_pemohon' => 'required|email|max:255',
                 'detail_informasi' => 'required|string',
                 'tujuan_penggunaan_informasi' => 'required|string',
-                'cara_memperoleh_informasi' => 'required|string',
-                'cara_mendapatkan_salinan' => 'required|string',
+                'cara_memperoleh_informasi' => 'required', // Bisa string atau array
+                'cara_mendapatkan_salinan' => 'nullable', // Bisa string atau array
                 'tempat_mendapatkan_salinan' => 'nullable|string',
+                'privacy_status' => 'nullable|in:Publik,Anonim,Rahasia',
             ]);
 
             if ($validator->fails()) {
@@ -38,19 +39,47 @@ class PermohonanInformasiController extends Controller
                 ], 422);
             }
 
-            // Generate Unique Code (e.g., REQ-XXXXX)
+            $validatedData = $validator->validated();
+
+            // Penanganan cara_memperoleh_informasi (Konversi ke JSON jika array, pastikan format benar)
+            if (is_array($validatedData['cara_memperoleh_informasi'])) {
+                $validatedData['cara_memperoleh_informasi'] = json_encode($validatedData['cara_memperoleh_informasi']);
+            } else {
+                // Jika string, bungkus dalam array lalu JSON-kan agar konsisten dengan web
+                $validatedData['cara_memperoleh_informasi'] = json_encode([$validatedData['cara_memperoleh_informasi']]);
+            }
+
+            // Penanganan cara_mendapatkan_salinan
+            if (isset($validatedData['cara_mendapatkan_salinan'])) {
+                if (is_array($validatedData['cara_mendapatkan_salinan'])) {
+                    $validatedData['cara_mendapatkan_salinan'] = json_encode($validatedData['cara_mendapatkan_salinan']);
+                } else {
+                    $validatedData['cara_mendapatkan_salinan'] = json_encode([$validatedData['cara_mendapatkan_salinan']]);
+                }
+            }
+
+            // Default privacy status if not provided
+            $validatedData['privacy_status'] = $validatedData['privacy_status'] ?? 'Publik';
+
+            // Link to user if authenticated via Sanctum
+            if (auth('sanctum')->check()) {
+                $validatedData['user_id'] = auth('sanctum')->id();
+            }
+
+            // Generate Unique Code
             $uniqueCode = 'REQ-' . strtoupper(GeneralHelper::generateUniqueCode(6));
+            $validatedData['unique_code'] = $uniqueCode;
 
-            $permohonan = PermohonanInformasi::create(array_merge(
-                $validator->validated(),
-                ['unique_code' => $uniqueCode]
-            ));
+            $permohonan = PermohonanInformasi::create($validatedData);
 
-            // Optional: Send Notification to Telegram (using existing helper)
-            $message = "<b>🔔 Permohonan Informasi Baru (via Android)</b>\n\n";
-            $message .= "Nama: {$permohonan->nama_pemohon}\n";
-            $message .= "Kode: <code>{$permohonan->unique_code}</code>\n";
-            $message .= "Tujuan: {$permohonan->tujuan_penggunaan_informasi}";
+            // Notifikasi Telegram
+            $message = "<b>🔔 Permohonan Informasi Baru (Mobile App)</b>\n\n";
+            $message .= "<b>🆔 Kode:</b> <code>{$permohonan->unique_code}</code>\n";
+            $message .= "<b>👤 Nama:</b> {$permohonan->nama_pemohon}\n";
+            $message .= "<b>📍 Alamat:</b> {$permohonan->alamat_pemohon}\n";
+            $message .= "<b>📝 Detail:</b>\n" . substr($permohonan->detail_informasi, 0, 100) . "...\n\n";
+            $message .= "<b>🔒 Privasi:</b> {$permohonan->privacy_status}\n";
+            $message .= '<a href="' . url('/admin/permohonan-informasi/' . $permohonan->id) . '">🔗 Lihat di Web</a>';
             
             GeneralHelper::sendTelegramMessage($message);
 

@@ -46,6 +46,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/sliders', [SliderController::class, 'index']);
     Route::get('/galeri', [GaleriController::class, 'index']);
     Route::get('/menu', [MenuController::class, 'index']);
+    Route::get('/units', [App\Http\Controllers\Api\DinasController::class, 'list']);
 
     // Statistik & Sistem
     Route::get('/statistik', [StatistikController::class, 'index']);

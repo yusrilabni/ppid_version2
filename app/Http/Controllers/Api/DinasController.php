@@ -13,6 +13,22 @@ use Maatwebsite\Excel\Facades\Excel;
 
 class DinasController extends Controller
 {
+    public function list()
+    {
+        try {
+            $organizations = Organization::all();
+            return response()->json([
+                'success' => true,
+                'data' => $organizations
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => $e->getMessage()
+            ], 500);
+        }
+    }
+
     public function index()
     {
         $cached = GeneralHelper::syncExternalUnitsIfNeeded();
