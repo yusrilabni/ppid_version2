@@ -107,6 +107,121 @@ class PermohonanInformasiController extends Controller
     }
 
     /**
+     * Get all requests belonging to the authenticated user.
+     */
+    public function myRequests(Request $request): JsonResponse
+    {
+        try {
+            $user = $request->user();
+            $permohonan = PermohonanInformasi::where('user_id', $user->id)
+                ->orderBy('created_at', 'desc')
+                ->get();
+
+            return response()->json([
+                'success' => true,
+                'data' => $permohonan
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengambil riwayat permohonan',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
+     * Get detailed info of a specific request with responses.
+     */
+    public function show(Request $request, $id): JsonResponse
+    {
+        try {
+            $user = $request->user();
+            $permohonan = PermohonanInformasi::with(['responses.user'])
+                ->where('user_id', $user->id)
+                ->where('id', $id)
+                ->firstOrFail();
+
+            return response()->json([
+                'success' => true,
+                'data' => $permohonan
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Permohonan tidak ditemukan'
+            ], 404);
+        }
+    }
+
+    /**
+     * Update a pending request.
+     */
+    public function update(Request $request, $id): JsonResponse
+    {
+        try {
+            $user = $request->user();
+            $permohonan = PermohonanInformasi::where('user_id', $user->id)
+                ->where('id', $id)
+                ->firstOrFail();
+
+            if ($permohonan->status_permohonan !== 'pending') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Permohonan yang sudah diproses tidak dapat diubah.'
+                ], 403);
+            }
+
+            $validator = Validator::make($request->all(), [
+                'nama_pemohon' => 'required|string|max:255',
+                'alamat_pemohon' => 'required|string',
+                'pekerjaan' => 'required|string|max:255',
+                'nomor_telepon_pemohon' => 'required|string|max:20',
+                'email_pemohon' => 'required|email|max:255',
+                'detail_informasi' => 'required|string',
+                'tujuan_penggunaan_informasi' => 'required|string',
+                'cara_memperoleh_informasi' => 'required',
+                'cara_mendapatkan_salinan' => 'nullable',
+                'tempat_mendapatkan_salinan' => 'nullable|string',
+                'privacy_status' => 'nullable|in:Publik,Anonim,Rahasia',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Validasi gagal',
+                    'errors' => $validator->errors()
+                ], 422);
+            }
+
+            $validatedData = $validator->validated();
+
+            // Handle arrays to JSON conversion
+            if (is_array($validatedData['cara_memperoleh_informasi'])) {
+                $validatedData['cara_memperoleh_informasi'] = json_encode($validatedData['cara_memperoleh_informasi']);
+            }
+            if (isset($validatedData['cara_mendapatkan_salinan']) && is_array($validatedData['cara_mendapatkan_salinan'])) {
+                $validatedData['cara_mendapatkan_salinan'] = json_encode($validatedData['cara_mendapatkan_salinan']);
+            }
+
+            $permohonan->update($validatedData);
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Permohonan berhasil diperbarui',
+                'data' => $permohonan
+            ]);
+
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal memperbarui permohonan',
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    /**
      * Check status of a request using unique code.
      */
     public function checkStatus($code): JsonResponse

@@ -69,6 +69,11 @@ Route::prefix('v1')->group(function () {
         Route::get('/profile', [App\Http\Controllers\Api\ProfileController::class, 'show']);
         Route::post('/profile', [App\Http\Controllers\Api\ProfileController::class, 'update']);
 
+        // My Information Requests (Mobile Tracking)
+        Route::get('/my-requests', [PermohonanInformasiController::class, 'myRequests']);
+        Route::get('/my-requests/{id}', [PermohonanInformasiController::class, 'show']);
+        Route::post('/my-requests/{id}', [PermohonanInformasiController::class, 'update']); // Use POST as proxy for update due to common mobile fetch limitations
+
         Route::post('/logout', [App\Http\Controllers\Api\LoginController::class, 'logout']);
     });
 
