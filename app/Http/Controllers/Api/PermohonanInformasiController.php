@@ -66,20 +66,25 @@ class PermohonanInformasiController extends Controller
                 $validatedData['user_id'] = auth('sanctum')->id();
             }
 
-            // Generate Unique Code
-            $uniqueCode = 'REQ-' . strtoupper(GeneralHelper::generateUniqueCode(6));
+            // Tambahkan unique_code (Sesuaikan dengan limit database: 5 karakter)
+            $uniqueCode = '';
+            do {
+                $uniqueCode = GeneralHelper::generateUniqueCode(5);
+            } while (PermohonanInformasi::where('unique_code', $uniqueCode)->exists());
+            
             $validatedData['unique_code'] = $uniqueCode;
 
             $permohonan = PermohonanInformasi::create($validatedData);
 
             // Notifikasi Telegram
-            $message = "<b>🔔 Permohonan Informasi Baru (Mobile App)</b>\n\n";
-            $message .= "<b>🆔 Kode:</b> <code>{$permohonan->unique_code}</code>\n";
-            $message .= "<b>👤 Nama:</b> {$permohonan->nama_pemohon}\n";
-            $message .= "<b>📍 Alamat:</b> {$permohonan->alamat_pemohon}\n";
-            $message .= "<b>📝 Detail:</b>\n" . substr($permohonan->detail_informasi, 0, 100) . "...\n\n";
+            $message = "<b>📄 Permohonan Informasi Baru (Mobile)</b>\n\n";
+            $message .= "<b>🆔 Kode:</b> #{$permohonan->unique_code}\n";
+            $message .= "<b>👤 Pemohon:</b> " . htmlspecialchars($permohonan->nama_pemohon) . "\n";
+            $message .= "<b>💼 Pekerjaan:</b> " . htmlspecialchars($permohonan->pekerjaan) . "\n";
+            $message .= "<b>📍 Alamat:</b> " . htmlspecialchars($permohonan->alamat_pemohon) . "\n";
+            $message .= "<b>📝 Detail:</b>\n" . htmlspecialchars(substr($permohonan->detail_informasi, 0, 150)) . "...\n\n";
             $message .= "<b>🔒 Privasi:</b> {$permohonan->privacy_status}\n";
-            $message .= '<a href="' . url('/admin/permohonan-informasi/' . $permohonan->id) . '">🔗 Lihat di Web</a>';
+            $message .= '<a href="' . url('/admin/permohonan-informasi/' . $permohonan->id) . '">🔗 Lihat Detail di Website</a>';
             
             GeneralHelper::sendTelegramMessage($message);
 
