@@ -328,7 +328,7 @@
                                  : 'Admin PPID';
                 @endphp
                 <p class="sig-name">{{ $adminName }}</p>
-                <p style="font-size: 7pt; color: #94a3b8;">Dicetak otomatis melalui Sistem PPID</p>
+                <p style="font-size: 7pt; color: #94a3b8;">Dicetak otomatis melalui Sistem PPID Sinjai (v2.1)</p>
             </td>
         </tr>
     </table>
