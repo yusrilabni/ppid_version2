@@ -166,7 +166,7 @@
         }
         .tm-user { font-size: 10pt; font-weight: 800; color: #0f172a; }
         .tm-date { font-size: 8pt; color: #94a3b8; margin-left: 10px; font-weight: 400; }
-        .tm-stars { color: #f59e0b; font-family: DejaVu Sans, sans-serif; margin-left: 10px; }
+        .tm-stars { color: #f59e0b; font-family: 'DejaVu Sans', sans-serif !important; margin-left: 10px; }
         .tm-msg { font-size: 10pt; margin-top: 5px; color: #334155; }
         .tm-meta {
             margin-top: 10px;
@@ -304,7 +304,7 @@
                     <div class="tm-user">{{ strtoupper($response->user->name ?? 'PEMOHON') }}
                         <span class="tm-date">{{ $response->created_at->translatedFormat('d M Y, H:i') }} WITA</span>
                         @if($response->user_id == $permohonan->user_id && $permohonan->rating)
-                            <span class="tm-stars">@for($i=0;$i<$permohonan->rating;$i++) ★ @endfor</span>
+                            <span class="tm-stars">@for($i=0;$i<$permohonan->rating;$i++) &#9733; @endfor</span>
                         @endif
                     </div>
                     <div class="tm-msg">{!! nl2br(e($response->message)) !!}</div>
