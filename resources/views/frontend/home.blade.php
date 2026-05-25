@@ -1,5 +1,16 @@
 @extends('frontend.layouts.app')
 
+@section('meta')
+    @php
+        $shareImage = asset('assets/images/logo-ppid.png');
+        if ($sliders->count() > 0) {
+            $shareImage = asset('storage/' . $sliders->first()->image);
+        }
+    @endphp
+    <meta property="og:image" content="{{ $shareImage }}">
+    <meta property="twitter:image" content="{{ $shareImage }}">
+@endsection
+
 @section('content')
     <style>
         /* Carousel Skeleton Fix: Force side-by-side layout before JS loads */

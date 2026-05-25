@@ -20,16 +20,19 @@
     <meta property="og:url" content="{{ url()->current() }}">
     <meta property="og:title" content="PPID @hasSection('title') - @yield('title') @endif">
     <meta property="og:description" content="Pejabat Pengelola Informasi dan Dokumentasi Kabupaten Sinjai - Transparansi Informasi Publik">
-    <meta property="og:image" content="{{ asset('storage/logo/ppid.webp') }}">
+    
+    @hasSection('meta')
+        @yield('meta')
+    @else
+        <meta property="og:image" content="{{ asset('assets/images/logo-ppid.png') }}">
+        <meta property="twitter:image" content="{{ asset('assets/images/logo-ppid.png') }}">
+    @endif
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
     <meta property="twitter:url" content="{{ url()->current() }}">
     <meta property="twitter:title" content="PPID @hasSection('title') - @yield('title') @endif">
     <meta property="twitter:description" content="Pejabat Pengelola Informasi dan Dokumentasi Kabupaten Sinjai - Transparansi Informasi Publik">
-    <meta property="twitter:image" content="{{ asset('storage/logo/ppid.webp') }}">
-
-    @yield('meta')
 
     <!-- Stationary Scroll Restoration (No Jump) -->
     <script>
