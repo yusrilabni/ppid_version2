@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Laporan - {{ $permohonan->unique_code }}</title>
     <style>
-        /* DOMPDF STABILIZATION - VERSION 2.5 */
+        /* DOMPDF STABILIZATION - VERSION 2.6 */
         @page {
             margin: 1.5cm; /* Margin fisik kertas di semua halaman */
         }
@@ -13,7 +13,7 @@
             margin: 0;
             padding: 0;
             color: #1e293b;
-            background-color: #ffffff; /* Putih bersih agar tidak ada masalah warna di margin */
+            background-color: #ffffff;
             line-height: 1.5;
         }
         
@@ -66,6 +66,7 @@
             display: inline-block;
             background-color: #1e3a8a;
             color: #ffffff;
+            font-family: 'Courier', monospace;
             padding: 4px 15px;
             border-radius: 6px;
             font-size: 12pt;
@@ -97,7 +98,7 @@
         /* Sections */
         .section-wrap {
             margin-bottom: 30px;
-            page-break-inside: avoid; /* Mencegah terpotong di tengah */
+            page-break-inside: avoid;
         }
         .section-head {
             font-size: 11pt;
@@ -224,7 +225,7 @@
                     @endif
                 </td>
                 <td class="header-text">
-                    <p class="brand-name">PPID KAB. SINJAI</p>
+                    <p class="brand-name">PPID KABUPATEN SINJAI</p>
                     <p class="brand-sub">Pejabat Pengelola Informasi dan Dokumentasi</p>
                     <p class="brand-sub" style="font-style: italic;">Transparansi Pelayanan Publik</p>
                 </td>
@@ -346,14 +347,14 @@
         <table style="width: 100%;">
             <tr>
                 <td style="width: 60%; font-size: 8.5pt; color: #64748b; vertical-align: top;">
-                    <strong>KONTAK PPID SINJAI:</strong><br>
+                    <strong>KONTAK PPID KABUPATEN SINJAI:</strong><br>
                     Jl. Persatuan Raya No. 101 Kec. Sinjai Utara,<br>
                     Kabupaten Sinjai, Sulawesi Selatan 92611<br>
                     Telp: 0482-21432 | Email: ppidkabsinjai@gmail.com
                 </td>
                 <td style="text-align: center; vertical-align: top;">
                     <p style="font-size: 9pt;">Sinjai, {{ date('d F Y') }}</p>
-                    <p style="font-weight: bold; margin-top: 5px;">PETUGAS PPID,</p>
+                    <p style="font-weight: bold;">PETUGAS PPID,</p>
                     
                     @php
                         $adminResponse = $permohonan->responses->where('user_id', '!=', $permohonan->user_id)->last();
@@ -363,7 +364,7 @@
                     @endphp
                     
                     <div class="sig-name">{{ $adminName }}</div>
-                    <p style="font-size: 7.5pt; color: #94a3b8; margin-top: 10px;">VERIFIED BY SYSTEM v2.5</p>
+                    <p style="font-size: 7.5pt; color: #94a3b8; margin-top: 10px;">VERIFIED BY SYSTEM v2.6</p>
                 </td>
             </tr>
         </table>
