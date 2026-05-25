@@ -124,6 +124,7 @@
         /* Sectioning Ala Tailwind */
         .section-wrap {
             margin-bottom: 35px;
+            page-break-inside: avoid;
         }
         .section-head {
             font-size: 11pt;
@@ -143,6 +144,7 @@
             border: 1px solid #e2e8f0;
             border-radius: 12px;
             overflow: hidden;
+            page-break-inside: avoid;
         }
         .grid-table th {
             width: 35%;
@@ -180,6 +182,7 @@
             font-size: 11pt;
             border-radius: 0 12px 12px 0;
             line-height: 1.6;
+            page-break-inside: avoid;
         }
 
         /* Timeline Box */
@@ -188,6 +191,7 @@
             border: 1px solid #e2e8f0;
             border-radius: 16px;
             padding: 20px;
+            page-break-inside: avoid;
         }
         .tm-item {
             border-left: 3px solid #cbd5e1;
