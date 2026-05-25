@@ -2,7 +2,7 @@
 
 @section('meta')
     @php
-        $shareImage = asset('assets/images/logo-ppid.png');
+        $shareImage = asset('storage/logo/ppid.webp');
         if ($sliders->count() > 0) {
             $shareImage = asset('storage/' . $sliders->first()->image);
         }

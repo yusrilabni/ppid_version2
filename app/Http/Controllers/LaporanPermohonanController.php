@@ -436,24 +436,18 @@ class LaporanPermohonanController extends Controller
             abort(404, 'Permohonan informasi tidak ditemukan atau tidak dapat diakses.');
         }
 
-        // 3. Prepare Logo (Temporarily disabled to fix loading issue)
+        // 3. Prepare Logo
         $ppidLogoBase64 = '';
-        /*
-        $logoPath = public_path('assets/images/logo-ppid.png');
-        
-        if (!file_exists($logoPath)) {
-            $logoPath = storage_path('app/public/logo/Logo PPID With Caption.png');
-        }
+        $logoPath = storage_path('app/public/logo/ppid.webp');
         
         if (file_exists($logoPath)) {
             try {
                 $logoContent = file_get_contents($logoPath);
-                $ppidLogoBase64 = 'data:image/png;base64,' . base64_encode($logoContent);
+                $ppidLogoBase64 = 'data:image/webp;base64,' . base64_encode($logoContent);
             } catch (\Exception $e) {
                 Log::error("Failed to encode PDF logo: " . $e->getMessage());
             }
         }
-        */
 
         // 4. Generate PDF
         try {
@@ -462,7 +456,11 @@ class LaporanPermohonanController extends Controller
                 'ppidLogoBase64' => $ppidLogoBase64
             ])->setPaper('a4', 'portrait')
               ->setWarnings(false)
-              ->setOption(['isRemoteEnabled' => true, 'isHtml5ParserEnabled' => true]);
+              ->setOption([
+                  'isRemoteEnabled' => false, // Matikan remote agar tidak loading lama mencari aset luar
+                  'isHtml5ParserEnabled' => true,
+                  'defaultFont' => 'sans-serif'
+              ]);
             
             $fileName = 'laporan-permohonan-' . $permohonanInformasi->unique_code . '.pdf';
 

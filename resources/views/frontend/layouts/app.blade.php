@@ -24,8 +24,8 @@
     @hasSection('meta')
         @yield('meta')
     @else
-        <meta property="og:image" content="{{ asset('assets/images/logo-ppid.png') }}">
-        <meta property="twitter:image" content="{{ asset('assets/images/logo-ppid.png') }}">
+        <meta property="og:image" content="{{ asset('storage/logo/ppid.webp') }}">
+        <meta property="twitter:image" content="{{ asset('storage/logo/ppid.webp') }}">
     @endif
 
     <!-- Twitter -->

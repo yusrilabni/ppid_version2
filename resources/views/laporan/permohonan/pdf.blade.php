@@ -2,9 +2,8 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <title>Laporan Permohonan - {{ $permohonan->unique_code }}</title>
+    <title>PDF - {{ $permohonan->unique_code }}</title>
     <style>
-        /* Menggunakan font sistem yang didukung DomPDF */
         @page {
             margin: 0;
         }
@@ -13,233 +12,215 @@
             margin: 0;
             padding: 0;
             color: #334155;
-            background-color: #f8fafc; /* Warna background web */
+            background-color: #f1f5f9; /* Background web Sinjai */
         }
-        .container {
-            width: 19cm;
-            margin: 1cm auto;
+        .paper {
+            width: 18cm;
+            margin: 0.5cm auto;
             background-color: #ffffff;
-            padding: 1.5cm;
+            padding: 1cm;
             min-height: 27cm;
-            box-shadow: 0 0 10px rgba(0,0,0,0.1);
+            border: 1px solid #e2e8f0;
         }
         
-        /* Header Web Style - Persis Web */
+        /* Header Web Style */
         .header-web {
-            background-color: #ffffff;
             border-bottom: 5px solid #1e3a8a;
-            padding-bottom: 20px;
-            margin-bottom: 30px;
-            width: 100%;
+            padding-bottom: 15px;
+            margin-bottom: 25px;
         }
         .header-table {
             width: 100%;
             border-collapse: collapse;
         }
         .logo-img {
-            width: 160px; /* Ukuran logo di web */
+            max-width: 150px;
             height: auto;
         }
         .header-text {
             text-align: right;
             vertical-align: middle;
         }
-        .web-app-name {
-            font-size: 20pt;
+        .web-title {
+            font-size: 18pt;
             font-weight: bold;
             color: #1e3a8a;
             margin: 0;
-            line-height: 1.1;
         }
-        .web-app-sub {
+        .web-subtitle {
             font-size: 9pt;
             color: #64748b;
-            margin-top: 5px;
+            margin-top: 2px;
         }
 
-        /* Title Card - Persis Web */
+        /* Title Card */
         .card-title {
-            background-color: #ffffff;
             border: 1px solid #e2e8f0;
-            border-radius: 12px;
-            padding: 25px;
+            border-radius: 10px;
+            padding: 20px;
             text-align: center;
-            margin-bottom: 30px;
+            margin-bottom: 25px;
+            background-color: #ffffff;
         }
         .main-heading {
-            font-size: 16pt;
-            font-weight: 800;
-            color: #0f172a;
-            margin-bottom: 10px;
+            font-size: 14pt;
+            font-weight: bold;
+            color: #1e293b;
+            margin-bottom: 8px;
         }
         .code-pill {
             display: inline-block;
             background-color: #dbeafe;
             color: #1e40af;
-            font-family: monospace;
-            padding: 4px 16px;
-            border-radius: 6px;
-            font-size: 12pt;
+            padding: 3px 12px;
+            border-radius: 5px;
+            font-size: 11pt;
             font-weight: bold;
         }
 
         /* Status & Rating Bar */
-        .meta-bar {
+        .meta-table {
             width: 100%;
-            margin-bottom: 25px;
+            margin-bottom: 20px;
         }
         .badge {
-            padding: 6px 14px;
-            border-radius: 99px;
+            padding: 4px 10px;
+            border-radius: 15px;
             font-size: 8pt;
             font-weight: bold;
             color: white;
             text-transform: uppercase;
         }
-        .badge-selesai { background-color: #10b981; }
-        .badge-publik { background-color: #3b82f6; }
+        .badge-success { background-color: #10b981; }
+        .badge-info { background-color: #3b82f6; }
         
-        .rating-stars {
-            color: #fbbf24;
-            font-size: 14pt;
+        .rating-text {
+            color: #f59e0b;
+            font-weight: bold;
+            font-size: 12pt;
         }
 
-        /* Section Layout - Persis Web */
-        .section-box {
-            margin-bottom: 30px;
-        }
-        .section-label {
+        /* Section Layout */
+        .section-title {
             font-size: 11pt;
-            font-weight: 700;
+            font-weight: bold;
             color: #1e3a8a;
             border-bottom: 2px solid #e2e8f0;
-            padding-bottom: 8px;
+            padding-bottom: 5px;
+            margin-top: 20px;
             margin-bottom: 15px;
             text-transform: uppercase;
         }
 
-        .data-grid {
+        .data-table {
             width: 100%;
             border-collapse: collapse;
         }
-        .data-grid th {
-            width: 30%;
+        .data-table th {
+            width: 35%;
             text-align: left;
-            padding: 12px;
+            padding: 10px;
             background-color: #f8fafc;
             border: 1px solid #e2e8f0;
             font-size: 9pt;
-            color: #475569;
+            color: #64748b;
         }
-        .data-grid td {
-            padding: 12px;
+        .data-table td {
+            padding: 10px;
             border: 1px solid #e2e8f0;
             font-size: 10pt;
             color: #1e293b;
+            vertical-align: top;
         }
 
-        /* Message Card - Persis Web */
+        /* Content Boxes */
         .msg-label {
-            font-size: 8pt;
             font-weight: bold;
-            color: #64748b;
-            margin-bottom: 6px;
-            text-transform: uppercase;
+            font-size: 8pt;
+            color: #94a3b8;
+            margin-top: 15px;
+            display: block;
         }
         .msg-box {
+            border-left: 5px solid #1e3a8a;
             background-color: #ffffff;
             border: 1px solid #e2e8f0;
             border-left: 5px solid #1e3a8a;
-            padding: 15px;
-            margin-bottom: 20px;
-            font-size: 10.5pt;
+            padding: 12px;
+            margin-top: 5px;
+            font-size: 10pt;
             border-radius: 4px;
         }
 
-        /* Timeline Tanggapan - Persis Web */
-        .timeline-item {
+        /* Timeline Tanggapan */
+        .response-container {
+            margin-top: 10px;
+            border: 1px solid #e2e8f0;
+            border-radius: 6px;
+            padding: 15px;
+        }
+        .response-item {
             border-left: 2px solid #cbd5e1;
-            padding-left: 20px;
-            margin-bottom: 20px;
-            position: relative;
+            padding-left: 15px;
+            margin-bottom: 15px;
         }
-        .timeline-item::before {
-            content: '';
-            position: absolute;
-            left: -6px;
-            top: 0;
-            width: 10px;
-            height: 10px;
-            background-color: #1e3a8a;
-            border-radius: 50%;
-        }
-        .timeline-header {
-            font-size: 9pt;
+        .response-user {
             font-weight: bold;
+            font-size: 9pt;
             color: #334155;
         }
-        .timeline-date {
+        .response-date {
             font-size: 8pt;
             color: #94a3b8;
-            margin-left: 8px;
+            margin-left: 5px;
         }
-        .timeline-body {
-            margin-top: 5px;
-            font-size: 10pt;
-            color: #475569;
+        .response-body {
+            margin-top: 4px;
+            font-size: 9.5pt;
         }
 
-        /* Office Footer - Kontak Lengkap */
-        .office-footer {
-            margin-top: 50px;
-            padding-top: 20px;
-            border-top: 1px solid #e2e8f0;
+        /* Footer & Signature */
+        .footer-table {
             width: 100%;
+            margin-top: 50px;
+            border-top: 1px solid #e2e8f0;
+            padding-top: 20px;
         }
-        .footer-col {
-            width: 50%;
-            vertical-align: top;
+        .contact-info {
             font-size: 8pt;
             color: #64748b;
+            width: 60%;
         }
-
-        /* Signature Area */
-        .sig-box {
+        .sig-cell {
             text-align: center;
-            padding: 20px;
+            vertical-align: top;
         }
+        .sig-space { height: 60px; }
         .sig-name {
             font-weight: bold;
             text-decoration: underline;
-            margin-top: 60px;
             text-transform: uppercase;
         }
     </style>
 </head>
 <body>
 
-<div class="container">
+<div class="paper">
     <!-- Header Web Style -->
     <div class="header-web">
         <table class="header-table">
             <tr>
-                <td style="width: 160px;">
-                    {{-- Mencoba loading logo via path absolut yang paling mungkin --}}
-                    @php
-                        $logoLocalPath = public_path('assets/images/logo-ppid.png');
-                        if (!file_exists($logoLocalPath)) {
-                            $logoLocalPath = storage_path('app/public/logo/Logo PPID With Caption.png');
-                        }
-                    @endphp
-                    @if(file_exists($logoLocalPath))
-                        <img src="data:image/png;base64,{{ base64_encode(file_get_contents($logoLocalPath)) }}" class="logo-img">
+                <td style="width: 150px;">
+                    @if(!empty($ppidLogoBase64))
+                        <img src="{{ $ppidLogoBase64 }}" class="logo-img">
                     @else
-                        <div style="font-weight: bold; color: #1e3a8a; font-size: 24pt;">PPID</div>
+                        <div style="font-weight: bold; color: #1e3a8a; font-size: 20pt;">PPID</div>
                     @endif
                 </td>
                 <td class="header-text">
-                    <p class="web-app-name">PPID KABUPATEN SINJAI</p>
-                    <p class="web-app-sub">Pejabat Pengelola Informasi dan Dokumentasi</p>
+                    <p class="web-title">PPID KABUPATEN SINJAI</p>
+                    <p class="web-subtitle">Pejabat Pengelola Informasi dan Dokumentasi</p>
+                    <p class="web-subtitle" style="font-style: italic;">"Transparansi Informasi Publik"</p>
                 </td>
             </tr>
         </table>
@@ -251,118 +232,103 @@
         <div class="code-pill">{{ $permohonan->unique_code }}</div>
     </div>
 
-    <!-- Meta Info -->
-    <table class="meta-bar">
+    <!-- Meta Status & Rating -->
+    <table class="meta-table">
         <tr>
             <td>
-                <span class="badge badge-selesai">{{ $permohonan->status_permohonan }}</span>
-                <span class="badge badge-publik">{{ $permohonan->privacy_status }}</span>
+                <span class="badge badge-success">{{ $permohonan->status_permohonan }}</span>
+                <span class="badge badge-info">{{ $permohonan->privacy_status }}</span>
             </td>
             <td style="text-align: right;">
                 @if($permohonan->rating)
-                    <div style="font-size: 8pt; color: #64748b; margin-bottom: 2px;">RATING KEPUASAN</div>
-                    <div class="rating-stars">
-                        @for($i = 0; $i < $permohonan->rating; $i++)
-                            &#9733; {{-- Entitas HTML untuk Bintang Solid --}}
-                        @endfor
-                        @for($i = 0; $i < (5 - $permohonan->rating); $i++)
-                            <span style="color: #e2e8f0;">&#9733;</span>
-                        @endfor
-                    </div>
+                    <span style="font-size: 8pt; color: #64748b; margin-right: 5px;">KEPUASAN:</span>
+                    <span class="rating-text">
+                        @for($i = 0; $i < $permohonan->rating; $i++) ★ @endfor
+                    </span>
                 @endif
             </td>
         </tr>
     </table>
 
-    <!-- Section A: Pengajuan -->
-    <div class="section-box">
-        <div class="section-label">A. INFORMASI PENGAJUAN</div>
-        <table class="data-grid">
-            <tr>
-                <th>TANGGAL PENGAJUAN</th>
-                <td>{{ $permohonan->created_at->translatedFormat('d F Y, H:i') }} WITA</td>
-            </tr>
-            <tr>
-                <th>NAMA PEMOHON</th>
-                <td>
-                    @if ($permohonan->privacy_status == 'Anonim')
-                        [DATA DISAMARKAN]
-                    @else
-                        {{ strtoupper($permohonan->nama_pemohon) }}
-                    @endif
-                </td>
-            </tr>
-            <tr>
-                <th>ALAMAT</th>
-                <td>{{ $permohonan->alamat_pemohon }}</td>
-            </tr>
-            <tr>
-                <th>KONTAK</th>
-                <td>
-                    @if ($permohonan->privacy_status == 'Anonim')
-                        ***-**** / *****@***
-                    @else
-                        {{ $permohonan->nomor_telepon_pemohon ?? '-' }} / {{ $permohonan->email_pemohon ?? '-' }}
-                    @endif
-                </td>
-            </tr>
-        </table>
+    <!-- Section: Identitas -->
+    <div class="section-title">A. IDENTITAS PEMOHON</div>
+    <table class="data-table">
+        <tr>
+            <th>Nama Lengkap</th>
+            <td>
+                @if ($permohonan->privacy_status == 'Anonim')
+                    <span style="color: #94a3b8; font-style: italic;">[Data Disamarkan]</span>
+                @else
+                    {{ strtoupper($permohonan->nama_pemohon) }}
+                @endif
+            </td>
+        </tr>
+        <tr>
+            <th>Alamat</th>
+            <td>{{ $permohonan->alamat_pemohon }}</td>
+        </tr>
+        <tr>
+            <th>Kontak (Email/Telp)</th>
+            <td>
+                @if ($permohonan->privacy_status == 'Anonim')
+                    ***-**** / *****@***
+                @else
+                    {{ $permohonan->email_pemohon ?? '-' }} / {{ $permohonan->nomor_telepon_pemohon ?? '-' }}
+                @endif
+            </td>
+        </tr>
+    </table>
+
+    <!-- Section: Konten -->
+    <div class="section-title">B. RINCIAN PERMOHONAN</div>
+    <span class="msg-label">INFORMASI YANG DIBUTUHKAN:</span>
+    <div class="msg-box">
+        {!! nl2br(e($permohonan->detail_informasi)) !!}
     </div>
 
-    <!-- Section B: Konten -->
-    <div class="section-box">
-        <div class="section-label">B. RINCIAN INFORMASI</div>
-        
-        <div class="msg-label">Informasi yang Dibutuhkan:</div>
-        <div class="msg-box">
-            {!! nl2br(e($permohonan->detail_informasi)) !!}
-        </div>
-
-        <div class="msg-label">Tujuan Penggunaan:</div>
-        <div class="msg-box" style="border-left-color: #64748b;">
-            {!! nl2br(e($permohonan->tujuan_penggunaan_informasi)) !!}
-        </div>
+    <span class="msg-label">TUJUAN PENGGUNAAN:</span>
+    <div class="msg-box" style="border-left-color: #64748b;">
+        {!! nl2br(e($permohonan->tujuan_penggunaan_informasi)) !!}
     </div>
 
-    <!-- Section C: Tanggapan -->
-    <div class="section-box">
-        <div class="section-label">C. RIWAYAT TANGGAPAN ADMIN</div>
+    <!-- Section: Tanggapan -->
+    <div class="section-title">C. RIWAYAT TANGGAPAN ADMIN</div>
+    <div class="response-container">
         @forelse($permohonan->responses as $response)
-            <div class="timeline-item">
-                <div class="timeline-header">
+            <div class="response-item">
+                <div class="response-user">
                     {{ strtoupper($response->user->name ?? 'Admin PPID') }}
-                    <span class="timeline-date">{{ $response->created_at->translatedFormat('d M Y, H:i') }} WITA</span>
+                    <span class="response-date">{{ $response->created_at->translatedFormat('d M Y, H:i') }} WITA</span>
                 </div>
-                <div class="timeline-body">{!! nl2br(e($response->message)) !!}</div>
+                <div class="response-body">{!! nl2br(e($response->message)) !!}</div>
             </div>
         @empty
-            <div style="text-align: center; color: #94a3b8; font-style: italic; font-size: 9pt;">Belum ada tanggapan.</div>
+            <div style="text-align: center; color: #94a3b8; font-style: italic; font-size: 9pt;">Belum ada tanggapan resmi.</div>
         @endforelse
     </div>
 
     <!-- Footer Office & Signature -->
-    <table class="office-footer">
+    <table class="footer-table">
         <tr>
-            <td class="footer-col">
+            <td class="contact-info">
                 <strong>KONTAK KANTOR PPID SINJAI:</strong><br>
                 Email: ppidkabsinjai@gmail.com<br>
                 Telepon: 0482-21432<br>
                 Alamat: Jl. Persatuan Raya No. 101 Kec. Sinjai Utara,<br>
-                Kabupaten Sinjai, Sulawesi Selatan 92611
+                Kab. Sinjai, Sulawesi Selatan 92611
             </td>
-            <td style="width: 50%; text-align: center; vertical-align: bottom;">
-                <div class="sig-box">
-                    <p style="font-size: 9pt;">Sinjai, {{ date('d F Y') }}</p>
-                    <p style="font-weight: bold;">PETUGAS PPID,</p>
-                    @php
-                        $lastResponse = $permohonan->responses->last();
-                        $adminName = ($permohonan->status_permohonan == 'selesai' && $lastResponse) 
-                                     ? ($lastResponse->user->name ?? 'Admin PPID') 
-                                     : 'Admin PPID';
-                    @endphp
-                    <p class="sig-name">{{ $adminName }}</p>
-                    <p style="font-size: 7pt; color: #94a3b8;">DICETAK DARI SISTEM PPID SINJAI</p>
-                </div>
+            <td class="sig-cell">
+                <p style="font-size: 9pt;">Sinjai, {{ date('d F Y') }}</p>
+                <p style="font-weight: bold;">Petugas PPID,</p>
+                <div class="sig-space"></div>
+                @php
+                    $lastResponse = $permohonan->responses->last();
+                    $adminName = ($permohonan->status_permohonan == 'selesai' && $lastResponse) 
+                                 ? ($lastResponse->user->name ?? 'Admin PPID') 
+                                 : 'Admin PPID';
+                @endphp
+                <p class="sig-name">{{ $adminName }}</p>
+                <p style="font-size: 7pt; color: #94a3b8;">Dicetak otomatis melalui Sistem PPID</p>
             </td>
         </tr>
     </table>
