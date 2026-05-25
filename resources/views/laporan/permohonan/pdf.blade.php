@@ -4,7 +4,7 @@
     <meta charset="UTF-8">
     <title>Laporan - {{ $permohonan->unique_code }}</title>
     <style>
-        /* DOMPDF-COMPATIBLE "TAILWIND" STYLES */
+        /* DOMPDF-COMPATIBLE PREMIUM STYLES */
         @page {
             margin: 0;
         }
@@ -13,24 +13,24 @@
             margin: 0;
             padding: 0;
             color: #1e293b;
-            background-color: #f1f5f9; /* Slate 100 - Ala Tailwind */
+            background-color: #f1f5f9; 
         }
-        .paper-container {
-            width: 19cm;
-            margin: 0 auto;
+        /* Pembungkus utama untuk memastikan padding konsisten di SEMUA halaman */
+        .paper-wrapper {
             padding: 1cm;
         }
         .paper {
             background-color: #ffffff;
-            min-height: 27cm;
+            min-height: 27.7cm; /* A4 height approx */
             padding: 1.5cm;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1); /* Shadow ala Tailwind */
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             border-radius: 12px;
+            position: relative;
         }
         
         /* Premium Header */
         .header-premium {
-            border-bottom: 6px solid #1e3a8a; /* Blue 900 */
+            border-bottom: 6px solid #1e3a8a;
             padding-bottom: 25px;
             margin-bottom: 35px;
         }
@@ -56,7 +56,7 @@
         .brand-sub {
             font-size: 10pt;
             font-weight: 600;
-            color: #64748b; /* Slate 500 */
+            color: #64748b;
             margin-top: 4px;
             text-transform: uppercase;
         }
@@ -74,7 +74,7 @@
         .doc-label {
             font-size: 9pt;
             font-weight: 800;
-            color: #3b82f6; /* Blue 500 */
+            color: #3b82f6;
             text-transform: uppercase;
             letter-spacing: 2px;
             margin-bottom: 10px;
@@ -82,7 +82,7 @@
         .main-title {
             font-size: 16pt;
             font-weight: 800;
-            color: #0f172a; /* Slate 900 */
+            color: #0f172a;
             margin: 0 0 15px 0;
             line-height: 1.2;
         }
@@ -95,7 +95,6 @@
             border-radius: 8px;
             font-size: 13pt;
             font-weight: bold;
-            box-shadow: 0 2px 4px rgba(30, 58, 138, 0.3);
         }
 
         /* Status Badges */
@@ -112,16 +111,16 @@
             color: white;
             text-transform: uppercase;
         }
-        .bg-success { background-color: #10b981; } /* Emerald 500 */
-        .bg-blue { background-color: #3b82f6; } /* Blue 500 */
+        .bg-success { background-color: #10b981; }
+        .bg-blue { background-color: #3b82f6; }
         
         .stars-container {
-            color: #f59e0b; /* Amber 500 */
+            color: #f59e0b;
             font-size: 16pt;
             font-family: DejaVu Sans, sans-serif;
         }
 
-        /* Sectioning Ala Tailwind */
+        /* Sectioning */
         .section-wrap {
             margin-bottom: 35px;
             page-break-inside: avoid;
@@ -144,7 +143,6 @@
             border: 1px solid #e2e8f0;
             border-radius: 12px;
             overflow: hidden;
-            page-break-inside: avoid;
         }
         .grid-table th {
             width: 35%;
@@ -168,7 +166,7 @@
         .content-label {
             font-size: 8.5pt;
             font-weight: 800;
-            color: #94a3b8; /* Slate 400 */
+            color: #94a3b8;
             margin-bottom: 8px;
             text-transform: uppercase;
             display: block;
@@ -182,7 +180,6 @@
             font-size: 11pt;
             border-radius: 0 12px 12px 0;
             line-height: 1.6;
-            page-break-inside: avoid;
         }
 
         /* Timeline Box */
@@ -191,13 +188,13 @@
             border: 1px solid #e2e8f0;
             border-radius: 16px;
             padding: 20px;
-            page-break-inside: avoid;
         }
         .tm-item {
             border-left: 3px solid #cbd5e1;
             padding-left: 20px;
             margin-bottom: 25px;
             position: relative;
+            page-break-inside: avoid;
         }
         .tm-dot {
             position: absolute;
@@ -225,12 +222,23 @@
             font-size: 10.5pt;
             color: #475569;
         }
+        .tm-attachment {
+            margin-top: 10px;
+            font-size: 9pt;
+            background: #f1f5f9;
+            padding: 8px 12px;
+            border-radius: 6px;
+            display: inline-block;
+            color: #1e40af;
+            font-weight: bold;
+        }
 
         /* Modern Footer */
         .footer-premium {
             margin-top: 60px;
             padding-top: 30px;
             border-top: 2px solid #f1f5f9;
+            page-break-inside: avoid;
         }
         .contact-card {
             background-color: #f8fafc;
@@ -253,7 +261,7 @@
 </head>
 <body>
 
-<div class="paper-container">
+<div class="paper-wrapper">
     <div class="paper">
         <!-- Premium Header -->
         <div class="header-premium">
@@ -353,14 +361,32 @@
 
         <!-- Section: Tanggapan -->
         <div class="section-wrap">
-            <div class="section-head">III. Log Tanggapan Admin</div>
+            <div class="section-head">III. Log Tanggapan & Aktivitas</div>
             <div class="timeline-box">
                 @forelse($permohonan->responses as $response)
                     <div class="tm-item">
                         <div class="tm-dot"></div>
-                        <span class="tm-user">{{ strtoupper($response->user->name ?? 'PETUGAS PPID') }}</span>
+                        <span class="tm-user">{{ strtoupper($response->user->name ?? 'PENGGUNA') }}</span>
                         <span class="tm-date">{{ $response->created_at->translatedFormat('d M Y, H:i') }} WITA</span>
-                        <div class="tm-body">{!! nl2br(e($response->message)) !!}</div>
+                        <div class="tm-body">
+                            {!! nl2br(e($response->message)) !!}
+                            
+                            {{-- Lampiran File jika ada --}}
+                            @if($response->file_path)
+                                <br>
+                                <div class="tm-attachment">
+                                    📎 LAMPIRAN: {{ basename($response->file_path) }}
+                                </div>
+                            @endif
+
+                            {{-- Link jika ada --}}
+                            @if($response->link)
+                                <br>
+                                <div class="tm-attachment">
+                                    🔗 LINK: {{ $response->link }}
+                                </div>
+                            @endif
+                        </div>
                     </div>
                 @empty
                     <div style="text-align: center; color: #94a3b8; font-style: italic; padding: 20px;">
@@ -387,7 +413,7 @@
                         <p style="font-weight: 800; font-size: 10pt; margin-top: 5px;">PETUGAS PPID SINJAI,</p>
                         
                         @php
-                            // LOGIKA ANTI-SALAH NAMA: Ambil admin asli, bukan pemohon
+                            // LOGIKA ANTI-SALAH NAMA
                             $adminResponse = $permohonan->responses->where('user_id', '!=', $permohonan->user_id)->last();
                             $adminDisplayName = ($permohonan->status_permohonan == 'selesai' && $adminResponse) 
                                          ? ($adminResponse->user->name ?? 'ADMIN PPID') 
@@ -396,7 +422,7 @@
                         
                         <div class="sig-name">{{ $adminDisplayName }}</div>
                         <p style="font-size: 7.5pt; color: #94a3b8; margin-top: 10px; font-weight: 600;">
-                            VERIFIED BY PPID SYSTEM v2.3
+                            VERIFIED BY PPID SYSTEM v2.4
                         </p>
                     </td>
                 </tr>
