@@ -436,11 +436,11 @@ class LaporanPermohonanController extends Controller
             abort(404, 'Permohonan informasi tidak ditemukan atau tidak dapat diakses.');
         }
 
-        // 3. Prepare Logo
+        // 3. Prepare Logo (Temporarily disabled to fix loading issue)
         $ppidLogoBase64 = '';
-        $logoPath = public_path('assets/images/logo-ppid.png'); // Mencoba path public yang umum
+        /*
+        $logoPath = public_path('assets/images/logo-ppid.png');
         
-        // Jika tidak ada, coba path yang sebelumnya dikomentari tapi pastikan filenya ada
         if (!file_exists($logoPath)) {
             $logoPath = storage_path('app/public/logo/Logo PPID With Caption.png');
         }
@@ -453,6 +453,7 @@ class LaporanPermohonanController extends Controller
                 Log::error("Failed to encode PDF logo: " . $e->getMessage());
             }
         }
+        */
 
         // 4. Generate PDF
         try {
