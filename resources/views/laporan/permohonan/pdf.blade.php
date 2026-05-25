@@ -1,332 +1,223 @@
 <!DOCTYPE html>
 <html lang="id">
-
 <head>
     <meta charset="UTF-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Laporan Permohonan Informasi</title>
+    <title>Laporan Permohonan Informasi - {{ $permohonan->unique_code }}</title>
     <style>
-        body {
-            font-family: 'Arial', sans-serif;
-            font-size: 12px;
-            color: #333;
-            margin: 10px;
-            padding: 0;
-            line-height: 1.2;
+        @page {
+            margin: 1.5cm;
         }
-
-        /* HEADER */
-        .header-container {
-            text-align: center;
+        body {
+            font-family: 'Helvetica', 'Arial', sans-serif;
+            font-size: 11pt;
+            line-height: 1.5;
+            color: #333;
+        }
+        /* Header Styling */
+        .header-table {
+            width: 100%;
+            border-bottom: 2px solid #000;
+            padding-bottom: 10px;
             margin-bottom: 20px;
         }
-
-        .logo-container {
-            margin-bottom: 10px;
+        .logo-cell {
+            width: 80px;
+            vertical-align: middle;
         }
-
         .logo-img {
-            width: 120px;
+            width: 70px;
             height: auto;
         }
-
-        .header-title {
-            font-size: 22px;
-            color: #000;
-            font-weight: bold;
-            margin: 0;
-            padding: 0;
-            line-height: 1;
-        }
-
-        .header-subtitle {
-            font-size: 11px;
-            color: #666;
-            margin: 2px 0 0 0;
-            padding: 0;
-        }
-
-        /* BADGES */
-        .badges-container {
+        .title-cell {
             text-align: center;
-            margin: 3px 0 5px 0;
+            vertical-align: middle;
         }
-
-        .badge {
-            display: inline-block;
-            padding: 3px 8px;
-            border-radius: 12px;
-            font-size: 10px;
+        .title-main {
+            font-size: 16pt;
             font-weight: bold;
-            margin: 0 3px;
+            text-transform: uppercase;
+            margin: 0;
+            color: #000;
         }
-
-        .status-selesai {
-            background-color: #d1fae5;
-            color: #065f46;
-            border: 1px solid #a7f3d0;
+        .title-sub {
+            font-size: 10pt;
+            margin: 5px 0 0 0;
+            color: #444;
         }
-
-        .privacy-publik {
-            background-color: #e0f2fe;
-            color: #0369a1;
-            border: 1px solid #bae6fd;
-        }
-
-        /* SECTION TITLE */
+        /* Section Styling */
         .section-title {
-            background-color: #e8eaf6;
-            color: #1a237e;
-            padding: 6px 8px;
-            margin: 10px 0 5px 0;
-            font-size: 13px;
+            background-color: #f2f2f2;
+            padding: 5px 10px;
             font-weight: bold;
-            border-left: 4px solid #1a237e;
+            font-size: 12pt;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            border-left: 5px solid #1a237e;
         }
-
-        /* TABEL - Perbaikan utama */
-        .info-table {
+        /* Data Table */
+        .data-table {
             width: 100%;
             border-collapse: collapse;
-            margin-bottom: 10px;
+            margin-bottom: 15px;
         }
-
-        .info-table th {
-            background-color: #f5f5f5;
-            border: 1px solid #ddd;
-            padding: 6px 8px;
-            width: 30%;
-            font-weight: bold;
-            font-size: 12px;
+        .data-table th {
+            width: 35%;
             text-align: left;
-        }
-
-        .info-table td {
-            border: 1px solid #ddd;
-            padding: 6px 8px;
-            font-size: 12px;
-            text-align: left;
-        }
-
-        /* CONTENT BLOCKS */
-        .content-block {
-            background-color: #fafafa;
-            border: 1px solid #e0e0e0;
-            padding: 8px 10px;
-            margin-bottom: 8px;
-            font-size: 12px;
-            line-height: 1.4;
-        }
-
-        /* RESPONSE BLOCKS */
-        .response-block {
-            background-color: #f8f9fa;
-            border: 1px solid #e0e0e0;
-            padding: 8px 10px;
-            margin-bottom: 8px;
-        }
-
-        .response-header {
-            font-weight: bold;
-            color: #333;
-            font-size: 12px;
-        }
-
-        .response-date {
-            font-size: 10px;
-            color: #666;
-            margin-left: 8px;
-        }
-
-        .response-content {
-            font-size: 12px;
-            line-height: 1.4;
-        }
-
-        .attachment-link {
-            font-size: 11px;
-            color: #1565c0;
-        }
-
-        .no-response {
-            font-style: italic;
-            color: #888;
-            font-size: 11px;
-            text-align: center;
             padding: 8px;
-        }
-
-        /* LABEL STYLING */
-        .label {
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
             font-weight: bold;
-            margin: 5px 0;
-            display: block;
-            font-size: 12px;
+            color: #555;
+        }
+        .data-table td {
+            padding: 8px;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+        }
+        /* Content Block */
+        .content-box {
+            padding: 10px;
+            border: 1px solid #ddd;
+            background-color: #fafafa;
+            margin-bottom: 10px;
+            min-height: 50px;
+        }
+        /* Footer / Signature Area */
+        .footer-area {
+            margin-top: 40px;
+            width: 100%;
+        }
+        .signature-box {
+            float: right;
+            width: 250px;
+            text-align: center;
+        }
+        .badge {
+            padding: 4px 10px;
+            border-radius: 4px;
+            font-size: 9pt;
+            font-weight: bold;
+            color: #fff;
+        }
+        .bg-success { background-color: #28a745; }
+        .bg-info { background-color: #17a2b8; }
+        
+        .clearfix::after {
+            content: "";
+            clear: both;
+            display: table;
         }
     </style>
 </head>
-
 <body>
-    <!-- HEADER -->
-    <div class="header-container">
-        @if(!empty($ppidLogoBase64))
-        <div class="logo-container">
-            <img src="{{ $ppidLogoBase64 }}" alt="Logo PPID" class="logo-img">
+
+    <!-- Header -->
+    <table class="header-table">
+        <tr>
+            <td class="logo-cell">
+                @if(!empty($ppidLogoBase64))
+                    <img src="{{ $ppidLogoBase64 }}" class="logo-img">
+                @endif
+            </td>
+            <td class="title-cell">
+                <h1 class="title-main">Pejabat Pengelola Informasi dan Dokumentasi (PPID)</h1>
+                <p class="title-sub">Pemerintah Kabupaten Sinjai - Provinsi Sulawesi Selatan</p>
+            </td>
+        </tr>
+    </table>
+
+    <div style="text-align: center; margin-bottom: 20px;">
+        <h2 style="margin: 0; font-size: 14pt;">RINCIAN PERMOHONAN INFORMASI PUBLIK</h2>
+        <p style="margin: 5px 0; font-family: monospace;">Kode: {{ $permohonan->unique_code }}</p>
+    </div>
+
+    <!-- Informasi Status -->
+    <table class="data-table">
+        <tr>
+            <th>Status Permohonan</th>
+            <td><span class="badge bg-success">{{ strtoupper($permohonan->status_permohonan) }}</span></td>
+        </tr>
+        <tr>
+            <th>Privasi Data</th>
+            <td><span class="badge bg-info">{{ strtoupper($permohonan->privacy_status) }}</span></td>
+        </tr>
+        <tr>
+            <th>Tanggal Pengajuan</th>
+            <td>{{ $permohonan->created_at->translatedFormat('d F Y H:i') }} WITA</td>
+        </tr>
+    </table>
+
+    <!-- Data Pemohon -->
+    <div class="section-title">I. IDENTITAS PEMOHON</div>
+    <table class="data-table">
+        <tr>
+            <th>Nama Lengkap</th>
+            <td>
+                @if ($permohonan->privacy_status == 'Anonim')
+                    {{ substr($permohonan->nama_pemohon, 0, 1) . '*****' }} (Data Disamarkan)
+                @else
+                    {{ $permohonan->nama_pemohon }}
+                @endif
+            </td>
+        </tr>
+        <tr>
+            <th>Alamat</th>
+            <td>{{ $permohonan->alamat_pemohon }}</td>
+        </tr>
+        <tr>
+            <th>Pekerjaan</th>
+            <td>{{ $permohonan->pekerjaan ?? '-' }}</td>
+        </tr>
+        <tr>
+            <th>Kontak (Telp/Email)</th>
+            <td>
+                @if ($permohonan->privacy_status == 'Anonim')
+                    ***-**** / *****@***
+                @else
+                    {{ $permohonan->nomor_telepon_pemohon ?? '-' }} / {{ $permohonan->email_pemohon ?? '-' }}
+                @endif
+            </td>
+        </tr>
+    </table>
+
+    <!-- Detail Permohonan -->
+    <div class="section-title">II. RINCIAN PERMOHONAN</div>
+    <div style="font-weight: bold; margin-bottom: 5px;">Informasi yang Diminta:</div>
+    <div class="content-box">
+        {!! nl2br(e($permohonan->detail_informasi)) !!}
+    </div>
+
+    <div style="font-weight: bold; margin: 15px 0 5px 0;">Tujuan Penggunaan Informasi:</div>
+    <div class="content-box">
+        {!! nl2br(e($permohonan->tujuan_penggunaan_informasi)) !!}
+    </div>
+
+    <!-- Cara Memperoleh -->
+    <div class="section-title">III. DISTRIBUSI INFORMASI</div>
+    @php
+        $caraMemperoleh = json_decode($permohonan->cara_memperoleh_informasi, true);
+        $caraSalinan = json_decode($permohonan->cara_mendapatkan_salinan, true);
+    @endphp
+    <table class="data-table">
+        <tr>
+            <th>Cara Memperoleh</th>
+            <td>{{ is_array($caraMemperoleh) ? implode(', ', $caraMemperoleh) : '-' }}</td>
+        </tr>
+        <tr>
+            <th>Format Salinan</th>
+            <td>{{ is_array($caraSalinan) ? implode(', ', $caraSalinan) : '-' }}</td>
+        </tr>
+    </table>
+
+    <!-- Penutup & Tanda Tangan -->
+    <div class="footer-area clearfix">
+        <div class="signature-box">
+            <p>Sinjai, {{ date('d F Y') }}</p>
+            <p style="margin-top: 60px; font-weight: bold; text-decoration: underline;">Admin PPID Kabupaten Sinjai</p>
+            <p style="font-size: 9pt; color: #777;">Dicetak secara otomatis melalui Sistem PPID</p>
         </div>
-        @endif
-        <div class="header-title">Detail Permohonan Informasi</div>
-        <div class="header-subtitle">Laporan resmi rincian permohonan informasi publik.</div>
-    </div>
-
-    <!-- BADGES -->
-    <div class="badges-container">
-        @php
-            $statusClass = [
-                'selesai' => 'status-selesai',
-                'diproses' => 'status-diproses',
-                'pending' => 'status-pending',
-                'ditolak' => 'status-ditolak',
-            ];
-            $privacyClass = [
-                'Publik' => 'privacy-publik',
-                'Anonim' => 'privacy-anonim',
-                'Rahasia' => 'privacy-rahasia',
-            ];
-        @endphp
-        <span class="badge {{ $statusClass[$permohonan->status_permohonan] ?? 'status-pending' }}">
-            {{ ucfirst($permohonan->status_permohonan) }}
-        </span>
-        <span class="badge {{ $privacyClass[$permohonan->privacy_status] ?? 'privacy-publik' }}">
-            {{ $permohonan->privacy_status }}
-        </span>
-    </div>
-
-    <!-- CONTENT -->
-    <div>
-        <div class="section-title">A. Detail Permohonan</div>
-        <table class="info-table">
-            <tr>
-                <th>Kode Permohonan</th>
-                <td>{{ $permohonan->unique_code }}</td>
-            </tr>
-            <tr>
-                <th>Tanggal Permohonan</th>
-                <td>{{ $permohonan->created_at->format('d F Y') }}</td>
-            </tr>
-            <tr>
-                <th>Status Permohonan</th>
-                <td>{{ ucfirst($permohonan->status_permohonan) }}</td>
-            </tr>
-            <tr>
-                <th>Rating Kepuasan</th>
-                <td>{{ $permohonan->rating ? $permohonan->rating . ' dari 5' : 'Belum dinilai' }}</td>
-            </tr>
-        </table>
-
-        <div class="section-title">B. Informasi Pemohon</div>
-        <table class="info-table">
-            <tr>
-                <th>Nama Pemohon</th>
-                <td>
-                    @if ($permohonan->privacy_status == 'Anonim')
-                        {{ substr($permohonan->nama_pemohon, 0, 1) . '*****' }}
-                    @else
-                        {{ $permohonan->nama_pemohon }}
-                    @endif
-                </td>
-            </tr>
-            <tr>
-                <th>Alamat</th>
-                <td>{{ $permohonan->alamat_pemohon }}</td>
-            </tr>
-            <tr>
-                <th>Pekerjaan</th>
-                <td>{{ $permohonan->pekerjaan ?? '-' }}</td>
-            </tr>
-            <tr>
-                <th>Nomor Telepon</th>
-                <td>
-                    @if ($permohonan->privacy_status == 'Anonim')
-                        {{ substr($permohonan->nomor_telepon_pemohon, 0, 3) . '*****' }}
-                    @else
-                        {{ $permohonan->nomor_telepon_pemohon ?? '-' }}
-                    @endif
-                </td>
-            </tr>
-            <tr>
-                <th>Email</th>
-                <td>
-                    @if ($permohonan->privacy_status == 'Anonim')
-                        {{ substr($permohonan->email_pemohon, 0, 3) . '*****' }}
-                    @else
-                        {{ $permohonan->email_pemohon ?? '-' }}
-                    @endif
-                </td>
-            </tr>
-        </table>
-
-        <div class="section-title">C. Rincian Permohonan</div>
-        <span class="label">Informasi yang Dibutuhkan:</span>
-        <div class="content-block">{{ $permohonan->detail_informasi }}</div>
-
-        <span class="label">Tujuan Penggunaan Informasi:</span>
-        <div class="content-block">{{ $permohonan->tujuan_penggunaan_informasi }}</div>
-
-        @php
-            $caraMemperoleh = json_decode($permohonan->cara_memperoleh_informasi, true);
-            $caraSalinan = json_decode($permohonan->cara_mendapatkan_salinan, true);
-        @endphp
-
-        @if (!empty($caraMemperoleh) || !empty($caraSalinan))
-            <div class="section-title">D. Cara Memperoleh dan Mendapatkan Salinan</div>
-
-            @if (!empty($caraMemperoleh))
-                <span class="label">Cara Memperoleh Informasi:</span>
-                <div class="content-block">
-                    @foreach ($caraMemperoleh as $cara)
-                        • {{ $cara }}<br>
-                    @endforeach
-                </div>
-            @endif
-
-            @if (!empty($caraSalinan))
-                <span class="label">Cara Mendapatkan Salinan:</span>
-                <div class="content-block">
-                    @foreach ($caraSalinan as $cara)
-                        • {{ $cara }}<br>
-                    @endforeach
-                </div>
-            @endif
-
-            @if ($permohonan->tempat_mendapatkan_salinan)
-                <span class="label">Tempat Mendapatkan Salinan:</span>
-                <div class="content-block">{{ $permohonan->tempat_mendapatkan_salinan }}</div>
-            @endif
-        @endif
-
-        <div class="section-title">E. Riwayat Tanggapan</div>
-        @if ($permohonan->responses->count() > 0)
-            @foreach ($permohonan->responses as $response)
-                <div class="response-block">
-                    <div class="response-header">
-                        {{ $response->user->name ?? 'Admin' }}
-                        <span class="response-date">{{ $response->created_at->format('d M Y, H:i') }}</span>
-                    </div>
-                    <div class="response-content">{{ $response->message }}</div>
-                    @if ($response->file_path)
-                        <div class="attachment-link"><strong>Lampiran:</strong> File terlampir</div>
-                    @endif
-                    @if ($response->link)
-                        <div class="attachment-link"><strong>Link:</strong> {{ $response->link }}</div>
-                    @endif
-                </div>
-            @endforeach
-        @else
-            <div class="no-response">Belum ada tanggapan.</div>
-        @endif
     </div>
 
 </body>
-
 </html>
+
