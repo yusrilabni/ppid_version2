@@ -4,13 +4,13 @@
     <meta charset="UTF-8">
     <title>Report - {{ $permohonan->unique_code }}</title>
     <style>
-        /* DOMPDF ULTRA MODERN DESIGN - VERSION 3.0 */
+        /* DOMPDF ULTRA MODERN DESIGN - VERSION 3.1 */
         @page {
-            margin: 0; /* Kita kontrol margin lewat container */
+            margin: 0; 
         }
         body {
             font-family: 'Helvetica', Arial, sans-serif;
-            background-color: #f1f5f9; /* Slate 100 - Background luar kertas */
+            background-color: #f1f5f9; 
             margin: 0;
             padding: 0;
             color: #1e293b;
@@ -225,13 +225,18 @@
             color: #64748b;
         }
         .sig-name {
-            font-size: 13pt;
+            font-size: 12pt;
             font-weight: 900;
             color: #1e3a8a;
             margin-top: 60px;
             text-transform: uppercase;
-            border-bottom: 3px solid #1e3a8a;
             display: inline-block;
+        }
+        .sig-nip {
+            font-size: 10pt;
+            color: #1e293b;
+            font-weight: bold;
+            margin-top: 2px;
         }
 
         .clearfix::after {
@@ -394,15 +399,22 @@
                     @php
                         // Logika pengambilan nama Admin (Petugas), bukan pemohon
                         $adminResponse = $permohonan->responses->where('user_id', '!=', $permohonan->user_id)->last();
-                        $adminDisplayName = ($permohonan->status_permohonan == 'selesai' && $adminResponse) 
-                                         ? ($adminResponse->user->name ?? 'ADMIN PPID') 
-                                         : 'ADMIN PPID';
+                        $adminUser = $adminResponse ? $adminResponse->user : null;
+                        
+                        $adminDisplayName = $adminUser ? $adminUser->name : 'ADMIN PPID';
+                        $adminNip = $adminUser ? $adminUser->nip : null;
                     @endphp
                     
-                    <div class="sig-name">{{ $adminDisplayName }}</div>
-                    <p style="font-size: 8pt; color: #94a3b8; margin-top: 12px; font-weight: 600; letter-spacing: 1px;">
-                        OFFICIAL PPID SYSTEM v3.0
-                    </p>
+                    <div class="sig-name">{{ strtoupper($adminDisplayName) }}</div>
+                    @if($adminNip)
+                        <div class="sig-nip">NIP. {{ $adminNip }}</div>
+                    @endif
+                    
+                    <div style="margin-top: 15px; border-top: 1px solid #e2e8f0; padding-top: 5px;">
+                        <p style="font-size: 7.5pt; color: #94a3b8; font-weight: 600; letter-spacing: 1px;">
+                            OFFICIAL DIGITAL REPORT
+                        </p>
+                    </div>
                 </td>
             </tr>
         </table>
