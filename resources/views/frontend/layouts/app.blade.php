@@ -27,6 +27,11 @@
         <meta property="og:image" content="{{ asset('storage/logo/ppid.webp') }}">
         <meta property="twitter:image" content="{{ asset('storage/logo/ppid.webp') }}">
     @endif
+    
+    {{-- Versi Meta Tambahan untuk Social Media --}}
+    <meta property="og:image:type" content="image/webp">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
 
     <!-- Twitter -->
     <meta property="twitter:card" content="summary_large_image">
