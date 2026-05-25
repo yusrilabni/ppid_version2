@@ -242,8 +242,10 @@
             <td style="text-align: right;">
                 @if($permohonan->rating)
                     <span style="font-size: 8pt; color: #64748b; margin-right: 5px;">KEPUASAN:</span>
-                    <span class="rating-text">
-                        @for($i = 0; $i < $permohonan->rating; $i++) ★ @endfor
+                    <span class="rating-text" style="font-family: DejaVu Sans, sans-serif;">
+                        @for($i = 0; $i < $permohonan->rating; $i++)
+                            &#9733;
+                        @endfor
                     </span>
                 @endif
             </td>
@@ -322,13 +324,16 @@
                 <p style="font-weight: bold;">Petugas PPID,</p>
                 <div class="sig-space"></div>
                 @php
-                    $lastResponse = $permohonan->responses->last();
-                    $adminName = ($permohonan->status_permohonan == 'selesai' && $lastResponse) 
-                                 ? ($lastResponse->user->name ?? 'Admin PPID') 
-                                 : 'Admin PPID';
+                    // Pastikan yang muncul di tanda tangan BUKAN nama pemohon
+                    // Cari tanggapan terakhir yang user_id nya BUKAN milik si pemohon
+                    $adminResponse = $permohonan->responses->where('user_id', '!=', $permohonan->user_id)->last();
+                    
+                    $adminName = ($permohonan->status_permohonan == 'selesai' && $adminResponse) 
+                                 ? ($adminResponse->user->name ?? 'ADMIN PPID') 
+                                 : 'ADMIN PPID';
                 @endphp
-                <p class="sig-name">{{ $adminName }}</p>
-                <p style="font-size: 7pt; color: #94a3b8;">Dicetak otomatis melalui Sistem PPID Sinjai (v2.1)</p>
+                <p class="sig-name">{{ strtoupper($adminName) }}</p>
+                <p style="font-size: 7pt; color: #94a3b8;">Dicetak otomatis melalui Sistem PPID Sinjai (v2.2)</p>
             </td>
         </tr>
     </table>
@@ -336,4 +341,3 @@
 
 </body>
 </html>
-
