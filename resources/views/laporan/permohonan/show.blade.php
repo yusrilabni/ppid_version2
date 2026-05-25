@@ -499,7 +499,8 @@
                         </div>
                         @endif
 
-                        <form action="{{ route('laporan.permohonan.rate', $permohonan) }}" method="POST" onsubmit="{{ is_null($permohonan->rating) ? "return confirm('Kirim tanggapan dan penilaian sekarang?');" : "" }}">
+                        <form id="ratingForm" action="{{ route('laporan.permohonan.rate', $permohonan) }}" method="POST" 
+                              onsubmit="return handleRatingSubmit(this);">
                             @csrf
 
                             @if(is_null($permohonan->rating))
@@ -544,13 +545,40 @@
                             </div>
 
                             <div class="flex justify-end">
-                                <button type="submit"
-                                        class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-black rounded-2xl hover:from-blue-700 hover:to-indigo-800 shadow-xl shadow-blue-200 transition-all active:scale-95 focus:ring-4 focus:ring-blue-500/20">
-                                    <i class="fas fa-check-double mr-2"></i>
-                                    {{ is_null($permohonan->rating) ? 'Kirim Tanggapan & Selesaikan' : 'Perbarui Penilaian' }}
+                                <button type="submit" id="ratingSubmitBtn"
+                                        class="w-full sm:w-auto inline-flex items-center justify-center px-8 py-4 bg-gradient-to-r from-blue-600 to-indigo-700 text-white font-black rounded-2xl hover:from-blue-700 hover:to-indigo-800 shadow-xl shadow-blue-200 transition-all active:scale-95 focus:ring-4 focus:ring-blue-500/20 disabled:opacity-50 disabled:cursor-not-allowed">
+                                    <span id="btnText" class="flex items-center">
+                                        <i class="fas fa-check-double mr-2"></i>
+                                        {{ is_null($permohonan->rating) ? 'Kirim Tanggapan & Selesaikan' : 'Perbarui Penilaian' }}
+                                    </span>
+                                    <span id="btnLoading" class="hidden">
+                                        <i class="fas fa-circle-notch animate-spin mr-2"></i> Mengirim...
+                                    </span>
                                 </button>
                             </div>
                         </form>
+
+                        <script>
+                            function handleRatingSubmit(form) {
+                                // 1. Tampilkan Konfirmasi jika pertama kali rating
+                                @if(is_null($permohonan->rating))
+                                    if (!confirm('Kirim tanggapan dan penilaian sekarang? Anda hanya dapat mengirim ulasan satu kali.')) {
+                                        return false;
+                                    }
+                                @endif
+
+                                // 2. Disable tombol untuk cegah double click
+                                const btn = document.getElementById('ratingSubmitBtn');
+                                const btnText = document.getElementById('btnText');
+                                const btnLoading = document.getElementById('btnLoading');
+
+                                btn.disabled = true;
+                                btnText.classList.add('hidden');
+                                btnLoading.classList.remove('hidden');
+
+                                return true;
+                            }
+                        </script>
                     </div>
                 </div>
                 @endif

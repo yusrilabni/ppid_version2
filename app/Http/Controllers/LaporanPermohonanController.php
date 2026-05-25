@@ -372,24 +372,41 @@ class LaporanPermohonanController extends Controller
             'message' => ($isFirstRating ? 'required' : 'nullable') . '|string|max:5000',
         ]);
         
-        // 4. Update the request
-        $permohonanInformasi->rating = $validatedData['rating'];
-        
-        // Mark as 'selesai' only on the first rating
-        if ($isFirstRating) {
-            $permohonanInformasi->status_permohonan = 'selesai';
-        }
-        
-        $permohonanInformasi->save();
+        // 4. Update the request with Transaction to prevent race conditions
+        DB::transaction(function () use ($permohonanInformasi, $validatedData, $isFirstRating) {
+            // Re-check first rating inside transaction to prevent double comments from rapid clicks
+            $currentRating = DB::table('permohonan_informasis')->where('id', $permohonanInformasi->id)->value('rating');
+            $actuallyFirst = is_null($currentRating);
 
-        // Jika ada pesan tanggapan akhir, simpan ke responses
-        if (!empty($validatedData['message'])) {
-            PermohonanResponse::create([
-                'permohonan_informasi_id' => $permohonanInformasi->id,
-                'user_id' => auth()->id(),
-                'message' => $validatedData['message'],
-            ]);
-        }
+            $permohonanInformasi->rating = $validatedData['rating'];
+            
+            if ($actuallyFirst) {
+                $permohonanInformasi->status_permohonan = 'selesai';
+            }
+            
+            $permohonanInformasi->save();
+
+            // Jika ini benar-benar rating pertama ATAU ada pesan baru pada update
+            // Namun user minta ulasan terakhir hanya sekali, maka kita hanya simpan jika 'actuallyFirst'
+            if (!empty($validatedData['message'])) {
+                // Jika ini adalah update rating, kita mungkin tidak ingin menambah pesan baru 
+                // tapi karena script lama membolehkan, kita batasi: 
+                // Jangan tambah pesan jika pesan yang sama persis baru saja dikirim (cegah double click server-side)
+                $alreadyExists = PermohonanResponse::where('permohonan_informasi_id', $permohonanInformasi->id)
+                    ->where('user_id', auth()->id())
+                    ->where('message', $validatedData['message'])
+                    ->where('created_at', '>=', now()->subSeconds(10))
+                    ->exists();
+
+                if (!$alreadyExists) {
+                    PermohonanResponse::create([
+                        'permohonan_informasi_id' => $permohonanInformasi->id,
+                        'user_id' => auth()->id(),
+                        'message' => $validatedData['message'],
+                    ]);
+                }
+            }
+        });
 
         // Kirim Notifikasi Telegram (Satu Pesan Terpadu)
         $escNama = GeneralHelper::escapeTelegramMarkdown($permohonanInformasi->nama_pemohon);
