@@ -758,7 +758,15 @@
                         </div>
 
                         <div class="mt-6 md:mt-8 p-5 md:p-6 bg-blue-50 rounded-lg border border-blue-100">
-                            <h4 class="text-sm md:text-base font-semibold text-gray-900 mb-3">Jam Pelayanan</h4>
+                            <div class="flex items-center justify-between mb-3">
+                                <h4 class="text-sm md:text-base font-semibold text-gray-900">Jam Pelayanan</h4>
+                                <span class="px-2 py-1 bg-green-100 text-green-700 text-[10px] md:text-xs font-bold rounded-full border border-green-200 flex items-center gap-1">
+                                    <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M5 13l4 4L19 7"></path>
+                                    </svg>
+                                    GRATIS
+                                </span>
+                            </div>
                             <div class="space-y-2 text-xs md:text-sm text-gray-700">
                                 <p class="flex justify-between">
                                     <span class="font-medium">Senin - Kamis:</span>
@@ -771,6 +779,11 @@
                                 <p class="flex justify-between">
                                     <span class="font-medium">Sabtu - Minggu:</span>
                                     <span>{{ $contactInfo['service_hours_weekend'] ?? 'Libur' }}</span>
+                                </p>
+                            </div>
+                            <div class="mt-4 pt-3 border-t border-blue-200">
+                                <p class="text-[10px] md:text-xs text-blue-600 font-medium italic">
+                                    *Seluruh layanan informasi publik tidak dipungut biaya apapun.
                                 </p>
                             </div>
                         </div>
