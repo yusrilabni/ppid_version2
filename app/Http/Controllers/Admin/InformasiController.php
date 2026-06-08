@@ -16,6 +16,7 @@ use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use App\Helpers\GeneralHelper;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Validation\ValidationException;
 
 class InformasiController extends Controller
 {
@@ -288,8 +289,8 @@ class InformasiController extends Controller
 
             $validationRules = [
                 'title' => 'required|string|min:5|max:255',
-                'doc_desc' => 'nullable|string',
-                'doc_content' => 'nullable|string',
+                'doc_desc' => 'required|string',
+                'doc_content' => 'required|string',
                 'category' => 'required|string',
                 'tahun' => 'required',
                 'status' => 'required|string',
@@ -339,6 +340,8 @@ class InformasiController extends Controller
             return redirect()->route('frontend.informasi.category', ['category' => Str::slug(str_replace('Informasi ', '', $dataToSave['category']))])
                 ->with('success', 'Data berhasil disimpan.');
 
+        } catch (ValidationException $e) {
+            throw $e;
         } catch (\Exception $e) {
             \Log::error('STORE_FAILED: ' . $e->getMessage());
             return redirect()->back()->withInput()->with('error', 'Gagal menyimpan: ' . $e->getMessage());
@@ -357,8 +360,8 @@ class InformasiController extends Controller
 
         $validationRules = [
             'title' => 'required|string|min:5|max:255',
-            'doc_desc' => 'nullable|string|max:65535',
-            'doc_content' => 'nullable|string',
+            'doc_desc' => 'required|string|max:65535',
+            'doc_content' => 'required|string',
             'category' => ['required', 'string', 'in:Informasi Berkala,Informasi Setiap Saat,Informasi Serta Merta,Informasi Dikecualikan'],
             'jenis_dokumen' => 'nullable|string',
             'tahun' => 'required|date',
