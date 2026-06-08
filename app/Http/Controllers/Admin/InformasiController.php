@@ -290,8 +290,9 @@ class InformasiController extends Controller
             $validationRules = [
                 'title' => 'required|string|min:5|max:255',
                 'doc_desc' => 'required|string',
-                'doc_content' => 'required|string',
+                'doc_content' => 'nullable|string',
                 'category' => 'required|string',
+                'jenis_dokumen' => 'required|string',
                 'tahun' => 'required',
                 'status' => 'required|string',
                 'file_type' => 'required',
@@ -361,9 +362,9 @@ class InformasiController extends Controller
         $validationRules = [
             'title' => 'required|string|min:5|max:255',
             'doc_desc' => 'required|string|max:65535',
-            'doc_content' => 'required|string',
+            'doc_content' => 'nullable|string',
             'category' => ['required', 'string', 'in:Informasi Berkala,Informasi Setiap Saat,Informasi Serta Merta,Informasi Dikecualikan'],
-            'jenis_dokumen' => 'nullable|string',
+            'jenis_dokumen' => 'required|string',
             'tahun' => 'required|date',
             'status' => 'required|string|in:BERLAKU,ARSIP',
             'file_type' => 'required|in:upload,url',

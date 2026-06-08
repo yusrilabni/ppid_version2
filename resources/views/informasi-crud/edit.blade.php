@@ -65,7 +65,7 @@
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
                             <div class="md:col-span-2"><label for="title" class="block text-gray-700 text-sm font-semibold mb-2">Judul Informasi <span class="text-red-500">*</span></label><input type="text" name="title" id="title" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" value="{{ old('title', $informasi->title) }}" required minlength="5" placeholder="Masukkan judul informasi"></div>
                             <div class="md:col-span-2"><label for="doc_desc" class="block text-gray-700 text-sm font-semibold mb-2">Deskripsi Singkat <span class="text-red-500">*</span></label><textarea name="doc_desc" id="doc_desc" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" placeholder="Deskripsi singkat tentang informasi ini" required>{{ old('doc_desc', $informasi->deskripsi) }}</textarea></div>
-                            <div class="md:col-span-2"><label for="doc_content" class="block text-gray-700 text-sm font-semibold mb-2">Konten Informasi Lengkap <span class="text-red-500">*</span></label><textarea name="doc_content" id="doc_content" rows="6" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" placeholder="Konten lengkap informasi publik" required>{{ old('doc_content', $informasi->content) }}</textarea></div>
+                            <div class="md:col-span-2"><label for="doc_content" class="block text-gray-700 text-sm font-semibold mb-2">Konten Informasi Lengkap</label><textarea name="doc_content" id="doc_content" rows="6" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" placeholder="Konten lengkap informasi publik">{{ old('doc_content', $informasi->content) }}</textarea></div>
                             @php
                                 $categories = [
                                     ['value' => 'Informasi Berkala', 'label' => 'Informasi Berkala'],
@@ -104,7 +104,7 @@
                                 </div>
                             @endif
                             <div>
-                                <label for="jenis_dokumen" class="block text-gray-700 text-sm font-semibold mb-2">Jenis Dokumen</label>
+                                <label for="jenis_dokumen" class="block text-gray-700 text-sm font-semibold mb-2">Jenis Dokumen <span class="text-red-500">*</span></label>
                                 @php
                                     $jenisDokumenOptions = [
                                         ['value' => 'Profil Badan Publik', 'label' => 'Profil Badan Publik', 'desc' => 'Sejarah, Visi Misi, Tupoksi, Struktur Organisasi, Profil Pimpinan, Domisili'],
@@ -133,6 +133,7 @@
                                         :value="$currentJenis"
                                         placeholder="Pilih Jenis Dokumen"
                                         :searchable="true"
+                                        required="true"
                                     />
                                 </div>
                                 <div id="jenis_dokumen_desc" class="mt-2 text-xs text-blue-600 font-medium italic min-h-[1rem]">{{ $currentDesc }}</div>
