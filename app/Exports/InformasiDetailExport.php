@@ -25,10 +25,10 @@ class InformasiDetailExport implements FromCollection, WithHeadings, ShouldAutoS
     public function collection()
     {
         return Informasi::when($this->startDate, function ($query) {
-                                return $query->where('created_at', '>=', $this->startDate);
+                                return $query->where('tanggal_upload', '>=', $this->startDate);
                             })
                             ->when($this->endDate, function ($query) {
-                                return $query->where('created_at', '<=', $this->endDate->endOfDay());
+                                return $query->where('tanggal_upload', '<=', $this->endDate->endOfDay());
                             })
                             ->with('organization') // Eager load organization
                             ->get()
@@ -39,7 +39,7 @@ class InformasiDetailExport implements FromCollection, WithHeadings, ShouldAutoS
                                     $informasi->jenis_dokumen,
                                     $informasi->organization->name ?? 'N/A',
                                     $informasi->status,
-                                    $informasi->created_at->format('d M Y H:i:s'),
+                                    $informasi->tanggal_upload ? Carbon::parse($informasi->tanggal_upload)->format('d M Y') : $informasi->created_at->format('d M Y'),
                                     $informasi->download_count,
                                     route('frontend.informasi.detail', ['slug' => $informasi->slug]),
                                 ];
@@ -54,7 +54,7 @@ class InformasiDetailExport implements FromCollection, WithHeadings, ShouldAutoS
             'Jenis Dokumen',
             'Unit',
             'Status',
-            'Tanggal Dibuat',
+            'Tanggal Upload',
             'Jumlah Download',
             'URL Detail',
         ];

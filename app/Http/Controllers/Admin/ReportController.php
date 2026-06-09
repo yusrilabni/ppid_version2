@@ -44,10 +44,10 @@ class ReportController extends Controller
 
         // Total Reports
         $totalInformasi = Informasi::when($request->filled('start_date'), function ($query) use ($startDate) {
-                                return $query->where('created_at', '>=', $startDate);
+                                return $query->where('tanggal_upload', '>=', $startDate);
                             })
                             ->when($request->filled('end_date'), function ($query) use ($endDate) {
-                                return $query->where('created_at', '<=', $endDate->endOfDay());
+                                return $query->where('tanggal_upload', '<=', $endDate->endOfDay());
                             })
                             ->when($selectedUnitId, function ($query) use ($selectedUnitId) {
                                 return $query->where('unit_id', $selectedUnitId);
@@ -99,10 +99,10 @@ class ReportController extends Controller
         $totalPageViews = 0; // Set to 0 or derive from elsewhere if needed.
 
         $totalDownloads = Informasi::when($request->filled('start_date'), function ($query) use ($startDate) {
-                                return $query->where('created_at', '>=', $startDate);
+                                return $query->where('tanggal_upload', '>=', $startDate);
                             })
                             ->when($request->filled('end_date'), function ($query) use ($endDate) {
-                                return $query->where('created_at', '<=', $endDate->endOfDay());
+                                return $query->where('tanggal_upload', '<=', $endDate->endOfDay());
                             })
                             ->sum('download_count');
 
@@ -118,10 +118,10 @@ class ReportController extends Controller
 
         // Informasi Reports
         $informasiReports = Informasi::when($request->filled('start_date'), function ($query) use ($startDate) {
-                                return $query->where('created_at', '>=', $startDate);
+                                return $query->where('tanggal_upload', '>=', $startDate);
                             })
                             ->when($request->filled('end_date'), function ($query) use ($endDate) {
-                                return $query->where('created_at', '<=', $endDate->endOfDay());
+                                return $query->where('tanggal_upload', '<=', $endDate->endOfDay());
                             })
                             ->when($selectedUnitId, function ($query) use ($selectedUnitId) {
                                 return $query->where('unit_id', $selectedUnitId);
@@ -179,8 +179,8 @@ class ReportController extends Controller
 
         // Prepare dashboard-like statistics, filtered by date range
         $dashboardStatsForReports = [
-            'totalInformasiCount' => Informasi::when($request->filled('start_date'), fn ($query) => $query->where('created_at', '>=', $startDate))
-                                            ->when($request->filled('end_date'), fn ($query) => $query->where('created_at', '<=', $endDate->endOfDay()))
+            'totalInformasiCount' => Informasi::when($request->filled('start_date'), fn ($query) => $query->where('tanggal_upload', '>=', $startDate))
+                                            ->when($request->filled('end_date'), fn ($query) => $query->where('tanggal_upload', '<=', $endDate->endOfDay()))
                                             ->when($selectedUnitId, fn ($query) => $query->where('unit_id', $selectedUnitId))
                                             ->count(),
 
@@ -199,15 +199,15 @@ class ReportController extends Controller
                                         ->when($request->filled('end_date'), fn ($query) => $query->whereDate('created_at', '<=', $endDate->endOfDay()))
                                         ->sum('jumlah'), // Sum ALL 'jumlah' in Statistik, filtered by date
 
-            'totalPageViews' => Informasi::when($request->filled('start_date'), fn ($query) => $query->where('created_at', '>=', $startDate))
-                                        ->when($request->filled('end_date'), fn ($query) => $query->where('created_at', '<=', $endDate->endOfDay()))
+            'totalPageViews' => Informasi::when($request->filled('start_date'), fn ($query) => $query->where('tanggal_upload', '>=', $startDate))
+                                        ->when($request->filled('end_date'), fn ($query) => $query->where('tanggal_upload', '<=', $endDate->endOfDay()))
                                         ->sum('views_count') +
                                 SubStandarLayanan::when($request->filled('start_date'), fn ($query) => $query->where('created_at', '>=', $startDate))
                                         ->when($request->filled('end_date'), fn ($query) => $query->where('created_at', '<=', $endDate->endOfDay()))
                                         ->sum('views_count'),
 
-            'totalDownloads' => Informasi::when($request->filled('start_date'), fn ($query) => $query->where('created_at', '>=', $startDate))
-                                        ->when($request->filled('end_date'), fn ($query) => $query->where('created_at', '<=', $endDate->endOfDay()))
+            'totalDownloads' => Informasi::when($request->filled('start_date'), fn ($query) => $query->where('tanggal_upload', '>=', $startDate))
+                                        ->when($request->filled('end_date'), fn ($query) => $query->where('tanggal_upload', '<=', $endDate->endOfDay()))
                                         ->sum('download_count'),
 
             // The following stats are typically not date-filtered in the same way for a dashboard summary,
@@ -241,10 +241,10 @@ class ReportController extends Controller
         $selectedUnitId = $request->input('unit_id');
 
         $totalInformasi = Informasi::when($request->filled('start_date'), function ($query) use ($startDate) {
-                                return $query->where('created_at', '>=', $startDate);
+                                return $query->where('tanggal_upload', '>=', $startDate);
                             })
                             ->when($request->filled('end_date'), function ($query) use ($endDate) {
-                                return $query->where('created_at', '<=', Carbon::parse($endDate)->endOfDay());
+                                return $query->where('tanggal_upload', '<=', Carbon::parse($endDate)->endOfDay());
                             })
                             ->when($selectedUnitId, function ($query) use ($selectedUnitId) {
                                 return $query->where('unit_id', $selectedUnitId);
@@ -303,10 +303,10 @@ class ReportController extends Controller
                             ->sum('jumlah');
 
         $totalDownloads = Informasi::when($request->filled('start_date'), function ($query) use ($startDate) {
-                                return $query->where('created_at', '>=', $startDate);
+                                return $query->where('tanggal_upload', '>=', $startDate);
                             })
                             ->when($request->filled('end_date'), function ($query) use ($endDate) {
-                                return $query->where('created_at', '<=', Carbon::parse($endDate)->endOfDay());
+                                return $query->where('tanggal_upload', '<=', Carbon::parse($endDate)->endOfDay());
                             })
                             ->sum('download_count');
 
@@ -322,8 +322,8 @@ class ReportController extends Controller
 
         // Prepare dashboard-like statistics, filtered by date range for export
         $dashboardStatsForReports = [
-            'totalInformasiCount' => Informasi::when($request->filled('start_date'), fn ($query) => $query->where('created_at', '>=', $startDate))
-                                            ->when($request->filled('end_date'), fn ($query) => $query->where('created_at', '<=', Carbon::parse($endDate)->endOfDay()))
+            'totalInformasiCount' => Informasi::when($request->filled('start_date'), fn ($query) => $query->where('tanggal_upload', '>=', $startDate))
+                                            ->when($request->filled('end_date'), fn ($query) => $query->where('tanggal_upload', '<=', Carbon::parse($endDate)->endOfDay()))
                                             ->when($selectedUnitId, fn ($query) => $query->where('unit_id', $selectedUnitId))
                                             ->count(),
 
@@ -342,15 +342,15 @@ class ReportController extends Controller
                                         ->when($request->filled('end_date'), fn ($query) => $query->whereDate('created_at', '<=', Carbon::parse($endDate)->endOfDay()))
                                         ->sum('jumlah'), // Sum ALL 'jumlah' in Statistik, filtered by date
 
-            'totalPageViews' => Informasi::when($request->filled('start_date'), fn ($query) => $query->where('created_at', '>=', $startDate))
-                                        ->when($request->filled('end_date'), fn ($query) => $query->where('created_at', '<=', Carbon::parse($endDate)->endOfDay()))
+            'totalPageViews' => Informasi::when($request->filled('start_date'), fn ($query) => $query->where('tanggal_upload', '>=', $startDate))
+                                        ->when($request->filled('end_date'), fn ($query) => $query->where('tanggal_upload', '<=', Carbon::parse($endDate)->endOfDay()))
                                         ->sum('views_count') +
                                 SubStandarLayanan::when($request->filled('start_date'), fn ($query) => $query->where('created_at', '>=', $startDate))
                                         ->when($request->filled('end_date'), fn ($query) => $query->where('created_at', '<=', Carbon::parse($endDate)->endOfDay()))
                                         ->sum('views_count'),
 
-            'totalDownloads' => Informasi::when($request->filled('start_date'), fn ($query) => $query->where('created_at', '>=', $startDate))
-                                        ->when($request->filled('end_date'), fn ($query) => $query->where('created_at', '<=', Carbon::parse($endDate)->endOfDay()))
+            'totalDownloads' => Informasi::when($request->filled('start_date'), fn ($query) => $query->where('tanggal_upload', '>=', $startDate))
+                                        ->when($request->filled('end_date'), fn ($query) => $query->where('tanggal_upload', '<=', Carbon::parse($endDate)->endOfDay()))
                                         ->sum('download_count'),
 
             'totalUsers' => User::when($selectedUnitId, fn ($query) => $query->where('unit_id', $selectedUnitId))->count(),
@@ -393,8 +393,8 @@ class ReportController extends Controller
 
         // Calculate dashboardStatsForReports
         $dashboardStatsForReports = [
-            'totalInformasiCount' => Informasi::when($request->filled('start_date'), fn ($query) => $query->where('created_at', '>=', $startDate))
-                                            ->when($request->filled('end_date'), fn ($query) => $query->where('created_at', '<=', Carbon::parse($endDate)->endOfDay()))
+            'totalInformasiCount' => Informasi::when($request->filled('start_date'), fn ($query) => $query->where('tanggal_upload', '>=', $startDate))
+                                            ->when($request->filled('end_date'), fn ($query) => $query->where('tanggal_upload', '<=', Carbon::parse($endDate)->endOfDay()))
                                             ->when($selectedUnitId, fn ($query) => $query->where('unit_id', $selectedUnitId))
                                             ->count(),
 
@@ -413,15 +413,15 @@ class ReportController extends Controller
                                         ->when($request->filled('end_date'), fn ($query) => $query->whereDate('created_at', '<=', Carbon::parse($endDate)->endOfDay()))
                                         ->sum('jumlah'), // Sum ALL 'jumlah' in Statistik, filtered by date
 
-            'totalPageViews' => Informasi::when($request->filled('start_date'), fn ($query) => $query->where('created_at', '>=', $startDate))
-                                        ->when($request->filled('end_date'), fn ($query) => $query->where('created_at', '<=', Carbon::parse($endDate)->endOfDay()))
+            'totalPageViews' => Informasi::when($request->filled('start_date'), fn ($query) => $query->where('tanggal_upload', '>=', $startDate))
+                                        ->when($request->filled('end_date'), fn ($query) => $query->where('tanggal_upload', '<=', Carbon::parse($endDate)->endOfDay()))
                                         ->sum('views_count') +
                                 SubStandarLayanan::when($request->filled('start_date'), fn ($query) => $query->where('created_at', '>=', $startDate))
                                         ->when($request->filled('end_date'), fn ($query) => $query->where('created_at', '<=', Carbon::parse($endDate)->endOfDay()))
                                         ->sum('views_count'),
 
-            'totalDownloads' => Informasi::when($request->filled('start_date'), fn ($query) => $query->where('created_at', '>=', $startDate))
-                                        ->when($request->filled('end_date'), fn ($query) => $query->where('created_at', '<=', Carbon::parse($endDate)->endOfDay()))
+            'totalDownloads' => Informasi::when($request->filled('start_date'), fn ($query) => $query->where('tanggal_upload', '>=', $startDate))
+                                        ->when($request->filled('end_date'), fn ($query) => $query->where('tanggal_upload', '<=', Carbon::parse($endDate)->endOfDay()))
                                         ->sum('download_count'),
             'totalUsers' => User::when($selectedUnitId, fn ($query) => $query->where('unit_id', $selectedUnitId))->count(),
             'totalOrganizations' => Organization::count(),

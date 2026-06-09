@@ -96,7 +96,7 @@
                                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Kategori</th>
                                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Jenis Dokumen</th>
                                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Unit</th>
-                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider w-1/12">Tanggal Dibuat</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider w-1/12">Tanggal Upload</th>
                                             <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">URL Detail</th>
                                         </tr>
                                     </thead>
@@ -107,7 +107,13 @@
                                                 <td class="px-6 py-4 text-sm text-gray-500">{{ $info->category }}</td>
                                                 <td class="px-6 py-4 text-sm text-gray-500">{{ $info->jenis_dokumen }}</td>
                                                 <td class="px-6 py-4 text-sm text-gray-500">{{ $info->organization->name ?? 'N/A' }}</td>
-                                                <td class="px-6 py-4 text-sm text-gray-500">{{ $info->created_at->format('d M Y') }}</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">
+                                                    @if($info->tanggal_upload)
+                                                        {{ \Carbon\Carbon::parse($info->tanggal_upload)->format('d M Y') }}
+                                                    @else
+                                                        {{ $info->created_at->format('d M Y') }}
+                                                    @endif
+                                                </td>
                                                 <td class="px-6 py-4 text-sm text-blue-600 hover:underline break-words min-w-0">
                                                     <a href="{{ route('frontend.informasi.detail', ['slug' => $info->slug]) }}" target="_blank">{{ route('frontend.informasi.detail', ['slug' => $info->slug]) }}</a>
                                                 </td>
@@ -269,7 +275,7 @@
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Jenis Dokumen</th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">Unit</th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider w-1/12">Status</th>
-                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider w-1/12">Tanggal Dibuat</th>
+                                        <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider w-1/12">Tanggal Upload</th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider w-1/12">Jumlah Download</th>
                                         <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider">URL Detail</th>
                                     </tr>
@@ -282,7 +288,13 @@
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $informasi->jenis_dokumen }}</td>
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $informasi->organization->name ?? 'N/A' }}</td>
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $informasi->status }}</td>
-                                            <td class="px-6 py-4 text-sm text-gray-500">{{ $informasi->created_at->format('d M Y') }}</td>
+                                            <td class="px-6 py-4 text-sm text-gray-500">
+                                                @if($informasi->tanggal_upload)
+                                                    {{ \Carbon\Carbon::parse($informasi->tanggal_upload)->format('d M Y') }}
+                                                @else
+                                                    {{ $informasi->created_at->format('d M Y') }}
+                                                @endif
+                                            </td>
                                             <td class="px-6 py-4 text-sm text-gray-500">{{ $informasi->download_count }}</td>
                                             <td class="px-6 py-4 text-sm text-blue-600 hover:underline break-words min-w-0">
                                                 <a href="{{ route('frontend.informasi.detail', ['slug' => $informasi->slug]) }}" target="_blank">{{ route('frontend.informasi.detail', ['slug' => $informasi->slug]) }}</a>
