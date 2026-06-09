@@ -251,14 +251,41 @@
                                         </tr>
                                         <tr>
                                             <td class="px-6 py-4 text-sm font-medium text-gray-900">Total Unduhan</td>
-                                            <td class="px-6 py-4 text-sm text-gray-500">{{ $dashboardStatsForReports['totalDownloads'] }}</td>
+                                            <td class="px-6 py-4 text-sm text-gray-500">{{ $totalReportsData['totalDownloads'] }}</td>
                                         </tr>
-                                    </tbody>
-                                </table>
-                            </div>
-                        @endif
-                    </div>
-                </div>
+                                        </tbody>
+                                        </table>
+                                        </div>
+                                        @endif
+                                        </div>
+
+                                        {{-- Categories Breakdown Summary --}}
+                                        <div class="mb-8">
+                                        <h4 class="text-md font-semibold text-gray-700 mb-2">Rincian Per Kategori Informasi</h4>
+                                        @if(empty($totalReportsData['informasiCategories']))
+                                        <p class="text-gray-600">Tidak ada data rincian kategori dalam periode ini.</p>
+                                        @else
+                                        <div class="overflow-x-auto bg-white rounded-lg shadow">
+                                        <table class="min-w-full divide-y divide-gray-200">
+                                        <thead class="bg-gradient-to-r from-green-600 to-green-800 text-white">
+                                        <tr>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider w-1/2">Kategori Informasi</th>
+                                            <th scope="col" class="px-6 py-3 text-left text-xs font-medium text-white uppercase tracking-wider w-1/2">Jumlah</th>
+                                        </tr>
+                                        </thead>
+                                        <tbody class="bg-white divide-y divide-gray-200">
+                                        @foreach($totalReportsData['informasiCategories'] as $category => $count)
+                                            <tr>
+                                                <td class="px-6 py-4 text-sm font-medium text-gray-900">{{ $category }}</td>
+                                                <td class="px-6 py-4 text-sm text-gray-500">{{ $count }}</td>
+                                            </tr>
+                                        @endforeach
+                                        </tbody>
+                                        </table>
+                                        </div>
+                                        @endif
+                                        </div>
+                                        </div>
 
                 {{-- Informasi Reports Tab Content --}}
                 <div x-show="openTab === 'informasi'">

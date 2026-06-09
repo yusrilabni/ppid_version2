@@ -106,6 +106,22 @@ class ReportController extends Controller
                             })
                             ->sum('download_count');
 
+        // Categories Breakdown
+        $informasiCategories = Informasi::when($request->filled('start_date'), function ($query) use ($startDate) {
+                                    return $query->where('tanggal_upload', '>=', $startDate);
+                                })
+                                ->when($request->filled('end_date'), function ($query) use ($endDate) {
+                                    return $query->where('tanggal_upload', '<=', $endDate->endOfDay());
+                                })
+                                ->when($selectedUnitId, function ($query) use ($selectedUnitId) {
+                                    return $query->where('unit_id', $selectedUnitId);
+                                })
+                                ->selectRaw('category, count(*) as count')
+                                ->groupBy('category')
+                                ->get()
+                                ->pluck('count', 'category')
+                                ->toArray();
+
 
         $totalReportsData = [
             'totalInformasi' => $totalInformasi,
@@ -114,6 +130,7 @@ class ReportController extends Controller
             'totalVisits' => $totalVisits,
             'totalPageViews' => $totalPageViews, // Using new name
             'totalDownloads' => $totalDownloads,
+            'informasiCategories' => $informasiCategories, // Add categories breakdown
         ];
 
         // Informasi Reports
