@@ -19,9 +19,8 @@ class WhatsAppWebhookController extends Controller
         $history = [];
         if (file_exists($logPath)) {
             $history = json_decode(file_get_contents($logPath), true) ?: [];
-            // Pastikan $history adalah list/array berurutan, bukan associative object
             if (!empty($history) && !isset($history[0])) {
-                $history = []; // Reset jika format lama rusak
+                $history = []; 
             }
         }
 
@@ -30,11 +29,12 @@ class WhatsAppWebhookController extends Controller
             'method' => $request->method(),
             'ip' => $request->ip(),
             'all_data' => $request->all(),
+            'raw_input' => file_get_contents('php://input'), // Tambahkan data mentah
         ];
 
-        array_unshift($history, $currentHit); // Tambah ke urutan teratas
-        $history = array_slice($history, 0, 10); // Simpan maksimal 10 riwayat
-        
+        array_unshift($history, $currentHit); 
+        $history = array_slice($history, 0, 10); 
+
         file_put_contents($logPath, json_encode($history, JSON_PRETTY_PRINT));
         Log::info('WhatsApp Webhook Hit: ', $currentHit);
 
