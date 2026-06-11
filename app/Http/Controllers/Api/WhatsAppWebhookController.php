@@ -28,21 +28,17 @@ class WhatsAppWebhookController extends Controller
         $pengirim = $data['from']; // Bisa berupa nomor@c.us atau IDGrup@g.us
         $pesan = trim(strtolower($data['body']));
 
-        // 2. Logika Balasan Khusus Grup
-        // Cek apakah pesan berasal dari grup (@g.us)
-        if (str_contains($pengirim, '@g.us')) {
-            
-            // Cek perintah #status
-            if ($pesan === '#status') {
-                $statusPesan = "📊 *STATUS SISTEM PPID*\n\n"
-                             . "✅ *Server:* Online\n"
-                             . "✅ *Database:* Terhubung\n"
-                             . "✅ *WhatsApp Gateway:* Aktif\n"
-                             . "🕒 *Waktu:* " . now()->format('d/m/Y H:i:s') . "\n\n"
-                             . "Sistem berjalan dengan normal. 🚀";
+        // 2. Logika Balasan
+        // Jika pesan berisi perintah #status
+        if ($pesan === '#status') {
+            $statusPesan = "📊 *STATUS SISTEM PPID*\n\n"
+                         . "✅ *Server:* Online\n"
+                         . "✅ *Database:* Terhubung\n"
+                         . "✅ *WhatsApp Gateway:* Aktif\n"
+                         . "🕒 *Waktu:* " . now()->format('d/m/Y H:i:s') . "\n\n"
+                         . "Sistem berjalan dengan normal. 🚀";
 
-                GeneralHelper::sendWhatsApp($pengirim, $statusPesan);
-            }
+            GeneralHelper::sendWhatsApp($pengirim, $statusPesan);
         }
 
         return response()->json(['status' => 'success']);
