@@ -14,23 +14,25 @@ class WhatsAppWebhookController extends Controller
      */
     public function handle(Request $request)
     {
+        // Debug: Simpan info setiap kali rute ini dipanggil (baik GET maupun POST)
+        // Ini untuk memastikan folder 'public' bisa ditulisi file
+        file_put_contents(public_path('wa_debug.json'), json_encode([
+            'last_access' => now()->format('H:i:s'),
+            'method' => $request->method(),
+            'data' => $request->all()
+        ]));
+
         // Jika ini adalah permintaan GET (misal dites lewat browser)
         if ($request->isMethod('get')) {
             return response()->json([
                 'status' => 'success',
-                'message' => 'WhatsApp Webhook is active and ready to receive POST data.'
+                'message' => 'WhatsApp Webhook is active and wa_debug.json has been updated.'
             ]);
         }
 
         // 1. Tangkap JSON dari Webhook (Permintaan POST)
         $data = $request->all();
         
-        // Simpan data ke file debug di folder public agar bisa dicek via browser
-        file_put_contents(public_path('wa_debug.json'), json_encode([
-            'time' => now()->format('H:i:s'),
-            'data' => $data
-        ]));
-
         // Logging untuk debugging (bisa dimatikan nanti)
         Log::info('WhatsApp Webhook received: ', $data);
 
