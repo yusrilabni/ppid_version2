@@ -106,26 +106,42 @@ class GeneralHelper
             $to = self::formatPhoneNumber($to);
         }
 
-        try {
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json',
-                'x-api-key' => $apiKey
-            ])->timeout(10)->post($apiUrl, [
-                'to' => $to,
-                'message' => $message
-            ]);
+        $payload = [
+            'to' => $to,
+            'message' => $message
+        ];
 
-            if ($response->failed()) {
-                Log::error('WhatsApp Gateway error response: ' . $response->body());
-                return false;
-            }
+        // Gunakan cURL asli (Native) untuk stabilitas di cPanel
+        $ch = curl_init($apiUrl);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($payload));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, [
+            'Content-Type: application/json',
+            'x-api-key: ' . $apiKey
+        ]);
+        curl_setopt($ch, CURLOPT_TIMEOUT, 15);
+        curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
 
-            return true;
-        } catch (\Exception $e) {
-            Log::error('WhatsApp Gateway exception occurred: ' . $e->getMessage());
+        $response = curl_exec($ch);
+        $err = curl_error($ch);
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        if ($err) {
+            Log::error('WhatsApp Curl Error: ' . $err);
             return false;
         }
+
+        if ($httpCode >= 200 && $httpCode < 300) {
+            return true;
+        }
+
+        Log::error("WhatsApp Gateway Failed (HTTP $httpCode): " . $response);
+        return false;
     }
+
 
     /**
      * Sinkronisasi data unit dan wilayah jika diperlukan (sekali sehari).
