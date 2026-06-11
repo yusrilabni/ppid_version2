@@ -93,8 +93,8 @@ class GeneralHelper
      */
     public static function sendWhatsApp($to, $message)
     {
-        $apiUrl = env('WA_API_URL', 'http://36.95.15.72:3000/api/send');
-        $apiKey = env('WA_API_KEY', '3047a8cc-6efd-4dfd-a4c6-dc7b3363de3f');
+        $apiUrl = config('ppid.whatsapp.api_url');
+        $apiKey = config('ppid.whatsapp.api_key');
 
         if (!$apiUrl || !$apiKey) {
             Log::warning('WhatsApp Gateway configuration is missing.');
