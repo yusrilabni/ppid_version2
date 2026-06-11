@@ -172,6 +172,30 @@ Route::get('/test-wa-trigger', function() {
     ]);
 });
 
+Route::get('/test-wa-connection', function() {
+    $apiUrl = config('ppid.whatsapp.api_url');
+    $apiKey = config('ppid.whatsapp.api_key');
+    
+    try {
+        $response = \Illuminate\Support\Facades\Http::withHeaders([
+            'x-api-key' => $apiKey
+        ])->timeout(5)->get(str_replace('/api/send', '', $apiUrl)); // Coba akses root gateway
+        
+        return response()->json([
+            'target' => $apiUrl,
+            'status' => 'CONNECTED',
+            'response' => $response->body()
+        ]);
+    } catch (\Exception $e) {
+        return response()->json([
+            'target' => $apiUrl,
+            'status' => 'FAILED',
+            'error' => $e->getMessage(),
+            'hint' => 'Jika error Connection Timed Out, berarti Hosting cPanel Anda memblokir Port 3000.'
+        ], 500);
+    }
+});
+
 // Laravel ERD (Bypass environment check - DISABLED IN PRODUCTION)
 if (app()->environment('local')) {
     Route::get('/erd', [\Recca0120\LaravelErd\Http\Controllers\LaravelErdController::class, 'index'])->name('erd.index');
