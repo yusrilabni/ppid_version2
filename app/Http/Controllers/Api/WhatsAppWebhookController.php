@@ -14,7 +14,15 @@ class WhatsAppWebhookController extends Controller
      */
     public function handle(Request $request)
     {
-        // 1. Tangkap JSON dari Webhook
+        // Jika ini adalah permintaan GET (misal dites lewat browser)
+        if ($request->isMethod('get')) {
+            return response()->json([
+                'status' => 'success',
+                'message' => 'WhatsApp Webhook is active and ready to receive POST data.'
+            ]);
+        }
+
+        // 1. Tangkap JSON dari Webhook (Permintaan POST)
         $data = $request->all();
         
         // Logging untuk debugging (bisa dimatikan nanti)

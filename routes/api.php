@@ -82,4 +82,4 @@ Route::prefix('v1')->group(function () {
 // Fallback rute lama (jika masih ada yang pakai, agar tidak langsung error)
 Route::get('/health', [HealthController::class, 'index']);
 Route::post('/telegram/webhook', [\App\Http\Controllers\Api\TelegramWebhookController::class, 'handle']);
-Route::post('/whatsapp/webhook', [\App\Http\Controllers\Api\WhatsAppWebhookController::class, 'handle']);
+Route::match(['get', 'post'], '/whatsapp/webhook', [\App\Http\Controllers\Api\WhatsAppWebhookController::class, 'handle']);
