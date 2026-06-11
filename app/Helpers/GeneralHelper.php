@@ -88,6 +88,8 @@ class GeneralHelper
         }
     }
 
+    public static $lastWaResponse = null;
+
     /**
      * Send message via WhatsApp Gateway
      */
@@ -129,8 +131,11 @@ class GeneralHelper
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
         curl_close($ch);
 
+        self::$lastWaResponse = $response; // Simpan respon untuk debug
+
         if ($err) {
             Log::error('WhatsApp Curl Error: ' . $err);
+            self::$lastWaResponse = "CURL_ERROR: " . $err;
             return false;
         }
 

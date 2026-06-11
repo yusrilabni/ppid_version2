@@ -197,13 +197,14 @@ Route::get('/test-wa-connection', function() {
         });
 
         Route::get('/test-wa-send/{phone}', function($phone) {
-        $result = \App\Helpers\GeneralHelper::sendWhatsApp($phone, "Halo! Ini adalah pesan tes dari Sistem PPID. Jika Anda menerima ini, berarti integrasi WhatsApp sudah SUKSES! 🚀");
+            $result = \App\Helpers\GeneralHelper::sendWhatsApp($phone, "Halo! Ini adalah pesan tes dari Sistem PPID. Jika Anda menerima ini, berarti integrasi WhatsApp sudah SUKSES! 🚀");
 
-        return response()->json([
-        'target_phone' => $phone,
-        'send_status' => $result ? 'SUCCESS' : 'FAILED',
-        'info' => $result ? 'Silakan cek WhatsApp Anda.' : 'Gagal mengirim. Cek log Laravel untuk detailnya.'
-        ]);
+            return response()->json([
+                'target_phone' => $phone,
+                'send_status' => $result ? 'SUCCESS' : 'FAILED',
+                'gateway_response' => json_decode(\App\Helpers\GeneralHelper::$lastWaResponse, true) ?: \App\Helpers\GeneralHelper::$lastWaResponse,
+                'info' => $result ? 'Silakan cek WhatsApp Anda.' : 'Periksa gateway_response di atas untuk melihat penyebab kegagalan.'
+            ]);
         });
 
         // Laravel ERD (Bypass environment check - DISABLED IN PRODUCTION)
