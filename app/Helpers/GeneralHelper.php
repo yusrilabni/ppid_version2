@@ -55,8 +55,8 @@ class GeneralHelper
      */
     public static function sendTelegramMessage($message, $buttons = null)
     {
-        $token = "8684002355:AAEvGLpwQVKHF8nkmeznuLOjTclkU52pzlk";
-        $chat_id = "-1003717845788"; // ID Supergroup baru hasil migrasi
+        $token = env('TELEGRAM_BOT_TOKEN', "8684002355:AAEvGLpwQVKHF8nkmeznuLOjTclkU52pzlk");
+        $chat_id = env('TELEGRAM_CHAT_ID', "-1003717845788");
 
         if (!$token || !$chat_id) {
             Log::warning('Telegram configuration is missing.');
@@ -67,7 +67,7 @@ class GeneralHelper
             $payload = [
                 'chat_id' => $chat_id,
                 'text' => $message,
-                'parse_mode' => 'HTML', // Ganti ke HTML agar lebih stabil
+                'parse_mode' => 'HTML',
             ];
 
             if ($buttons) {
@@ -84,6 +84,43 @@ class GeneralHelper
             return true;
         } catch (\Exception $e) {
             Log::error('Telegram exception occurred: ' . $e->getMessage());
+            return false;
+        }
+    }
+
+    /**
+     * Send message via WhatsApp Gateway
+     */
+    public static function sendWhatsApp($to, $message)
+    {
+        $apiUrl = env('WA_API_URL', 'http://36.95.15.72:3000/api/send');
+        $apiKey = env('WA_API_KEY', '3047a8cc-6efd-4dfd-a4c6-dc7b3363de3f');
+
+        if (!$apiUrl || !$apiKey) {
+            Log::warning('WhatsApp Gateway configuration is missing.');
+            return false;
+        }
+
+        // Format number to 62...
+        $to = self::formatPhoneNumber($to);
+
+        try {
+            $response = Http::withHeaders([
+                'Content-Type' => 'application/json',
+                'x-api-key' => $apiKey
+            ])->timeout(10)->post($apiUrl, [
+                'to' => $to,
+                'message' => $message
+            ]);
+
+            if ($response->failed()) {
+                Log::error('WhatsApp Gateway error response: ' . $response->body());
+                return false;
+            }
+
+            return true;
+        } catch (\Exception $e) {
+            Log::error('WhatsApp Gateway exception occurred: ' . $e->getMessage());
             return false;
         }
     }
