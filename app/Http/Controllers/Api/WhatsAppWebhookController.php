@@ -15,12 +15,16 @@ class WhatsAppWebhookController extends Controller
     public function handle(Request $request)
     {
         // Debug: Simpan info setiap kali rute ini dipanggil (baik GET maupun POST)
-        // Ini untuk memastikan folder 'public' bisa ditulisi file
-        file_put_contents(public_path('wa_debug.json'), json_encode([
-            'last_access' => now()->format('H:i:s'),
+        $debugData = [
+            'time' => now()->format('H:i:s'),
             'method' => $request->method(),
-            'data' => $request->all()
-        ]));
+            'ip' => $request->ip(),
+            'all_data' => $request->all(),
+            'headers' => $request->headers->all(),
+        ];
+
+        file_put_contents(public_path('wa_debug.json'), json_encode($debugData));
+        Log::info('WhatsApp Webhook Hit: ', $debugData);
 
         // Jika ini adalah permintaan GET (misal dites lewat browser)
         if ($request->isMethod('get')) {
@@ -32,13 +36,10 @@ class WhatsAppWebhookController extends Controller
 
         // 1. Tangkap JSON dari Webhook (Permintaan POST)
         $data = $request->all();
-        
-        // Logging untuk debugging (bisa dimatikan nanti)
-        Log::info('WhatsApp Webhook received: ', $data);
 
         // Pastikan data yang dibutuhkan ada
         if (!isset($data['from']) || !isset($data['body'])) {
-            return response()->json(['status' => 'error', 'message' => 'Invalid data'], 400);
+            return response()->json(['status' => 'success', 'info' => 'Data received but incomplete'], 200);
         }
 
         $pengirim = $data['from']; // Bisa berupa nomor@c.us atau IDGrup@g.us
