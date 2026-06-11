@@ -14,23 +14,32 @@ class WhatsAppWebhookController extends Controller
      */
     public function handle(Request $request)
     {
-        // Debug: Simpan info setiap kali rute ini dipanggil (baik GET maupun POST)
-        $debugData = [
+        // Debug: Simpan riwayat 10 hit terakhir agar tidak tertimpa saat refresh browser
+        $logPath = public_path('wa_debug.json');
+        $history = [];
+        if (file_exists($logPath)) {
+            $history = json_decode(file_get_contents($logPath), true) ?: [];
+        }
+
+        $currentHit = [
             'time' => now()->format('H:i:s'),
             'method' => $request->method(),
             'ip' => $request->ip(),
             'all_data' => $request->all(),
-            'headers' => $request->headers->all(),
         ];
 
-        file_put_contents(public_path('wa_debug.json'), json_encode($debugData));
-        Log::info('WhatsApp Webhook Hit: ', $debugData);
+        array_unshift($history, $currentHit); // Tambah ke urutan teratas
+        $history = array_slice($history, 0, 10); // Simpan maksimal 10 riwayat
+        
+        file_put_contents($logPath, json_encode($history));
+        Log::info('WhatsApp Webhook Hit: ', $currentHit);
 
         // Jika ini adalah permintaan GET (misal dites lewat browser)
         if ($request->isMethod('get')) {
             return response()->json([
                 'status' => 'success',
-                'message' => 'WhatsApp Webhook is active and wa_debug.json has been updated.'
+                'message' => 'WhatsApp Webhook is active. History has been updated.',
+                'history_count' => count($history)
             ]);
         }
 
