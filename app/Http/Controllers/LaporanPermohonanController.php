@@ -304,6 +304,19 @@ class LaporanPermohonanController extends Controller
 
         GeneralHelper::sendTelegramMessage($tgMsg, $buttons);
 
+        // --- KIRIM NOTIFIKASI WHATSAPP KE GRUP ---
+        $targetGroup = env('WA_GROUP_NOTIF_KHUSUS');
+        if ($targetGroup && $targetGroup !== 'masukkan_id_grup_disini@g.us') {
+            $waMsg = "📄 *PERMOHONAN INFORMASI BARU*\n\n"
+                   . "*ID:* #{$uniqueCode}\n"
+                   . "*Pemohon:* " . $permohonan->nama_pemohon . "\n"
+                   . "*Tgl:* " . now()->format('d/m/Y H:i') . "\n\n"
+                   . "*Detail Informasi:* \n" . Str::limit($permohonan->detail_informasi, 150) . "\n\n"
+                   . "Silakan cek dashboard admin untuk menindaklanjuti.";
+            
+            GeneralHelper::sendWhatsApp($targetGroup, $waMsg);
+        }
+
         return redirect()->route('laporan.permohonan.saya')->with('success', 'Permohonan informasi berhasil dikirim.');
     }
 
