@@ -77,7 +77,5 @@ class WhatsAppWebhookController extends Controller
         }
 
         return response()->json(['status' => 'success']);
-
-        return response()->json(['status' => 'success']);
     }
 }
