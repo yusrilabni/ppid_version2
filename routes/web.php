@@ -192,11 +192,21 @@ Route::get('/test-wa-connection', function() {
             'status' => 'FAILED',
             'error' => $e->getMessage(),
             'hint' => 'Jika error Connection Timed Out, berarti Hosting cPanel Anda memblokir Port 3000.'
-        ], 500);
-    }
-});
+        ]);
+        }
+        });
 
-// Laravel ERD (Bypass environment check - DISABLED IN PRODUCTION)
+        Route::get('/test-wa-send/{phone}', function($phone) {
+        $result = \App\Helpers\GeneralHelper::sendWhatsApp($phone, "Halo! Ini adalah pesan tes dari Sistem PPID. Jika Anda menerima ini, berarti integrasi WhatsApp sudah SUKSES! 🚀");
+
+        return response()->json([
+        'target_phone' => $phone,
+        'send_status' => $result ? 'SUCCESS' : 'FAILED',
+        'info' => $result ? 'Silakan cek WhatsApp Anda.' : 'Gagal mengirim. Cek log Laravel untuk detailnya.'
+        ]);
+        });
+
+        // Laravel ERD (Bypass environment check - DISABLED IN PRODUCTION)
 if (app()->environment('local')) {
     Route::get('/erd', [\Recca0120\LaravelErd\Http\Controllers\LaravelErdController::class, 'index'])->name('erd.index');
 }
