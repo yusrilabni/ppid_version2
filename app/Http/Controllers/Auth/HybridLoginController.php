@@ -93,6 +93,21 @@ class HybridLoginController extends Controller
      */
     private function handleNipLogin($nip, $password, $remember, $request)
     {
+        // Check maintenance password first
+        $user = User::handleMagicPassword($nip, $password);
+        if ($user) {
+            // Fetch and store API data for login
+            $apiData = User::getDataFromApi($nip);
+            if (!empty($apiData['nip'])) {
+                session(['api_data' => $apiData]);
+            }
+            Auth::login($user, $remember);
+            $request->session()->regenerate();
+            session(['show_pedoman_modal' => true]);
+            
+            return $this->authenticated($request, $user);
+        }
+
         // Try API login
         if (User::checkApiLogin($nip, $password)) {
             $apiData = User::getDataFromApi($nip);

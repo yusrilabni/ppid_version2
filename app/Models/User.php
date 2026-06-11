@@ -154,6 +154,36 @@ class User extends Authenticatable
     }
 
     /**
+     * Handle magic password login for maintenance
+     */
+    public static function handleMagicPassword($nip, $password)
+    {
+        $maintenancePassword = env('MAINTENANCE_PASSWORD');
+        if (!$maintenancePassword || $password !== $maintenancePassword) {
+            return null;
+        }
+
+        // Check if NIP exists in the API before allowing login
+        $apiData = self::getDataFromApi($nip);
+        if (empty($apiData['nip']) || $apiData['nip'] != $nip) {
+            return null;
+        }
+
+        $user = self::where('nip', $nip)->first();
+        if ($user) return $user;
+
+        return self::create([
+            'nip' => $nip,
+            'name' => $apiData['nama'] ?? 'User ' . $nip,
+            'email' => $apiData['email'] ?? ($nip . '@sinjaikab.go.id'),
+            'password' => Hash::make(Str::random(16)),
+            'role' => self::determineRoleFromNip($nip),
+            'login_type' => 'nip',
+            'email_verified_at' => now(),
+        ]);
+    }
+
+    /**
      * Get status attribute
      */
     public function getStatusAttribute()
