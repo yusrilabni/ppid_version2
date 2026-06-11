@@ -51,10 +51,10 @@
 
             // Add root nodes
             @foreach($positions as $position)
-                data.addRow(['{!! $position->title !!} - {!! $position->name ?: "Kosong" !!}', '', '']);
+                data.addRow(['{!! addslashes(htmlspecialchars($position->title)) !!} - {!! addslashes(htmlspecialchars($position->name ?: "Kosong")) !!}', '', '']);
 
                 // Add children recursively
-                addChildren(data, {!! json_encode($position->toArray()) !!}, '{!! $position->title !!} - {!! $position->name ?: "Kosong" !!}');
+                addChildren(data, {!! json_encode($position->toArray()) !!}, '{!! addslashes(htmlspecialchars($position->title)) !!} - {!! addslashes(htmlspecialchars($position->name ?: "Kosong")) !!}');
             @endforeach
 
             var chart = new google.visualization.OrgChart(document.getElementById('chart_org'));
@@ -68,7 +68,7 @@
         function addChildren(data, position, parentId) {
             if(position.children && position.children.length > 0) {
                 position.children.forEach(function(child) {
-                    data.addRow(['{!! child.title !!} - {!! child.name ?: "Kosong" !!}', parentId, '']);
+                    data.addRow([child.title + ' - ' + (child.name || 'Kosong'), parentId, '']);
                     if(child.allChildren && child.allChildren.length > 0) {
                         addChildren(data, child, child.title + ' - ' + (child.name || 'Kosong'));
                     }
