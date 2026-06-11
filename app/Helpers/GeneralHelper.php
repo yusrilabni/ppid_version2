@@ -101,8 +101,10 @@ class GeneralHelper
             return false;
         }
 
-        // Format number to 62...
-        $to = self::formatPhoneNumber($to);
+        // Jika bukan grup (@g.us), maka format sebagai nomor telepon internasional
+        if (!str_contains($to, '@g.us')) {
+            $to = self::formatPhoneNumber($to);
+        }
 
         try {
             $response = Http::withHeaders([
