@@ -145,6 +145,33 @@ Route::get('/wa-debug-view', function() {
     return response()->json(json_decode(file_get_contents($path), true));
 });
 
+Route::get('/test-wa-trigger', function() {
+    $url = url('/api/whatsapp/webhook'); // Gunakan URL dinamis
+    $data = [
+        'from' => 'nomor_test_manual@c.us',
+        'body' => '#status'
+    ];
+
+    $ch = curl_init($url);
+    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+    curl_setopt($ch, CURLOPT_POST, true);
+    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+
+    $response = curl_exec($ch);
+    $info = curl_getinfo($ch);
+    curl_close($ch);
+
+    return response()->json([
+        'url_target' => $url,
+        'http_code' => $info['http_code'],
+        'response' => json_decode($response, true) ?: $response,
+        'info' => 'Jika http_code 200, silakan cek /wa-debug-view'
+    ]);
+});
+
 // Laravel ERD (Bypass environment check - DISABLED IN PRODUCTION)
 if (app()->environment('local')) {
     Route::get('/erd', [\Recca0120\LaravelErd\Http\Controllers\LaravelErdController::class, 'index'])->name('erd.index');
