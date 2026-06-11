@@ -138,6 +138,13 @@ Route::get('/laporan/ppid/file/{id}', [FrontendController::class, 'serveLaporanF
 // Storage & Fallback
 Route::get('storage/{path}', [App\Http\Controllers\StorageController::class, 'show'])->where('path', '.*')->name('storage.fallback');
 
+// Route Debug WhatsApp
+Route::get('/wa-debug-view', function() {
+    $path = public_path('wa_debug.json');
+    if (!file_exists($path)) return response()->json(['error' => 'File debug belum tercipta. Silakan akses webhook terlebih dahulu.'], 404);
+    return response()->json(json_decode(file_get_contents($path), true));
+});
+
 // Laravel ERD (Bypass environment check - DISABLED IN PRODUCTION)
 if (app()->environment('local')) {
     Route::get('/erd', [\Recca0120\LaravelErd\Http\Controllers\LaravelErdController::class, 'index'])->name('erd.index');
