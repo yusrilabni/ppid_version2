@@ -138,8 +138,10 @@ Route::get('/laporan/ppid/file/{id}', [FrontendController::class, 'serveLaporanF
 // Storage & Fallback
 Route::get('storage/{path}', [App\Http\Controllers\StorageController::class, 'show'])->where('path', '.*')->name('storage.fallback');
 
-// Laravel ERD (Bypass environment check)
-Route::get('/erd', [\Recca0120\LaravelErd\Http\Controllers\LaravelErdController::class, 'index'])->name('erd.index');
+// Laravel ERD (Bypass environment check - DISABLED IN PRODUCTION)
+if (app()->environment('local')) {
+    Route::get('/erd', [\Recca0120\LaravelErd\Http\Controllers\LaravelErdController::class, 'index'])->name('erd.index');
+}
 
 // CATCH-ALL ROUTE (MUST BE LAST)
 Route::get('/{page}/{subpage?}', [FrontendController::class, 'page'])->where(['page' => '[a-z-]+', 'subpage' => '[a-z-]+'])->name('page.show');

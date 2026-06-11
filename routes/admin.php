@@ -138,11 +138,11 @@ Route::middleware(['auth', SuperadminMiddleware::class])->group(function () {
     Route::get('reports/export/survey', [ReportController::class, 'exportSurvey'])->name('reports.survey.export');
 });
 
-// CACHE BUSTER SAKTI
+// CACHE BUSTER SAKTI (HANYA SUPERADMIN)
 Route::get('clear-all-cache', function() {
     \Illuminate\Support\Facades\Artisan::call('route:clear');
     \Illuminate\Support\Facades\Artisan::call('view:clear');
     \Illuminate\Support\Facades\Artisan::call('config:clear');
     \Illuminate\Support\Facades\Artisan::call('cache:clear');
     return "BERHASIL! Semua rute telah diperbarui secara paksa. Silakan coba buka menu kembali.";
-})->middleware(['auth']);
+})->middleware(['auth', SuperadminMiddleware::class]);

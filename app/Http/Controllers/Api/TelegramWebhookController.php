@@ -50,7 +50,7 @@ class TelegramWebhookController extends Controller
 
     private function answerCallback($callbackQueryId)
     {
-        $token = "8684002355:AAEvGLpwQVKHF8nkmeznuLOjTclkU52pzlk";
+        $token = env('TELEGRAM_BOT_TOKEN');
         \Illuminate\Support\Facades\Http::post("https://api.telegram.org/bot{$token}/answerCallbackQuery", [
             'callback_query_id' => $callbackQueryId,
             'text' => 'Permintaan sedang diproses...',
@@ -115,8 +115,8 @@ class TelegramWebhookController extends Controller
 
     private function updateTelegramMessage($messageId, $text)
     {
-        $token = "8684002355:AAEvGLpwQVKHF8nkmeznuLOjTclkU52pzlk";
-        $chatId = "-1003717845788";
+        $token = env('TELEGRAM_BOT_TOKEN');
+        $chatId = env('TELEGRAM_CHAT_ID', "-1003717845788");
 
         \Illuminate\Support\Facades\Http::post("https://api.telegram.org/bot{$token}/editMessageText", [
             'chat_id' => $chatId,

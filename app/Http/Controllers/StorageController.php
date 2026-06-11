@@ -17,6 +17,11 @@ class StorageController extends Controller
      */
     public function show($path)
     {
+        // Sanitasi path untuk mencegah Path Traversal
+        if (str_contains($path, '..') || str_starts_with($path, '/') || str_starts_with($path, '\\')) {
+            abort(403, 'Akses ditolak: Path tidak valid.');
+        }
+
         // Define prioritized paths from .env or defaults
         // Pastikan path ini sesuai dengan cPanel
         $priorities = [
