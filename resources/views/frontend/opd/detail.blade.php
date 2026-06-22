@@ -5,10 +5,10 @@
 @section('meta')
     <meta property="og:title" content="Profil {{ $organization->name }} - Kabupaten Sinjai">
     <meta property="og:description" content="Profil resmi dan struktur organisasi {{ $organization->name }} Kabupaten Sinjai.">
-    <meta property="og:image" content="{{ ($informasi && $informasi->file) ? asset('storage/' . $informasi->file) : asset('storage/logo/ppid.webp') }}">
+    <meta property="og:image" content="{{ ($informasi && $informasi->file) ? asset('storage/' . $informasi->file) : asset('storage/logo/ppid_og.png') }}">
     <meta property="twitter:title" content="Profil {{ $organization->name }} - Kabupaten Sinjai">
     <meta property="twitter:description" content="Profil resmi dan struktur organisasi {{ $organization->name }} Kabupaten Sinjai.">
-    <meta property="twitter:image" content="{{ ($informasi && $informasi->file) ? asset('storage/' . $informasi->file) : asset('storage/logo/ppid.webp') }}">
+    <meta property="twitter:image" content="{{ ($informasi && $informasi->file) ? asset('storage/' . $informasi->file) : asset('storage/logo/ppid_og.png') }}">
 @endsection
 
 @section('content')

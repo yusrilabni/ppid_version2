@@ -24,12 +24,12 @@
     @hasSection('meta')
         @yield('meta')
     @else
-        <meta property="og:image" content="{{ asset('storage/logo/ppid.webp') }}">
-        <meta property="twitter:image" content="{{ asset('storage/logo/ppid.webp') }}">
+        <meta property="og:image" content="{{ asset('storage/logo/ppid_og.png') }}">
+        <meta property="twitter:image" content="{{ asset('storage/logo/ppid_og.png') }}">
     @endif
     
     {{-- Versi Meta Tambahan untuk Social Media --}}
-    <meta property="og:image:type" content="image/webp">
+    <meta property="og:image:type" content="image/png">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
 

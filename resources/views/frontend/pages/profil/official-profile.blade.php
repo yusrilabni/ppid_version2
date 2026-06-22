@@ -38,10 +38,10 @@
 @section('meta')
     <meta property="og:title" content="Profil {{ $jabatan }} - {{ $official->full_name }}">
     <meta property="og:description" content="Profil resmi {{ $official->full_name }} sebagai {{ $jabatan }} Kabupaten Sinjai.">
-    <meta property="og:image" content="{{ $official->photo ? asset('storage/' . $official->photo) : asset('storage/logo/ppid.webp') }}">
+    <meta property="og:image" content="{{ $official->photo ? asset('storage/' . $official->photo) : asset('storage/logo/ppid_og.png') }}">
     <meta property="twitter:title" content="Profil {{ $jabatan }} - {{ $official->full_name }}">
     <meta property="twitter:description" content="Profil resmi {{ $official->full_name }} sebagai {{ $jabatan }} Kabupaten Sinjai.">
-    <meta property="twitter:image" content="{{ $official->photo ? asset('storage/' . $official->photo) : asset('storage/logo/ppid.webp') }}">
+    <meta property="twitter:image" content="{{ $official->photo ? asset('storage/' . $official->photo) : asset('storage/logo/ppid_og.png') }}">
 @endsection
 
 @section('content')

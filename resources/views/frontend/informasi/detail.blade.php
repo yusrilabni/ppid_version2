@@ -4,7 +4,7 @@
 
 @section('meta')
     @php
-        $shareImage = asset('storage/logo/ppid.webp');
+        $shareImage = asset('storage/logo/ppid_og.png');
         $isImage = false;
         if ($informasi->file) {
             $ext = strtolower(pathinfo($informasi->file, PATHINFO_EXTENSION));
