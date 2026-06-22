@@ -16,10 +16,13 @@ class HybridLoginController extends Controller
     /**
      * Show login form
      */
-    public function showLoginForm()
+    public function showLoginForm(Request $request)
     {
         if (Auth::check()) {
             return redirect()->intended('/');
+        }
+        if ($request->filled('redirect_to')) {
+            session(['redirect_to' => $request->input('redirect_to')]);
         }
         return view('auth.login');
     }
@@ -27,10 +30,13 @@ class HybridLoginController extends Controller
     /**
      * Show registration form
      */
-    public function showRegisterForm()
+    public function showRegisterForm(Request $request)
     {
         if (Auth::check()) {
             return redirect()->intended('/');
+        }
+        if ($request->filled('redirect_to')) {
+            session(['redirect_to' => $request->input('redirect_to')]);
         }
         return view('auth.register');
     }
@@ -67,6 +73,15 @@ class HybridLoginController extends Controller
      */
     private function authenticated($request, $user)
     {
+        if ($request->filled('redirect_to')) {
+            return redirect($request->input('redirect_to'));
+        }
+
+        if (session()->has('redirect_to')) {
+            $redirectTo = session()->pull('redirect_to');
+            return redirect($redirectTo);
+        }
+
         return redirect()->intended('/');
     }
 

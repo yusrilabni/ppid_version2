@@ -132,6 +132,7 @@
 
                 <form method="POST" action="{{ route('register') }}" x-data="{ show: false, showConfirm: false }" class="space-y-5">
                     @csrf
+                    <input type="hidden" name="redirect_to" value="{{ request()->query('redirect_to') }}">
 
                     <!-- NAME -->
                     <div>
@@ -188,7 +189,7 @@
 
                 <div class="mt-7 text-center">
                     <p class="text-sm text-gray-600 mb-3">Sudah punya akun?</p>
-                    <a href="{{ route('login') }}"
+                    <a href="{{ route('login', ['redirect_to' => request()->query('redirect_to')]) }}"
                         class="block w-full py-3 border-2 border-blue-600 text-blue-600 rounded-lg hover:bg-blue-50 transition font-medium">
                         Kembali ke Login
                     </a>
