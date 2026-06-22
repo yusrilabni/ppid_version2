@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Support\Facades\Cache;
 
 class Slider extends Model
 {
@@ -18,4 +19,17 @@ class Slider extends Model
         'jenis_dokumen',
         'category',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saved(function () {
+            Cache::forget('home_sliders');
+        });
+
+        static::deleted(function () {
+            Cache::forget('home_sliders');
+        });
+    }
 }
