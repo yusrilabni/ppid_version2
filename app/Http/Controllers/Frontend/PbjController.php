@@ -121,8 +121,11 @@ class PbjController extends Controller
             // If there's a URL or a File, we need an Informasi record
             if ($url || $file) {
                 $question = PbjQuestion::find($questionId);
-                $apiUserData = User::getDataFromApi($user->nip);
-                $userUnitId = $apiUserData['unit_id'] ?? null;
+                $userUnitId = $user->unit_id;
+                if (!$userUnitId && $user->nip) {
+                    $apiUserData = User::getDataFromApi($user->nip);
+                    $userUnitId = $apiUserData['unit_id'] ?? null;
+                }
 
                 $informasiData = [
                     'title' => $question->question,
@@ -149,7 +152,10 @@ class PbjController extends Controller
             } else { // If BOTH url and file are absent
                 // Delete the associated Informasi record if it exists
                 if ($answer->informasi_id) {
-                    Informasi::find($answer->informasi_id)->delete();
+                    $informasi = Informasi::find($answer->informasi_id);
+                    if ($informasi) {
+                        $informasi->delete();
+                    }
                     $answer->informasi_id = null;
                 }
             }

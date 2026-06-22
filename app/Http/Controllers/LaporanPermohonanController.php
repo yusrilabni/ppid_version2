@@ -391,7 +391,7 @@ class LaporanPermohonanController extends Controller
         // 4. Update the request with Transaction to prevent race conditions
         DB::transaction(function () use ($permohonanInformasi, $validatedData, $isFirstRating) {
             // Re-check first rating inside transaction to prevent double comments from rapid clicks
-            $currentRating = DB::table('permohonan_informasis')->where('id', $permohonanInformasi->id)->value('rating');
+            $currentRating = DB::table('permohonan_informasi')->where('id', $permohonanInformasi->id)->value('rating');
             $actuallyFirst = is_null($currentRating);
 
             $permohonanInformasi->rating = $validatedData['rating'];

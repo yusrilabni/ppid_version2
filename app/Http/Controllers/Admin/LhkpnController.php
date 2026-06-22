@@ -175,7 +175,9 @@ class LhkpnController extends Controller
             
             // Set ARSIP for old ones for this specific unit and position
             Informasi::where('unit_id', $request->unit_id)
-                     ->where('position_id', $request->position_id)
+                     ->whereHas('lhkpn', function($q) use ($request) {
+                         $q->where('position_id', $request->position_id);
+                     })
                      ->whereNotNull('lhkpn_id')
                      ->update(['status' => 'ARSIP']);
 

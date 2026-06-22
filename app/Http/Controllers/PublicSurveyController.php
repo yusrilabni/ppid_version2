@@ -29,6 +29,8 @@ class PublicSurveyController extends Controller
         foreach ($survey->questions as $question) {
             if ($question->is_required) {
                 $rules['answers.' . $question->id] = 'required';
+            } else {
+                $rules['answers.' . $question->id] = 'nullable';
             }
         }
 
@@ -40,7 +42,10 @@ class PublicSurveyController extends Controller
             'respondent_ip' => $request->ip(),
         ]);
 
-        foreach ($validatedData['answers'] as $questionId => $answer) {
+        $answers = $validatedData['answers'] ?? [];
+        foreach ($answers as $questionId => $answer) {
+            if (is_null($answer)) continue;
+
             $answerText = is_array($answer) ? json_encode($answer) : $answer;
             
             $response->answers()->create([
