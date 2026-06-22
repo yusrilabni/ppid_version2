@@ -21,10 +21,6 @@ class LaporanPermohonanController extends Controller
 
     public function index(Request $request)
     {
-        if (!auth()->check()) {
-            return redirect()->route('register', ['redirect_to' => route('laporan.permohonan.index')]);
-        }
-
         $query = PermohonanInformasi::query()
             ->whereIn('privacy_status', ['Publik', 'Anonim'])
             ->whereIn('status_permohonan', ['selesai', 'ditolak']);
