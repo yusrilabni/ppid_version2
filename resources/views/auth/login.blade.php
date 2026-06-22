@@ -95,6 +95,20 @@
             cursor: pointer;
             color: #6b7280;
         }
+
+        @keyframes fadeInDown {
+            from {
+                opacity: 0;
+                transform: translateY(-10px);
+            }
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+        .animate-fade-in-down {
+            animation: fadeInDown 0.4s ease-out forwards;
+        }
     </style>
 </head>
 
@@ -125,18 +139,37 @@
 
                 <!-- FORM -->
                 @if (session('status'))
-                    <div class="mb-4 font-medium text-sm text-green-600 bg-green-50 p-3 rounded-lg border border-green-200">
-                        {{ session('status') }}
+                    @php
+                        $isRegistrationSuccess = str_contains(strtolower(session('status')), 'registrasi');
+                    @endphp
+                    <div class="mb-5 p-4 rounded-2xl bg-emerald-50 border border-emerald-100 flex items-start gap-3 shadow-[0_4px_20px_rgba(16,185,129,0.08)] animate-fade-in-down">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-emerald-100 flex items-center justify-center text-emerald-600">
+                            <i data-lucide="check-circle" class="w-5 h-5"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-bold text-emerald-800 leading-tight">
+                                {{ $isRegistrationSuccess ? 'Registrasi Berhasil!' : 'Status Berhasil' }}
+                            </h4>
+                            <p class="text-xs text-emerald-600 mt-1 leading-relaxed">
+                                {{ $isRegistrationSuccess ? str_replace('Registrasi berhasil! ', '', session('status')) : session('status') }}
+                            </p>
+                        </div>
                     </div>
                 @endif
 
                 @if ($errors->any())
-                    <div class="mb-4 bg-red-50 border border-red-200 text-red-700 px-4 py-3 rounded-lg text-sm">
-                        <ul class="list-disc list-inside">
-                            @foreach ($errors->all() as $error)
-                                <li>{{ $error }}</li>
-                            @endforeach
-                        </ul>
+                    <div class="mb-5 p-4 rounded-2xl bg-rose-50 border border-rose-100 flex items-start gap-3 shadow-[0_4px_20px_rgba(244,63,94,0.08)] animate-fade-in-down">
+                        <div class="flex-shrink-0 w-8 h-8 rounded-full bg-rose-100 flex items-center justify-center text-rose-600">
+                            <i data-lucide="alert-circle" class="w-5 h-5"></i>
+                        </div>
+                        <div class="flex-1">
+                            <h4 class="text-sm font-bold text-rose-800 leading-tight">Terjadi Kesalahan</h4>
+                            <ul class="text-xs text-rose-600 mt-1.5 list-disc list-inside space-y-0.5 leading-relaxed">
+                                @foreach ($errors->all() as $error)
+                                    <li>{{ $error }}</li>
+                                @endforeach
+                            </ul>
+                        </div>
                     </div>
                 @endif
 
