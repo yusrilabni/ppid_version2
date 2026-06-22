@@ -45,6 +45,12 @@ class LoginProtectionMiddleware
     private function isLoginRelatedRoute(Request $request): bool
     {
         $uri = $request->path();
+
+        // Exclude verification routes to prevent infinite redirect loops
+        if (str_contains($uri, 'login/protection/verify')) {
+            return false;
+        }
+
         $routeName = $request->route() ? $request->route()->getName() : null;
 
         return str_contains($uri, 'login') ||
