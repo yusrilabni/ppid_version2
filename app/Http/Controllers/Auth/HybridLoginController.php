@@ -184,11 +184,14 @@ class HybridLoginController extends Controller
             'login_type' => 'email',
         ]);
 
-        Auth::login($user);
-        $request->session()->regenerate();
-        session(['show_pedoman_modal' => true]);
+        // Do not auto-login. Redirect to login page with status message and carry over redirect_to.
+        $redirectTo = $request->input('redirect_to');
+        $loginParams = [];
+        if (!empty($redirectTo)) {
+            $loginParams['redirect_to'] = $redirectTo;
+        }
 
-        return $this->authenticated($request, $user);
+        return redirect()->route('login', $loginParams)->with('status', 'Registrasi berhasil! Silakan masuk menggunakan alamat email dan kata sandi yang telah Anda daftarkan.');
 
     }
 
