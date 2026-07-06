@@ -135,13 +135,12 @@ Berdasarkan hasil analisis usability, berikut adalah rekomendasi aksi nyata yang
 ---
 
 ## DAFTAR PUSTAKA
-1.  **Davis, F. D. (1989)**. Perceived Usefulness, Perceived Ease of Use, and User Acceptance of Information Technology. *MIS Quarterly*, 13(3), 319-340.
-2.  **ISO 9241-11. (2018)**. *Ergonomics of human-system interaction — Part 11: Usability: Definitions and concepts*. Geneva: International Organization for Standardization.
-3.  **Miles, M. B., Huberman, A. M., & Saldaña, J. (2014)**. *Qualitative Data Analysis: A Methods Sourcebook* (3rd ed.). Thousand Oaks, CA: Sage Publications.
-4.  **Nielsen, J. (1993)**. *Usability Engineering*. Boston: Academic Press.
-5.  **Nurlinah, N. (2021)**. Evaluasi Pelayanan Keterbukaan Informasi Publik PPID di Dinas Komunikasi dan Informatika. *Jurnal Ilmiah Administrasi Publik*, 7(2), 215-223.
+1.  **Bakhri, S., Haidir, A., & Simamora, S. S. (2025)**. Evaluasi Usability Website PPID Kabupaten Bogor dengan Metode System Usability Scale (SUS) di Diskominfo Kabupaten Bogor. *JISAMAR (Journal of Information System, Applied, Management, Accounting and Research)*, 9(4), 512-520.
+2.  **Davis, F. D. (1989)**. Perceived Usefulness, Perceived Ease of Use, and User Acceptance of Information Technology. *MIS Quarterly*, 13(3), 319-340.
+3.  **ISO 9241-11. (2018)**. *Ergonomics of human-system interaction — Part 11: Usability: Definitions and concepts*. Geneva: International Organization for Standardization.
+4.  **Miles, M. B., Huberman, A. M., & Saldaña, J. (2014)**. *Qualitative Data Analysis: A Methods Sourcebook* (3rd ed.). Thousand Oaks, CA: Sage Publications.
+5.  **Nielsen, J. (1993)**. *Usability Engineering*. Boston: Academic Press.
 6.  **Peraturan Komisi Informasi Nomor 1 Tahun 2021** tentang Standar Layanan Informasi Publik.
 7.  **Pratama, I. P. A. (2014)**. *Handbook E-Government*. Bandung: Informatika.
-8.  **Saputra, A. (2020)**. Evaluasi Usability Pada Website E-Government Menggunakan System Usability Scale (SUS). *Jurnal Teknologi Informasi*, 4(1), 12-18.
+8.  **Sadewa, M. Y., Sujaya, M. A. P., Gunawan, I M. A. O., & Indrawan, G. (2024)**. Evaluasi Pengalaman Pengguna Website PPID Undiksha Dengan Metode User Experience Questionnaire (UEQ). *INSERT: Information System and Emerging Technology Journal*, 5(1), 12-21. DOI: https://doi.org/10.23887/insert.v5i1.70383.
 9.  **Undang-Undang Republik Indonesia Nomor 14 Tahun 2008** tentang Keterbukaan Informasi Publik.
-10. **Wulandari, S., & Yuliani, R. (2022)**. Analisis Usability dan Pengalaman Pengguna Website PPID Menggunakan Kuesioner UEQ dan SUS. *Jurnal Sistem Informasi*, 11(2), 125-134.
