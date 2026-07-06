@@ -88,7 +88,7 @@ class SingleSurveyExport implements FromCollection, WithHeadings, WithTitle, Wit
             // Remove headers: data:image/png;base64, or data:image/jpeg;base64,
             $image = preg_replace('#^data:image/[^;]+;base64,#', '', $base64Image);
             $image = str_replace(' ', '+', $image);
-            $imageName = 'chart_' . time() . '_' . $index . '.png';
+            $imageName = 'chart_' . time() . '_' . $index . '.jpg';
             $path = storage_path('app/public/temp/' . $imageName);
             
             if (!file_exists(storage_path('app/public/temp'))) {

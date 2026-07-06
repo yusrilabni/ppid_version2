@@ -292,8 +292,8 @@
                 const tempCanvas = document.createElement('canvas');
                 const ctx = tempCanvas.getContext('2d');
                 
-                // Set max width 800px (Sangat cukup untuk Excel)
-                const maxWidth = 800;
+                // Set max width 500px (Sangat cukup untuk Excel)
+                const maxWidth = 500;
                 const scale = Math.min(1, maxWidth / canvas.width);
                 tempCanvas.width = canvas.width * scale;
                 tempCanvas.height = canvas.height * scale;
@@ -303,9 +303,12 @@
                 ctx.fillRect(0, 0, tempCanvas.width, tempCanvas.height);
                 ctx.drawImage(canvas, 0, 0, tempCanvas.width, tempCanvas.height);
                 
-                // Gunakan JPEG kualitas 0.6 (Ukuran file berkurang drastis dibanding PNG)
-                const dataUrl = tempCanvas.toDataURL('image/jpeg', 0.6);
-                chartImages.push(dataUrl);
+                // Gunakan JPEG kualitas 0.5 (Ukuran file berkurang drastis dibanding PNG)
+                const dataUrl = tempCanvas.toDataURL('image/jpeg', 0.5);
+                
+                // Hapus prefix data:image/jpeg;base64, agar tidak memicu deteksi WAF (Error 403)
+                const base64Data = dataUrl.split(',')[1] || dataUrl;
+                chartImages.push(base64Data);
             }
 
             btn.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Mengirim Data...';
