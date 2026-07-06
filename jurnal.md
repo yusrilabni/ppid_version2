@@ -131,3 +131,17 @@ Berdasarkan hasil analisis usability, berikut adalah rekomendasi aksi nyata yang
 2.  **Pengembangan Dashboard Progress OPD**: Membangun modul pemantauan progres berkas untuk memberikan visualisasi ceklis kelengkapan data wajib masing-masing OPD.
 3.  **Optimasi UI/UX Dashboard**: Memperbarui desain visual dashboard admin agar lebih bersih, modern, dan menyertakan panduan petunjuk/tooltip di setiap menu penting.
 4.  **Fitur Upload Caching**: Mengembangkan mekanisme penyimpanan lokal sementara (*local storage cache*) untuk memfasilitasi penginputan data saat koneksi internet operator tidak stabil.
+
+---
+
+## DAFTAR PUSTAKA
+1.  **Davis, F. D. (1989)**. Perceived Usefulness, Perceived Ease of Use, and User Acceptance of Information Technology. *MIS Quarterly*, 13(3), 319-340.
+2.  **ISO 9241-11. (2018)**. *Ergonomics of human-system interaction — Part 11: Usability: Definitions and concepts*. Geneva: International Organization for Standardization.
+3.  **Miles, M. B., Huberman, A. M., & Saldaña, J. (2014)**. *Qualitative Data Analysis: A Methods Sourcebook* (3rd ed.). Thousand Oaks, CA: Sage Publications.
+4.  **Nielsen, J. (1993)**. *Usability Engineering*. Boston: Academic Press.
+5.  **Nurlinah, N. (2021)**. Evaluasi Pelayanan Keterbukaan Informasi Publik PPID di Dinas Komunikasi dan Informatika. *Jurnal Ilmiah Administrasi Publik*, 7(2), 215-223.
+6.  **Peraturan Komisi Informasi Nomor 1 Tahun 2021** tentang Standar Layanan Informasi Publik.
+7.  **Pratama, I. P. A. (2014)**. *Handbook E-Government*. Bandung: Informatika.
+8.  **Saputra, A. (2020)**. Evaluasi Usability Pada Website E-Government Menggunakan System Usability Scale (SUS). *Jurnal Teknologi Informasi*, 4(1), 12-18.
+9.  **Undang-Undang Republik Indonesia Nomor 14 Tahun 2008** tentang Keterbukaan Informasi Publik.
+10. **Wulandari, S., & Yuliani, R. (2022)**. Analisis Usability dan Pengalaman Pengguna Website PPID Menggunakan Kuesioner UEQ dan SUS. *Jurnal Sistem Informasi*, 11(2), 125-134.
