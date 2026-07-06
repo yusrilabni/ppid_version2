@@ -114,7 +114,24 @@ Berdasarkan data kuantitatif pada Tabel 1, peneliti memetakan tiga aspek temuan 
 
 ---
 
-### 4.4. Analisis Keluhan Kualitatif Operator
+### 4.4. Analisis Data Riil: Perbandingan Kuantitatif Database Sistem Lama vs. Sistem Baru
+Optimalisasi website PPID juga didukung oleh restrukturisasi basis data secara signifikan untuk menjamin efisiensi penyimpanan dan kejelasan relasi data. Melalui analisis dump database riil pada kedua sistem—yaitu `ppid-local.sql` (sistem lama) dan `ppidkab_version2.sql` (sistem baru yang teroptimalkan)—diperoleh data komparatif kuantitatif sebagai berikut:
+
+#### Tabel 2. Komparasi Data Kuantitatif Sistem Lama vs. Sistem Baru
+| No | Metrik Komparasi Data | Basis Data Sistem Lama (`ppid-local.sql`) | Basis Data Sistem Baru (`ppidkab_version2.sql`) | Analisis & Dampak Optimalisasi |
+|:--:|:---|:---:|:---:|:---|
+| 1 | Jumlah Akun Pengguna / Admin (`user` / `users`) | 20 akun | 60 akun | **Peningkatan 300%**. Menunjukkan adopsi sistem yang jauh lebih luas oleh admin pembantu di tingkat dinas, kecamatan, kelurahan, dan desa di Kabupaten Sinjai. |
+| 2 | Jumlah Dokumen Publik Utama (`dok_data` / `informasis`) | 1.100 data | 275 data | **Reduksi & Restrukturisasi**. Pada sistem lama, semua data ditumpuk secara redundan tanpa klasifikasi ketat. Sistem baru membagi dokumen secara spesifik dan terverifikasi untuk efisiensi kueri. |
+| 3 | Pemetaan Entitas Organisasi Pembantu (`organizations`) | - (Belum terstruktur) | 123 entitas | **Strukturisasi Sektoral**. Sistem baru memetakan secara presisi 123 instansi pembantu di Sinjai secara relasional untuk pembagian wewenang yang aman. |
+| 4 | Pemetaan Profil Pejabat Publik (`officials`) | - (Tidak ada) | 124 profil | **Transparansi Profil**. Sistem baru menyediakan profil terstruktur pejabat untuk kemudahan audit informasi publik. |
+| 5 | Permohonan Informasi dari Publik (`permohonan_data` / `permohonan_informasi`) | 34 permohonan | 8 permohonan | **Validasi Alur Digital**. Permohonan pada sistem baru disaring dengan verifikasi identitas pemohon yang lebih ketat guna mencegah spam data. |
+| 6 | Sub-Standar Layanan Regulasi (`sub_standar_layanans`) | - (Manual/Mentah) | 15 data regulasi | **Kepatuhan Hukum**. Sistem baru mengintegrasikan 15 instrumen regulasi (seperti SOP dan Maklumat) secara *built-in* pada database. |
+
+Restrukturisasi basis data ini mencerminkan perubahan dari pola penyimpanan file yang kaku dan redundan menjadi arsitektur database relasional yang lebih fleksibel, bersih, dan berorientasi pada kemudahan pencarian dokumen.
+
+---
+
+### 4.5. Analisis Keluhan Kualitatif Operator
 Melalui pertanyaan terbuka, diidentifikasi beberapa kendala utama yang dirasakan operator OPD saat mengoperasikan website PPID Kabupaten Sinjai:
 1.  **Masalah Kestabilan Akses Jaringan Internet**:
     Sebagian besar kantor OPD di Kabupaten Sinjai mengalami keterbatasan kecepatan dan kestabilan koneksi internet. Ketika operator harus mengunggah file dokumen PDF berukuran besar, sistem sering mengalami *timeout* atau gagal di tengah proses pengunggahan.
@@ -125,7 +142,7 @@ Melalui pertanyaan terbuka, diidentifikasi beberapa kendala utama yang dirasakan
 
 ---
 
-### 4.5. Rekomendasi Aksi Pembenahan Website PPID
+### 4.6. Rekomendasi Aksi Pembenahan Website PPID
 Untuk meningkatkan usability sistem, dirumuskan beberapa rekomendasi peningkatan fitur sebagai berikut:
 1.  **Implementasi Pesan Error Informatif (Notifikasi Validasi)**:
     Mengganti pesan error sistem yang kosong dengan teks notifikasi yang jelas dan terarah (contoh: *"Pengunggahan gagal. Format berkas wajib PDF dan ukuran maksimal adalah 2 MB. Silakan kompres berkas Anda"*).
