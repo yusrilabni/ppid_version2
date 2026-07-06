@@ -145,7 +145,7 @@ Melalui pertanyaan terbuka, diidentifikasi beberapa kendala utama yang dirasakan
 ### 4.6. Rekomendasi Aksi Pembenahan Website PPID
 Untuk meningkatkan usability sistem, dirumuskan beberapa rekomendasi peningkatan fitur sebagai berikut:
 1.  **Implementasi Pesan Error Informatif (Notifikasi Validasi)**:
-    Mengganti pesan error sistem yang kosong dengan teks notifikasi yang jelas dan terarah (contoh: *"Pengunggahan gagal. Format berkas wajib PDF dan ukuran maksimal adalah 2 MB. Silakan kompres berkas Anda"*).
+    Mengganti pesan error sistem yang kosong dengan teks notifikasi yang jelas dan terarah (contoh: *"Pengunggahan gagal. Format berkas tidak sesuai, sistem hanya menerima dokumen dengan ekstensi .pdf"*).
 2.  **Pembangunan Dashboard Monitoring Progres Dokumen Mandiri (OPD Progress Dashboard)**:
     Menyediakan diagram persentase atau ceklis kelengkapan berkas wajib pada halaman dashboard admin pembantu. Fitur ini memungkinkan setiap admin OPD memantau status dokumen mana saja yang belum lengkap atau sudah kedaluwarsa secara mandiri tanpa menunggu evaluasi manual dari PPID Utama Diskominfo.
 3.  **Usulan Pengembangan Mekanisme Cache Penyimpanan Sementara (Offline Mode Upload)**:
