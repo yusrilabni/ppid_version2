@@ -1,7 +1,8 @@
 # PENGEMBANGAN DAN OPTIMALISASI WEBSITE PPID DALAM MENINGKATKAN USABILITY LAYANAN INFORMASI PUBLIK PADA DISKOMINFO KABUPATEN SINJAI
 
 **Muh. Yusril Abni¹\*, Sudirman²**
-¹'² Politeknik Lembaga Pendidikan dan Pengembangan Profesi Indonesia Makassar, Indonesia
+¹ Mahasiswa, Politeknik Lembaga Pendidikan dan Pengembangan Profesi Indonesia Makassar, Indonesia
+² Dosen Pembimbing, Politeknik Lembaga Pendidikan dan Pengembangan Profesi Indonesia Makassar, Indonesia
 \* Penulis Korespondensi: yusrilabni8877@gmail.com
 
 ---
