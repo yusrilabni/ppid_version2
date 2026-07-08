@@ -389,7 +389,7 @@
                         @endforeach
 
                         {{-- Navigation Buttons --}}
-                        <div class="sticky bottom-0 bg-white border-t border-gray-100 px-4 md:px-8 py-4 md:py-6 shadow-lg z-[5]">
+                        <div class="sticky bottom-0 bg-white border-t border-gray-100 px-4 md:px-8 py-4 md:py-6 shadow-lg z-40">
                             <div class="flex justify-between items-center max-w-5xl mx-auto">
                                 <button type="button" x-show="step > 1" x-on:click="prevStep()"
                                     class="group flex items-center px-4 py-3 md:px-8 md:py-4 bg-gray-100 hover:bg-gray-200 text-gray-800 font-bold rounded-xl transition-all duration-200 transform active:scale-95 shadow-md">
