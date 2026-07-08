@@ -27,7 +27,7 @@ return Application::configure(basePath: dirname(__DIR__))
     })
     ->withExceptions(function (Exceptions $exceptions) {
         $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, $request) {
-            // Jika sesi habis atau klik ganda, arahkan kembali ke login/home daripada tampil error 419
-            return redirect()->route('login')->with('info', 'Sesi Anda telah berakhir. Silakan masuk kembali.');
+            // Jika sesi habis atau token mismatch (CSRF Expired / 419), arahkan langsung ke beranda
+            return redirect('/');
         });
     })->create();
