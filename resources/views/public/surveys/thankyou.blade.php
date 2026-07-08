@@ -27,6 +27,11 @@
                 <div class="p-8 text-center">
                     <!-- Pesan konfirmasi -->
                     <div class="mb-8">
+                        @if(session('message'))
+                            <div class="bg-blue-50 rounded-2xl p-5 mb-6 border border-blue-100 text-blue-800 flex items-center justify-center">
+                                <p class="font-bold text-base"><i class="fas fa-info-circle text-lg mr-2 text-blue-500"></i>{{ session('message') }}</p>
+                            </div>
+                        @endif
                         <p class="text-gray-700 text-lg mb-4 leading-relaxed">
                             <i class="fas fa-clipboard-check text-green-500 mr-2"></i>
                             Jawaban Anda telah berhasil kami rekam dan akan kami proses dengan seksama.
@@ -110,3 +115,17 @@
         }
     </style>
 @endsection
+
+@push('scripts')
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            // Bersihkan semua data kuesioner dari localStorage setelah sukses terkirim
+            for (let i = localStorage.length - 1; i >= 0; i--) {
+                const key = localStorage.key(i);
+                if (key && key.startsWith('survey_')) {
+                    localStorage.removeItem(key);
+                }
+            }
+        });
+    </script>
+@endpush

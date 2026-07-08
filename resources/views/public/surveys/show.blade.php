@@ -140,7 +140,7 @@
                     </div>
 
                     <form action="{{ route('public.surveys.store', $survey) }}" method="POST" class="relative"
-                        x-ref="surveyForm" @change="handleInputChange($event)">
+                        x-ref="surveyForm" @change="handleInputChange($event)" @submit="if(isSubmitting) { $event.preventDefault(); return; } isSubmitting = true;">
                         @csrf
 
                         {{-- Loop Pages --}}
@@ -202,16 +202,16 @@
                                                             class="text-white font-bold text-lg md:text-xl">{{ $loop->iteration }}</span>
                                                     </div>
                                                 </div>
-                                                <div class="flex-grow w-full">
-                                                    <label class="block mb-4 md:mb-6">
+                                                <div class="flex-grow w-full min-w-0">
+                                                    <div class="block mb-4 md:mb-6">
                                                         <div
-                                                            class="flex flex-col md:flex-row md:items-center justify-between gap-3 mb-3">
-                                                            <span class="text-lg md:text-xl font-bold text-gray-900 leading-snug">
+                                                            class="flex flex-col md:flex-row md:items-start justify-between gap-3 mb-3 w-full">
+                                                            <div class="text-lg md:text-xl font-bold text-gray-900 leading-snug break-words flex-1 min-w-0">
                                                                 {{ $question->question_text }}
-                                                            </span>
+                                                            </div>
                                                             @if ($question->is_required)
                                                                 <span
-                                                                    class="bg-red-50 text-red-600 text-xs md:text-sm font-black px-3 py-1 rounded-full border border-red-100 flex items-center justify-center w-max">
+                                                                    class="bg-red-50 text-red-600 text-xs md:text-sm font-black px-3 py-1 rounded-full border border-red-100 flex items-center justify-center w-max flex-shrink-0">
                                                                     <i class="fas fa-exclamation-circle mr-1.5"></i>
                                                                     WAJIB
                                                                 </span>
@@ -222,13 +222,13 @@
                                                                 class="mt-3 p-3 bg-yellow-50 border-l-4 border-yellow-400 rounded-r-lg">
                                                                 <div class="flex items-start">
                                                                     <i
-                                                                        class="fas fa-lightbulb text-yellow-500 text-base mr-2 mt-0.5"></i>
-                                                                    <p class="text-xs md:text-sm text-gray-700 italic">
+                                                                        class="fas fa-lightbulb text-yellow-500 text-base mr-2 mt-0.5 flex-shrink-0"></i>
+                                                                    <p class="text-xs md:text-sm text-gray-700 italic break-words flex-1 min-w-0">
                                                                         {{ $question->description }}</p>
                                                                 </div>
                                                             </div>
                                                         @endif
-                                                    </label>
+                                                    </div>
 
                                                     <div class="mt-4 md:mt-6">
                                                         @if ($question->question_type === 'Isian Singkat')
@@ -282,11 +282,11 @@
                                                                         <input type="radio"
                                                                             name="answers[{{ $question->id }}]"
                                                                             value="{{ $option->id }}"
-                                                                            class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 mr-3 md:mr-4"
+                                                                            class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 mr-3 md:mr-4 flex-shrink-0"
                                                                             {{ $question->is_required ? 'required' : '' }}
                                                                             x-on:change="handleInputChange($event)">
                                                                         <span
-                                                                            class="text-gray-800 text-base md:text-lg flex-grow">{{ $option->option_text }}</span>
+                                                                            class="text-gray-800 text-base md:text-lg flex-1 min-w-0 break-words">{{ $option->option_text }}</span>
                                                                     </label>
                                                                 @endforeach
                                                             </div>
@@ -299,10 +299,10 @@
                                                                         <input type="checkbox"
                                                                             name="answers[{{ $question->id }}][]"
                                                                             value="{{ $option->id }}"
-                                                                            class="h-5 w-5 rounded text-green-600 focus:ring-green-500 border-gray-300 mr-3 md:mr-4"
+                                                                            class="h-5 w-5 rounded text-green-600 focus:ring-green-500 border-gray-300 mr-3 md:mr-4 flex-shrink-0"
                                                                             x-on:change="handleInputChange($event)">
                                                                         <span
-                                                                            class="text-gray-800 text-base md:text-lg flex-grow">{{ $option->option_text }}</span>
+                                                                            class="text-gray-800 text-base md:text-lg flex-1 min-w-0 break-words">{{ $option->option_text }}</span>
                                                                     </label>
                                                                 @endforeach
                                                             </div>
@@ -413,9 +413,12 @@
                                 </template>
 
                                 <button type="submit" x-show="step === totalSteps"
-                                    class="group flex items-center px-5 py-3 md:px-10 md:py-4 bg-green-600 hover:bg-green-700 text-white font-bold rounded-xl shadow-lg transition-all duration-200 transform active:scale-95">
-                                    <i class="fas fa-paper-plane mr-2 md:mr-4 text-base md:text-xl"></i>
-                                    <span class="text-sm md:text-lg">Kirim</span>
+                                    :disabled="isSubmitting"
+                                    :class="isSubmitting ? 'opacity-50 cursor-not-allowed' : 'active:scale-95 hover:bg-green-700'"
+                                    class="group flex items-center px-5 py-3 md:px-10 md:py-4 bg-green-600 text-white font-bold rounded-xl shadow-lg transition-all duration-200 transform">
+                                    <i class="fas fa-paper-plane mr-2 md:mr-4 text-base md:text-xl" x-show="!isSubmitting"></i>
+                                    <i class="fas fa-spinner fa-spin mr-2 md:mr-4 text-base md:text-xl" x-show="isSubmitting" style="display: none;"></i>
+                                    <span class="text-sm md:text-lg" x-text="isSubmitting ? 'Mengirim...' : 'Kirim'"></span>
                                 </button>
                             </div>
                         </div>
@@ -489,6 +492,7 @@
                 progress: 0,
                 totalQuestions: totalQuestions,
                 answeredQuestions: 0,
+                isSubmitting: false,
 
                 init() {
                     // Load saved step
