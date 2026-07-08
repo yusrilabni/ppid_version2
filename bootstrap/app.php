@@ -26,8 +26,15 @@ return Application::configure(basePath: dirname(__DIR__))
         ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
+        // Tangkap HttpException dengan status 419 (Page Expired)
+        $exceptions->render(function (\Symfony\Component\HttpKernel\Exception\HttpException $e, $request) {
+            if ($e->getStatusCode() === 419) {
+                return redirect('/');
+            }
+        });
+
+        // Tangkap TokenMismatchException secara langsung jika belum dikonversi
         $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, $request) {
-            // Jika sesi habis atau token mismatch (CSRF Expired / 419), arahkan langsung ke beranda
             return redirect('/');
         });
     })->create();
