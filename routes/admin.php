@@ -122,6 +122,8 @@ Route::middleware(['auth', SuperadminMiddleware::class])->group(function () {
     // Survey Responses
     Route::get('surveys/{survey}/responses', [SurveyResponseController::class, 'index'])->name('surveys.responses.index');
     Route::post('surveys/{survey}/responses/update-answer', [SurveyResponseController::class, 'updateAnswer'])->name('surveys.responses.updateAnswer');
+    Route::get('surveys/{survey}/responses/{response}/edit', [SurveyResponseController::class, 'edit'])->name('surveys.responses.edit');
+    Route::put('surveys/{survey}/responses/{response}/update-all', [SurveyResponseController::class, 'updateAll'])->name('surveys.responses.updateAll');
     Route::get('surveys/{survey}/responses/export', [SurveyResponseController::class, 'export'])->name('surveys.responses.export');
     Route::post('surveys/{survey}/responses/process-report', [SurveyResponseController::class, 'exportExcel'])->name('surveys.responses.exportExcel');
     

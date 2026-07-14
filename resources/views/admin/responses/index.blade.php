@@ -111,7 +111,12 @@
                             @forelse ($survey->responses as $index => $response)
                                 <tr class="hover:bg-blue-50/30 transition-colors group">
                                     <td class="px-6 py-5 whitespace-nowrap sticky left-0 bg-white group-hover:bg-blue-50/50 z-10 border-r border-gray-100 text-sm font-bold text-gray-900">
-                                        {{ $index + 1 }}
+                                        <div class="flex items-center justify-between gap-4">
+                                            <span>#{{ $index + 1 }}</span>
+                                            <a href="{{ route('admin.surveys.responses.edit', [$survey->slug, $response->id]) }}" class="text-blue-600 bg-blue-100 hover:bg-blue-200 hover:text-blue-800 p-2 rounded-lg transition-colors flex-shrink-0" title="Edit Semua Jawaban Responden">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                        </div>
                                     </td>
                                     <td class="px-6 py-5 whitespace-nowrap">
                                         <div class="flex flex-col">

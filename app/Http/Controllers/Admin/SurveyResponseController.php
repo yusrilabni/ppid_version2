@@ -196,4 +196,35 @@ class SurveyResponseController extends Controller
 
         return back()->with('success', 'Jawaban responden berhasil diperbarui secara manual.');
     }
+
+    public function edit(Survey $survey, SurveyResponse $response)
+    {
+        $survey->load(['questions.options', 'responses.answers']);
+        $sortedQuestions = $this->getSortedQuestions($survey);
+        
+        return view('admin.responses.edit', compact('survey', 'response', 'sortedQuestions'));
+    }
+
+    public function updateAll(Request $request, Survey $survey, SurveyResponse $response)
+    {
+        $answersData = $request->input('answers', []);
+        
+        foreach ($answersData as $questionId => $answerText) {
+            $question = \App\Models\SurveyQuestion::find($questionId);
+            if (!$question) continue;
+            
+            $answer = $response->answers()->firstOrNew(['question_id' => $questionId]);
+            
+            if ($question->question_type === 'Checkbox') {
+                $answer->answer_text = json_encode(is_array($answerText) ? $answerText : [$answerText]);
+            } else {
+                $answer->answer_text = $answerText;
+            }
+            
+            $answer->save();
+        }
+
+        return redirect()->route('admin.surveys.responses.index', $survey->slug)
+                         ->with('success', 'Semua jawaban responden berhasil diperbarui.');
+    }
 }
