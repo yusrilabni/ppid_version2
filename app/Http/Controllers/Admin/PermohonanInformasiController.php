@@ -92,11 +92,15 @@ class PermohonanInformasiController extends Controller
             // Siapkan URL WhatsApp untuk Pemohon
             $waPhone = GeneralHelper::formatPhoneNumber($permohonan->nomor_telepon_pemohon);
             $directLink = route('laporan.permohonan.show', $permohonan->unique_code);
+            $adminPesan = strlen($request->message) > 300 
+                ? "_Pesan admin terlalu panjang. Silakan klik tautan di bawah untuk membaca rincian tanggapan lengkap._" 
+                : "_{$request->message}_";
+
             $waMessage = "*NOTIFIKASI PPID KABUPATEN SINJAI*\n\n"
                        . "Halo {$permohonan->nama_pemohon},\n"
                        . "Permohonan Informasi Anda dengan ID *#{$permohonan->unique_code}* telah mendapatkan tanggapan dari Admin.\n\n"
                        . "*Status:* Diproses\n"
-                       . "*Pesan Admin:* \n_{$request->message}_\n\n";
+                       . "*Pesan Admin:* \n{$adminPesan}\n\n";
 
             if ($request->link) {
                 $waMessage .= "*Tautan Eksternal:* \n{$request->link}\n\n";
