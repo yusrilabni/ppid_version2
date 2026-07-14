@@ -208,16 +208,23 @@ class SurveyResponseController extends Controller
     public function updateAll(Request $request, Survey $survey, SurveyResponse $response)
     {
         $answersData = $request->input('answers', []);
-        $applyToAll = $request->has('apply_to_all');
+        $applyToAllQuestions = $request->input('apply_to_all_questions', []);
         
         $questions = \App\Models\SurveyQuestion::whereIn('id', array_keys($answersData))->get()->keyBy('id');
-        $targetResponses = $applyToAll ? $survey->responses : collect([$response]);
+        $allResponses = $survey->responses;
 
-        foreach ($targetResponses as $targetResponse) {
-            foreach ($answersData as $questionId => $answerText) {
-                $question = $questions->get($questionId);
-                if (!$question) continue;
-                
+        $hasAnyBulkUpdate = false;
+
+        foreach ($answersData as $questionId => $answerText) {
+            $question = $questions->get($questionId);
+            if (!$question) continue;
+            
+            $applyToAll = !empty($applyToAllQuestions[$questionId]);
+            if ($applyToAll) $hasAnyBulkUpdate = true;
+            
+            $targetResponses = $applyToAll ? $allResponses : collect([$response]);
+
+            foreach ($targetResponses as $targetResponse) {
                 $answer = $targetResponse->answers()->firstOrNew(['question_id' => $questionId]);
                 
                 if ($question->question_type === 'Checkbox') {
@@ -230,8 +237,8 @@ class SurveyResponseController extends Controller
             }
         }
 
-        $message = $applyToAll 
-            ? 'Semua jawaban untuk seluruh responden berhasil diseragamkan.' 
+        $message = $hasAnyBulkUpdate 
+            ? 'Beberapa jawaban berhasil diseragamkan ke seluruh responden.' 
             : 'Jawaban responden berhasil diperbarui.';
 
         return redirect()->route('admin.surveys.responses.index', $survey->slug)

@@ -81,20 +81,14 @@
                             @else
                                 <textarea name="answers[{{ $question->id }}]" rows="4" class="mt-1 block w-full border border-gray-200 rounded-xl shadow-sm py-3 px-4 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm" placeholder="Masukkan jawaban...">{{ $currentAnswer }}</textarea>
                             @endif
+                            
+                            <div class="mt-4 flex items-center">
+                                <input type="checkbox" id="apply_all_{{ $question->id }}" name="apply_to_all_questions[{{ $question->id }}]" value="1" class="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500 cursor-pointer">
+                                <label for="apply_all_{{ $question->id }}" class="ml-2 text-sm text-gray-600 cursor-pointer">Seragamkan jawaban khusus untuk pertanyaan ini ke seluruh responden</label>
+                            </div>
                         </div>
                     </div>
                 @endforeach
-            </div>
-
-            <!-- Mass Update Checkbox -->
-            <div class="px-6 py-5 bg-yellow-50 border-t border-yellow-100 flex items-start gap-4">
-                <div class="flex items-center h-5">
-                    <input type="checkbox" id="apply_to_all" name="apply_to_all" value="1" class="w-5 h-5 text-yellow-600 bg-white border-yellow-300 rounded focus:ring-yellow-500 cursor-pointer">
-                </div>
-                <div>
-                    <label for="apply_to_all" class="font-bold text-yellow-900 text-sm cursor-pointer">Terapkan jawaban ini ke SEMUA Responden</label>
-                    <p class="text-sm text-yellow-700 mt-1">Jika dicentang, jawaban dari responden ini akan disalin (menimpa) jawaban milik seluruh responden lain di survei ini sehingga semuanya menjadi seragam.</p>
-                </div>
             </div>
 
             <!-- Footer / Action Buttons -->
