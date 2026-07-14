@@ -1157,7 +1157,7 @@
             // Auto-open WhatsApp link if exists in session
             @if(session('wa_url'))
                 setTimeout(function() {
-                    window.open("{{ session('wa_url') }}", '_blank');
+                    window.open("{!! session('wa_url') !!}", '_blank');
                 }, 1000);
             @endif
         });

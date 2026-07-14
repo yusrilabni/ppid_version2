@@ -317,10 +317,14 @@ class PermohonanInformasiController extends Controller
         // WhatsApp Notification
         $waPhone = GeneralHelper::formatPhoneNumber($permohonan->nomor_telepon_pemohon);
         $directLink = route('laporan.permohonan.show', $permohonan->unique_code);
+        $adminPesan = strlen($response->message) > 300 
+            ? "_Pesan admin terlalu panjang. Silakan klik tautan di bawah untuk membaca rincian tanggapan lengkap._" 
+            : "_{$response->message}_";
+
         $waMessage = "*PENGIRIMAN ULANG NOTIFIKASI PPID KABUPATEN SINJAI*\n\n"
                    . "Halo {$permohonan->nama_pemohon},\n"
                    . "Berikut adalah informasi terkait permohonan Anda (#{$permohonan->unique_code}):\n\n"
-                   . "*Isi Balasan:* \n_{$response->message}_\n\n"
+                   . "*Isi Balasan:* \n{$adminPesan}\n\n"
                    . "Silakan cek detail lengkap dan unduh file melalui tautan berikut:\n"
                    . $directLink . "\n\n"
                    . "Kami sangat menghargai jika Anda bersedia memberikan penilaian (rating) atas layanan dan informasi yang kami berikan. Masukan Anda sangat berarti bagi kami untuk terus meningkatkan kualitas pelayanan ke depannya.\n\n"
