@@ -142,8 +142,16 @@
                                                     }
                                                 }
                                             @endphp
-                                            <div class="text-sm text-gray-600 leading-relaxed min-w-[200px] break-words">
-                                                {{ $answerText }}
+                                            <div class="text-sm text-gray-600 leading-relaxed min-w-[200px] break-words relative group flex justify-between items-center">
+                                                <span>{{ $answerText }}</span>
+                                                @php
+                                                    $isOptions = in_array($question->question_type, ['Checkbox', 'Pilihan Ganda', 'Dropdown', 'Pilihan Ganda (Berbobot)', 'Skala Kepuasan']);
+                                                    $optionsJson = $isOptions ? $question->options->toJson() : '[]';
+                                                    $currentAnswerText = $answer ? $answer->answer_text : '';
+                                                @endphp
+                                                <button type="button" onclick="openEditModal({{ $question->id }}, {{ $response->id }}, '{{ addslashes($question->question_text) }}', '{{ $question->question_type }}', '{{ addslashes($currentAnswerText) }}', {{ $optionsJson }})" class="opacity-0 group-hover:opacity-100 text-blue-500 hover:text-blue-700 transition-opacity p-1" title="Edit Jawaban">
+                                                    <i class="fas fa-edit"></i>
+                                                </button>
                                             </div>
                                         </td>
                                     @endforeach
@@ -167,6 +175,101 @@
         </div>
     </div>
 </div>
+
+<!-- Edit Answer Modal -->
+<div id="editAnswerModal" class="fixed inset-0 z-[100] hidden overflow-y-auto" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+    <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+        <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closeEditModal()"></div>
+        <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+        <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-gray-100">
+            <form id="editAnswerForm" method="POST" action="{{ route('admin.surveys.responses.updateAnswer', $survey->id) }}">
+                @csrf
+                <input type="hidden" name="response_id" id="edit_response_id">
+                <input type="hidden" name="question_id" id="edit_question_id">
+                
+                <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                    <div class="flex items-center mb-4">
+                        <div class="w-10 h-10 bg-blue-100 rounded-xl flex items-center justify-center text-blue-600 mr-3">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                        <h3 class="text-lg leading-6 font-black text-gray-900" id="modal-title">Edit Jawaban Responden</h3>
+                    </div>
+                    <div class="mt-2">
+                        <p class="text-sm font-semibold text-gray-700 mb-2 p-3 bg-gray-50 rounded-xl border border-gray-100" id="edit_question_text"></p>
+                        <div id="edit_input_container" class="mt-4">
+                            <!-- Input will be injected here -->
+                        </div>
+                    </div>
+                </div>
+                <div class="bg-gray-50 px-4 py-4 sm:px-6 sm:flex sm:flex-row-reverse rounded-b-2xl">
+                    <button type="submit" class="w-full inline-flex justify-center rounded-xl border border-transparent shadow-md px-5 py-2.5 bg-blue-600 text-sm font-bold text-white hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto transition-all active:scale-95">
+                        <i class="fas fa-save mr-2 mt-0.5"></i> Simpan Perubahan
+                    </button>
+                    <button type="button" onclick="closeEditModal()" class="mt-3 w-full inline-flex justify-center rounded-xl border border-gray-200 shadow-sm px-5 py-2.5 bg-white text-sm font-bold text-gray-700 hover:bg-gray-50 focus:outline-none sm:mt-0 sm:ml-3 sm:w-auto transition-all active:scale-95">
+                        Batal
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+function openEditModal(questionId, responseId, questionText, questionType, currentAnswer, options) {
+    document.getElementById('edit_question_id').value = questionId;
+    document.getElementById('edit_response_id').value = responseId;
+    document.getElementById('edit_question_text').innerText = questionText;
+    
+    let container = document.getElementById('edit_input_container');
+    container.innerHTML = ''; // clear
+    
+    if (questionType === 'Skala Kepuasan') {
+        let select = document.createElement('select');
+        select.name = 'answer_text';
+        select.className = 'mt-1 block w-full pl-3 pr-10 py-3 text-sm font-medium border-gray-200 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-xl bg-white shadow-sm';
+        for(let i=1; i<=5; i++) {
+            let opt = document.createElement('option');
+            opt.value = i;
+            opt.innerText = i + (i === 1 ? ' (Sangat Kurang)' : (i === 5 ? ' (Sangat Baik)' : ''));
+            if(currentAnswer == i) opt.selected = true;
+            select.appendChild(opt);
+        }
+        container.appendChild(select);
+    } else if (['Checkbox', 'Pilihan Ganda', 'Dropdown', 'Pilihan Ganda (Berbobot)'].includes(questionType)) {
+        let select = document.createElement('select');
+        select.name = 'answer_text';
+        select.className = 'mt-1 block w-full pl-3 pr-10 py-3 text-sm font-medium border-gray-200 focus:outline-none focus:ring-blue-500 focus:border-blue-500 rounded-xl bg-white shadow-sm';
+        
+        let parsedCurrent = currentAnswer;
+        try {
+            let arr = JSON.parse(currentAnswer);
+            if(Array.isArray(arr)) parsedCurrent = arr[0]; 
+        } catch(e) {}
+
+        options.forEach(function(o) {
+            let opt = document.createElement('option');
+            opt.value = o.id;
+            opt.innerText = o.option_text;
+            if(parsedCurrent == o.id) opt.selected = true;
+            select.appendChild(opt);
+        });
+        container.appendChild(select);
+    } else {
+        let input = document.createElement('textarea');
+        input.name = 'answer_text';
+        input.rows = 4;
+        input.className = 'mt-1 block w-full border border-gray-200 rounded-xl shadow-sm py-3 px-4 focus:outline-none focus:ring-blue-500 focus:border-blue-500 text-sm';
+        input.value = currentAnswer;
+        container.appendChild(input);
+    }
+    
+    document.getElementById('editAnswerModal').classList.remove('hidden');
+}
+
+function closeEditModal() {
+    document.getElementById('editAnswerModal').classList.add('hidden');
+}
+</script>
 
 <style>
     .custom-scrollbar::-webkit-scrollbar {

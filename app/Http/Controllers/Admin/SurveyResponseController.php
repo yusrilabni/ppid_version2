@@ -171,4 +171,30 @@ class SurveyResponseController extends Controller
             $fileName
         );
     }
+
+    public function updateAnswer(Request $request, Survey $survey)
+    {
+        $request->validate([
+            'response_id' => 'required|exists:survey_responses,id',
+            'question_id' => 'required|exists:survey_questions,id',
+            'answer_text' => 'required',
+        ]);
+
+        $response = SurveyResponse::findOrFail($request->response_id);
+        
+        $answer = $response->answers()->firstOrNew(['question_id' => $request->question_id]);
+        $answer->survey_id = $survey->id;
+        
+        $question = \App\Models\SurveyQuestion::findOrFail($request->question_id);
+        if ($question->question_type === 'Checkbox') {
+            // For checkbox, it expects a JSON array of option IDs
+            $answer->answer_text = json_encode([$request->answer_text]);
+        } else {
+            $answer->answer_text = $request->answer_text;
+        }
+        
+        $answer->save();
+
+        return back()->with('success', 'Jawaban responden berhasil diperbarui secara manual.');
+    }
 }
