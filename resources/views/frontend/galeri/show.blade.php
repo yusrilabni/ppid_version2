@@ -79,7 +79,7 @@
                 <div class="mt-12 pt-8 border-t border-gray-100">
                     <h3 class="text-sm font-black text-gray-400 uppercase tracking-[0.2em] mb-4">Bagikan Foto Ini</h3>
                     <div class="flex flex-wrap gap-3">
-                        <a href="https://wa.me/?text={{ urlencode($galeri->title . ' - ' . url()->current()) }}" target="_blank" class="flex items-center gap-2 bg-green-500 text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-green-600 transition-colors shadow-lg shadow-green-100">
+                        <a href="https://api.whatsapp.com/send?text={{ rawurlencode($galeri->title . ' - ' . url()->current()) }}" target="_blank" class="flex items-center gap-2 bg-green-500 text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-green-600 transition-colors shadow-lg shadow-green-100">
                             <i class="fab fa-whatsapp text-lg"></i> WhatsApp
                         </a>
                         <a href="https://www.facebook.com/sharer/sharer.php?u={{ urlencode(url()->current()) }}" target="_blank" class="flex items-center gap-2 bg-blue-600 text-white px-6 py-3 rounded-xl font-bold text-sm hover:bg-blue-700 transition-colors shadow-lg shadow-blue-100">

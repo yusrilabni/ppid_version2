@@ -107,7 +107,7 @@ class PermohonanInformasiController extends Controller
                        . "Kami sangat menghargai jika Anda bersedia memberikan penilaian (rating) atas layanan dan informasi yang kami berikan melalui tautan di atas. Masukan Anda sangat berarti bagi kami untuk terus meningkatkan kualitas pelayanan ke depannya.\n\n"
                        . "Terima kasih.";
             
-            $waUrl = "https://wa.me/{$waPhone}?text=" . urlencode($waMessage);
+            $waUrl = "https://api.whatsapp.com/send?phone={$waPhone}&text=" . rawurlencode($waMessage);
 
             // Tambahkan tombol di Telegram
             $buttons = [
@@ -207,7 +207,7 @@ class PermohonanInformasiController extends Controller
                    . "Kami sangat menghargai jika Anda bersedia memberikan penilaian (rating) atas layanan kami. Masukan Anda sangat berarti bagi kami untuk terus meningkatkan kualitas pelayanan.\n\n"
                    . "Terima kasih.";
         
-        $waUrl = "https://wa.me/{$waPhone}?text=" . urlencode($waMessage);
+        $waUrl = "https://api.whatsapp.com/send?phone={$waPhone}&text=" . rawurlencode($waMessage);
 
         // Tambahkan tombol di Telegram
         $buttons = [
@@ -268,7 +268,7 @@ class PermohonanInformasiController extends Controller
                    . "Meskipun demikian, kami tetap menghargai jika Anda bersedia memberikan penilaian atas respon layanan kami sebagai bahan evaluasi ke depannya.\n\n"
                    . "Terima kasih.";
         
-        $waUrl = "https://wa.me/{$waPhone}?text=" . urlencode($waMessage);
+        $waUrl = "https://api.whatsapp.com/send?phone={$waPhone}&text=" . rawurlencode($waMessage);
 
         // Tambahkan tombol di Telegram
         $buttons = [
@@ -322,7 +322,7 @@ class PermohonanInformasiController extends Controller
                    . "Kami sangat menghargai jika Anda bersedia memberikan penilaian (rating) atas layanan dan informasi yang kami berikan. Masukan Anda sangat berarti bagi kami untuk terus meningkatkan kualitas pelayanan ke depannya.\n\n"
                    . "Terima kasih.";
         
-        $waUrl = "https://wa.me/{$waPhone}?text=" . urlencode($waMessage);
+        $waUrl = "https://api.whatsapp.com/send?phone={$waPhone}&text=" . rawurlencode($waMessage);
 
         // Tambahkan tombol di Telegram
         $buttons = [

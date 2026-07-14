@@ -1154,7 +1154,7 @@
                     } else {
                         const waNumber = "6285156878911";
                         const waMessage = `*Pesan Baru dari Website PPID*\n\n*Nama:* ${name}\n*Email:* ${email}\n*Subjek:* ${subject}\n\n*Pesan:*\n${message}`;
-                        const waUrl = `https://wa.me/${waNumber}?text=${encodeURIComponent(waMessage)}`;
+                        const waUrl = `https://api.whatsapp.com/send?phone=${waNumber}&text=${encodeURIComponent(waMessage)}`;
                         window.open(waUrl, '_blank');
                         showMessage('Membuka WhatsApp... Pesan Anda telah disiapkan.', true);
                     }
