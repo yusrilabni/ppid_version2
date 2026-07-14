@@ -86,6 +86,17 @@
                 @endforeach
             </div>
 
+            <!-- Mass Update Checkbox -->
+            <div class="px-6 py-5 bg-yellow-50 border-t border-yellow-100 flex items-start gap-4">
+                <div class="flex items-center h-5">
+                    <input type="checkbox" id="apply_to_all" name="apply_to_all" value="1" class="w-5 h-5 text-yellow-600 bg-white border-yellow-300 rounded focus:ring-yellow-500 cursor-pointer">
+                </div>
+                <div>
+                    <label for="apply_to_all" class="font-bold text-yellow-900 text-sm cursor-pointer">Terapkan jawaban ini ke SEMUA Responden</label>
+                    <p class="text-sm text-yellow-700 mt-1">Jika dicentang, jawaban dari responden ini akan disalin (menimpa) jawaban milik seluruh responden lain di survei ini sehingga semuanya menjadi seragam.</p>
+                </div>
+            </div>
+
             <!-- Footer / Action Buttons -->
             <div class="px-6 py-5 bg-gray-50 border-t border-gray-100 flex items-center justify-end rounded-b-2xl gap-3">
                 <a href="{{ route('admin.surveys.responses.index', $survey->slug) }}" class="inline-flex justify-center rounded-xl border border-gray-200 shadow-sm px-6 py-2.5 bg-white text-sm font-bold text-gray-700 hover:bg-gray-50 focus:outline-none transition-all">
