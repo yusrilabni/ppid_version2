@@ -137,7 +137,19 @@
                                             </div>
                                             <div class="flex-1 min-w-0">
                                                 <p class="text-xs text-gray-500 font-medium mb-1">Telepon</p>
-                                                <p class="text-gray-800 font-medium">{{ PrivacyHelper::maskFull($permohonan->nomor_telepon_pemohon, $should_anonymize_data) }}</p>
+                                                <div class="flex items-center gap-2">
+                                                    <p class="text-gray-800 font-medium">{{ PrivacyHelper::maskFull($permohonan->nomor_telepon_pemohon, $should_anonymize_data) }}</p>
+                                                    @if(!$should_anonymize_data && $permohonan->nomor_telepon_pemohon)
+                                                        @php
+                                                            $rawPhone = preg_replace('/[^0-9]/', '', $permohonan->nomor_telepon_pemohon);
+                                                            if (str_starts_with($rawPhone, '0')) $rawPhone = '62' . substr($rawPhone, 1);
+                                                            elseif (str_starts_with($rawPhone, '8')) $rawPhone = '62' . $rawPhone;
+                                                        @endphp
+                                                        <a href="https://api.whatsapp.com/send?phone={{ $rawPhone }}" target="_blank" class="text-green-500 hover:text-green-600 transition-colors" title="Chat via WhatsApp">
+                                                            <i class="fab fa-whatsapp text-lg"></i>
+                                                        </a>
+                                                    @endif
+                                                </div>
                                             </div>
                                         </div>
                                     </div>
