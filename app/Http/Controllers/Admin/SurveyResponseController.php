@@ -208,6 +208,10 @@ class SurveyResponseController extends Controller
     public function updateAll(Request $request, Survey $survey, SurveyResponse $response)
     {
         $answersData = $request->input('answers', []);
+        if (!is_array($answersData)) {
+            $answersData = [];
+        }
+        
         $applyToAllQuestions = $request->input('apply_to_all_questions', []);
         
         $questions = \App\Models\SurveyQuestion::whereIn('id', array_keys($answersData))->get()->keyBy('id');
@@ -227,10 +231,17 @@ class SurveyResponseController extends Controller
             foreach ($targetResponses as $targetResponse) {
                 $answer = $targetResponse->answers()->firstOrNew(['question_id' => $questionId]);
                 
-                if ($question->question_type === 'Checkbox') {
-                    $answer->answer_text = json_encode(is_array($answerText) ? $answerText : [$answerText]);
+                // Prevent null constraint violations due to Laravel's ConvertEmptyStringsToNull middleware
+                // Prevent Array to String conversion errors
+                if ($question->question_type === 'Checkbox' || is_array($answerText)) {
+                    $val = is_array($answerText) ? $answerText : [$answerText];
+                    // If it was null, make it an empty array so it encodes to "[]" instead of "[null]"
+                    if ($answerText === null) {
+                        $val = [];
+                    }
+                    $answer->answer_text = json_encode($val);
                 } else {
-                    $answer->answer_text = $answerText;
+                    $answer->answer_text = (string) $answerText;
                 }
                 
                 $answer->save();
