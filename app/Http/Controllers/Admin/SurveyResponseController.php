@@ -183,7 +183,6 @@ class SurveyResponseController extends Controller
         $response = SurveyResponse::findOrFail($request->response_id);
         
         $answer = $response->answers()->firstOrNew(['question_id' => $request->question_id]);
-        $answer->survey_id = $survey->id;
         
         $question = \App\Models\SurveyQuestion::findOrFail($request->question_id);
         if ($question->question_type === 'Checkbox') {
