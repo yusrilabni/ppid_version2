@@ -182,7 +182,7 @@
         <div class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" onclick="closeEditModal()"></div>
         <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
         <div class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-lg sm:w-full border border-gray-100">
-            <form id="editAnswerForm" method="POST" action="{{ route('admin.surveys.responses.updateAnswer', $survey->id) }}">
+            <form id="editAnswerForm" method="POST" action="{{ route('admin.surveys.responses.updateAnswer', $survey->slug) }}">
                 @csrf
                 <input type="hidden" name="response_id" id="edit_response_id">
                 <input type="hidden" name="question_id" id="edit_question_id">
