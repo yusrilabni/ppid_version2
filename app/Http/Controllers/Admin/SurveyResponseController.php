@@ -46,7 +46,7 @@ class SurveyResponseController extends Controller
                     foreach ($question->options as $option) {
                         $label = $option->option_text;
                         if ($question->question_type === 'Pilihan Ganda (Berbobot)' && !is_null($option->value)) {
-                            $label = $option->value . ' (' . $option->option_text . ')';
+                            $label = $option->option_text . ' (' . $option->value . ')';
                         }
                         $labels[$option->id] = $label;
                         $data[$option->id] = 0;
@@ -135,7 +135,7 @@ class SurveyResponseController extends Controller
                             
                             $formattedOptions = $selectedOptions->map(function($option) use ($question) {
                                 if ($question->question_type === 'Pilihan Ganda (Berbobot)' && !is_null($option->value)) {
-                                    return $option->value;
+                                    return $option->option_text . ' (' . $option->value . ')';
                                 }
                                 return $option->option_text;
                             });

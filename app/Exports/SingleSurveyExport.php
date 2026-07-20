@@ -45,7 +45,7 @@ class SingleSurveyExport implements FromCollection, WithHeadings, WithTitle, Wit
                         
                         $formattedOptions = $selectedOptions->map(function($option) use ($question) {
                             if ($question->question_type === 'Pilihan Ganda (Berbobot)' && !is_null($option->value)) {
-                                return $option->value;
+                                return $option->option_text . ' (' . $option->value . ')';
                             }
                             return $option->option_text;
                         });
