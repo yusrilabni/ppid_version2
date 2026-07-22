@@ -147,8 +147,15 @@
                                 <li class="flex items-start">
                                     <i class="fas fa-phone-alt mt-1.5 mr-4 text-blue-400 w-5 text-center"></i>
                                     <div>
-                                        <span class="block text-gray-400 text-sm">Nomor Telepon / WhatsApp Helpdesk</span>
-                                        <a href="tel:{{ $contactPhone }}" class="font-semibold hover:text-blue-300 transition">{{ $contactPhone }}</a>
+                                        <span class="block text-gray-400 text-sm">Nomor Telepon</span>
+                                        <a href="tel:0482-21432" class="font-semibold hover:text-blue-300 transition">0482-21432</a>
+                                    </div>
+                                </li>
+                                <li class="flex items-start">
+                                    <i class="fab fa-whatsapp mt-1.5 mr-4 text-green-400 w-5 text-center text-lg"></i>
+                                    <div>
+                                        <span class="block text-gray-400 text-sm">WhatsApp Helpdesk</span>
+                                        <a href="https://wa.me/6285156878911" target="_blank" class="font-semibold hover:text-green-300 transition">0851-5687-8911</a>
                                     </div>
                                 </li>
                             </ul>
