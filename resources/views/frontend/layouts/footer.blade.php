@@ -52,6 +52,14 @@
                     @endforeach
                     <li class="pt-2 mt-2 border-t border-gray-800"></li>
                     <li>
+                        <a href="{{ url('/kebijakan-privasi') }}" class="hover:text-white flex items-center group">
+                            <div class="bg-purple-500/10 p-1.5 rounded mr-2 group-hover:bg-purple-500 transition-colors">
+                                <i class="fas fa-user-shield text-purple-500 group-hover:text-white text-[10px]"></i>
+                            </div>
+                            Kebijakan Privasi
+                        </a>
+                    </li>
+                    <li>
                         <a href="{{ route('extra.rss') }}" class="hover:text-white flex items-center group">
                             <div class="bg-orange-500/10 p-1.5 rounded mr-2 group-hover:bg-orange-500 transition-colors">
                                 <i class="fas fa-rss text-orange-500 group-hover:text-white text-[10px]"></i>
