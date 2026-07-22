@@ -1,6 +1,17 @@
 @extends('frontend.layouts.app')
 @section('title', 'Kebijakan Privasi')
 
+@push('styles')
+<style>
+    .privacy-section:hover .section-icon {
+        transform: scale(1.1) rotate(5deg);
+    }
+    .section-icon {
+        transition: all 0.3s ease-in-out;
+    }
+</style>
+@endpush
+
 @section('content')
 @php
     $profilPpid = \App\Models\ProfilPpid::where('status', true)->first();
@@ -8,163 +19,285 @@
     $contactEmail = ($profilPpid ? $profilPpid->email : null) ?? config('ppid.contact_info.email') ?? 'ppid@sinjaikab.go.id';
     $contactPhone = ($profilPpid ? $profilPpid->phone : null) ?? config('ppid.contact_info.phone') ?? '-';
 @endphp
-<div class="py-12 bg-gray-50 min-h-screen">
-    <div class="max-w-4xl mx-auto sm:px-6 lg:px-8">
-        <div class="bg-white overflow-hidden shadow-xl sm:rounded-2xl border border-gray-100">
-            <div class="p-8 sm:p-12 text-gray-800">
-                
-                <div class="text-center mb-10 pb-8 border-b border-gray-200">
-                    <h1 class="text-3xl font-extrabold text-gray-900 mb-4 leading-tight">
-                        KEBIJAKAN PRIVASI / PEMBERITAHUAN PELINDUNGAN DATA PRIBADI<br>
-                        LAYANAN DIGITAL PEMERINTAH KABUPATEN SINJAI
-                    </h1>
-                    <div class="inline-block bg-blue-50 px-4 py-2 rounded-full mt-4">
-                        <p class="text-blue-700 font-semibold text-lg">PPID Kabupaten Sinjai</p>
+
+<!-- Header / Hero Section -->
+<div class="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-600 overflow-hidden">
+    <!-- Decorative Shapes -->
+    <div class="absolute top-0 left-0 w-full h-full opacity-10 pointer-events-none">
+        <svg viewBox="0 0 100 100" preserveAspectRatio="none" class="absolute w-full h-full">
+            <path d="M0 100 C 20 0 50 0 100 100 Z" fill="white"></path>
+        </svg>
+    </div>
+    
+    <div class="relative max-w-6xl mx-auto px-4 sm:px-6 lg:px-8 py-20 lg:py-28 text-center">
+        <div class="inline-flex items-center justify-center w-20 h-20 bg-white/10 rounded-full mb-6 backdrop-blur-sm border border-white/20 shadow-2xl">
+            <i class="fas fa-user-shield text-4xl text-white"></i>
+        </div>
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white mb-6 leading-tight tracking-tight">
+            Kebijakan Privasi & <br class="hidden md:block"> Pemberitahuan Pelindungan Data
+        </h1>
+        <div class="inline-block bg-white/20 px-6 py-2 rounded-full backdrop-blur-md border border-white/30">
+            <p class="text-white font-semibold text-lg flex items-center justify-center gap-2">
+                <i class="fas fa-university text-yellow-300"></i> PPID Kabupaten Sinjai
+            </p>
+        </div>
+        <p class="text-blue-100 mt-6 text-sm font-medium opacity-90">
+            <i class="far fa-clock mr-1"></i> Diperbarui pada: 22 Juli 2026
+        </p>
+    </div>
+    
+    <!-- Wave Bottom -->
+    <div class="absolute bottom-0 w-full leading-none">
+        <svg class="block w-full h-12 md:h-20 text-gray-50" viewBox="0 0 1440 320" fill="currentColor" xmlns="http://www.w3.org/2000/svg">
+            <path d="M0,256L48,245.3C96,235,192,213,288,213.3C384,213,480,235,576,224C672,213,768,171,864,165.3C960,160,1056,192,1152,202.7C1248,213,1344,203,1392,197.3L1440,192L1440,320L1392,320C1344,320,1248,320,1152,320C1056,320,960,320,864,320C768,320,672,320,576,320C480,320,384,320,288,320C192,320,96,320,48,320L0,320Z"></path>
+        </svg>
+    </div>
+</div>
+
+<div class="py-12 bg-gray-50 pb-24">
+    <div class="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">
+        
+        <!-- Intro Card -->
+        <div class="bg-white rounded-3xl shadow-lg border border-gray-100 p-8 md:p-10 mb-10 transform -translate-y-12 relative z-10">
+            <h2 class="text-2xl font-bold text-gray-900 mb-4 flex items-center gap-3">
+                <i class="fas fa-info-circle text-blue-600 text-3xl"></i> Pendahuluan
+            </h2>
+            <div class="text-gray-600 leading-relaxed text-lg space-y-4">
+                <p>
+                    Pemerintah Daerah Kabupaten Sinjai berkomitmen penuh untuk melindungi dan menghormati privasi data pribadi Anda selaku pengguna ("Anda" atau "Pengguna") seluruh layanan digital yang Kami kelola, baik berbasis situs web maupun aplikasi seluler. 
+                </p>
+                <p>
+                    Kebijakan Privasi ini menjelaskan bagaimana Kami mengumpulkan, menggunakan, menyimpan, membagikan, dan melindungi Data Pribadi Anda saat Anda menggunakan Layanan Digital Kami. Dengan mengakses dan/atau menggunakan Layanan Digital Kami, Anda mengakui bahwa Anda telah membaca, memahami, dan menyetujui seluruh ketentuan yang tertuang di dalamnya.
+                </p>
+            </div>
+        </div>
+
+        <!-- Main Content Grid -->
+        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+            
+            <!-- Section 1 -->
+            <div class="bg-white rounded-3xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-100 p-8 privacy-section">
+                <div class="flex items-center gap-4 mb-6 pb-4 border-b border-gray-100">
+                    <div class="w-14 h-14 rounded-2xl bg-blue-50 flex items-center justify-center text-blue-600 text-2xl section-icon">
+                        <i class="fas fa-database"></i>
                     </div>
-                    <p class="text-gray-500 mt-4 text-sm font-medium">Diperbarui pada: 22 Juli 2026</p>
+                    <h2 class="text-2xl font-bold text-gray-900">1. Data yang Dikumpulkan</h2>
+                </div>
+                <p class="text-gray-600 mb-4 font-medium">Kami mengumpulkan data yang relevan dan diperlukan:</p>
+                
+                <h3 class="font-bold text-gray-800 mt-4 mb-3 flex items-center gap-2"><i class="fas fa-pen-nib text-blue-500"></i> Diberikan Langsung:</h3>
+                <ul class="space-y-3 text-gray-600">
+                    <li class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1.5 mr-3"></i> <span><strong>Identitas:</strong> Nama Lengkap, NIK, TTL, Jenis Kelamin.</span></li>
+                    <li class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1.5 mr-3"></i> <span><strong>Kontak:</strong> Alamat email, Nomor telepon, Domisili.</span></li>
+                    <li class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1.5 mr-3"></i> <span><strong>Dokumen:</strong> Foto KTP, KK, swafoto (sesuai layanan).</span></li>
+                    <li class="flex items-start"><i class="fas fa-check-circle text-green-500 mt-1.5 mr-3"></i> <span><strong>Kredensial:</strong> Kata sandi/password yang dienkripsi.</span></li>
+                </ul>
+
+                <h3 class="font-bold text-gray-800 mt-6 mb-3 flex items-center gap-2"><i class="fas fa-robot text-blue-500"></i> Terkumpul Otomatis:</h3>
+                <p class="text-gray-600 bg-gray-50 p-4 rounded-xl border border-gray-100">Alamat IP, jenis perangkat, sistem operasi, peramban (browser), waktu akses, dan log aktivitas sistem.</p>
+            </div>
+
+            <!-- Section 2 -->
+            <div class="bg-white rounded-3xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-100 p-8 privacy-section">
+                <div class="flex items-center gap-4 mb-6 pb-4 border-b border-gray-100">
+                    <div class="w-14 h-14 rounded-2xl bg-indigo-50 flex items-center justify-center text-indigo-600 text-2xl section-icon">
+                        <i class="fas fa-bullseye"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900">2. Tujuan Pemrosesan</h2>
+                </div>
+                <p class="text-gray-600 mb-4 font-medium">Data Anda digunakan secara spesifik untuk:</p>
+                <ul class="space-y-3 text-gray-600">
+                    <li class="flex items-center p-3 bg-gray-50 rounded-lg"><i class="fas fa-angle-right text-indigo-500 mr-3"></i> Pendaftaran dan autentikasi akun Pengguna.</li>
+                    <li class="flex items-center p-3 bg-gray-50 rounded-lg"><i class="fas fa-angle-right text-indigo-500 mr-3"></i> Pemrosesan permohonan layanan publik.</li>
+                    <li class="flex items-center p-3 bg-gray-50 rounded-lg"><i class="fas fa-angle-right text-indigo-500 mr-3"></i> Penyediaan notifikasi status layanan.</li>
+                    <li class="flex items-center p-3 bg-gray-50 rounded-lg"><i class="fas fa-angle-right text-indigo-500 mr-3"></i> Penyelesaian kendala teknis/helpdesk.</li>
+                    <li class="flex items-center p-3 bg-gray-50 rounded-lg"><i class="fas fa-angle-right text-indigo-500 mr-3"></i> Evaluasi kualitas dan keamanan Layanan.</li>
+                    <li class="flex items-center p-3 bg-gray-50 rounded-lg"><i class="fas fa-angle-right text-indigo-500 mr-3"></i> Kepatuhan terhadap peraturan perundangan.</li>
+                </ul>
+            </div>
+
+            <!-- Section 3 & 4 (Combined vertically) -->
+            <div class="space-y-8">
+                <div class="bg-white rounded-3xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-100 p-8 privacy-section">
+                    <div class="flex items-center gap-4 mb-6 pb-4 border-b border-gray-100">
+                        <div class="w-14 h-14 rounded-2xl bg-teal-50 flex items-center justify-center text-teal-600 text-2xl section-icon">
+                            <i class="fas fa-balance-scale"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-900">3. Dasar Hukum</h2>
+                    </div>
+                    <ul class="space-y-3 text-gray-600">
+                        <li class="flex items-start"><i class="far fa-check-square text-teal-500 mt-1 mr-3"></i> Persetujuan yang sah dan eksplisit dari Anda.</li>
+                        <li class="flex items-start"><i class="far fa-check-square text-teal-500 mt-1 mr-3"></i> Pelaksanaan kewenangan sebagai instansi pemerintah.</li>
+                        <li class="flex items-start"><i class="far fa-check-square text-teal-500 mt-1 mr-3"></i> Pemenuhan kewajiban hukum yang mengikat.</li>
+                    </ul>
                 </div>
 
-                <div class="space-y-8 text-gray-700 leading-relaxed text-lg">
-                    
-                    <section>
-                        <h2 class="text-2xl font-bold text-gray-900 mb-4 border-l-4 border-blue-600 pl-4">Pendahuluan</h2>
-                        <p>
-                            Pemerintah Daerah Kabupaten Sinjai berkomitmen untuk melindungi dan menghormati privasi data pribadi Anda selaku pengguna ("Anda" atau "Pengguna") seluruh layanan digital yang Kami kelola, baik berbasis situs web maupun aplikasi seluler. Kebijakan Privasi ini menjelaskan bagaimana Kami mengumpulkan, menggunakan, menyimpan, membagikan, dan melindungi Data Pribadi Anda saat Anda menggunakan Layanan Digital Kami.
-                        </p>
-                        <p class="mt-4">
-                            Dengan mengakses dan/atau menggunakan Layanan Digital Kami, Anda mengakui bahwa Anda telah membaca, memahami, dan menyetujui ketentuan dalam Kebijakan Privasi ini.
-                        </p>
-                    </section>
-
-                    <section>
-                        <h2 class="text-2xl font-bold text-gray-900 mb-4 border-l-4 border-blue-600 pl-4">1. Data Pribadi yang Kami Kumpulkan</h2>
-                        <p class="mb-4">Kami hanya mengumpulkan data yang relevan dan diperlukan untuk penyelenggaraan layanan publik. Data yang dikumpulkan meliputi:</p>
-                        
-                        <h3 class="font-bold text-gray-800 mt-4 mb-2">Data yang Anda berikan secara langsung:</h3>
-                        <ul class="list-disc pl-6 space-y-2 marker:text-blue-500">
-                            <li>Identitas pribadi (Nama Lengkap, Nomor Induk Kependudukan (NIK), Tempat/Tanggal Lahir, Jenis Kelamin).</li>
-                            <li>Informasi kontak (Alamat email, Nomor telepon, Alamat domisili).</li>
-                            <li>Dokumen pendukung administrasi (seperti foto KTP, Kartu Keluarga, swafoto/liveness check) yang diunggah sesuai kebutuhan layanan spesifik.</li>
-                            <li>Informasi kredensial login (Kata sandi/password yang dienkripsi).</li>
-                        </ul>
-
-                        <h3 class="font-bold text-gray-800 mt-6 mb-2">Data yang terkumpul secara otomatis:</h3>
-                        <p>Alamat IP (Internet Protocol), jenis perangkat, sistem operasi, jenis peramban (browser), waktu akses, dan log aktivitas saat menggunakan layanan Kami untuk keperluan evaluasi dan keamanan sistem.</p>
-                    </section>
-
-                    <section>
-                        <h2 class="text-2xl font-bold text-gray-900 mb-4 border-l-4 border-blue-600 pl-4">2. Tujuan Pemrosesan Data Pribadi</h2>
-                        <p class="mb-4">Kami memproses Data Pribadi Anda untuk tujuan berikut:</p>
-                        <ul class="list-disc pl-6 space-y-2 marker:text-blue-500">
-                            <li>Pendaftaran, verifikasi, dan autentikasi akun Pengguna.</li>
-                            <li>Pemrosesan dan pemenuhan permohonan layanan administrasi atau layanan publik yang Anda ajukan.</li>
-                            <li>Penyediaan informasi, notifikasi, atau pembaruan terkait status layanan yang Anda ajukan.</li>
-                            <li>Penyelesaian kendala teknis atau pengaduan (helpdesk).</li>
-                            <li>Analisis dan evaluasi untuk peningkatan kualitas dan keamanan Layanan Digital Kami.</li>
-                            <li>Kepatuhan terhadap kewajiban hukum atau peraturan perundang-undangan yang berlaku.</li>
-                        </ul>
-                    </section>
-
-                    <section>
-                        <h2 class="text-2xl font-bold text-gray-900 mb-4 border-l-4 border-blue-600 pl-4">3. Dasar Hukum Pemrosesan</h2>
-                        <p class="mb-4">Kami memproses Data Pribadi Anda berdasarkan:</p>
-                        <ul class="list-disc pl-6 space-y-2 marker:text-blue-500">
-                            <li>Persetujuan yang sah dan eksplisit dari Anda.</li>
-                            <li>Pelaksanaan kewenangan, tugas, dan fungsi Kami sebagai instansi pemerintah dalam penyelenggaraan pelayanan publik.</li>
-                            <li>Pemenuhan kewajiban hukum yang mengikat Kami.</li>
-                        </ul>
-                    </section>
-
-                    <section>
-                        <h2 class="text-2xl font-bold text-gray-900 mb-4 border-l-4 border-blue-600 pl-4">4. Pembagian dan Pengungkapan Data Pribadi</h2>
-                        <p class="mb-4">Kami tidak akan menjual, menyewakan, atau menukar Data Pribadi Anda kepada pihak ketiga untuk tujuan komersial. Data Pribadi Anda hanya dapat dibagikan kepada:</p>
-                        <ul class="list-disc pl-6 space-y-2 marker:text-blue-500">
-                            <li>Instansi pemerintah lain (Kementerian/Lembaga/Daerah) dalam rangka integrasi layanan publik dan pengecekan silang data (misalnya: integrasi NIK dengan Ditjen Dukcapil).</li>
-                            <li>Aparat penegak hukum, pengadilan, atau otoritas terkait lainnya apabila diwajibkan oleh hukum dan peraturan perundang-undangan.</li>
-                        </ul>
-                    </section>
-
-                    <section>
-                        <h2 class="text-2xl font-bold text-gray-900 mb-4 border-l-4 border-blue-600 pl-4">5. Penyimpanan dan Keamanan Data Pribadi</h2>
-                        <ul class="space-y-4">
-                            <li class="bg-gray-50 p-4 rounded-lg border border-gray-100"><strong class="text-gray-900 block mb-1">Keamanan:</strong> Kami menerapkan standar keamanan teknis dan organisasi yang wajar, termasuk enkripsi, pembatasan hak akses, dan pemantauan sistem, untuk melindungi Data Pribadi Anda dari akses, perusakan, atau kebocoran yang tidak sah.</li>
-                            <li class="bg-gray-50 p-4 rounded-lg border border-gray-100"><strong class="text-gray-900 block mb-1">Lokasi Penyimpanan:</strong> Data Anda disimpan di Pusat Data Nasional (PDN) atau infrastruktur peladen (server) yang berlokasi di wilayah hukum Republik Indonesia.</li>
-                            <li class="bg-gray-50 p-4 rounded-lg border border-gray-100"><strong class="text-gray-900 block mb-1">Retensi:</strong> Data Pribadi akan disimpan selama Anda masih aktif menggunakan layanan, dan/atau sesuai dengan jangka waktu retensi arsip elektronik yang diatur dalam peraturan perundang-undangan, setelah itu data akan dihapus atau dimusnahkan.</li>
-                        </ul>
-                    </section>
-
-                    <section>
-                        <h2 class="text-2xl font-bold text-gray-900 mb-4 border-l-4 border-blue-600 pl-4">6. Hak-Hak Subjek Data Pribadi</h2>
-                        <p class="mb-4">Sesuai dengan Undang-Undang Pelindungan Data Pribadi, Anda memiliki hak atas Data Pribadi Anda, antara lain:</p>
-                        <ul class="list-disc pl-6 space-y-2 marker:text-blue-500">
-                            <li>Mendapatkan informasi mengenai kejelasan identitas, dasar kepentingan hukum, tujuan permintaan dan penggunaan Data Pribadi.</li>
-                            <li>Mengakses, meminta salinan, dan/atau memperbaiki kesalahan/ketidakakuratan Data Pribadi Anda.</li>
-                            <li>Mengakhiri pemrosesan, menghapus, atau memusnahkan Data Pribadi Anda (dengan catatan hal ini dapat memengaruhi kemampuan Kami untuk menyediakan layanan kepada Anda).</li>
-                            <li>Menarik persetujuan pemrosesan Data Pribadi yang telah diberikan sebelumnya.</li>
-                        </ul>
-                        <div class="mt-4 p-4 bg-yellow-50 text-yellow-800 rounded-lg text-sm italic">
-                            Catatan: Untuk menggunakan hak-hak di atas, Anda dapat menghubungi kami melalui detail kontak di bawah ini. Kami berhak melakukan verifikasi identitas Anda sebelum memenuhi permintaan tersebut.
+                <div class="bg-white rounded-3xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-100 p-8 privacy-section">
+                    <div class="flex items-center gap-4 mb-6 pb-4 border-b border-gray-100">
+                        <div class="w-14 h-14 rounded-2xl bg-orange-50 flex items-center justify-center text-orange-600 text-2xl section-icon">
+                            <i class="fas fa-share-alt"></i>
                         </div>
-                    </section>
+                        <h2 class="text-2xl font-bold text-gray-900">4. Berbagi Data Pribadi</h2>
+                    </div>
+                    <p class="text-gray-600 mb-4">Data Anda <span class="font-bold text-red-500">TIDAK AKAN</span> dijual untuk tujuan komersial. Data hanya dibagikan kepada:</p>
+                    <ul class="space-y-3 text-gray-600">
+                        <li class="flex items-start p-3 bg-orange-50/30 rounded-lg"><i class="fas fa-building text-orange-400 mt-1 mr-3"></i> <span>Instansi pemerintah lain untuk integrasi layanan (misal: Ditjen Dukcapil).</span></li>
+                        <li class="flex items-start p-3 bg-orange-50/30 rounded-lg"><i class="fas fa-gavel text-orange-400 mt-1 mr-3"></i> <span>Aparat penegak hukum jika diwajibkan oleh peraturan perundang-undangan.</span></li>
+                    </ul>
+                </div>
+            </div>
 
-                    <section>
-                        <h2 class="text-2xl font-bold text-gray-900 mb-4 border-l-4 border-blue-600 pl-4">7. Penggunaan Tuki (Cookies)</h2>
-                        <p>Layanan web Kami mungkin menggunakan cookies untuk mengingat preferensi Anda dan menganalisis arus lalu lintas situs untuk meningkatkan pengalaman pengguna. Anda dapat mengatur peramban Anda untuk menolak cookies, namun hal tersebut mungkin membatasi fungsionalitas fitur tertentu pada situs Kami.</p>
-                    </section>
-
-                    <section>
-                        <h2 class="text-2xl font-bold text-gray-900 mb-4 border-l-4 border-blue-600 pl-4">8. Perubahan Kebijakan Privasi</h2>
-                        <p>Kami berhak untuk meninjau dan mengubah Kebijakan Privasi ini dari waktu ke waktu agar tetap sejalan dengan perkembangan regulasi, teknologi, atau proses bisnis. Setiap perubahan akan Kami beritahukan melalui situs web atau aplikasi Kami.</p>
-                    </section>
-
-                    <section>
-                        <h2 class="text-2xl font-bold text-gray-900 mb-4 border-l-4 border-blue-600 pl-4">9. Kontak Kami</h2>
-                        <p class="mb-4">Jika Anda memiliki pertanyaan, keluhan, atau ingin melaksanakan hak Anda terkait pelindungan Data Pribadi, silakan hubungi kami melalui:</p>
-                        
-                        <div class="bg-gray-800 text-white rounded-xl p-6 shadow-inner">
-                            <ul class="space-y-4">
-                                <li class="flex items-start">
-                                    <i class="fas fa-building mt-1.5 mr-4 text-blue-400 w-5 text-center"></i>
-                                    <div>
-                                        <span class="block text-gray-400 text-sm">Nama Unit/Pejabat Pengelola</span>
-                                        <span class="font-semibold">PPID Kabupaten Sinjai / Dinas Komunikasi Informatika dan Persandian</span>
-                                    </div>
-                                </li>
-                                <li class="flex items-start">
-                                    <i class="fas fa-map-marker-alt mt-1.5 mr-4 text-blue-400 w-5 text-center"></i>
-                                    <div>
-                                        <span class="block text-gray-400 text-sm">Alamat Kantor</span>
-                                        <span class="font-semibold">{{ $contactAddress }}</span>
-                                    </div>
-                                </li>
-                                <li class="flex items-start">
-                                    <i class="fas fa-envelope mt-1.5 mr-4 text-blue-400 w-5 text-center"></i>
-                                    <div>
-                                        <span class="block text-gray-400 text-sm">Email</span>
-                                        <a href="mailto:{{ $contactEmail }}" class="font-semibold hover:text-blue-300 transition">{{ $contactEmail }}</a>
-                                    </div>
-                                </li>
-                                <li class="flex items-start">
-                                    <i class="fas fa-phone-alt mt-1.5 mr-4 text-blue-400 w-5 text-center"></i>
-                                    <div>
-                                        <span class="block text-gray-400 text-sm">Nomor Telepon</span>
-                                        <a href="tel:0482-21432" class="font-semibold hover:text-blue-300 transition">0482-21432</a>
-                                    </div>
-                                </li>
-                                <li class="flex items-start">
-                                    <i class="fab fa-whatsapp mt-1.5 mr-4 text-green-400 w-5 text-center text-lg"></i>
-                                    <div>
-                                        <span class="block text-gray-400 text-sm">WhatsApp Helpdesk</span>
-                                        <a href="https://wa.me/6285156878911" target="_blank" class="font-semibold hover:text-green-300 transition">0851-5687-8911</a>
-                                    </div>
-                                </li>
-                            </ul>
+            <!-- Section 5 -->
+            <div class="bg-white rounded-3xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-100 p-8 privacy-section">
+                <div class="flex items-center gap-4 mb-6 pb-4 border-b border-gray-100">
+                        <div class="w-14 h-14 rounded-2xl bg-purple-50 flex items-center justify-center text-purple-600 text-2xl section-icon">
+                        <i class="fas fa-shield-alt"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900">5. Penyimpanan & Keamanan</h2>
+                </div>
+                <div class="space-y-4">
+                    <div class="flex flex-col sm:flex-row gap-4 items-start p-4 bg-purple-50/40 rounded-2xl border border-purple-100">
+                        <div class="bg-white p-3 rounded-full shadow-sm text-purple-500"><i class="fas fa-lock"></i></div>
+                        <div>
+                            <strong class="text-gray-900 block mb-1">Standar Keamanan Tinggi</strong> 
+                            <span class="text-gray-600 text-sm">Penerapan enkripsi, pembatasan hak akses, dan pemantauan sistem untuk mencegah kebocoran data.</span>
                         </div>
-                    </section>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-4 items-start p-4 bg-purple-50/40 rounded-2xl border border-purple-100">
+                        <div class="bg-white p-3 rounded-full shadow-sm text-purple-500"><i class="fas fa-server"></i></div>
+                        <div>
+                            <strong class="text-gray-900 block mb-1">Lokasi Server Nasional</strong> 
+                            <span class="text-gray-600 text-sm">Disimpan di Pusat Data Nasional (PDN) atau infrastruktur dalam wilayah Republik Indonesia.</span>
+                        </div>
+                    </div>
+                    <div class="flex flex-col sm:flex-row gap-4 items-start p-4 bg-purple-50/40 rounded-2xl border border-purple-100">
+                        <div class="bg-white p-3 rounded-full shadow-sm text-purple-500"><i class="fas fa-history"></i></div>
+                        <div>
+                            <strong class="text-gray-900 block mb-1">Retensi Data</strong> 
+                            <span class="text-gray-600 text-sm">Disimpan selama Anda aktif dan sesuai aturan retensi arsip elektronik sebelum dimusnahkan.</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
 
+            <!-- Section 6 -->
+            <div class="bg-white rounded-3xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-100 p-8 privacy-section">
+                <div class="flex items-center gap-4 mb-6 pb-4 border-b border-gray-100">
+                        <div class="w-14 h-14 rounded-2xl bg-green-50 flex items-center justify-center text-green-600 text-2xl section-icon">
+                        <i class="fas fa-user-check"></i>
+                    </div>
+                    <h2 class="text-2xl font-bold text-gray-900">6. Hak-Hak Anda</h2>
+                </div>
+                <p class="text-gray-600 mb-4">Anda memiliki kendali penuh atas data Anda:</p>
+                <ul class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-sm text-gray-600">
+                    <li class="bg-gray-50 p-3 rounded-xl border border-gray-100 flex gap-3"><i class="fas fa-info-circle text-green-500 mt-1"></i> Hak mendapat informasi penggunaan data.</li>
+                    <li class="bg-gray-50 p-3 rounded-xl border border-gray-100 flex gap-3"><i class="fas fa-edit text-green-500 mt-1"></i> Hak mengakses dan memperbaiki data.</li>
+                    <li class="bg-gray-50 p-3 rounded-xl border border-gray-100 flex gap-3"><i class="fas fa-trash-alt text-green-500 mt-1"></i> Hak menghapus/memusnahkan data.</li>
+                    <li class="bg-gray-50 p-3 rounded-xl border border-gray-100 flex gap-3"><i class="fas fa-ban text-green-500 mt-1"></i> Hak menarik persetujuan pemrosesan.</li>
+                </ul>
+                <div class="mt-4 p-4 bg-yellow-50 border border-yellow-200 text-yellow-800 rounded-xl text-sm flex items-start gap-3">
+                    <i class="fas fa-exclamation-triangle mt-1 text-yellow-600"></i>
+                    <span><strong>Catatan:</strong> Kami berhak memverifikasi identitas Anda terlebih dahulu sebelum memenuhi permintaan pelaksanaan hak-hak tersebut.</span>
+                </div>
+            </div>
+
+            <!-- Section 7 & 8 (Combined vertically) -->
+            <div class="space-y-8">
+                <div class="bg-white rounded-3xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-100 p-8 privacy-section">
+                    <div class="flex items-center gap-4 mb-6 pb-4 border-b border-gray-100">
+                            <div class="w-14 h-14 rounded-2xl bg-yellow-50 flex items-center justify-center text-yellow-600 text-2xl section-icon">
+                            <i class="fas fa-cookie-bite"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-900">7. Cookies (Tuki)</h2>
+                    </div>
+                    <p class="text-gray-600">
+                        Kami menggunakan cookies untuk mengingat preferensi Anda dan menganalisis lalu lintas situs. Anda dapat mengatur peramban untuk menolak cookies, namun hal tersebut mungkin membatasi fitur tertentu.
+                    </p>
+                </div>
+
+                <div class="bg-white rounded-3xl shadow-md hover:shadow-xl transition-shadow duration-300 border border-gray-100 p-8 privacy-section">
+                    <div class="flex items-center gap-4 mb-6 pb-4 border-b border-gray-100">
+                            <div class="w-14 h-14 rounded-2xl bg-rose-50 flex items-center justify-center text-rose-600 text-2xl section-icon">
+                            <i class="fas fa-sync-alt"></i>
+                        </div>
+                        <h2 class="text-2xl font-bold text-gray-900">8. Perubahan Kebijakan</h2>
+                    </div>
+                    <p class="text-gray-600">
+                        Kami berhak meninjau dan mengubah Kebijakan Privasi ini agar tetap sejalan dengan regulasi atau teknologi terbaru. Setiap perubahan akan diberitahukan melalui situs web Kami.
+                    </p>
+                </div>
+            </div>
+
+        </div>
+
+        <!-- Section 9 - Full Width Contact -->
+        <div class="mt-8 bg-gray-900 rounded-3xl shadow-2xl overflow-hidden">
+            <div class="grid grid-cols-1 lg:grid-cols-5 h-full">
+                <div class="lg:col-span-2 bg-gradient-to-br from-blue-600 to-indigo-700 p-10 text-white flex flex-col justify-center">
+                    <h2 class="text-3xl font-bold mb-4">9. Hubungi Kami</h2>
+                    <p class="text-blue-100 text-lg opacity-90 mb-8">
+                        Jika Anda memiliki pertanyaan, keluhan, atau ingin melaksanakan hak Anda terkait pelindungan Data Pribadi, silakan hubungi tim Helpdesk kami.
+                    </p>
+                    <div class="mt-auto">
+                        <i class="fas fa-headset text-7xl opacity-20 transform translate-y-4 translate-x-4"></i>
+                    </div>
+                </div>
+                <div class="lg:col-span-3 p-10 sm:p-12 text-gray-300 flex flex-col justify-center">
+                    <ul class="space-y-6">
+                        <li class="flex items-start group">
+                            <div class="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mr-5 shrink-0 group-hover:bg-blue-600 transition-colors">
+                                <i class="fas fa-building text-xl"></i>
+                            </div>
+                            <div>
+                                <span class="block text-gray-500 text-sm font-semibold uppercase tracking-wider mb-1">Pengelola Data</span>
+                                <span class="text-white text-lg font-medium">PPID Kabupaten Sinjai / Dinas Komunikasi Informatika dan Persandian</span>
+                            </div>
+                        </li>
+                        <li class="flex items-start group">
+                            <div class="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mr-5 shrink-0 group-hover:bg-blue-600 transition-colors">
+                                <i class="fas fa-map-marker-alt text-xl"></i>
+                            </div>
+                            <div>
+                                <span class="block text-gray-500 text-sm font-semibold uppercase tracking-wider mb-1">Alamat Kantor</span>
+                                <span class="text-white font-medium">{{ $contactAddress }}</span>
+                            </div>
+                        </li>
+                        <div class="grid grid-cols-1 sm:grid-cols-2 gap-6 pt-2">
+                            <li class="flex items-start group">
+                                <div class="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mr-4 shrink-0 group-hover:bg-blue-600 transition-colors">
+                                    <i class="fas fa-envelope text-xl"></i>
+                                </div>
+                                <div>
+                                    <span class="block text-gray-500 text-sm font-semibold uppercase tracking-wider mb-1">Email</span>
+                                    <a href="mailto:{{ $contactEmail }}" class="text-white font-medium hover:text-blue-400 transition-colors">{{ $contactEmail }}</a>
+                                </div>
+                            </li>
+                            <li class="flex items-start group">
+                                <div class="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mr-4 shrink-0 group-hover:bg-blue-600 transition-colors">
+                                    <i class="fas fa-phone-alt text-xl"></i>
+                                </div>
+                                <div>
+                                    <span class="block text-gray-500 text-sm font-semibold uppercase tracking-wider mb-1">Telepon</span>
+                                    <a href="tel:0482-21432" class="text-white font-medium hover:text-blue-400 transition-colors">0482-21432</a>
+                                </div>
+                            </li>
+                        </div>
+                        <li class="flex items-start group pt-2 border-t border-gray-800 mt-4">
+                            <div class="w-12 h-12 bg-gray-800 rounded-full flex items-center justify-center mr-5 shrink-0 group-hover:bg-green-500 transition-colors">
+                                <i class="fab fa-whatsapp text-xl"></i>
+                            </div>
+                            <div>
+                                <span class="block text-gray-500 text-sm font-semibold uppercase tracking-wider mb-1">WhatsApp Helpdesk</span>
+                                <a href="https://wa.me/6285156878911" target="_blank" class="text-white text-xl font-bold hover:text-green-400 transition-colors flex items-center gap-2">
+                                    0851-5687-8911 <i class="fas fa-external-link-alt text-sm opacity-50"></i>
+                                </a>
+                            </div>
+                        </li>
+                    </ul>
                 </div>
             </div>
         </div>
+
     </div>
 </div>
 @endsection
