@@ -7,11 +7,16 @@
 <div class="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-600 pt-20 pb-24 overflow-hidden">
     <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
     <div class="container max-w-6xl mx-auto px-4 relative z-10 text-center">
+        <!-- Breadcrumbs -->
+        <div class="flex items-center justify-center space-x-3 text-blue-200 text-sm mb-6 font-medium">
+            <a href="{{ route('home') }}" class="hover:text-white transition-colors"><i class="fas fa-home"></i> Beranda</a>
+            <i class="fas fa-chevron-right text-xs opacity-50"></i>
+            <span class="text-white opacity-80">Transparansi</span>
+            <i class="fas fa-chevron-right text-xs opacity-50"></i>
+            <span class="text-white opacity-80">Informasi Pemkab</span>
+        </div>
+
         <div class="flex justify-between items-center mb-4">
-            <div class="w-full relative">
-                <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight drop-shadow-lg">
-                    Informasi Pemkab
-                </h1>
                 
                 @auth
                     @can('create', App\Models\Informasi::class)
@@ -42,7 +47,7 @@
         <!-- Kotak Filter Glassmorphism -->
         <div class="bg-white/90 backdrop-blur-md p-6 md:p-8 rounded-2xl shadow-xl border border-gray-100 mb-10 transition-all duration-300 hover:shadow-2xl">
             <form action="{{ route('frontend.informasi-pemkab.index') }}" method="GET" id="filterForm">
-                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+                <div class="grid grid-cols-1 md:grid-cols-5 gap-6 items-end">
                     
                     <!-- Filter Kategori -->
                     <div class="relative" style="z-index: 50;">
@@ -84,23 +89,36 @@
                         </select>
                     </div>
 
+                    <!-- Per Halaman -->
+                    <div class="relative">
+                        <label for="per_page" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-list-ol text-blue-500 mr-1"></i> Tampilkan
+                        </label>
+                        <select name="per_page" id="per_page" class="w-full custom-select2" onchange="this.form.submit()">
+                            <option value="10" {{ request('per_page', 10) == 10 ? 'selected' : '' }}>10 Baris</option>
+                            <option value="25" {{ request('per_page') == 25 ? 'selected' : '' }}>25 Baris</option>
+                            <option value="50" {{ request('per_page') == 50 ? 'selected' : '' }}>50 Baris</option>
+                            <option value="100" {{ request('per_page') == 100 ? 'selected' : '' }}>100 Baris</option>
+                        </select>
+                    </div>
+
                     <!-- Pencarian Teks -->
                     <div class="relative flex flex-col">
                         <label for="search" class="block text-sm font-semibold text-gray-700 mb-2">
-                            <i class="fas fa-search text-blue-500 mr-1"></i> Pencarian
+                            <i class="fas fa-search text-blue-500 mr-1"></i> Cari
                         </label>
                         <div class="flex items-center space-x-2">
                             <div class="relative flex-grow">
                                 <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
                                     <i class="fas fa-search text-gray-400"></i>
                                 </div>
-                                <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="Ketik judul..." 
+                                <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="Judul..." 
                                     class="w-full pl-10 pr-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all h-[44px] text-sm bg-gray-50 focus:bg-white">
                             </div>
-                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg rounded-xl h-[44px] px-5 transition-all flex items-center justify-center">
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg rounded-xl h-[44px] px-4 transition-all flex items-center justify-center">
                                 Cari
                             </button>
-                            <a href="{{ route('frontend.informasi-pemkab.index') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-600 shadow-sm rounded-xl h-[44px] px-4 transition-all flex items-center justify-center border border-gray-200" title="Reset Filter">
+                            <a href="{{ route('frontend.informasi-pemkab.index') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-600 shadow-sm rounded-xl h-[44px] px-3 transition-all flex items-center justify-center border border-gray-200" title="Reset Filter">
                                 <i class="fas fa-sync-alt"></i>
                             </a>
                         </div>
@@ -125,9 +143,9 @@
         <!-- Daftar Dokumen Grid/List -->
         <div class="bg-white/80 rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative min-h-[400px]" style="z-index: 10;">
             
-            <!-- Watermark Background -->
-            <div class="absolute inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden">
-                <img src="{{ asset('storage/logo/Lambang_Kabupaten_Sinjai.png') }}" alt="Watermark Sinjai" class="w-[40%] md:w-[25%] lg:w-[20%] object-contain opacity-[0.03] filter grayscale">
+            <!-- Watermark Background Dynamic -->
+            <div class="absolute inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden" style="opacity: 0.03;">
+                <div class="w-full h-full" style="background-image: url('{{ asset('storage/logo/Lambang_Kabupaten_Sinjai.png') }}'); background-repeat: repeat-y; background-position: center top; background-size: contain; min-height: 800px; filter: grayscale(100%);"></div>
             </div>
 
             <div class="overflow-x-auto relative z-10">
@@ -143,9 +161,9 @@
                     <tbody class="divide-y divide-gray-100/50">
                         @forelse ($informasi_pemkabs as $dokumen)
                             <tr class="hover:bg-blue-50/60 transition-colors group">
-                                <td class="py-4 px-6 whitespace-normal">
-                                    <div class="flex items-start">
-                                        <div class="flex-shrink-0 mt-1">
+                                <td class="py-4 px-6 whitespace-normal align-middle">
+                                    <div class="flex items-center">
+                                        <div class="flex-shrink-0">
                                             <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-100 to-indigo-50 flex items-center justify-center border border-blue-100 shadow-sm text-blue-600">
                                                 <i class="fas fa-file-pdf text-lg"></i>
                                             </div>
@@ -162,7 +180,7 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="py-4 px-6 whitespace-normal align-top">
+                                <td class="py-4 px-6 whitespace-normal align-middle">
                                     <span class="inline-block px-3 py-1 bg-white/80 text-gray-700 text-xs font-semibold rounded-lg border border-gray-200 mb-1 shadow-sm">
                                         {{ $dokumen->kategori }}
                                     </span>
@@ -171,15 +189,29 @@
                                         {{ $dokumen->jenis_dokumen }}
                                     </span>
                                 </td>
-                                <td class="py-4 px-6 text-center align-top">
+                                <td class="py-4 px-6 text-center align-middle">
                                     <span class="inline-block bg-white/80 px-3 py-1.5 rounded-lg text-sm font-bold text-gray-600 border border-gray-200 shadow-sm">
                                         {{ $dokumen->tahun }}
                                     </span>
                                 </td>
-                                <td class="py-4 px-6 text-center align-top">
-                                    <a href="{{ route('frontend.informasi-pemkab.show', $dokumen->id) }}" class="inline-flex items-center justify-center bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:shadow-lg py-2 px-4 rounded-xl text-sm font-bold transition-all duration-300 transform hover:-translate-y-1">
-                                        <i class="fas fa-eye mr-2"></i> Lihat Detail
-                                    </a>
+                                <td class="py-4 px-6 text-center align-middle">
+                                    <div class="flex flex-col space-y-2 items-center justify-center">
+                                        <a href="{{ route('frontend.informasi-pemkab.show', $dokumen->id) }}" class="inline-flex w-32 items-center justify-center bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:shadow-lg py-1.5 px-3 rounded-lg text-xs font-bold transition-all duration-300">
+                                            <i class="fas fa-eye mr-2"></i> Lihat Detail
+                                        </a>
+                                        
+                                        @if ($dokumen->file_path)
+                                            @if(str_starts_with($dokumen->file_path, 'http'))
+                                                <a href="{{ $dokumen->file_path }}" target="_blank" class="inline-flex w-32 items-center justify-center bg-white border border-green-500 text-green-600 hover:bg-green-500 hover:text-white hover:shadow-lg py-1.5 px-3 rounded-lg text-xs font-bold transition-all duration-300">
+                                                    <i class="fas fa-external-link-alt mr-2"></i> Buka Tautan
+                                                </a>
+                                            @else
+                                                <a href="{{ asset('storage/' . $dokumen->file_path) }}" target="_blank" class="inline-flex w-32 items-center justify-center bg-white border border-green-500 text-green-600 hover:bg-green-500 hover:text-white hover:shadow-lg py-1.5 px-3 rounded-lg text-xs font-bold transition-all duration-300">
+                                                    <i class="fas fa-cloud-download-alt mr-2"></i> Unduh File
+                                                </a>
+                                            @endif
+                                        @endif
+                                    </div>
                                 </td>
                             </tr>
                         @empty

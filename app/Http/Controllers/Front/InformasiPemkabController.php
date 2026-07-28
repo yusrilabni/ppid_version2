@@ -44,7 +44,9 @@ class InformasiPemkabController extends Controller
             }
         });
 
-        $informasi_pemkabs = $query->latest()->paginate(15);
+        // Pagination dinamis
+        $perPage = request('per_page', 10);
+        $informasi_pemkabs = $query->latest()->paginate($perPage);
         $kategori_jenis = InformasiPemkab::KATEGORI_JENIS_DOKUMEN;
 
         return view('frontend.informasi-pemkab.index', compact('informasi_pemkabs', 'kategori_jenis'));
