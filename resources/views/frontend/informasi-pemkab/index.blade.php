@@ -169,7 +169,7 @@
                                             </div>
                                         </div>
                                         <div class="ml-4">
-                                            <a href="{{ route('frontend.informasi-pemkab.show', $dokumen->id) }}" class="block text-base font-bold text-gray-800 hover:text-blue-700 transition-colors leading-tight">
+                                            <a href="{{ route('frontend.informasi-pemkab.show', $dokumen->slug ?? $dokumen->id) }}" class="block text-base font-bold text-gray-800 hover:text-blue-700 transition-colors leading-tight">
                                                 {{ $dokumen->judul }}
                                             </a>
                                             @if($dokumen->deskripsi)
@@ -196,20 +196,18 @@
                                 </td>
                                 <td class="py-4 px-6 text-center align-middle">
                                     <div class="flex flex-col space-y-2 items-center justify-center">
-                                        <a href="{{ route('frontend.informasi-pemkab.show', $dokumen->id) }}" class="inline-flex w-32 items-center justify-center bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:shadow-lg py-1.5 px-3 rounded-lg text-xs font-bold transition-all duration-300">
+                                        <a href="{{ route('frontend.informasi-pemkab.show', $dokumen->slug ?? $dokumen->id) }}" class="inline-flex w-32 items-center justify-center bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:shadow-lg py-1.5 px-3 rounded-lg text-xs font-bold transition-all duration-300">
                                             <i class="fas fa-eye mr-2"></i> Lihat Detail
                                         </a>
                                         
                                         @if ($dokumen->file_path)
-                                            @if(str_starts_with($dokumen->file_path, 'http'))
-                                                <a href="{{ $dokumen->file_path }}" target="_blank" class="inline-flex w-32 items-center justify-center bg-white border border-green-500 text-green-600 hover:bg-green-500 hover:text-white hover:shadow-lg py-1.5 px-3 rounded-lg text-xs font-bold transition-all duration-300">
+                                            <a href="{{ route('frontend.informasi-pemkab.download', $dokumen->slug ?? $dokumen->id) }}" target="_blank" class="inline-flex w-32 items-center justify-center bg-white border border-green-500 text-green-600 hover:bg-green-500 hover:text-white hover:shadow-lg py-1.5 px-3 rounded-lg text-xs font-bold transition-all duration-300">
+                                                @if(str_starts_with($dokumen->file_path, 'http'))
                                                     <i class="fas fa-external-link-alt mr-2"></i> Buka Tautan
-                                                </a>
-                                            @else
-                                                <a href="{{ asset('storage/' . $dokumen->file_path) }}" target="_blank" class="inline-flex w-32 items-center justify-center bg-white border border-green-500 text-green-600 hover:bg-green-500 hover:text-white hover:shadow-lg py-1.5 px-3 rounded-lg text-xs font-bold transition-all duration-300">
+                                                @else
                                                     <i class="fas fa-cloud-download-alt mr-2"></i> Unduh File
-                                                </a>
-                                            @endif
+                                                @endif
+                                            </a>
                                         @endif
                                     </div>
                                 </td>

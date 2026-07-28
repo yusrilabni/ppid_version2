@@ -46,20 +46,48 @@
             <div class="lg:col-span-2 space-y-6">
                 <!-- Deskripsi Card -->
                 <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                    @if($informasi_pemkab->deskripsi)
                     <div class="border-b border-gray-100 bg-gray-50/50 px-6 py-4">
                         <h2 class="text-xl font-bold text-gray-800 flex items-center">
                             <i class="fas fa-info-circle text-blue-500 mr-2"></i> Deskripsi Dokumen
                         </h2>
                     </div>
                     <div class="p-6 md:p-8">
-                        @if($informasi_pemkab->deskripsi)
-                            <div class="prose prose-blue max-w-none text-gray-700 leading-relaxed text-lg">
-                                <p>{{ $informasi_pemkab->deskripsi }}</p>
-                            </div>
+                        <div class="prose prose-blue max-w-none text-gray-700 leading-relaxed text-lg">
+                            <p>{{ $informasi_pemkab->deskripsi }}</p>
+                        </div>
+                    </div>
+                    @endif
+                </div>
+
+                <!-- Preview Dokumen Card -->
+                <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+                    <div class="border-b border-gray-100 bg-gray-50/50 px-6 py-4 flex justify-between items-center">
+                        <h2 class="text-xl font-bold text-gray-800 flex items-center">
+                            <i class="fas fa-eye text-blue-500 mr-2"></i> Pratinjau Dokumen
+                        </h2>
+                        <span class="text-xs bg-blue-100 text-blue-700 font-bold px-3 py-1 rounded-full">
+                            <i class="fas fa-chart-line mr-1"></i> {{ number_format($informasi_pemkab->views_count) }} Kali Dilihat
+                        </span>
+                    </div>
+                    <div class="p-0 h-[600px] w-full bg-gray-100">
+                        @if ($informasi_pemkab->file_path)
+                            @if(str_starts_with($informasi_pemkab->file_path, 'http'))
+                                <div class="w-full h-full flex flex-col items-center justify-center bg-gray-100 p-8 text-center">
+                                    <i class="fas fa-external-link-alt text-6xl text-gray-300 mb-4"></i>
+                                    <h3 class="text-xl font-bold text-gray-700 mb-2">Dokumen Berupa Tautan Eksternal</h3>
+                                    <p class="text-gray-500 mb-6">Tautan ini mengarah ke sumber eksternal dan tidak dapat dipratinjau langsung di sini.</p>
+                                    <a href="{{ route('frontend.informasi-pemkab.download', $informasi_pemkab->slug ?? $informasi_pemkab->id) }}" target="_blank" class="px-6 py-3 bg-blue-600 text-white font-bold rounded-lg shadow hover:bg-blue-700 transition">
+                                        Kunjungi Tautan <i class="fas fa-arrow-right ml-2"></i>
+                                    </a>
+                                </div>
+                            @else
+                                <iframe src="{{ asset('storage/' . $informasi_pemkab->file_path) }}#toolbar=0" class="w-full h-full border-0"></iframe>
+                            @endif
                         @else
-                            <div class="flex flex-col items-center justify-center py-8 text-gray-400">
-                                <i class="fas fa-align-left text-4xl mb-3 opacity-30"></i>
-                                <p class="text-sm font-medium">Tidak ada deskripsi untuk dokumen ini.</p>
+                            <div class="w-full h-full flex items-center justify-center text-gray-400 flex-col">
+                                <i class="fas fa-ban text-4xl mb-3"></i>
+                                <p>File tidak tersedia</p>
                             </div>
                         @endif
                     </div>
@@ -77,19 +105,14 @@
                             <p class="text-sm text-gray-600">Klik tombol di samping untuk melihat atau mengunduh dokumen secara lengkap.</p>
                         </div>
                         
-                        <div class="flex-shrink-0 w-full md:w-auto">
+                        <div class="flex-shrink-0 w-full md:w-auto text-center md:text-right">
                             @if ($informasi_pemkab->file_path)
-                                @if(str_starts_with($informasi_pemkab->file_path, 'http'))
-                                    <a href="{{ $informasi_pemkab->file_path }}" target="_blank" 
-                                       class="w-full md:w-auto flex items-center justify-center px-8 py-3.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 hover:shadow-blue-600/50 transition-all duration-300 transform hover:-translate-y-1">
-                                        <i class="fas fa-external-link-alt mr-2"></i> Buka Tautan Eksternal
-                                    </a>
-                                @else
-                                    <a href="{{ asset('storage/' . $informasi_pemkab->file_path) }}" target="_blank" 
-                                       class="w-full md:w-auto flex items-center justify-center px-8 py-3.5 bg-gradient-to-r from-green-500 to-emerald-600 text-white font-bold rounded-xl shadow-lg shadow-green-500/30 hover:shadow-green-600/50 transition-all duration-300 transform hover:-translate-y-1">
-                                        <i class="fas fa-cloud-download-alt mr-2 text-xl"></i> Unduh File Dokumen
-                                    </a>
-                                @endif
+                                <a href="{{ route('frontend.informasi-pemkab.download', $informasi_pemkab->slug ?? $informasi_pemkab->id) }}" target="_blank" 
+                                   class="w-full md:w-auto inline-flex items-center justify-center px-8 py-3.5 bg-gradient-to-r {{ str_starts_with($informasi_pemkab->file_path, 'http') ? 'from-blue-600 to-blue-700 shadow-blue-500/30 hover:shadow-blue-600/50' : 'from-green-500 to-emerald-600 shadow-green-500/30 hover:shadow-green-600/50' }} text-white font-bold rounded-xl shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                                    <i class="fas {{ str_starts_with($informasi_pemkab->file_path, 'http') ? 'fa-external-link-alt' : 'fa-cloud-download-alt' }} mr-2 text-xl"></i> 
+                                    {{ str_starts_with($informasi_pemkab->file_path, 'http') ? 'Buka Tautan Eksternal' : 'Unduh File Dokumen' }}
+                                </a>
+                                <p class="mt-3 text-xs text-gray-500 font-semibold"><i class="fas fa-download mr-1"></i> Telah diunduh/dibuka {{ number_format($informasi_pemkab->downloads_count) }} kali</p>
                             @else
                                 <span class="flex items-center justify-center px-6 py-3 bg-gray-200 text-gray-500 font-bold rounded-xl cursor-not-allowed">
                                     <i class="fas fa-ban mr-2"></i> File Tidak Tersedia
@@ -112,7 +135,7 @@
                     <div class="p-6">
                         <ul class="space-y-4">
                             <li class="flex flex-col">
-                                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Dinas / Instansi</span>
+                                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Di-upload oleh</span>
                                 <span class="text-sm font-bold text-gray-800 flex items-start">
                                     <i class="fas fa-building mt-1 mr-2 text-blue-500 opacity-80"></i> 
                                     {{ $informasi_pemkab->organization ? $informasi_pemkab->organization->name : 'Pemerintah Kabupaten' }}
@@ -131,9 +154,9 @@
                                 </span>
                             </li>
                             <li class="pt-4 border-t border-gray-100 flex flex-col">
-                                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Tanggal Rilis</span>
-                                <span class="text-sm font-semibold text-gray-700">
-                                    {{ $informasi_pemkab->published_at ? \Carbon\Carbon::parse($informasi_pemkab->published_at)->translatedFormat('d F Y') : \Carbon\Carbon::parse($informasi_pemkab->created_at)->translatedFormat('d F Y') }}
+                                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Tahun Dokumen</span>
+                                <span class="text-sm font-semibold text-gray-700 flex items-center">
+                                    <i class="fas fa-calendar mr-1.5 text-blue-400"></i> {{ $informasi_pemkab->tahun }}
                                 </span>
                             </li>
                         </ul>

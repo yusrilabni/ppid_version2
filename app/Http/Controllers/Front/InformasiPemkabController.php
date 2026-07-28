@@ -54,13 +54,47 @@ class InformasiPemkabController extends Controller
 
     public function show(InformasiPemkab $informasi_pemkab)
     {
-        // Pengecekan otorisasi
-        if ($informasi_pemkab->visibility === 'private' || $informasi_pemkab->status === 'draft' || ($informasi_pemkab->status === 'scheduled' && $informasi_pemkab->published_at > now())) {
-            if (!auth()->check()) {
-                abort(404, 'Dokumen tidak ditemukan atau belum dipublikasikan.');
-            }
+        // Pastikan dokumen published dan jika public bisa dilihat siapa saja, jika private harus login
+        if ($informasi_pemkab->status !== 'published' && $informasi_pemkab->status !== 'scheduled') {
+            abort(404);
         }
 
+        if ($informasi_pemkab->status === 'scheduled' && $informasi_pemkab->published_at > now()) {
+            abort(404);
+        }
+
+        if ($informasi_pemkab->visibility === 'private' && !auth()->check()) {
+            abort(403, 'Akses ditolak. Dokumen ini bersifat private dan hanya dapat dilihat oleh admin.');
+        }
+
+        // Increment view count
+        $informasi_pemkab->increment('views_count');
+
         return view('frontend.informasi-pemkab.show', compact('informasi_pemkab'));
+    }
+
+    public function download(InformasiPemkab $informasi_pemkab)
+    {
+        // Validasi akses sama dengan method show
+        if ($informasi_pemkab->status !== 'published' && $informasi_pemkab->status !== 'scheduled') {
+            abort(404);
+        }
+
+        if ($informasi_pemkab->status === 'scheduled' && $informasi_pemkab->published_at > now()) {
+            abort(404);
+        }
+
+        if ($informasi_pemkab->visibility === 'private' && !auth()->check()) {
+            abort(403, 'Akses ditolak. Dokumen ini bersifat private dan hanya dapat diunduh oleh admin.');
+        }
+
+        // Increment download count
+        $informasi_pemkab->increment('downloads_count');
+
+        if (str_starts_with($informasi_pemkab->file_path, 'http')) {
+            return redirect($informasi_pemkab->file_path);
+        }
+
+        return redirect(asset('storage/' . $informasi_pemkab->file_path));
     }
 }

@@ -8,6 +8,7 @@ class InformasiPemkab extends Model
 {
     protected $fillable = [
         'judul',
+        'slug',
         'kategori',
         'jenis_dokumen',
         'tahun',
@@ -18,8 +19,27 @@ class InformasiPemkab extends Model
         'published_at',
         'user_id',
         'unit_id',
-        'ip_address'
+        'ip_address',
+        'views_count',
+        'downloads_count'
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::creating(function ($model) {
+            if (empty($model->slug)) {
+                $model->slug = \Illuminate\Support\Str::slug($model->judul) . '-' . uniqid();
+            }
+        });
+
+        static::updating(function ($model) {
+            if ($model->isDirty('judul')) {
+                $model->slug = \Illuminate\Support\Str::slug($model->judul) . '-' . uniqid();
+            }
+        });
+    }
 
     public const KATEGORI_JENIS_DOKUMEN = [
         'Perencanaan' => ['RPJPD', 'RPJMD', 'RKPD', 'Renstra', 'Renja', 'RKA', 'KUA', 'PPAS'],
