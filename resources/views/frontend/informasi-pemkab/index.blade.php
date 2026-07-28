@@ -6,24 +6,24 @@
 <!-- Hero Section -->
 <div class="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-600 pt-20 pb-24 overflow-hidden">
     <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
-    <div class="container max-w-6xl mx-auto px-4 relative z-10 text-left">
+    <div class="container max-w-6xl mx-auto px-4 relative z-10 text-center">
         <!-- Breadcrumbs -->
-        <div class="flex items-center space-x-3 text-blue-200 text-sm mb-6 font-medium">
+        <div class="flex items-center justify-start space-x-3 text-blue-200 text-sm mb-6 font-medium w-full text-left">
             <a href="{{ route('home') }}" class="hover:text-white transition-colors"><i class="fas fa-home"></i> Beranda</a>
             <i class="fas fa-chevron-right text-xs opacity-50"></i>
-            <span class="text-white opacity-80">Transparansi</span>
+            <span class="text-white opacity-80"><i class="fas fa-layer-group mr-1"></i> Transparansi</span>
             <i class="fas fa-chevron-right text-xs opacity-50"></i>
-            <span class="text-white opacity-80">Informasi Pemkab</span>
+            <span class="text-white opacity-80"><i class="fas fa-file-pdf mr-1"></i> Informasi Pemkab</span>
         </div>
 
-        <div class="flex justify-between items-center mb-4">
+        <div class="flex justify-center items-center mb-4">
             <div class="w-full relative">
                 <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight drop-shadow-lg">
                     Informasi Pemkab
                 </h1>
             </div>
         </div>
-        <p class="text-blue-100 text-lg md:text-xl max-w-2xl font-light mt-4">
+        <p class="text-blue-100 text-lg md:text-xl max-w-2xl mx-auto font-light mt-4">
             Transparansi Dokumen Pemerintah Kabupaten yang dapat Anda akses, telusuri, dan unduh dengan mudah.
         </p>
     </div>
