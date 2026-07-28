@@ -183,10 +183,17 @@
                                 </td>
                                 <td class="py-4 px-6 text-center align-top">
                                     @if ($dokumen->file_path)
-                                        <a href="{{ asset('storage/' . $dokumen->file_path) }}" target="_blank" 
-                                           class="inline-flex items-center justify-center bg-white/90 border-2 border-green-500 text-green-600 hover:bg-green-500 hover:text-white hover:shadow-lg py-2 px-4 rounded-xl text-sm font-bold transition-all duration-300 transform hover:-translate-y-1">
-                                            <i class="fas fa-cloud-download-alt mr-2"></i> Unduh
-                                        </a>
+                                        @if(str_starts_with($dokumen->file_path, 'http'))
+                                            <a href="{{ $dokumen->file_path }}" target="_blank" 
+                                               class="inline-flex items-center justify-center bg-white/90 border-2 border-green-500 text-green-600 hover:bg-green-500 hover:text-white hover:shadow-lg py-2 px-4 rounded-xl text-sm font-bold transition-all duration-300 transform hover:-translate-y-1">
+                                                <i class="fas fa-external-link-alt mr-2"></i> Buka Link
+                                            </a>
+                                        @else
+                                            <a href="{{ asset('storage/' . $dokumen->file_path) }}" target="_blank" 
+                                               class="inline-flex items-center justify-center bg-white/90 border-2 border-green-500 text-green-600 hover:bg-green-500 hover:text-white hover:shadow-lg py-2 px-4 rounded-xl text-sm font-bold transition-all duration-300 transform hover:-translate-y-1">
+                                                <i class="fas fa-cloud-download-alt mr-2"></i> Unduh
+                                            </a>
+                                        @endif
                                     @else
                                         <span class="inline-flex items-center justify-center bg-gray-100/80 text-gray-400 py-2 px-4 rounded-xl text-sm font-medium">
                                             Tidak tersedia

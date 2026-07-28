@@ -64,9 +64,15 @@
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @if($dokumen->file_path)
-                                    <a href="{{ asset('storage/' . $dokumen->file_path) }}" target="_blank" class="text-blue-600 hover:text-blue-800 flex items-center">
-                                        <i class="fas fa-file-download mr-1"></i> Unduh
-                                    </a>
+                                    @if(str_starts_with($dokumen->file_path, 'http'))
+                                        <a href="{{ $dokumen->file_path }}" target="_blank" class="text-blue-600 hover:text-blue-800 flex items-center">
+                                            <i class="fas fa-external-link-alt mr-1"></i> Buka Link
+                                        </a>
+                                    @else
+                                        <a href="{{ asset('storage/' . $dokumen->file_path) }}" target="_blank" class="text-blue-600 hover:text-blue-800 flex items-center">
+                                            <i class="fas fa-file-download mr-1"></i> Unduh
+                                        </a>
+                                    @endif
                                 @else
                                     <span class="text-gray-400">-</span>
                                 @endif

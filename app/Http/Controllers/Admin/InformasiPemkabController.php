@@ -30,13 +30,17 @@ class InformasiPemkabController extends Controller
             'jenis_dokumen' => 'required|string',
             'tahun' => 'required|integer',
             'deskripsi' => 'nullable|string',
-            'file' => 'required|file|mimes:pdf,doc,docx,xls,xlsx,zip,rar|max:10240',
+            'upload_method' => 'required|in:file,link',
+            'file' => 'required_if:upload_method,file|file|mimes:pdf,doc,docx,xls,xlsx,zip,rar|max:10240',
+            'link' => 'required_if:upload_method,link|url|max:2048',
         ]);
 
-        $data = $request->except('file');
+        $data = $request->except(['file', 'link', 'upload_method']);
         
-        if ($request->hasFile('file')) {
+        if ($request->upload_method === 'file' && $request->hasFile('file')) {
             $data['file_path'] = $request->file('file')->store('informasi_pemkab', 'public');
+        } elseif ($request->upload_method === 'link' && $request->filled('link')) {
+            $data['file_path'] = $request->input('link');
         }
 
         $data['user_id'] = Auth::id();
@@ -65,16 +69,23 @@ class InformasiPemkabController extends Controller
             'jenis_dokumen' => 'required|string',
             'tahun' => 'required|integer',
             'deskripsi' => 'nullable|string',
+            'upload_method' => 'required|in:file,link',
             'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,zip,rar|max:10240',
+            'link' => 'nullable|url|max:2048',
         ]);
 
-        $data = $request->except('file');
+        $data = $request->except(['file', 'link', 'upload_method']);
         
-        if ($request->hasFile('file')) {
-            if ($informasi_pemkab->file_path) {
+        if ($request->upload_method === 'file' && $request->hasFile('file')) {
+            if ($informasi_pemkab->file_path && !str_starts_with($informasi_pemkab->file_path, 'http')) {
                 Storage::disk('public')->delete($informasi_pemkab->file_path);
             }
             $data['file_path'] = $request->file('file')->store('informasi_pemkab', 'public');
+        } elseif ($request->upload_method === 'link' && $request->filled('link')) {
+            if ($informasi_pemkab->file_path && !str_starts_with($informasi_pemkab->file_path, 'http')) {
+                Storage::disk('public')->delete($informasi_pemkab->file_path);
+            }
+            $data['file_path'] = $request->input('link');
         }
         
         $data['ip_address'] = $request->ip();

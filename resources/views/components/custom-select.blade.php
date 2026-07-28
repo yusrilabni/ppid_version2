@@ -31,6 +31,7 @@
 :class="open ? 'custom-select-open' : ''"
 :style="open ? 'z-index: 100 !important;' : ''" 
 @click.away="open = false"
+@update-options.window="if ($event.detail.target === '{{ $name }}') { updateData($event.detail.data) }"
 x-init="$watch('open', value => {
     // Elevate parent containers to avoid stacking context issues (e.g. from backdrop-blur or overflow-hidden)
     let p = $el.parentElement;
@@ -168,6 +169,13 @@ x-init="$watch('open', value => {
                         detail: { value: this.selectedValue, item: item },
                         bubbles: true
                     }));
+                },
+                updateData(newData) {
+                    this.allData = newData;
+                    // Reset selected if it's no longer in the new data
+                    if (!this.allData.find(item => String(item.value) === String(this.selectedValue))) {
+                        this.selectedValue = null;
+                    }
                 }
             }));
             Alpine.store('customSelectInitialized', true);

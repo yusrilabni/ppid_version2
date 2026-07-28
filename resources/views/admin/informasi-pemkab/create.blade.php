@@ -15,7 +15,7 @@
                 </div>
             </div>
 
-            <div class="p-6">
+            <div class="p-6" x-data="pemkabForm()">
                 <form action="{{ route('admin.informasi-pemkab.store') }}" method="POST" enctype="multipart/form-data">
                     @csrf
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -40,25 +40,38 @@
                         </div>
 
                         <!-- Kategori -->
-                        <div class="relative" style="z-index: 50;">
+                        @php
+                            $kategoriOptions = collect($kategori_jenis)->keys()->map(function($kat) {
+                                return ['value' => $kat, 'label' => $kat];
+                            })->toArray();
+                        @endphp
+                        <div class="relative z-50">
                             <label for="kategori" class="block text-gray-700 text-sm font-semibold mb-2">Kategori <span class="text-red-500">*</span></label>
-                            <select name="kategori" id="kategori" required class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 transition custom-select2">
-                                <option value="">-- Pilih Kategori --</option>
-                                @foreach($kategori_jenis as $kat => $jenis)
-                                    <option value="{{ $kat }}" {{ old('kategori') == $kat ? 'selected' : '' }}>{{ $kat }}</option>
-                                @endforeach
-                            </select>
+                            <x-custom-select 
+                                name="kategori" 
+                                :options="$kategoriOptions" 
+                                :value="old('kategori')"
+                                placeholder="Pilih Kategori"
+                                :searchable="false"
+                                required="true"
+                                @change="kategoriChanged($event.detail.value)"
+                            />
                             @error('kategori')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>
 
                         <!-- Jenis Dokumen -->
-                        <div class="relative" style="z-index: 49;">
+                        <div class="relative z-40">
                             <label for="jenis_dokumen" class="block text-gray-700 text-sm font-semibold mb-2">Jenis Dokumen <span class="text-red-500">*</span></label>
-                            <select name="jenis_dokumen" id="jenis_dokumen" required disabled class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 transition bg-gray-100 cursor-not-allowed custom-select2">
-                                <option value="">-- Pilih Kategori Terlebih Dahulu --</option>
-                            </select>
+                            <x-custom-select 
+                                name="jenis_dokumen" 
+                                :options="[]" 
+                                :value="old('jenis_dokumen')"
+                                placeholder="Pilih Jenis Dokumen"
+                                :searchable="false"
+                                required="true"
+                            />
                             @error('jenis_dokumen')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
@@ -74,20 +87,49 @@
                             @enderror
                         </div>
 
-                        <!-- File Upload -->
-                        <div>
-                            <label for="file" class="block text-gray-700 text-sm font-semibold mb-2">Upload File Dokumen <span class="text-red-500">*</span></label>
-                            <input type="file" name="file" id="file" required accept=".pdf,.doc,.docx,.xls,.xlsx,.zip,.rar"
-                                class="w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition duration-200">
-                            <p class="text-xs text-gray-500 mt-1">Format: PDF, Word, Excel, ZIP, RAR. Maks: 10MB</p>
-                            @error('file')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
+                        <!-- Tipe Upload & Input File/URL -->
+                        <div class="md:col-span-2 border border-gray-200 rounded-xl p-4 bg-gray-50/50">
+                            <label class="block text-gray-700 text-sm font-semibold mb-3">Pilih Metode Upload <span class="text-red-500">*</span></label>
+                            
+                            <div class="flex space-x-6 mb-4">
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="radio" name="upload_method" value="file" x-model="uploadMethod" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                    <span class="ml-2 text-sm text-gray-700">Upload File Lokal</span>
+                                </label>
+                                <label class="flex items-center cursor-pointer">
+                                    <input type="radio" name="upload_method" value="link" x-model="uploadMethod" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
+                                    <span class="ml-2 text-sm text-gray-700">Link Eksternal (Google Drive / Lainnya)</span>
+                                </label>
+                            </div>
+
+                            <!-- Input File Lokal -->
+                            <div x-show="uploadMethod === 'file'" x-cloak>
+                                <label for="file" class="block text-gray-700 text-sm font-semibold mb-2">Pilih File <span class="text-red-500">*</span></label>
+                                <input type="file" name="file" id="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.zip,.rar"
+                                    x-bind:required="uploadMethod === 'file'"
+                                    class="w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition duration-200">
+                                <p class="text-xs text-gray-500 mt-1">Format: PDF, Word, Excel, ZIP, RAR. Maks: 10MB</p>
+                                @error('file')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
+
+                            <!-- Input Link Eksternal -->
+                            <div x-show="uploadMethod === 'link'" x-cloak>
+                                <label for="link" class="block text-gray-700 text-sm font-semibold mb-2">URL Dokumen <span class="text-red-500">*</span></label>
+                                <input type="url" name="link" id="link" value="{{ old('link') }}" placeholder="https://drive.google.com/..."
+                                    x-bind:required="uploadMethod === 'link'"
+                                    class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">
+                                <p class="text-xs text-gray-500 mt-1">Pastikan link dapat diakses secara publik.</p>
+                                @error('link')
+                                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                                @enderror
+                            </div>
                         </div>
                     </div>
 
                     <div class="mt-8 pt-6 border-t border-gray-200 flex justify-end space-x-4">
-                        <a href="{{ route('frontend.informasi-pemkab.index') }}" class="px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition duration-200 flex items-center">
+                        <a href="{{ route('admin.informasi-pemkab.index') }}" class="px-6 py-3 bg-gray-100 text-gray-700 font-semibold rounded-lg hover:bg-gray-200 transition duration-200 flex items-center">
                             <i class="fas fa-times mr-2"></i> Batal
                         </a>
                         <button type="submit" class="px-6 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 shadow-md hover:shadow-lg transition duration-200 flex items-center">
@@ -100,61 +142,32 @@
     </div>
 </div>
 
-<!-- Select2 & Logic -->
-<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
-<style>
-    .select2-container .select2-selection--single {
-        height: 42px !important;
-        border: 1px solid #d1d5db !important;
-        border-radius: 0.5rem !important;
-        display: flex;
-        align-items: center;
-    }
-    .select2-container--default .select2-selection--single .select2-selection__arrow {
-        height: 40px !important;
-    }
-    .select2-container--default .select2-selection--single .select2-selection__rendered {
-        color: #374151 !important;
-    }
-</style>
-<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
-<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
-    const mapping = @json($kategori_jenis);
-    const oldJenis = "{{ old('jenis_dokumen') }}";
-    
-    $(document).ready(function() {
-        $('.custom-select2').select2({
-            width: '100%',
-            dropdownAutoWidth: true
-        });
-
-        $('#kategori').on('change', function() {
-            let kategori = $(this).val();
-            let $jenis = $('#jenis_dokumen');
+    document.addEventListener('alpine:init', () => {
+        Alpine.data('pemkabForm', () => ({
+            mapping: @json($kategori_jenis),
+            uploadMethod: '{{ old('upload_method', 'file') }}',
             
-            $jenis.empty();
+            init() {
+                // Initialize jenis options if old value exists
+                let initialKat = '{{ old('kategori') }}';
+                if (initialKat) {
+                    this.kategoriChanged(initialKat);
+                }
+            },
             
-            if (kategori && mapping[kategori]) {
-                $jenis.prop('disabled', false);
-                $jenis.removeClass('bg-gray-100 cursor-not-allowed');
-                $jenis.append('<option value="">-- Pilih Jenis Dokumen --</option>');
+            kategoriChanged(val) {
+                let opts = [];
+                if (val && this.mapping[val]) {
+                    opts = this.mapping[val].map(item => ({value: item, label: item}));
+                }
                 
-                mapping[kategori].forEach(function(item) {
-                    let selected = (oldJenis === item) ? 'selected' : '';
-                    $jenis.append(`<option value="${item}" ${selected}>${item}</option>`);
-                });
-            } else {
-                $jenis.prop('disabled', true);
-                $jenis.addClass('bg-gray-100 cursor-not-allowed');
-                $jenis.append('<option value="">-- Pilih Kategori Terlebih Dahulu --</option>');
+                // Dispatch event to update the jenis_dokumen custom-select component
+                window.dispatchEvent(new CustomEvent('update-options', {
+                    detail: { target: 'jenis_dokumen', data: opts }
+                }));
             }
-        });
-
-        // Trigger on load for old data validation
-        if ($('#kategori').val()) {
-            $('#kategori').trigger('change');
-        }
+        }));
     });
 </script>
 @endsection
