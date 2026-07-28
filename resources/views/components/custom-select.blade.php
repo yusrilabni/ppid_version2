@@ -52,11 +52,7 @@ x-init="$watch('open', value => {
     }
 })">
     
-    @if($required)
-        <input type="hidden" name="{{ $name }}" id="{{ $id ?? $name }}" x-model="selectedValue" required>
-    @else
-        <input type="hidden" name="{{ $name }}" id="{{ $id ?? $name }}" x-model="selectedValue">
-    @endif
+    <input type="hidden" name="{{ $name }}" id="{{ $id ?? $name }}" x-model="selectedValue">
 
     {{-- Trigger Button --}}
     <button type="button" 

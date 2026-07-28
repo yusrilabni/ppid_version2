@@ -101,6 +101,9 @@
                                     <span class="ml-2 text-sm text-gray-700">Link Eksternal (Google Drive / Lainnya)</span>
                                 </label>
                             </div>
+                            @error('upload_method')
+                                <p class="text-red-500 text-xs mt-1 mb-4">{{ $message }}</p>
+                            @enderror
 
                             <!-- Input File Lokal -->
                             <div x-show="uploadMethod === 'file'" x-cloak>
