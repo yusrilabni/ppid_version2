@@ -109,20 +109,26 @@
         @endif
 
         <!-- Daftar Dokumen Grid/List -->
-        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative" style="z-index: 10;">
-            <div class="overflow-x-auto">
-                <table class="min-w-full w-full whitespace-nowrap">
+        <div class="bg-white/80 rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative min-h-[400px]" style="z-index: 10;">
+            
+            <!-- Watermark Background -->
+            <div class="absolute inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden">
+                <img src="{{ asset('storage/logo/Lambang_Kabupaten_Sinjai.png') }}" alt="Watermark Sinjai" class="w-[80%] md:w-[50%] lg:w-[40%] object-contain opacity-[0.05] filter grayscale scale-110">
+            </div>
+
+            <div class="overflow-x-auto relative z-10">
+                <table class="min-w-full w-full whitespace-nowrap bg-transparent">
                     <thead>
-                        <tr class="bg-gray-50/80 border-b border-gray-200 text-left">
+                        <tr class="bg-gray-100/60 border-b border-gray-200 text-left backdrop-blur-sm">
                             <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase">Detail Dokumen</th>
                             <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-48">Kategori</th>
                             <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-32 text-center">Tahun</th>
                             <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-32 text-center">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100">
+                    <tbody class="divide-y divide-gray-100/50">
                         @forelse ($informasi_pemkabs as $dokumen)
-                            <tr class="hover:bg-blue-50/50 transition-colors group">
+                            <tr class="hover:bg-blue-50/60 transition-colors group">
                                 <td class="py-4 px-6 whitespace-normal">
                                     <div class="flex items-start">
                                         <div class="flex-shrink-0 mt-1">
@@ -148,27 +154,27 @@
                                     </div>
                                 </td>
                                 <td class="py-4 px-6 whitespace-normal align-top">
-                                    <span class="inline-block px-3 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded-lg border border-gray-200 mb-1">
+                                    <span class="inline-block px-3 py-1 bg-white/80 text-gray-700 text-xs font-semibold rounded-lg border border-gray-200 mb-1 shadow-sm">
                                         {{ $dokumen->kategori }}
                                     </span>
                                     <br>
-                                    <span class="inline-block px-3 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded-lg border border-blue-100 mt-1">
+                                    <span class="inline-block px-3 py-1 bg-blue-50/80 text-blue-700 text-xs font-semibold rounded-lg border border-blue-100 mt-1 shadow-sm">
                                         {{ $dokumen->jenis_dokumen }}
                                     </span>
                                 </td>
                                 <td class="py-4 px-6 text-center align-top">
-                                    <span class="inline-block bg-gray-50 px-3 py-1.5 rounded-lg text-sm font-bold text-gray-600 border border-gray-200">
+                                    <span class="inline-block bg-white/80 px-3 py-1.5 rounded-lg text-sm font-bold text-gray-600 border border-gray-200 shadow-sm">
                                         {{ $dokumen->tahun }}
                                     </span>
                                 </td>
                                 <td class="py-4 px-6 text-center align-top">
                                     @if ($dokumen->file_path)
                                         <a href="{{ asset('storage/' . $dokumen->file_path) }}" target="_blank" 
-                                           class="inline-flex items-center justify-center bg-white border-2 border-green-500 text-green-600 hover:bg-green-500 hover:text-white hover:shadow-lg py-2 px-4 rounded-xl text-sm font-bold transition-all duration-300 transform hover:-translate-y-1">
+                                           class="inline-flex items-center justify-center bg-white/90 border-2 border-green-500 text-green-600 hover:bg-green-500 hover:text-white hover:shadow-lg py-2 px-4 rounded-xl text-sm font-bold transition-all duration-300 transform hover:-translate-y-1">
                                             <i class="fas fa-cloud-download-alt mr-2"></i> Unduh
                                         </a>
                                     @else
-                                        <span class="inline-flex items-center justify-center bg-gray-100 text-gray-400 py-2 px-4 rounded-xl text-sm font-medium">
+                                        <span class="inline-flex items-center justify-center bg-gray-100/80 text-gray-400 py-2 px-4 rounded-xl text-sm font-medium">
                                             Tidak tersedia
                                         </span>
                                     @endif
@@ -176,13 +182,13 @@
                             </tr>
                         @empty
                             <tr>
-                                <td colspan="4" class="py-16 text-center">
-                                    <div class="flex flex-col items-center justify-center">
-                                        <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                                <td colspan="4" class="py-20 text-center">
+                                    <div class="flex flex-col items-center justify-center relative z-20">
+                                        <div class="w-24 h-24 bg-white/80 shadow-sm rounded-full flex items-center justify-center mb-4">
                                             <i class="fas fa-folder-open text-4xl text-gray-300"></i>
                                         </div>
                                         <h3 class="text-xl font-bold text-gray-700 mb-2">Belum Ada Dokumen</h3>
-                                        <p class="text-gray-500">Silakan sesuaikan filter pencarian Anda.</p>
+                                        <p class="text-gray-500 font-medium">Silakan sesuaikan filter pencarian Anda.</p>
                                     </div>
                                 </td>
                             </tr>
@@ -193,7 +199,7 @@
             
             <!-- Pagination -->
             @if($informasi_pemkabs->hasPages())
-            <div class="px-6 py-4 border-t border-gray-100 bg-gray-50">
+            <div class="relative z-10 px-6 py-4 border-t border-gray-100 bg-white/50 backdrop-blur-sm">
                 {{ $informasi_pemkabs->appends(request()->query())->links() }}
             </div>
             @endif
