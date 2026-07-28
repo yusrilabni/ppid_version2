@@ -6,9 +6,9 @@
 <!-- Hero Section -->
 <div class="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-600 pt-20 pb-24 overflow-hidden">
     <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
-    <div class="container max-w-6xl mx-auto px-4 relative z-10 text-center">
+    <div class="container max-w-6xl mx-auto px-4 relative z-10 text-left">
         <!-- Breadcrumbs -->
-        <div class="flex items-center justify-center space-x-3 text-blue-200 text-sm mb-6 font-medium">
+        <div class="flex items-center space-x-3 text-blue-200 text-sm mb-6 font-medium">
             <a href="{{ route('home') }}" class="hover:text-white transition-colors"><i class="fas fa-home"></i> Beranda</a>
             <i class="fas fa-chevron-right text-xs opacity-50"></i>
             <span class="text-white opacity-80">Transparansi</span>
@@ -21,19 +21,9 @@
                 <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight drop-shadow-lg">
                     Informasi Pemkab
                 </h1>
-                
-                @auth
-                    @can('create', App\Models\Informasi::class)
-                    <div class="absolute right-0 top-0">
-                        <a href="{{ route('admin.informasi-pemkab.create') }}" class="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white border border-white/40 font-semibold py-2.5 px-5 rounded-xl transition-all flex items-center shadow-lg hover:shadow-xl transform hover:-translate-y-1">
-                            <i class="fas fa-plus-circle mr-2 text-lg"></i> Tambah Dokumen
-                        </a>
-                    </div>
-                    @endcan
-                @endauth
             </div>
         </div>
-        <p class="text-blue-100 text-lg md:text-xl max-w-2xl mx-auto font-light mt-4">
+        <p class="text-blue-100 text-lg md:text-xl max-w-2xl font-light mt-4">
             Transparansi Dokumen Pemerintah Kabupaten yang dapat Anda akses, telusuri, dan unduh dengan mudah.
         </p>
     </div>
@@ -143,6 +133,18 @@
             <a href="{{ route('frontend.informasi-pemkab.index') }}" class="text-red-500 hover:text-red-700 text-xs font-medium ml-2 underline decoration-dashed underline-offset-4">Hapus Semua Filter</a>
         </div>
         @endif
+
+        <div class="flex justify-between items-end mb-4 relative z-10">
+            <h2 class="text-xl font-bold text-gray-800">Daftar Dokumen</h2>
+            
+            @auth
+                @can('create', App\Models\Informasi::class)
+                <a href="{{ route('admin.informasi-pemkab.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-5 rounded-xl transition-all flex items-center shadow shadow-blue-500/30 hover:shadow-lg transform hover:-translate-y-0.5">
+                    <i class="fas fa-plus mr-2"></i> Tambah Dokumen
+                </a>
+                @endcan
+            @endauth
+        </div>
 
         <!-- Daftar Dokumen Grid/List -->
         <div class="bg-white/80 rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative min-h-[400px]" style="z-index: 10;">
