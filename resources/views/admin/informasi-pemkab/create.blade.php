@@ -29,6 +29,16 @@
                             @enderror
                         </div>
 
+                        <!-- Deskripsi -->
+                        <div class="md:col-span-2">
+                            <label for="deskripsi" class="block text-gray-700 text-sm font-semibold mb-2">Deskripsi (Opsional)</label>
+                            <textarea name="deskripsi" id="deskripsi" rows="4" placeholder="Deskripsi singkat dokumen"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">{{ old('deskripsi') }}</textarea>
+                            @error('deskripsi')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
                         <!-- Kategori -->
                         <div class="relative" style="z-index: 50;">
                             <label for="kategori" class="block text-gray-700 text-sm font-semibold mb-2">Kategori <span class="text-red-500">*</span></label>
@@ -71,16 +81,6 @@
                                 class="w-full text-sm text-gray-500 file:mr-4 file:py-3 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 transition duration-200">
                             <p class="text-xs text-gray-500 mt-1">Format: PDF, Word, Excel, ZIP, RAR. Maks: 10MB</p>
                             @error('file')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Deskripsi -->
-                        <div class="md:col-span-2">
-                            <label for="deskripsi" class="block text-gray-700 text-sm font-semibold mb-2">Deskripsi (Opsional)</label>
-                            <textarea name="deskripsi" id="deskripsi" rows="4" placeholder="Deskripsi singkat dokumen"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200">{{ old('deskripsi') }}</textarea>
-                            @error('deskripsi')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>

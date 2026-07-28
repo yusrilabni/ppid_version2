@@ -30,6 +30,16 @@
                             @enderror
                         </div>
 
+                        <!-- Deskripsi -->
+                        <div class="md:col-span-2">
+                            <label for="deskripsi" class="block text-gray-700 text-sm font-semibold mb-2">Deskripsi (Opsional)</label>
+                            <textarea name="deskripsi" id="deskripsi" rows="4"
+                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition duration-200">{{ old('deskripsi', $informasi_pemkab->deskripsi) }}</textarea>
+                            @error('deskripsi')
+                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                            @enderror
+                        </div>
+
                         <!-- Kategori -->
                         <div class="relative" style="z-index: 50;">
                             <label for="kategori" class="block text-gray-700 text-sm font-semibold mb-2">Kategori <span class="text-red-500">*</span></label>
@@ -80,16 +90,6 @@
                                 </div>
                             @endif
                             @error('file')
-                                <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
-                            @enderror
-                        </div>
-
-                        <!-- Deskripsi -->
-                        <div class="md:col-span-2">
-                            <label for="deskripsi" class="block text-gray-700 text-sm font-semibold mb-2">Deskripsi (Opsional)</label>
-                            <textarea name="deskripsi" id="deskripsi" rows="4"
-                                class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-yellow-500 focus:border-yellow-500 transition duration-200">{{ old('deskripsi', $informasi_pemkab->deskripsi) }}</textarea>
-                            @error('deskripsi')
                                 <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                             @enderror
                         </div>

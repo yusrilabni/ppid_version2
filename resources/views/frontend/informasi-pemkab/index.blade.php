@@ -6,7 +6,7 @@
 <!-- Hero Section -->
 <div class="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-600 pt-20 pb-24 overflow-hidden">
     <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
-    <div class="container mx-auto px-4 relative z-10 text-center">
+    <div class="container max-w-6xl mx-auto px-4 relative z-10 text-center">
         <div class="flex justify-between items-center mb-4">
             <div class="w-full relative">
                 <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight drop-shadow-lg">
@@ -38,7 +38,7 @@
 </div>
 
 <div class="bg-gray-50 pb-16">
-    <div class="container mx-auto px-4 -mt-8 relative z-20">
+    <div class="container max-w-6xl mx-auto px-4 -mt-8 relative z-20">
         <!-- Kotak Filter Glassmorphism -->
         <div class="bg-white/90 backdrop-blur-md p-6 md:p-8 rounded-2xl shadow-xl border border-gray-100 mb-10 transition-all duration-300 hover:shadow-2xl">
             <form action="{{ route('frontend.informasi-pemkab.index') }}" method="GET" id="filterForm">
