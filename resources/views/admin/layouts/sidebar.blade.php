@@ -46,6 +46,10 @@
                     <i class="fas fa-info-circle w-4 mr-3"></i>
                     <span class="menu-text">Informasi</span>
                 </a>
+                <a href="{{ route('admin.informasi-pemkab.index') }}" class="flex items-center px-4 py-2 text-blue-200 hover:bg-blue-700 hover:bg-opacity-50 hover:text-white rounded-lg transition-colors duration-200 my-1 menu-item @if(request()->routeIs('admin.informasi-pemkab.*')) bg-blue-700 bg-opacity-75 @endif" title="Informasi Pemkab">
+                    <i class="fas fa-file-invoice w-4 mr-3"></i>
+                    <span class="menu-text">Informasi Pemkab</span>
+                </a>
                 @endcan
                 <a href="{{ route('admin.standar-layanan.index') }}" class="flex items-center px-4 py-2 text-blue-200 hover:bg-blue-700 hover:bg-opacity-50 hover:text-white rounded-lg transition-colors duration-200 my-1 menu-item @if(request()->routeIs('admin.standar-layanan.*')) bg-blue-700 bg-opacity-75 @endif" title="Standar Layanan">
                     <i class="fas fa-clipboard-list w-4 mr-3"></i>

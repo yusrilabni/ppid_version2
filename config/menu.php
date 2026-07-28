@@ -57,6 +57,7 @@ return [
             ['title' => 'Permohonan Informasi', 'url' => '/laporan/permohonan', 'icon' => 'file-signature'],
             ['title' => 'Survei', 'url' => '/laporan/survei', 'icon' => 'poll'],
             ['title' => 'Laporan PPID', 'url' => '/laporan/ppid', 'icon' => 'file-invoice'],
+            ['title' => 'Informasi Pemkab', 'url' => '/transparansi/informasi-pemkab', 'icon' => 'file-invoice'],
         ],
     ],
     ['title' => 'LHKPN', 'url' => '/lhkpn', 'icon' => 'file-invoice-dollar', 'children' => []],

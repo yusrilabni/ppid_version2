@@ -48,6 +48,9 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
          ->names('informasi-crud')
          ->parameters(['informasi-crud' => 'informasi']);
 
+    // Informasi Pemkab CRUD
+    Route::resource('informasi-pemkab', \App\Http\Controllers\Admin\InformasiPemkabController::class);
+
     // Resource Dasar
     Route::post('galeri/{galeri}/toggle-pin', [GaleriController::class, 'togglePin'])->name('galeri.toggle-pin');
     Route::resource('galeri', GaleriController::class);

@@ -99,6 +99,9 @@ Route::get('/informasi/detail/{slug}', [FrontendController::class, 'detailBySlug
 Route::get('/informasi/download/{id}', [FrontendController::class, 'download'])->name('frontend.informasi.download');
 Route::get('/informasi/visit-url/{id}', [FrontendController::class, 'visitUrl'])->name('frontend.informasi.visit-url');
 
+// Informasi Pemkab Route
+Route::get('/transparansi/informasi-pemkab', [\App\Http\Controllers\Front\InformasiPemkabController::class, 'index'])->name('frontend.informasi-pemkab.index');
+
 // Admin Resources
 Route::prefix('admin')->name('admin.')->group(function () {
     // Load all routes from admin.php (Middleware is handled inside that file)

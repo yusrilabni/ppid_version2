@@ -1,0 +1,159 @@
+@extends('admin.layouts.app')
+
+@section('title', 'Edit Informasi Pemkab')
+
+@section('content')
+<div class="bg-white rounded-xl shadow p-6">
+    <div class="mb-6">
+        <h2 class="text-xl font-bold text-gray-800">Edit Dokumen Informasi Pemkab</h2>
+        <p class="text-gray-600">Ubah formulir di bawah ini untuk memperbarui dokumen</p>
+    </div>
+
+    <form action="{{ route('admin.informasi-pemkab.update', $informasi_pemkab->id) }}" method="POST" enctype="multipart/form-data">
+        @csrf
+        @method('PUT')
+        <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+            <!-- Judul -->
+            <div class="md:col-span-2">
+                <label for="judul" class="block text-sm font-medium text-gray-700 mb-2">Judul Dokumen <span class="text-red-500">*</span></label>
+                <input type="text" name="judul" id="judul" value="{{ old('judul', $informasi_pemkab->judul) }}" required
+                    class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 transition">
+                @error('judul')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Kategori -->
+            <div class="relative" style="z-index: 50;">
+                <label for="kategori" class="block text-sm font-medium text-gray-700 mb-2">Kategori <span class="text-red-500">*</span></label>
+                <select name="kategori" id="kategori" required class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 transition custom-select2">
+                    <option value="">-- Pilih Kategori --</option>
+                    @foreach($kategori_jenis as $kat => $jenis)
+                        <option value="{{ $kat }}" {{ old('kategori', $informasi_pemkab->kategori) == $kat ? 'selected' : '' }}>{{ $kat }}</option>
+                    @endforeach
+                </select>
+                @error('kategori')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Jenis Dokumen -->
+            <div class="relative" style="z-index: 49;">
+                <label for="jenis_dokumen" class="block text-sm font-medium text-gray-700 mb-2">Jenis Dokumen <span class="text-red-500">*</span></label>
+                <select name="jenis_dokumen" id="jenis_dokumen" required disabled class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 transition bg-gray-100 cursor-not-allowed custom-select2">
+                    <option value="">-- Pilih Kategori Terlebih Dahulu --</option>
+                </select>
+                @error('jenis_dokumen')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Tahun -->
+            <div>
+                <label for="tahun" class="block text-sm font-medium text-gray-700 mb-2">Tahun Dokumen <span class="text-red-500">*</span></label>
+                <input type="number" name="tahun" id="tahun" value="{{ old('tahun', $informasi_pemkab->tahun) }}" required min="2000" max="2099"
+                    class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 transition">
+                @error('tahun')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- File Upload -->
+            <div>
+                <label for="file" class="block text-sm font-medium text-gray-700 mb-2">Upload File Dokumen (Biarkan kosong jika tidak ingin mengubah)</label>
+                <input type="file" name="file" id="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.zip,.rar"
+                    class="w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-lg file:border-0 file:text-sm file:font-semibold file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100">
+                <p class="text-xs text-gray-500 mt-1">Format: PDF, Word, Excel, ZIP, RAR. Maks: 10MB</p>
+                
+                @if($informasi_pemkab->file_path)
+                    <div class="mt-2 text-sm text-blue-600">
+                        <a href="{{ asset('storage/' . $informasi_pemkab->file_path) }}" target="_blank" class="hover:underline">
+                            <i class="fas fa-file-download mr-1"></i> File Saat Ini
+                        </a>
+                    </div>
+                @endif
+                @error('file')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+
+            <!-- Deskripsi -->
+            <div class="md:col-span-2">
+                <label for="deskripsi" class="block text-sm font-medium text-gray-700 mb-2">Deskripsi (Opsional)</label>
+                <textarea name="deskripsi" id="deskripsi" rows="4"
+                    class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 transition">{{ old('deskripsi', $informasi_pemkab->deskripsi) }}</textarea>
+                @error('deskripsi')
+                    <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
+                @enderror
+            </div>
+        </div>
+
+        <div class="mt-8 flex justify-end space-x-3">
+            <a href="{{ route('admin.informasi-pemkab.index') }}" class="bg-gray-100 text-gray-700 hover:bg-gray-200 px-6 py-2 rounded-lg font-medium transition">
+                Batal
+            </a>
+            <button type="submit" class="bg-blue-600 text-white hover:bg-blue-700 px-6 py-2 rounded-lg font-medium transition flex items-center">
+                <i class="fas fa-save mr-2"></i> Perbarui
+            </button>
+        </div>
+    </form>
+</div>
+
+<!-- Select2 & Logic -->
+<link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
+<style>
+    .select2-container .select2-selection--single {
+        height: 42px !important;
+        border: 1px solid #d1d5db !important;
+        border-radius: 0.5rem !important;
+        display: flex;
+        align-items: center;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__arrow {
+        height: 40px !important;
+    }
+    .select2-container--default .select2-selection--single .select2-selection__rendered {
+        color: #374151 !important;
+    }
+</style>
+<script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
+<script>
+    const mapping = @json($kategori_jenis);
+    const oldJenis = "{{ old('jenis_dokumen', $informasi_pemkab->jenis_dokumen) }}";
+    
+    $(document).ready(function() {
+        $('.custom-select2').select2({
+            width: '100%',
+            dropdownAutoWidth: true
+        });
+
+        $('#kategori').on('change', function() {
+            let kategori = $(this).val();
+            let $jenis = $('#jenis_dokumen');
+            
+            $jenis.empty();
+            
+            if (kategori && mapping[kategori]) {
+                $jenis.prop('disabled', false);
+                $jenis.removeClass('bg-gray-100 cursor-not-allowed');
+                $jenis.append('<option value="">-- Pilih Jenis Dokumen --</option>');
+                
+                mapping[kategori].forEach(function(item) {
+                    let selected = (oldJenis === item) ? 'selected' : '';
+                    $jenis.append(`<option value="${item}" ${selected}>${item}</option>`);
+                });
+            } else {
+                $jenis.prop('disabled', true);
+                $jenis.addClass('bg-gray-100 cursor-not-allowed');
+                $jenis.append('<option value="">-- Pilih Kategori Terlebih Dahulu --</option>');
+            }
+        });
+
+        // Trigger on load to set Jenis Dokumen
+        if ($('#kategori').val()) {
+            $('#kategori').trigger('change');
+        }
+    });
+</script>
+@endsection
