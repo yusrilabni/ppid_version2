@@ -63,16 +63,23 @@ class InformasiPemkabController extends Controller
         }
     }
 
-    public function edit($id)
+    public function edit(InformasiPemkab $informasi_pemkab)
     {
-        $informasi_pemkab = InformasiPemkab::findOrFail($id);
+        $user = auth()->user();
+        if (!$user->isAdmin() && $informasi_pemkab->organization_id != $user->unit_id) {
+            abort(403, 'Akses ditolak. Anda tidak berhak mengedit dokumen dinas lain.');
+        }
+
         $kategori_jenis = InformasiPemkab::KATEGORI_JENIS_DOKUMEN;
         return view('admin.informasi-pemkab.edit', compact('informasi_pemkab', 'kategori_jenis'));
     }
 
-    public function update(Request $request, $id)
+    public function update(Request $request, InformasiPemkab $informasi_pemkab)
     {
-        $informasi_pemkab = InformasiPemkab::findOrFail($id);
+        $user = auth()->user();
+        if (!$user->isAdmin() && $informasi_pemkab->organization_id != $user->unit_id) {
+            abort(403, 'Akses ditolak. Anda tidak berhak memperbarui dokumen dinas lain.');
+        }
 
         $request->validate([
             'judul' => 'required|string|max:255',
@@ -122,10 +129,14 @@ class InformasiPemkabController extends Controller
         }
     }
 
-    public function destroy($id)
+    public function destroy(InformasiPemkab $informasi_pemkab)
     {
-        $informasi_pemkab = InformasiPemkab::findOrFail($id);
-        if ($informasi_pemkab->file_path) {
+        $user = auth()->user();
+        if (!$user->isAdmin() && $informasi_pemkab->organization_id != $user->unit_id) {
+            abort(403, 'Akses ditolak. Anda tidak berhak menghapus dokumen dinas lain.');
+        }
+
+        if ($informasi_pemkab->file_path && !str_starts_with($informasi_pemkab->file_path, 'http')) {
             Storage::disk('public')->delete($informasi_pemkab->file_path);
         }
         $informasi_pemkab->delete();

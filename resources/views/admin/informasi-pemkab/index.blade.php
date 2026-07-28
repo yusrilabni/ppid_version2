@@ -78,18 +78,27 @@
                                 @endif
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
-                                <div class="flex space-x-3 items-center">
-                                    <a href="{{ route('admin.informasi-pemkab.edit', $dokumen->id) }}" class="text-blue-600 hover:text-blue-900 transition" title="Edit">
-                                        <i class="fas fa-edit"></i>
-                                    </a>
-                                    <form action="{{ route('admin.informasi-pemkab.destroy', $dokumen->id) }}" method="POST" class="inline-block">
-                                        @csrf
-                                        @method('DELETE')
-                                        <button type="submit" class="text-red-600 hover:text-red-900 transition" onclick="return confirm('Apakah Anda yakin ingin menghapus dokumen ini?')" title="Hapus">
-                                            <i class="fas fa-trash"></i>
-                                        </button>
-                                    </form>
-                                </div>
+                                @php
+                                    $user = auth()->user();
+                                    $canEdit = $user->isAdmin() || $dokumen->organization_id == $user->unit_id;
+                                @endphp
+                                
+                                @if($canEdit)
+                                    <div class="flex space-x-3 items-center">
+                                        <a href="{{ route('admin.informasi-pemkab.edit', $dokumen->id) }}" class="text-blue-600 hover:text-blue-900 transition" title="Edit">
+                                            <i class="fas fa-edit"></i>
+                                        </a>
+                                        <form action="{{ route('admin.informasi-pemkab.destroy', $dokumen->id) }}" method="POST" class="inline-block">
+                                            @csrf
+                                            @method('DELETE')
+                                            <button type="submit" class="text-red-600 hover:text-red-900 transition" onclick="return confirm('Apakah Anda yakin ingin menghapus dokumen ini?')" title="Hapus">
+                                                <i class="fas fa-trash"></i>
+                                            </button>
+                                        </form>
+                                    </div>
+                                @else
+                                    <span class="text-gray-400 italic text-xs">Akses Terbatas</span>
+                                @endif
                             </td>
                         </tr>
                     @empty
