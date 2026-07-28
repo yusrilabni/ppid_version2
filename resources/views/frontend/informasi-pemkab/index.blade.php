@@ -127,7 +127,7 @@
             
             <!-- Watermark Background -->
             <div class="absolute inset-0 z-0 flex items-center justify-center pointer-events-none overflow-hidden">
-                <img src="{{ asset('storage/logo/Lambang_Kabupaten_Sinjai.png') }}" alt="Watermark Sinjai" class="w-[80%] md:w-[50%] lg:w-[40%] object-contain opacity-[0.05] filter grayscale scale-110">
+                <img src="{{ asset('storage/logo/Lambang_Kabupaten_Sinjai.png') }}" alt="Watermark Sinjai" class="w-[40%] md:w-[25%] lg:w-[20%] object-contain opacity-[0.03] filter grayscale">
             </div>
 
             <div class="overflow-x-auto relative z-10">
@@ -151,17 +151,12 @@
                                             </div>
                                         </div>
                                         <div class="ml-4">
-                                            <h3 class="text-base font-bold text-gray-800 group-hover:text-blue-700 transition-colors leading-tight">
+                                            <a href="{{ route('frontend.informasi-pemkab.show', $dokumen->id) }}" class="block text-base font-bold text-gray-800 hover:text-blue-700 transition-colors leading-tight">
                                                 {{ $dokumen->judul }}
-                                            </h3>
+                                            </a>
                                             @if($dokumen->deskripsi)
                                                 <p class="text-sm text-gray-500 mt-1 line-clamp-1 group-hover:line-clamp-none transition-all duration-300">
                                                     {{ $dokumen->deskripsi }}
-                                                </p>
-                                            @endif
-                                            @if($dokumen->organization)
-                                                <p class="text-xs text-blue-600 font-semibold mt-1.5 flex items-center">
-                                                    <i class="fas fa-building mr-1.5 opacity-70"></i> {{ $dokumen->organization->name }}
                                                 </p>
                                             @endif
                                         </div>
@@ -182,23 +177,9 @@
                                     </span>
                                 </td>
                                 <td class="py-4 px-6 text-center align-top">
-                                    @if ($dokumen->file_path)
-                                        @if(str_starts_with($dokumen->file_path, 'http'))
-                                            <a href="{{ $dokumen->file_path }}" target="_blank" 
-                                               class="inline-flex items-center justify-center bg-white/90 border-2 border-green-500 text-green-600 hover:bg-green-500 hover:text-white hover:shadow-lg py-2 px-4 rounded-xl text-sm font-bold transition-all duration-300 transform hover:-translate-y-1">
-                                                <i class="fas fa-external-link-alt mr-2"></i> Buka Link
-                                            </a>
-                                        @else
-                                            <a href="{{ asset('storage/' . $dokumen->file_path) }}" target="_blank" 
-                                               class="inline-flex items-center justify-center bg-white/90 border-2 border-green-500 text-green-600 hover:bg-green-500 hover:text-white hover:shadow-lg py-2 px-4 rounded-xl text-sm font-bold transition-all duration-300 transform hover:-translate-y-1">
-                                                <i class="fas fa-cloud-download-alt mr-2"></i> Unduh
-                                            </a>
-                                        @endif
-                                    @else
-                                        <span class="inline-flex items-center justify-center bg-gray-100/80 text-gray-400 py-2 px-4 rounded-xl text-sm font-medium">
-                                            Tidak tersedia
-                                        </span>
-                                    @endif
+                                    <a href="{{ route('frontend.informasi-pemkab.show', $dokumen->id) }}" class="inline-flex items-center justify-center bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:shadow-lg py-2 px-4 rounded-xl text-sm font-bold transition-all duration-300 transform hover:-translate-y-1">
+                                        <i class="fas fa-eye mr-2"></i> Lihat Detail
+                                    </a>
                                 </td>
                             </tr>
                         @empty

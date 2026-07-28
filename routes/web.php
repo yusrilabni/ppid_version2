@@ -101,6 +101,7 @@ Route::get('/informasi/visit-url/{id}', [FrontendController::class, 'visitUrl'])
 
 // Informasi Pemkab Route
 Route::get('/transparansi/informasi-pemkab', [\App\Http\Controllers\Front\InformasiPemkabController::class, 'index'])->name('frontend.informasi-pemkab.index');
+Route::get('/transparansi/informasi-pemkab/{informasi_pemkab}', [\App\Http\Controllers\Front\InformasiPemkabController::class, 'show'])->name('frontend.informasi-pemkab.show');
 
 // Admin Resources
 Route::prefix('admin')->name('admin.')->group(function () {
