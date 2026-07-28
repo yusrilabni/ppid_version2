@@ -154,9 +154,9 @@
                 <div class="w-full h-full" style="background-image: url('{{ asset('storage/logo/Lambang_Kabupaten_Sinjai.png') }}'); background-repeat: repeat-y; background-position: center top; background-size: contain; min-height: 800px; filter: grayscale(100%);"></div>
             </div>
 
-            <div class="overflow-x-auto relative z-10">
-                <table class="min-w-full w-full whitespace-nowrap bg-transparent">
-                    <thead>
+            <div class="overflow-x-hidden md:overflow-x-auto relative z-10">
+                <table class="min-w-full w-full whitespace-nowrap md:whitespace-normal bg-transparent">
+                    <thead class="hidden md:table-header-group">
                         <tr class="bg-gray-100/60 border-b border-gray-200 text-left backdrop-blur-sm">
                             <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase">Detail Dokumen</th>
                             <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-48">Kategori</th>
@@ -164,10 +164,10 @@
                             <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-32 text-center">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-gray-100/50">
+                    <tbody class="divide-y divide-transparent md:divide-gray-100/50 block md:table-row-group bg-gray-50/30 md:bg-transparent p-3 md:p-0 space-y-4 md:space-y-0">
                         @forelse ($informasi_pemkabs as $dokumen)
-                            <tr class="transition-colors group {{ $dokumen->visibility === 'private' ? 'bg-orange-50/40 hover:bg-orange-100/60' : 'hover:bg-blue-50/60' }}">
-                                <td class="py-4 px-4 md:px-6 whitespace-normal align-middle">
+                            <tr class="block md:table-row bg-white md:bg-transparent rounded-2xl md:rounded-none shadow-sm md:shadow-none border {{ $dokumen->visibility === 'private' ? 'border-orange-200 md:border-none bg-orange-50/20 md:bg-orange-50/40 md:hover:bg-orange-100/60' : 'border-gray-100 md:border-none hover:bg-blue-50/60' }} p-4 md:p-0 transition-colors group">
+                                <td class="block md:table-cell py-2 md:py-4 px-1 md:px-6 whitespace-normal align-top md:align-middle">
                                     <div class="flex flex-col md:flex-row md:items-center gap-3 md:gap-0">
                                         <div class="flex-shrink-0">
                                             <div class="w-10 h-10 rounded-xl {{ $dokumen->visibility === 'private' ? 'bg-gradient-to-tr from-orange-100 to-amber-50 border-orange-200 text-orange-600' : 'bg-gradient-to-tr from-blue-100 to-indigo-50 border-blue-100 text-blue-600' }} flex items-center justify-center border shadow-sm">
@@ -191,22 +191,27 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="py-4 px-6 whitespace-normal align-middle">
-                                    <span class="inline-block px-3 py-1 bg-white/80 text-gray-700 text-xs font-semibold rounded-lg border border-gray-200 mb-1 shadow-sm">
-                                        {{ $dokumen->kategori }}
-                                    </span>
-                                    <br>
-                                    <span class="inline-block px-3 py-1 bg-blue-50/80 text-blue-700 text-xs font-semibold rounded-lg border border-blue-100 mt-1 shadow-sm">
-                                        {{ $dokumen->jenis_dokumen }}
-                                    </span>
+                                <td class="block md:table-cell py-2 md:py-4 px-1 md:px-6 whitespace-normal align-middle md:border-t-0 border-t border-gray-100/60 mt-3 pt-3 md:mt-0 md:pt-4">
+                                    <div class="flex flex-wrap gap-2 md:block">
+                                        <span class="inline-block px-3 py-1 bg-white/80 md:bg-white/80 text-gray-700 text-[11px] md:text-xs font-semibold rounded-lg border border-gray-200 shadow-sm md:mb-1">
+                                            {{ $dokumen->kategori }}
+                                        </span>
+                                        <span class="inline-block px-3 py-1 bg-blue-50/80 text-blue-700 text-[11px] md:text-xs font-semibold rounded-lg border border-blue-100 shadow-sm md:mt-1">
+                                            {{ $dokumen->jenis_dokumen }}
+                                        </span>
+                                        <!-- Tahun on mobile only -->
+                                        <span class="md:hidden inline-block px-3 py-1 bg-gray-100/80 text-gray-700 text-[11px] md:text-xs font-semibold rounded-lg border border-gray-200 shadow-sm">
+                                            <i class="fas fa-calendar mr-1"></i> {{ $dokumen->tahun }}
+                                        </span>
+                                    </div>
                                 </td>
-                                <td class="py-4 px-6 text-center align-middle">
+                                <td class="hidden md:table-cell py-4 px-6 text-center align-middle">
                                     <span class="inline-block bg-white/80 px-3 py-1.5 rounded-lg text-sm font-bold text-gray-600 border border-gray-200 shadow-sm">
                                         {{ $dokumen->tahun }}
                                     </span>
                                 </td>
-                                <td class="py-4 px-6 text-center align-middle w-48">
-                                    <div class="flex items-center justify-center space-x-2">
+                                <td class="block md:table-cell py-3 md:py-4 px-1 md:px-6 align-middle md:w-48 md:border-t-0 border-t border-gray-100/60 mt-3 pt-3 md:mt-0 md:pt-4">
+                                    <div class="flex items-center justify-start md:justify-center space-x-2">
                                         <!-- Lihat Detail -->
                                         <a href="{{ route('frontend.informasi-pemkab.show', $dokumen->slug ?? $dokumen->id) }}" class="inline-flex items-center justify-center w-9 h-9 bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:shadow-lg rounded-lg text-sm transition-all duration-300" title="Lihat Detail">
                                             <i class="fas fa-eye"></i>
@@ -238,8 +243,8 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr>
-                                <td colspan="4" class="py-20 text-center">
+                            <tr class="block md:table-row bg-white md:bg-transparent rounded-2xl md:rounded-none">
+                                <td colspan="4" class="block md:table-cell py-16 md:py-20 text-center">
                                     <div class="flex flex-col items-center justify-center relative z-20">
                                         <div class="w-24 h-24 bg-white/80 shadow-sm rounded-full flex items-center justify-center mb-4">
                                             <i class="fas fa-folder-open text-4xl text-gray-300"></i>
