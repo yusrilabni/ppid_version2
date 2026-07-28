@@ -12,7 +12,7 @@
 
     <div class="container max-w-5xl mx-auto px-4 relative z-10">
         <div class="mb-6">
-            <x-breadcrumbs :breadcrumbs="[['title' => 'Dashboard', 'url' => route('dashboard'), 'icon' => 'fas fa-tachometer-alt'],['title' => 'Informasi Pemkab', 'url' => route('admin.informasi-pemkab.index'), 'icon' => 'fas fa-file-alt'],['title' => 'Tambah Dokumen', 'url' => '#', 'icon' => 'fas fa-plus-circle'],]" />
+            <x-breadcrumbs :breadcrumbs="[['title' => 'Dashboard', 'url' => route('dashboard'), 'icon' => 'fas fa-tachometer-alt'],['title' => 'Informasi Pemkab', 'url' => route('admin.informasi-pemkab.index'), 'icon' => 'fas fa-file-alt'],['title' => 'Tambah Dokumen', 'url' => '#', 'icon' => 'fas fa-plus-circle'],]" theme="dark" />
         </div>
 
         @if(session('error'))
@@ -46,7 +46,7 @@
         </div>
         @endif
 
-        <div class="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/50">
+        <div class="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/50 relative z-10">
             <div class="bg-gradient-to-r from-blue-700 via-blue-800 to-blue-900 p-8 md:p-10 text-white relative overflow-hidden">
                 <!-- Dekorasi Header Card -->
                 <div class="absolute -right-10 -top-10 w-40 h-40 bg-white/10 rounded-full blur-3xl"></div>
@@ -141,17 +141,28 @@
                         </div>
 
                         <!-- Status & Jadwal -->
-                        <div class="md:col-span-2 border-2 border-dashed border-gray-200 rounded-2xl p-6 bg-gray-50/50 hover:bg-gray-50 transition-colors duration-300">
+                        <div class="md:col-span-2 border-2 border-dashed border-gray-200 rounded-2xl p-6 bg-gray-50/50 hover:bg-gray-50 transition-colors duration-300 relative z-30">
                             <label class="block text-gray-800 text-base font-bold mb-4">Pengaturan Penerbitan <span class="text-red-500">*</span></label>
                             
-                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                                <div>
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 relative z-30">
+                                @php
+                                    $statusOptions = [
+                                        ['value' => 'published', 'label' => 'Langsung Terbitkan (Published)'],
+                                        ['value' => 'draft', 'label' => 'Simpan Sebagai Draft'],
+                                        ['value' => 'scheduled', 'label' => 'Jadwalkan Penerbitan'],
+                                    ];
+                                @endphp
+                                <div class="relative z-30">
                                     <label class="block text-gray-700 text-sm font-bold mb-3">Status Dokumen</label>
-                                    <select name="status" id="status" x-model="statusDokumen" class="w-full px-5 py-4 bg-white border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-300 font-medium text-gray-800 shadow-sm">
-                                        <option value="published">Langsung Terbitkan (Published)</option>
-                                        <option value="draft">Simpan Sebagai Draft</option>
-                                        <option value="scheduled">Jadwalkan Penerbitan</option>
-                                    </select>
+                                    <x-custom-select 
+                                        name="status" 
+                                        :options="$statusOptions" 
+                                        :value="old('status', 'published')"
+                                        placeholder="Pilih Status"
+                                        :searchable="false"
+                                        @change="statusDokumen = $event.detail.value"
+                                        class="shadow-sm"
+                                    />
                                     @error('status')
                                         <p class="text-red-500 text-xs mt-2 font-medium"><i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}</p>
                                     @enderror
