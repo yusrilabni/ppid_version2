@@ -12,7 +12,7 @@
 
     <div class="container max-w-5xl mx-auto px-4 relative z-10">
         <div class="mb-6">
-            <x-breadcrumbs :breadcrumbs="[['title' => 'Beranda', 'url' => route('home'), 'icon' => 'fas fa-home'],['title' => 'Informasi Pemkab', 'url' => route('frontend.informasi-pemkab.index'), 'icon' => 'fas fa-file-alt'],['title' => 'Edit Dokumen', 'url' => '#', 'icon' => 'fas fa-edit'],]" />
+            <x-breadcrumbs :breadcrumbs="[['title' => 'Dashboard', 'url' => route('dashboard'), 'icon' => 'fas fa-tachometer-alt'],['title' => 'Informasi Pemkab', 'url' => route('admin.informasi-pemkab.index'), 'icon' => 'fas fa-file-alt'],['title' => 'Edit Dokumen', 'url' => '#', 'icon' => 'fas fa-edit'],]" />
         </div>
 
         @if(session('error'))
@@ -26,6 +26,22 @@
                 @if(str_contains(session('error'), 'SQLSTATE'))
                     <p class="mt-2 text-xs opacity-75 font-mono">Pastikan Anda sudah menjalankan perintah: php artisan migrate --force</p>
                 @endif
+            </div>
+        </div>
+        @endif
+
+        @if ($errors->any())
+        <div class="mb-6 bg-red-50/90 border border-red-200 text-red-700 px-6 py-4 rounded-2xl shadow-sm flex items-start backdrop-blur-sm relative z-20">
+            <div class="flex-shrink-0 mt-0.5">
+                <i class="fas fa-exclamation-triangle text-red-500 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <h3 class="text-sm font-bold text-red-800">Terdapat Kesalahan Pengisian Form:</h3>
+                <ul class="mt-2 list-disc list-inside text-sm">
+                    @foreach ($errors->all() as $error)
+                        <li>{{ $error }}</li>
+                    @endforeach
+                </ul>
             </div>
         </div>
         @endif
@@ -125,8 +141,51 @@
                             @enderror
                         </div>
 
-                        <!-- Spacer untuk Grid -->
-                        <div class="hidden md:block"></div>
+                        <!-- Status & Jadwal -->
+                        <div class="md:col-span-2 border-2 border-dashed border-gray-200 rounded-2xl p-6 bg-gray-50/50 hover:bg-gray-50 transition-colors duration-300">
+                            <label class="block text-gray-800 text-base font-bold mb-4">Pengaturan Penerbitan <span class="text-red-500">*</span></label>
+                            
+                            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                                <div>
+                                    <label class="block text-gray-700 text-sm font-bold mb-3">Status Dokumen</label>
+                                    <select name="status" id="status" x-model="statusDokumen" class="w-full px-5 py-4 bg-white border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all duration-300 font-medium text-gray-800 shadow-sm">
+                                        <option value="published">Langsung Terbitkan (Published)</option>
+                                        <option value="draft">Simpan Sebagai Draft</option>
+                                        <option value="scheduled">Jadwalkan Penerbitan</option>
+                                    </select>
+                                    @error('status')
+                                        <p class="text-red-500 text-xs mt-2 font-medium"><i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}</p>
+                                    @enderror
+                                </div>
+                                
+                                <div>
+                                    <label class="block text-gray-700 text-sm font-bold mb-3">Visibilitas</label>
+                                    <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
+                                        <label class="flex-1 flex items-center p-3 border border-gray-200 rounded-xl bg-white cursor-pointer hover:border-amber-300 transition-all">
+                                            <input type="radio" name="visibility" value="public" class="w-4 h-4 text-amber-600 border-gray-300 focus:ring-amber-500" {{ old('visibility', $informasi_pemkab->visibility) == 'public' ? 'checked' : '' }}>
+                                            <span class="ml-3 text-sm font-bold text-gray-800">Publik <span class="block font-normal text-xs text-gray-500">Dapat dilihat semua orang</span></span>
+                                        </label>
+                                        <label class="flex-1 flex items-center p-3 border border-gray-200 rounded-xl bg-white cursor-pointer hover:border-amber-300 transition-all">
+                                            <input type="radio" name="visibility" value="private" class="w-4 h-4 text-amber-600 border-gray-300 focus:ring-amber-500" {{ old('visibility', $informasi_pemkab->visibility) == 'private' ? 'checked' : '' }}>
+                                            <span class="ml-3 text-sm font-bold text-gray-800">Privat <span class="block font-normal text-xs text-gray-500">Hanya untuk internal</span></span>
+                                        </label>
+                                    </div>
+                                    @error('visibility')
+                                        <p class="text-red-500 text-xs mt-2 font-medium"><i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}</p>
+                                    @enderror
+                                </div>
+                            </div>
+                            
+                            <!-- Input Jadwal -->
+                            <div x-show="statusDokumen === 'scheduled'" x-collapse x-cloak class="mt-6 pt-6 border-t border-gray-200">
+                                <label for="published_at" class="block text-gray-700 text-sm font-bold mb-3">Pilih Tanggal & Waktu Rilis</label>
+                                <input type="datetime-local" name="published_at" id="published_at" value="{{ old('published_at', $informasi_pemkab->published_at ? date('Y-m-d\TH:i', strtotime($informasi_pemkab->published_at)) : '') }}"
+                                    class="w-full md:w-1/2 px-5 py-4 bg-white border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all duration-300 font-medium text-gray-800 shadow-sm">
+                                @error('published_at')
+                                    <p class="text-red-500 text-xs mt-2 font-medium"><i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}</p>
+                                @enderror
+                            </div>
+                        </div>
 
                         <!-- Tipe Upload & Input File/URL -->
                         @php
@@ -226,6 +285,7 @@
         Alpine.data('pemkabForm', () => ({
             mapping: @json($kategori_jenis),
             uploadMethod: '{{ old('upload_method', $isLink ? 'link' : 'file') }}',
+            statusDokumen: '{{ old('status', $informasi_pemkab->status ?? 'published') }}',
             
             init() {
                 // Initialize jenis options if old value exists

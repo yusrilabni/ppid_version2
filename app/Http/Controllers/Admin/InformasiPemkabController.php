@@ -33,6 +33,9 @@ class InformasiPemkabController extends Controller
             'upload_method' => 'required|in:file,link',
             'file' => 'required_if:upload_method,file|file|mimes:pdf,doc,docx,xls,xlsx,zip,rar|max:10240',
             'link' => 'required_if:upload_method,link|url|max:2048',
+            'status' => 'required|in:draft,published,scheduled',
+            'visibility' => 'required|in:public,private',
+            'published_at' => 'nullable|required_if:status,scheduled|date',
         ]);
 
         try {
@@ -80,6 +83,9 @@ class InformasiPemkabController extends Controller
             'upload_method' => 'required|in:file,link',
             'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,zip,rar|max:10240',
             'link' => 'nullable|url|max:2048',
+            'status' => 'required|in:draft,published,scheduled',
+            'visibility' => 'required|in:public,private',
+            'published_at' => 'nullable|required_if:status,scheduled|date',
         ]);
 
         try {

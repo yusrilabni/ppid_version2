@@ -13,6 +13,9 @@ class InformasiPemkab extends Model
         'tahun',
         'deskripsi',
         'file_path',
+        'status',
+        'visibility',
+        'published_at',
         'user_id',
         'unit_id',
         'ip_address'
