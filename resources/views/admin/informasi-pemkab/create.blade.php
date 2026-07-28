@@ -3,7 +3,7 @@
 @section('title', 'Tambah Informasi Pemkab')
 
 @section('content')
-<div class="relative min-h-screen bg-gray-50 pt-8 pb-16">
+<div class="relative min-h-screen bg-gray-50 pt-4 md:pt-6 pb-16">
     <!-- Dekorasi Background -->
     <div class="absolute inset-0 z-0 overflow-hidden pointer-events-none">
         <div class="absolute top-0 left-0 w-full h-80 bg-gradient-to-b from-blue-900 via-blue-800 to-transparent"></div>
