@@ -57,7 +57,7 @@ class InformasiPemkabController extends Controller
 
             InformasiPemkab::create($data);
 
-            return redirect()->route('admin.informasi-pemkab.index')->with('success', 'Dokumen berhasil ditambahkan');
+            return redirect()->route('frontend.informasi-pemkab.index')->with('success', 'Dokumen berhasil ditambahkan');
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
         }
@@ -116,7 +116,7 @@ class InformasiPemkabController extends Controller
 
             $informasi_pemkab->update($data);
 
-            return redirect()->route('admin.informasi-pemkab.index')->with('success', 'Dokumen berhasil diperbarui');
+            return redirect()->route('frontend.informasi-pemkab.index')->with('success', 'Dokumen berhasil diperbarui');
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
         }

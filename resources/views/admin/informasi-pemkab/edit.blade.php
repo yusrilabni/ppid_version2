@@ -12,7 +12,7 @@
 
     <div class="container max-w-5xl mx-auto px-4 relative z-10">
         <div class="mb-6">
-            <x-breadcrumbs :breadcrumbs="[['title' => 'Dashboard', 'url' => route('dashboard'), 'icon' => 'fas fa-tachometer-alt'],['title' => 'Informasi Pemkab', 'url' => route('admin.informasi-pemkab.index'), 'icon' => 'fas fa-file-alt'],['title' => 'Edit Dokumen', 'url' => '#', 'icon' => 'fas fa-edit'],]" theme="dark" />
+            <x-breadcrumbs :breadcrumbs="[['title' => 'Dashboard', 'url' => route('dashboard'), 'icon' => 'fas fa-tachometer-alt'],['title' => 'Informasi Pemkab', 'url' => route('frontend.informasi-pemkab.index'), 'icon' => 'fas fa-file-alt'],['title' => 'Edit Dokumen', 'url' => '#', 'icon' => 'fas fa-edit'],]" theme="dark" />
         </div>
 
         @if(session('error'))
@@ -279,12 +279,12 @@
                         </div>
                     </div>
 
-                    <div class="mt-10 pt-6 border-t border-gray-100 flex flex-col-reverse sm:flex-row justify-end sm:space-x-4">
-                        <a href="{{ route('admin.informasi-pemkab.index') }}" class="mt-3 sm:mt-0 px-8 py-3.5 bg-white text-gray-700 font-bold rounded-xl border-2 border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 flex items-center justify-center">
+                    <div class="mt-10 pt-6 border-t border-gray-100 flex flex-col-reverse sm:flex-row justify-end sm:space-x-4 relative z-10">
+                        <a href="{{ route('frontend.informasi-pemkab.index') }}" class="mt-3 sm:mt-0 px-8 py-3.5 bg-white text-gray-700 font-bold rounded-xl border-2 border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 flex items-center justify-center">
                             Batal
                         </a>
                         <button type="submit" class="px-8 py-3.5 bg-gradient-to-r from-amber-500 to-amber-600 text-white font-bold rounded-xl hover:from-amber-600 hover:to-amber-700 shadow-lg shadow-amber-500/30 hover:shadow-amber-600/40 transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center">
-                            <i class="fas fa-save mr-2"></i> Perbarui Dokumen
+                            <i class="fas fa-save mr-2"></i> Simpan Perubahan
                         </button>
                     </div>
                 </form>
