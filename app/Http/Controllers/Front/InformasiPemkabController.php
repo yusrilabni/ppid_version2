@@ -63,10 +63,6 @@ class InformasiPemkabController extends Controller
             abort(404);
         }
 
-        if ($informasi_pemkab->visibility === 'private' && !auth()->check()) {
-            abort(403, 'Akses ditolak. Dokumen ini bersifat private dan hanya dapat dilihat oleh admin.');
-        }
-
         // Increment view count
         $informasi_pemkab->increment('views_count');
 
@@ -82,10 +78,6 @@ class InformasiPemkabController extends Controller
 
         if ($informasi_pemkab->status === 'scheduled' && $informasi_pemkab->published_at > now()) {
             abort(404);
-        }
-
-        if ($informasi_pemkab->visibility === 'private' && !auth()->check()) {
-            abort(403, 'Akses ditolak. Dokumen ini bersifat private dan hanya dapat diunduh oleh admin.');
         }
 
         // Increment download count

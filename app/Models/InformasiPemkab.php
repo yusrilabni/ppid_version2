@@ -30,15 +30,29 @@ class InformasiPemkab extends Model
 
         static::creating(function ($model) {
             if (empty($model->slug)) {
-                $model->slug = \Illuminate\Support\Str::slug($model->judul) . '-' . uniqid();
+                $model->slug = static::generateUniqueSlug($model->judul);
             }
         });
 
         static::updating(function ($model) {
             if ($model->isDirty('judul')) {
-                $model->slug = \Illuminate\Support\Str::slug($model->judul) . '-' . uniqid();
+                $model->slug = static::generateUniqueSlug($model->judul, $model->id);
             }
         });
+    }
+
+    protected static function generateUniqueSlug($judul, $ignoreId = null)
+    {
+        $slug = \Illuminate\Support\Str::slug($judul);
+        $originalSlug = $slug;
+        $count = 1;
+
+        while (static::where('slug', $slug)->where('id', '!=', $ignoreId)->exists()) {
+            $slug = "{$originalSlug}-{$count}";
+            $count++;
+        }
+
+        return $slug;
     }
 
     public const KATEGORI_JENIS_DOKUMEN = [

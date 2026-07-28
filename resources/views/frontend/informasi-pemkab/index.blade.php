@@ -160,17 +160,22 @@
                     </thead>
                     <tbody class="divide-y divide-gray-100/50">
                         @forelse ($informasi_pemkabs as $dokumen)
-                            <tr class="hover:bg-blue-50/60 transition-colors group">
+                            <tr class="transition-colors group {{ $dokumen->visibility === 'private' ? 'bg-orange-50/40 hover:bg-orange-100/60' : 'hover:bg-blue-50/60' }}">
                                 <td class="py-4 px-6 whitespace-normal align-middle">
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0">
-                                            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-100 to-indigo-50 flex items-center justify-center border border-blue-100 shadow-sm text-blue-600">
+                                            <div class="w-10 h-10 rounded-xl {{ $dokumen->visibility === 'private' ? 'bg-gradient-to-tr from-orange-100 to-amber-50 border-orange-200 text-orange-600' : 'bg-gradient-to-tr from-blue-100 to-indigo-50 border-blue-100 text-blue-600' }} flex items-center justify-center border shadow-sm">
                                                 <i class="fas fa-file-pdf text-lg"></i>
                                             </div>
                                         </div>
                                         <div class="ml-4">
                                             <a href="{{ route('frontend.informasi-pemkab.show', $dokumen->slug ?? $dokumen->id) }}" class="block text-base font-bold text-gray-800 hover:text-blue-700 transition-colors leading-tight">
                                                 {{ $dokumen->judul }}
+                                                @if($dokumen->visibility === 'private')
+                                                    <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800 border border-orange-200" title="Hanya tampil bagi yang login atau memiliki link">
+                                                        <i class="fas fa-lock mr-1 text-[10px]"></i> Private
+                                                    </span>
+                                                @endif
                                             </a>
                                             @if($dokumen->deskripsi)
                                                 <p class="text-sm text-gray-500 mt-1 line-clamp-1 group-hover:line-clamp-none transition-all duration-300">
@@ -208,6 +213,21 @@
                                                     <i class="fas fa-cloud-download-alt mr-2"></i> Unduh File
                                                 @endif
                                             </a>
+                                        @endif
+
+                                        @if(auth()->check() && (auth()->user()->isAdmin() || $dokumen->organization_id == auth()->user()->unit_id))
+                                            <div class="flex w-32 space-x-2 pt-2 border-t border-gray-100">
+                                                <a href="{{ route('admin.informasi-pemkab.edit', $dokumen->id) }}" class="inline-flex flex-1 items-center justify-center bg-orange-50 border border-orange-200 text-orange-600 hover:bg-orange-600 hover:text-white hover:border-orange-600 hover:shadow-lg py-1.5 rounded-lg text-xs font-bold transition-all duration-300" title="Edit Dokumen">
+                                                    <i class="fas fa-edit"></i>
+                                                </a>
+                                                <form action="{{ route('admin.informasi-pemkab.destroy', $dokumen->id) }}" method="POST" class="inline-block flex-1">
+                                                    @csrf
+                                                    @method('DELETE')
+                                                    <button type="submit" class="w-full inline-flex items-center justify-center bg-red-50 border border-red-200 text-red-600 hover:bg-red-600 hover:text-white hover:border-red-600 hover:shadow-lg py-1.5 rounded-lg text-xs font-bold transition-all duration-300" onclick="return confirm('Apakah Anda yakin ingin menghapus dokumen ini?')" title="Hapus Dokumen">
+                                                        <i class="fas fa-trash"></i>
+                                                    </button>
+                                                </form>
+                                            </div>
                                         @endif
                                     </div>
                                 </td>

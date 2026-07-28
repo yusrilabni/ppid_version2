@@ -125,6 +125,11 @@
 
             <!-- Kolom Metadata Sidebar -->
             <div class="lg:col-span-1 space-y-6">
+                
+                <a href="{{ route('frontend.informasi-pemkab.index') }}" class="w-full flex items-center justify-center px-6 py-3.5 bg-white border-2 border-gray-200 text-gray-700 font-bold rounded-xl hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900 transition-all duration-300 shadow-sm">
+                    <i class="fas fa-arrow-left mr-2"></i> Kembali ke Daftar Dokumen
+                </a>
+
                 <!-- Detail Info Card -->
                 <div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
                     <div class="border-b border-gray-100 bg-gray-50/50 px-6 py-4">
@@ -163,9 +168,6 @@
                     </div>
                 </div>
 
-                <a href="{{ route('frontend.informasi-pemkab.index') }}" class="w-full flex items-center justify-center px-6 py-3.5 bg-white border-2 border-gray-200 text-gray-700 font-bold rounded-xl hover:bg-gray-50 hover:border-gray-300 hover:text-gray-900 transition-all duration-300">
-                    <i class="fas fa-arrow-left mr-2"></i> Kembali ke Daftar Dokumen
-                </a>
             </div>
 
         </div>
