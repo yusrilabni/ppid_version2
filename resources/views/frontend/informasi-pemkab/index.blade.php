@@ -8,12 +8,12 @@
     <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
     <div class="container max-w-6xl mx-auto px-4 relative z-10 text-center">
         <!-- Breadcrumbs -->
-        <div class="flex items-center justify-start space-x-3 text-blue-200 text-sm mb-6 font-medium w-full text-left">
-            <a href="{{ route('home') }}" class="hover:text-white transition-colors"><i class="fas fa-home"></i> Beranda</a>
-            <i class="fas fa-chevron-right text-xs opacity-50"></i>
-            <span class="text-white opacity-80"><i class="fas fa-layer-group mr-1"></i> Transparansi</span>
-            <i class="fas fa-chevron-right text-xs opacity-50"></i>
-            <span class="text-white opacity-80"><i class="fas fa-file-pdf mr-1"></i> Informasi Pemkab</span>
+        <div class="flex flex-wrap items-center justify-start gap-y-2 space-x-2 md:space-x-3 text-blue-200 text-xs md:text-sm mb-6 font-medium w-full text-left">
+            <a href="{{ route('home') }}" class="hover:text-white transition-colors flex items-center"><i class="fas fa-home mr-1"></i> Beranda</a>
+            <i class="fas fa-chevron-right text-[10px] opacity-50"></i>
+            <span class="text-white opacity-80 flex items-center"><i class="fas fa-layer-group mr-1"></i> Transparansi</span>
+            <i class="fas fa-chevron-right text-[10px] opacity-50"></i>
+            <span class="text-white opacity-80 flex items-center"><i class="fas fa-file-pdf mr-1"></i> Informasi Pemkab</span>
         </div>
 
         <div class="flex justify-center items-center mb-4">
@@ -134,12 +134,12 @@
         </div>
         @endif
 
-        <div class="flex justify-between items-end mb-4 relative z-10">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-end gap-4 mb-4 relative z-10">
             <h2 class="text-xl font-bold text-gray-800">Daftar Dokumen</h2>
             
             @auth
                 @can('create', App\Models\Informasi::class)
-                <a href="{{ route('admin.informasi-pemkab.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-5 rounded-xl transition-all flex items-center shadow shadow-blue-500/30 hover:shadow-lg transform hover:-translate-y-0.5">
+                <a href="{{ route('admin.informasi-pemkab.create') }}" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 px-4 rounded-xl transition-all flex items-center shadow shadow-blue-500/30 hover:shadow-lg transform hover:-translate-y-0.5 text-sm md:text-base w-full sm:w-auto justify-center">
                     <i class="fas fa-plus mr-2"></i> Tambah Dokumen
                 </a>
                 @endcan
@@ -167,18 +167,18 @@
                     <tbody class="divide-y divide-gray-100/50">
                         @forelse ($informasi_pemkabs as $dokumen)
                             <tr class="transition-colors group {{ $dokumen->visibility === 'private' ? 'bg-orange-50/40 hover:bg-orange-100/60' : 'hover:bg-blue-50/60' }}">
-                                <td class="py-4 px-6 whitespace-normal align-middle">
-                                    <div class="flex items-center">
+                                <td class="py-4 px-4 md:px-6 whitespace-normal align-middle">
+                                    <div class="flex flex-col md:flex-row md:items-center gap-3 md:gap-0">
                                         <div class="flex-shrink-0">
                                             <div class="w-10 h-10 rounded-xl {{ $dokumen->visibility === 'private' ? 'bg-gradient-to-tr from-orange-100 to-amber-50 border-orange-200 text-orange-600' : 'bg-gradient-to-tr from-blue-100 to-indigo-50 border-blue-100 text-blue-600' }} flex items-center justify-center border shadow-sm">
                                                 <i class="fas fa-file-pdf text-lg"></i>
                                             </div>
                                         </div>
-                                        <div class="ml-4">
+                                        <div class="md:ml-4 flex-grow">
                                             <a href="{{ route('frontend.informasi-pemkab.show', $dokumen->slug ?? $dokumen->id) }}" class="block text-base font-bold text-gray-800 hover:text-blue-700 transition-colors leading-tight">
                                                 {{ $dokumen->judul }}
                                                 @if($dokumen->visibility === 'private')
-                                                    <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800 border border-orange-200" title="Hanya tampil bagi yang login atau memiliki link">
+                                                    <span class="mt-1 md:mt-0 md:ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800 border border-orange-200" title="Hanya tampil bagi yang login atau memiliki link">
                                                         <i class="fas fa-lock mr-1 text-[10px]"></i> Private
                                                     </span>
                                                 @endif

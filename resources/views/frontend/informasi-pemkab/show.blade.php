@@ -7,14 +7,14 @@
 <div class="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-600 pt-20 pb-24 overflow-hidden">
     <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
     <div class="container max-w-5xl mx-auto px-4 relative z-10">
-        <div class="flex items-center justify-start space-x-3 text-blue-200 text-sm mb-6 font-medium w-full text-left">
-            <a href="{{ route('home') }}" class="hover:text-white transition-colors"><i class="fas fa-home"></i> Beranda</a>
-            <i class="fas fa-chevron-right text-xs opacity-50"></i>
-            <span class="text-white opacity-80"><i class="fas fa-layer-group mr-1"></i> Transparansi</span>
-            <i class="fas fa-chevron-right text-xs opacity-50"></i>
-            <a href="{{ route('frontend.informasi-pemkab.index') }}" class="hover:text-white transition-colors"><i class="fas fa-file-pdf mr-1"></i> Informasi Pemkab</a>
-            <i class="fas fa-chevron-right text-xs opacity-50"></i>
-            <span class="text-white opacity-90 truncate max-w-[200px] md:max-w-md"><i class="fas fa-eye mr-1"></i> {{ $informasi_pemkab->judul }}</span>
+        <div class="flex flex-wrap items-center justify-start gap-y-2 space-x-2 md:space-x-3 text-blue-200 text-xs md:text-sm mb-6 font-medium w-full text-left">
+            <a href="{{ route('home') }}" class="hover:text-white transition-colors flex items-center"><i class="fas fa-home mr-1"></i> Beranda</a>
+            <i class="fas fa-chevron-right text-[10px] opacity-50"></i>
+            <span class="text-white opacity-80 flex items-center"><i class="fas fa-layer-group mr-1"></i> Transparansi</span>
+            <i class="fas fa-chevron-right text-[10px] opacity-50"></i>
+            <a href="{{ route('frontend.informasi-pemkab.index') }}" class="hover:text-white transition-colors flex items-center"><i class="fas fa-file-pdf mr-1"></i> Informasi Pemkab</a>
+            <i class="fas fa-chevron-right text-[10px] opacity-50"></i>
+            <span class="text-white opacity-90 truncate max-w-[150px] sm:max-w-[200px] md:max-w-md flex items-center"><i class="fas fa-eye mr-1"></i> {{ $informasi_pemkab->judul }}</span>
         </div>
         
         <h1 class="text-3xl md:text-4xl lg:text-5xl font-extrabold text-white tracking-tight drop-shadow-lg leading-tight max-w-4xl">
