@@ -212,7 +212,7 @@
                                     <input type="radio" name="upload_method" value="file" x-model="uploadMethod" class="w-5 h-5 text-amber-600 border-gray-300 focus:ring-amber-500">
                                     <div class="ml-3">
                                         <span class="block text-sm font-bold text-gray-800">Upload File Lokal</span>
-                                        <span class="block text-xs text-gray-500 mt-0.5">PDF, Word, Excel, ZIP (Max 10MB)</span>
+                                        <span class="block text-xs text-gray-500 mt-0.5">PDF, Word, Excel, ZIP (Max 2MB)</span>
                                     </div>
                                 </label>
                                 <label class="flex items-center cursor-pointer p-4 border border-amber-100 rounded-xl bg-white shadow-sm hover:shadow-md hover:border-amber-300 transition-all">
