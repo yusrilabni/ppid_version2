@@ -199,35 +199,34 @@
                                         {{ $dokumen->tahun }}
                                     </span>
                                 </td>
-                                <td class="py-4 px-6 text-center align-middle">
-                                    <div class="flex flex-col space-y-2 items-center justify-center">
-                                        <a href="{{ route('frontend.informasi-pemkab.show', $dokumen->slug ?? $dokumen->id) }}" class="inline-flex w-32 items-center justify-center bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:shadow-lg py-1.5 px-3 rounded-lg text-xs font-bold transition-all duration-300">
-                                            <i class="fas fa-eye mr-2"></i> Lihat Detail
+                                <td class="py-4 px-6 text-center align-middle w-48">
+                                    <div class="flex items-center justify-center space-x-2">
+                                        <!-- Lihat Detail -->
+                                        <a href="{{ route('frontend.informasi-pemkab.show', $dokumen->slug ?? $dokumen->id) }}" class="inline-flex items-center justify-center w-9 h-9 bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:shadow-lg rounded-lg text-sm transition-all duration-300" title="Lihat Detail">
+                                            <i class="fas fa-eye"></i>
                                         </a>
                                         
+                                        <!-- Buka Link / Unduh -->
                                         @if ($dokumen->file_path)
-                                            <a href="{{ route('frontend.informasi-pemkab.download', $dokumen->slug ?? $dokumen->id) }}" target="_blank" class="inline-flex w-32 items-center justify-center bg-white border border-green-500 text-green-600 hover:bg-green-500 hover:text-white hover:shadow-lg py-1.5 px-3 rounded-lg text-xs font-bold transition-all duration-300">
-                                                @if(str_starts_with($dokumen->file_path, 'http'))
-                                                    <i class="fas fa-external-link-alt mr-2"></i> Buka Tautan
-                                                @else
-                                                    <i class="fas fa-cloud-download-alt mr-2"></i> Unduh File
-                                                @endif
+                                            <a href="{{ route('frontend.informasi-pemkab.download', $dokumen->slug ?? $dokumen->id) }}" target="_blank" class="inline-flex items-center justify-center w-9 h-9 bg-green-50 border border-green-200 text-green-600 hover:bg-green-600 hover:text-white hover:border-green-600 hover:shadow-lg rounded-lg text-sm transition-all duration-300" title="{{ str_starts_with($dokumen->file_path, 'http') ? 'Buka Tautan Eksternal' : 'Unduh Dokumen' }}">
+                                                <i class="fas {{ str_starts_with($dokumen->file_path, 'http') ? 'fa-external-link-alt' : 'fa-cloud-download-alt' }}"></i>
                                             </a>
                                         @endif
 
+                                        <!-- Edit dan Hapus (Auth) -->
                                         @if(auth()->check() && (auth()->user()->isAdmin() || $dokumen->organization_id == auth()->user()->unit_id))
-                                            <div class="flex w-32 space-x-2 pt-2 border-t border-gray-100">
-                                                <a href="{{ route('admin.informasi-pemkab.edit', $dokumen->id) }}" class="inline-flex flex-1 items-center justify-center bg-orange-50 border border-orange-200 text-orange-600 hover:bg-orange-600 hover:text-white hover:border-orange-600 hover:shadow-lg py-1.5 rounded-lg text-xs font-bold transition-all duration-300" title="Edit Dokumen">
-                                                    <i class="fas fa-edit"></i>
-                                                </a>
-                                                <form action="{{ route('admin.informasi-pemkab.destroy', $dokumen->id) }}" method="POST" class="inline-block flex-1">
-                                                    @csrf
-                                                    @method('DELETE')
-                                                    <button type="submit" class="w-full inline-flex items-center justify-center bg-red-50 border border-red-200 text-red-600 hover:bg-red-600 hover:text-white hover:border-red-600 hover:shadow-lg py-1.5 rounded-lg text-xs font-bold transition-all duration-300" onclick="return confirm('Apakah Anda yakin ingin menghapus dokumen ini?')" title="Hapus Dokumen">
-                                                        <i class="fas fa-trash"></i>
-                                                    </button>
-                                                </form>
-                                            </div>
+                                            <div class="h-6 w-px bg-gray-300 mx-1"></div>
+                                            
+                                            <a href="{{ route('admin.informasi-pemkab.edit', $dokumen->id) }}" class="inline-flex items-center justify-center w-9 h-9 bg-orange-50 border border-orange-200 text-orange-600 hover:bg-orange-600 hover:text-white hover:border-orange-600 hover:shadow-lg rounded-lg text-sm transition-all duration-300" title="Edit Dokumen">
+                                                <i class="fas fa-edit"></i>
+                                            </a>
+                                            <form action="{{ route('admin.informasi-pemkab.destroy', $dokumen->id) }}" method="POST" class="inline-block m-0 p-0">
+                                                @csrf
+                                                @method('DELETE')
+                                                <button type="submit" class="inline-flex items-center justify-center w-9 h-9 bg-red-50 border border-red-200 text-red-600 hover:bg-red-600 hover:text-white hover:border-red-600 hover:shadow-lg rounded-lg text-sm transition-all duration-300" onclick="return confirm('Apakah Anda yakin ingin menghapus dokumen ini?')" title="Hapus Dokumen">
+                                                    <i class="fas fa-trash"></i>
+                                                </button>
+                                            </form>
                                         @endif
                                     </div>
                                 </td>
