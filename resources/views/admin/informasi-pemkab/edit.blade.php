@@ -55,7 +55,7 @@
                         <!-- Judul -->
                         <div class="md:col-span-2">
                             <label for="judul" class="block text-gray-700 text-sm font-bold mb-3">Judul Dokumen <span class="text-red-500">*</span></label>
-                            <input type="text" name="judul" id="judul" value="{{ old('judul', $informasi_pemkab->judul) }}" required placeholder="Masukkan judul yang deskriptif..."
+                            <input type="text" name="judul" id="judul" value="{{ old('judul', $informasi_pemkab->judul) }}" placeholder="Masukkan judul yang deskriptif..."
                                 class="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all duration-300 font-medium text-gray-800 placeholder-gray-400 shadow-sm">
                             @error('judul')
                                 <p class="text-red-500 text-xs mt-2 font-medium"><i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}</p>
@@ -86,7 +86,6 @@
                                 :value="old('kategori', $informasi_pemkab->kategori)"
                                 placeholder="Pilih Kategori Dokumen"
                                 :searchable="false"
-                                required="true"
                                 @change="kategoriChanged($event.detail.value)"
                                 class="shadow-sm"
                             />
@@ -104,7 +103,6 @@
                                 :value="old('jenis_dokumen', $informasi_pemkab->jenis_dokumen)"
                                 placeholder="Pilih Jenis Dokumen"
                                 :searchable="false"
-                                required="true"
                                 class="shadow-sm"
                             />
                             @error('jenis_dokumen')
@@ -119,7 +117,7 @@
                                 <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
                                     <i class="far fa-calendar-alt text-gray-400"></i>
                                 </div>
-                                <input type="number" name="tahun" id="tahun" value="{{ old('tahun', $informasi_pemkab->tahun) }}" required min="2000" max="2099"
+                                <input type="number" name="tahun" id="tahun" value="{{ old('tahun', $informasi_pemkab->tahun) }}" min="2000" max="2099"
                                     class="w-full pl-12 pr-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all duration-300 font-bold text-gray-800 shadow-sm">
                             </div>
                             @error('tahun')
@@ -188,7 +186,6 @@
                                             <i class="fas fa-link text-gray-400"></i>
                                         </div>
                                         <input type="url" name="link" id="link" value="{{ old('link', $isLink ? $informasi_pemkab->file_path : '') }}" placeholder="https://drive.google.com/..."
-                                            x-bind:required="uploadMethod === 'link' && !('{{ $isLink }}' == '1')"
                                             class="w-full pl-11 pr-4 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all duration-300 font-medium text-gray-800 placeholder-gray-400">
                                     </div>
                                     <p class="text-xs text-amber-600 mt-2 font-medium"><i class="fas fa-info-circle mr-1"></i>Pastikan pengaturan privasi link adalah "Siapa saja yang memiliki link" (Public).</p>
