@@ -154,31 +154,32 @@
                 <div class="w-full h-full" style="background-image: url('{{ asset('storage/logo/Lambang_Kabupaten_Sinjai.png') }}'); background-repeat: repeat-y; background-position: center top; background-size: contain; min-height: 800px; filter: grayscale(100%);"></div>
             </div>
 
-            <div class="overflow-x-hidden md:overflow-x-auto relative z-10">
-                <table class="min-w-full w-full whitespace-nowrap md:whitespace-normal bg-transparent">
-                    <thead class="hidden md:table-header-group">
+            <!-- Desktop Table View -->
+            <div class="hidden md:block overflow-x-auto relative z-10">
+                <table class="min-w-full w-full whitespace-nowrap bg-transparent">
+                    <thead>
                         <tr class="bg-gray-100/60 border-b border-gray-200 text-left backdrop-blur-sm">
                             <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase">Detail Dokumen</th>
                             <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-48">Kategori</th>
                             <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-32 text-center">Tahun</th>
-                            <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-32 text-center">Aksi</th>
+                            <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-48 text-center">Aksi</th>
                         </tr>
                     </thead>
-                    <tbody class="divide-y divide-transparent md:divide-gray-100/50 block md:table-row-group bg-gray-50/30 md:bg-transparent p-3 md:p-0 space-y-4 md:space-y-0">
+                    <tbody class="divide-y divide-gray-100/50">
                         @forelse ($informasi_pemkabs as $dokumen)
-                            <tr class="block md:table-row bg-white md:bg-transparent rounded-2xl md:rounded-none shadow-sm md:shadow-none border {{ $dokumen->visibility === 'private' ? 'border-orange-200 md:border-none bg-orange-50/20 md:bg-orange-50/40 md:hover:bg-orange-100/60' : 'border-gray-100 md:border-none hover:bg-blue-50/60' }} p-4 md:p-0 transition-colors group">
-                                <td class="block md:table-cell py-2 md:py-4 px-1 md:px-6 whitespace-normal align-top md:align-middle">
-                                    <div class="flex flex-col md:flex-row md:items-center gap-3 md:gap-0">
+                            <tr class="transition-colors group {{ $dokumen->visibility === 'private' ? 'bg-orange-50/40 hover:bg-orange-100/60' : 'hover:bg-blue-50/60' }}">
+                                <td class="py-4 px-6 whitespace-normal align-middle">
+                                    <div class="flex items-center">
                                         <div class="flex-shrink-0">
                                             <div class="w-10 h-10 rounded-xl {{ $dokumen->visibility === 'private' ? 'bg-gradient-to-tr from-orange-100 to-amber-50 border-orange-200 text-orange-600' : 'bg-gradient-to-tr from-blue-100 to-indigo-50 border-blue-100 text-blue-600' }} flex items-center justify-center border shadow-sm">
                                                 <i class="fas fa-file-pdf text-lg"></i>
                                             </div>
                                         </div>
-                                        <div class="md:ml-4 flex-grow">
+                                        <div class="ml-4">
                                             <a href="{{ route('frontend.informasi-pemkab.show', $dokumen->slug ?? $dokumen->id) }}" class="block text-base font-bold text-gray-800 hover:text-blue-700 transition-colors leading-tight">
                                                 {{ $dokumen->judul }}
                                                 @if($dokumen->visibility === 'private')
-                                                    <span class="mt-1 md:mt-0 md:ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800 border border-orange-200" title="Hanya tampil bagi yang login atau memiliki link">
+                                                    <span class="ml-2 inline-flex items-center px-2 py-0.5 rounded text-xs font-medium bg-orange-100 text-orange-800 border border-orange-200" title="Hanya tampil bagi yang login atau memiliki link">
                                                         <i class="fas fa-lock mr-1 text-[10px]"></i> Private
                                                     </span>
                                                 @endif
@@ -191,50 +192,39 @@
                                         </div>
                                     </div>
                                 </td>
-                                <td class="block md:table-cell py-2 md:py-4 px-1 md:px-6 whitespace-normal align-middle md:border-t-0 border-t border-gray-100/60 mt-3 pt-3 md:mt-0 md:pt-4">
-                                    <div class="flex flex-wrap gap-2 md:block">
-                                        <span class="inline-block px-3 py-1 bg-white/80 md:bg-white/80 text-gray-700 text-[11px] md:text-xs font-semibold rounded-lg border border-gray-200 shadow-sm md:mb-1">
-                                            {{ $dokumen->kategori }}
-                                        </span>
-                                        <span class="inline-block px-3 py-1 bg-blue-50/80 text-blue-700 text-[11px] md:text-xs font-semibold rounded-lg border border-blue-100 shadow-sm md:mt-1">
-                                            {{ $dokumen->jenis_dokumen }}
-                                        </span>
-                                        <!-- Tahun on mobile only -->
-                                        <span class="md:hidden inline-block px-3 py-1 bg-gray-100/80 text-gray-700 text-[11px] md:text-xs font-semibold rounded-lg border border-gray-200 shadow-sm">
-                                            <i class="fas fa-calendar mr-1"></i> {{ $dokumen->tahun }}
-                                        </span>
-                                    </div>
+                                <td class="py-4 px-6 whitespace-normal align-middle">
+                                    <span class="inline-block px-3 py-1 bg-white/80 text-gray-700 text-xs font-semibold rounded-lg border border-gray-200 mb-1 shadow-sm">
+                                        {{ $dokumen->kategori }}
+                                    </span>
+                                    <br>
+                                    <span class="inline-block px-3 py-1 bg-blue-50/80 text-blue-700 text-xs font-semibold rounded-lg border border-blue-100 mt-1 shadow-sm">
+                                        {{ $dokumen->jenis_dokumen }}
+                                    </span>
                                 </td>
-                                <td class="hidden md:table-cell py-4 px-6 text-center align-middle">
+                                <td class="py-4 px-6 text-center align-middle">
                                     <span class="inline-block bg-white/80 px-3 py-1.5 rounded-lg text-sm font-bold text-gray-600 border border-gray-200 shadow-sm">
                                         {{ $dokumen->tahun }}
                                     </span>
                                 </td>
-                                <td class="block md:table-cell py-3 md:py-4 px-1 md:px-6 align-middle md:w-48 md:border-t-0 border-t border-gray-100/60 mt-3 pt-3 md:mt-0 md:pt-4">
-                                    <div class="flex items-center justify-start md:justify-center space-x-2">
-                                        <!-- Lihat Detail -->
-                                        <a href="{{ route('frontend.informasi-pemkab.show', $dokumen->slug ?? $dokumen->id) }}" class="inline-flex items-center justify-center w-9 h-9 bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-600 hover:text-white hover:border-blue-600 hover:shadow-lg rounded-lg text-sm transition-all duration-300" title="Lihat Detail">
+                                <td class="py-4 px-6 text-center align-middle w-48">
+                                    <div class="flex items-center justify-center space-x-2">
+                                        <a href="{{ route('frontend.informasi-pemkab.show', $dokumen->slug ?? $dokumen->id) }}" class="inline-flex items-center justify-center w-9 h-9 bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg text-sm transition-all duration-300" title="Lihat Detail">
                                             <i class="fas fa-eye"></i>
                                         </a>
-                                        
-                                        <!-- Buka Link / Unduh -->
                                         @if ($dokumen->file_path)
-                                            <a href="{{ route('frontend.informasi-pemkab.download', $dokumen->slug ?? $dokumen->id) }}" target="_blank" class="inline-flex items-center justify-center w-9 h-9 bg-green-50 border border-green-200 text-green-600 hover:bg-green-600 hover:text-white hover:border-green-600 hover:shadow-lg rounded-lg text-sm transition-all duration-300" title="{{ str_starts_with($dokumen->file_path, 'http') ? 'Buka Tautan Eksternal' : 'Unduh Dokumen' }}">
+                                            <a href="{{ route('frontend.informasi-pemkab.download', $dokumen->slug ?? $dokumen->id) }}" target="_blank" class="inline-flex items-center justify-center w-9 h-9 bg-green-50 border border-green-200 text-green-600 hover:bg-green-600 hover:text-white rounded-lg text-sm transition-all duration-300" title="{{ str_starts_with($dokumen->file_path, 'http') ? 'Buka Tautan Eksternal' : 'Unduh Dokumen' }}">
                                                 <i class="fas {{ str_starts_with($dokumen->file_path, 'http') ? 'fa-external-link-alt' : 'fa-cloud-download-alt' }}"></i>
                                             </a>
                                         @endif
-
-                                        <!-- Edit dan Hapus (Auth) -->
                                         @if(auth()->check() && (auth()->user()->isAdmin() || $dokumen->organization_id == auth()->user()->unit_id))
                                             <div class="h-6 w-px bg-gray-300 mx-1"></div>
-                                            
-                                            <a href="{{ route('admin.informasi-pemkab.edit', $dokumen->id) }}" class="inline-flex items-center justify-center w-9 h-9 bg-orange-50 border border-orange-200 text-orange-600 hover:bg-orange-600 hover:text-white hover:border-orange-600 hover:shadow-lg rounded-lg text-sm transition-all duration-300" title="Edit Dokumen">
+                                            <a href="{{ route('admin.informasi-pemkab.edit', $dokumen->id) }}" class="inline-flex items-center justify-center w-9 h-9 bg-orange-50 border border-orange-200 text-orange-600 hover:bg-orange-600 hover:text-white rounded-lg text-sm transition-all duration-300" title="Edit Dokumen">
                                                 <i class="fas fa-edit"></i>
                                             </a>
                                             <form action="{{ route('admin.informasi-pemkab.destroy', $dokumen->id) }}" method="POST" class="inline-block m-0 p-0">
                                                 @csrf
                                                 @method('DELETE')
-                                                <button type="submit" class="inline-flex items-center justify-center w-9 h-9 bg-red-50 border border-red-200 text-red-600 hover:bg-red-600 hover:text-white hover:border-red-600 hover:shadow-lg rounded-lg text-sm transition-all duration-300" onclick="return confirm('Apakah Anda yakin ingin menghapus dokumen ini?')" title="Hapus Dokumen">
+                                                <button type="submit" class="inline-flex items-center justify-center w-9 h-9 bg-red-50 border border-red-200 text-red-600 hover:bg-red-600 hover:text-white rounded-lg text-sm transition-all duration-300" onclick="return confirm('Apakah Anda yakin ingin menghapus dokumen ini?')" title="Hapus Dokumen">
                                                     <i class="fas fa-trash"></i>
                                                 </button>
                                             </form>
@@ -243,8 +233,8 @@
                                 </td>
                             </tr>
                         @empty
-                            <tr class="block md:table-row bg-white md:bg-transparent rounded-2xl md:rounded-none">
-                                <td colspan="4" class="block md:table-cell py-16 md:py-20 text-center">
+                            <tr>
+                                <td colspan="4" class="py-20 text-center">
                                     <div class="flex flex-col items-center justify-center relative z-20">
                                         <div class="w-24 h-24 bg-white/80 shadow-sm rounded-full flex items-center justify-center mb-4">
                                             <i class="fas fa-folder-open text-4xl text-gray-300"></i>
@@ -257,6 +247,82 @@
                         @endforelse
                     </tbody>
                 </table>
+            </div>
+
+            <!-- Mobile Card View -->
+            <div class="block md:hidden relative z-10 p-3 sm:p-4 space-y-4 bg-gray-50/50">
+                @forelse ($informasi_pemkabs as $dokumen)
+                    <div class="bg-white rounded-2xl shadow-sm border {{ $dokumen->visibility === 'private' ? 'border-orange-200 bg-orange-50/30' : 'border-gray-100' }} p-4 relative flex flex-col">
+                        <!-- Header Card -->
+                        <div class="flex items-start">
+                            <div class="w-10 h-10 flex-shrink-0 rounded-xl {{ $dokumen->visibility === 'private' ? 'bg-gradient-to-tr from-orange-100 to-amber-50 text-orange-600 border-orange-200' : 'bg-gradient-to-tr from-blue-100 to-indigo-50 text-blue-600 border-blue-100' }} flex items-center justify-center border shadow-sm mt-0.5">
+                                <i class="fas fa-file-pdf text-lg"></i>
+                            </div>
+                            <div class="ml-3 flex-grow min-w-0">
+                                <a href="{{ route('frontend.informasi-pemkab.show', $dokumen->slug ?? $dokumen->id) }}" class="block text-sm sm:text-base font-bold text-gray-800 hover:text-blue-700 leading-snug">
+                                    {{ $dokumen->judul }}
+                                </a>
+                                @if($dokumen->visibility === 'private')
+                                    <span class="mt-1.5 inline-flex items-center px-2 py-0.5 rounded text-[10px] font-medium bg-orange-100 text-orange-800 border border-orange-200">
+                                        <i class="fas fa-lock mr-1"></i> Private
+                                    </span>
+                                @endif
+                                @if($dokumen->deskripsi)
+                                    <p class="text-xs text-gray-500 mt-1.5 line-clamp-2 leading-relaxed">
+                                        {{ $dokumen->deskripsi }}
+                                    </p>
+                                @endif
+                            </div>
+                        </div>
+
+                        <!-- Tags / Badges -->
+                        <div class="mt-4 pt-3 border-t border-gray-100 flex flex-wrap gap-1.5">
+                            <span class="px-2 py-1 bg-gray-100 text-gray-700 text-[10px] sm:text-xs font-semibold rounded-md border border-gray-200">
+                                {{ $dokumen->kategori }}
+                            </span>
+                            <span class="px-2 py-1 bg-blue-50 text-blue-700 text-[10px] sm:text-xs font-semibold rounded-md border border-blue-100">
+                                {{ $dokumen->jenis_dokumen }}
+                            </span>
+                            <span class="px-2 py-1 bg-gray-50 text-gray-600 text-[10px] sm:text-xs font-semibold rounded-md border border-gray-200">
+                                <i class="fas fa-calendar mr-1 text-gray-400"></i> {{ $dokumen->tahun }}
+                            </span>
+                        </div>
+
+                        <!-- Actions Row -->
+                        <div class="mt-3 pt-3 border-t border-gray-100 flex justify-end space-x-2">
+                            @if ($dokumen->file_path)
+                                <a href="{{ route('frontend.informasi-pemkab.download', $dokumen->slug ?? $dokumen->id) }}" target="_blank" class="inline-flex flex-1 sm:flex-none items-center justify-center h-9 px-3 bg-green-50 border border-green-200 text-green-600 hover:bg-green-600 hover:text-white rounded-lg text-xs font-bold transition-colors" title="Unduh">
+                                    <i class="fas {{ str_starts_with($dokumen->file_path, 'http') ? 'fa-external-link-alt' : 'fa-cloud-download-alt' }} sm:mr-1.5"></i> <span class="hidden sm:inline">Unduh</span>
+                                </a>
+                            @endif
+                            <a href="{{ route('frontend.informasi-pemkab.show', $dokumen->slug ?? $dokumen->id) }}" class="inline-flex flex-1 sm:flex-none items-center justify-center h-9 px-3 bg-blue-50 border border-blue-200 text-blue-600 hover:bg-blue-600 hover:text-white rounded-lg text-xs font-bold transition-colors" title="Detail">
+                                <i class="fas fa-eye sm:mr-1.5"></i> <span class="hidden sm:inline">Detail</span>
+                            </a>
+                            
+                            @if(auth()->check() && (auth()->user()->isAdmin() || $dokumen->organization_id == auth()->user()->unit_id))
+                                <div class="h-9 w-px bg-gray-200 mx-1"></div>
+                                <a href="{{ route('admin.informasi-pemkab.edit', $dokumen->id) }}" class="inline-flex flex-1 sm:flex-none items-center justify-center w-9 h-9 bg-orange-50 border border-orange-200 text-orange-600 hover:bg-orange-600 hover:text-white rounded-lg text-xs transition-colors" title="Edit">
+                                    <i class="fas fa-edit"></i>
+                                </a>
+                                <form action="{{ route('admin.informasi-pemkab.destroy', $dokumen->id) }}" method="POST" class="inline-block flex-1 sm:flex-none m-0 p-0">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button type="submit" class="inline-flex w-full sm:w-9 items-center justify-center h-9 bg-red-50 border border-red-200 text-red-600 hover:bg-red-600 hover:text-white rounded-lg text-xs transition-colors" onclick="return confirm('Apakah Anda yakin ingin menghapus dokumen ini?')">
+                                        <i class="fas fa-trash"></i>
+                                    </button>
+                                </form>
+                            @endif
+                        </div>
+                    </div>
+                @empty
+                    <div class="py-12 text-center bg-white rounded-2xl shadow-sm border border-gray-100">
+                        <div class="w-20 h-20 bg-gray-50 rounded-full flex items-center justify-center mx-auto mb-4 border border-gray-100">
+                            <i class="fas fa-folder-open text-3xl text-gray-300"></i>
+                        </div>
+                        <h3 class="text-lg font-bold text-gray-700 mb-1">Belum Ada Dokumen</h3>
+                        <p class="text-sm text-gray-500 font-medium px-4">Silakan sesuaikan filter pencarian Anda.</p>
+                    </div>
+                @endforelse
             </div>
             
             <!-- Pagination -->
