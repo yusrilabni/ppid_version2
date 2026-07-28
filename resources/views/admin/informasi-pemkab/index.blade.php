@@ -43,8 +43,13 @@
                             <td class="px-6 py-4">
                                 <div class="text-sm font-medium text-gray-900">{{ $dokumen->judul }}</div>
                                 @if($dokumen->organization)
-                                    <div class="text-xs text-gray-500">OPD: {{ $dokumen->organization->name }}</div>
+                                    <div class="text-xs text-gray-500 mt-1">
+                                        <i class="fas fa-building mr-1"></i> {{ $dokumen->organization->name }}
+                                    </div>
                                 @endif
+                                <div class="text-xs text-gray-400 mt-1">
+                                    <i class="fas fa-network-wired mr-1"></i> IP: {{ $dokumen->ip_address ?? 'Tidak tercatat' }}
+                                </div>
                             </td>
                             <td class="px-6 py-4">
                                 <div class="text-sm text-gray-900">{{ $dokumen->kategori }}</div>

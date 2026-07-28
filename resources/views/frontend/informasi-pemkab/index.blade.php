@@ -7,10 +7,24 @@
 <div class="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-600 pt-20 pb-24 overflow-hidden">
     <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
     <div class="container mx-auto px-4 relative z-10 text-center">
-        <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-4 drop-shadow-lg">
-            Informasi Pemkab
-        </h1>
-        <p class="text-blue-100 text-lg md:text-xl max-w-2xl mx-auto font-light">
+        <div class="flex justify-between items-center mb-4">
+            <div class="w-full relative">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight drop-shadow-lg">
+                    Informasi Pemkab
+                </h1>
+                
+                @auth
+                    @can('create', App\Models\Informasi::class)
+                    <div class="absolute right-0 top-0">
+                        <a href="{{ route('admin.informasi-pemkab.create') }}" class="bg-white/20 hover:bg-white/30 backdrop-blur-md text-white border border-white/40 font-semibold py-2.5 px-5 rounded-xl transition-all flex items-center shadow-lg hover:shadow-xl transform hover:-translate-y-1">
+                            <i class="fas fa-plus-circle mr-2 text-lg"></i> Tambah Dokumen
+                        </a>
+                    </div>
+                    @endcan
+                @endauth
+            </div>
+        </div>
+        <p class="text-blue-100 text-lg md:text-xl max-w-2xl mx-auto font-light mt-4">
             Transparansi Dokumen Pemerintah Kabupaten yang dapat Anda akses, telusuri, dan unduh dengan mudah.
         </p>
     </div>

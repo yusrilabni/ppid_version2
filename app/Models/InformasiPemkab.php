@@ -14,7 +14,8 @@ class InformasiPemkab extends Model
         'deskripsi',
         'file_path',
         'user_id',
-        'unit_id'
+        'unit_id',
+        'ip_address'
     ];
 
     public const KATEGORI_JENIS_DOKUMEN = [

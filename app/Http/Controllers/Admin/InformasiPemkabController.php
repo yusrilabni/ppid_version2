@@ -41,6 +41,7 @@ class InformasiPemkabController extends Controller
 
         $data['user_id'] = Auth::id();
         $data['unit_id'] = Auth::user()->unit_id ?? null;
+        $data['ip_address'] = $request->ip();
 
         InformasiPemkab::create($data);
 
@@ -75,6 +76,8 @@ class InformasiPemkabController extends Controller
             }
             $data['file_path'] = $request->file('file')->store('informasi_pemkab', 'public');
         }
+        
+        $data['ip_address'] = $request->ip();
 
         $informasi_pemkab->update($data);
 
