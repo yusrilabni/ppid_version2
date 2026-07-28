@@ -3,194 +3,284 @@
 @section('title', 'Informasi Pemkab')
 
 @section('content')
-<div class="container mx-auto py-8 px-4">
-    <div class="mb-8 text-center">
-        <h1 class="text-3xl font-bold text-gray-800 uppercase relative inline-block">
+<!-- Hero Section -->
+<div class="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-600 pt-20 pb-24 overflow-hidden">
+    <div class="absolute inset-0 opacity-20 bg-[url('https://www.transparenttextures.com/patterns/cubes.png')] mix-blend-overlay"></div>
+    <div class="container mx-auto px-4 relative z-10 text-center">
+        <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight mb-4 drop-shadow-lg">
             Informasi Pemkab
-            <span class="absolute bottom-0 left-0 w-full h-1 bg-blue-600 rounded mt-2 transform translate-y-3"></span>
         </h1>
-        <p class="text-gray-600 mt-6">Daftar Dokumen Transparansi Pemerintah Kabupaten</p>
+        <p class="text-blue-100 text-lg md:text-xl max-w-2xl mx-auto font-light">
+            Transparansi Dokumen Pemerintah Kabupaten yang dapat Anda akses, telusuri, dan unduh dengan mudah.
+        </p>
     </div>
-
-    <!-- Kotak Pencarian / Filter -->
-    <div class="bg-white p-6 rounded-lg shadow-md mb-8 border-t-4 border-blue-600 relative" style="z-index: 40;">
-        <form action="{{ route('frontend.informasi-pemkab.index') }}" method="GET">
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-4 items-end">
-                <!-- Filter Kategori -->
-                <div class="relative" style="z-index: 50;">
-                    <label for="kategori" class="block text-sm font-medium text-gray-700 mb-2">Kategori</label>
-                    <select name="kategori" id="kategori" class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 transition custom-select2">
-                        <option value="">Semua Kategori</option>
-                        @foreach($kategori_jenis as $kat => $jenis)
-                            <option value="{{ $kat }}" {{ request('kategori') == $kat ? 'selected' : '' }}>{{ $kat }}</option>
-                        @endforeach
-                    </select>
-                </div>
-                
-                <!-- Filter Jenis Dokumen -->
-                <div class="relative" style="z-index: 49;">
-                    <label for="jenis_dokumen" class="block text-sm font-medium text-gray-700 mb-2">Jenis Dokumen</label>
-                    <select name="jenis_dokumen" id="jenis_dokumen" disabled class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 transition bg-gray-100 cursor-not-allowed custom-select2">
-                        <option value="">-- Pilih Kategori Dulu --</option>
-                    </select>
-                </div>
-
-                <!-- Filter Tahun -->
-                <div class="relative">
-                    <label for="tahun" class="block text-sm font-medium text-gray-700 mb-2">Tahun Dokumen</label>
-                    <select name="tahun" id="tahun" class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 transition custom-select2">
-                        <option value="">Semua Tahun</option>
-                        @php
-                            $currentYear = date('Y');
-                            $startYear = 2000;
-                        @endphp
-                        @for($y = $currentYear; $y >= $startYear; $y--)
-                            <option value="{{ $y }}" {{ request('tahun') == $y ? 'selected' : '' }}>{{ $y }}</option>
-                        @endfor
-                    </select>
-                </div>
-
-                <!-- Pencarian & Tombol -->
-                <div class="relative flex space-x-2">
-                    <div class="flex-grow">
-                        <label for="search" class="block text-sm font-medium text-gray-700 mb-2">Pencarian Judul</label>
-                        <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="Cari..." 
-                            class="w-full rounded-lg border-gray-300 focus:border-blue-500 focus:ring focus:ring-blue-200 transition h-[42px] px-3 border">
-                    </div>
-                    <div class="flex items-end">
-                        <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-semibold h-[42px] px-4 rounded-lg transition flex items-center justify-center whitespace-nowrap">
-                            <i class="fas fa-search"></i>
-                        </button>
-                        <a href="{{ route('frontend.informasi-pemkab.index') }}" class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold h-[42px] px-4 rounded-lg transition flex items-center justify-center ml-2" title="Reset Filter">
-                            <i class="fas fa-sync-alt"></i>
-                        </a>
-                    </div>
-                </div>
-            </div>
-        </form>
+    
+    <!-- Wave Shape Divider -->
+    <div class="absolute bottom-0 left-0 right-0 w-full overflow-hidden leading-none transform translate-y-1">
+        <svg class="relative block w-full h-[50px] md:h-[80px]" data-name="Layer 1" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none">
+            <path d="M321.39,56.44c58-10.79,114.16-30.13,172-41.86,82.39-16.72,168.19-17.73,250.45-.39C823.78,31,906.67,72,985.66,92.83c70.05,18.48,146.53,26.09,214.34,3V120H0V95.8C59.71,118,130.83,121.22,201.2,110.53Z" class="fill-gray-50"></path>
+        </svg>
     </div>
+</div>
 
-    <!-- Tabel Daftar Dokumen -->
-    <div class="bg-white p-6 rounded-lg shadow-md relative" style="z-index: 10;">
-        <div class="overflow-x-auto">
-            <table class="min-w-full bg-white border border-gray-200">
-                <thead class="bg-gray-800 text-white">
-                    <tr>
-                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Judul</th>
-                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Kategori</th>
-                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Jenis Dokumen</th>
-                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm">Tahun</th>
-                        <th class="text-left py-3 px-4 uppercase font-semibold text-sm text-center">Aksi</th>
-                    </tr>
-                </thead>
-                <tbody class="text-gray-700 divide-y divide-gray-200">
-                    @forelse ($informasi_pemkabs as $dokumen)
-                        <tr class="hover:bg-gray-50 transition">
-                            <td class="text-left py-4 px-4">
-                                <div class="font-medium text-gray-900">{{ $dokumen->judul }}</div>
-                                @if($dokumen->deskripsi)
-                                    <div class="text-xs text-gray-500 mt-1 line-clamp-2">{{ $dokumen->deskripsi }}</div>
-                                @endif
-                                @if($dokumen->organization)
-                                    <div class="text-xs text-blue-600 mt-1 font-semibold">OPD: {{ $dokumen->organization->name }}</div>
-                                @endif
-                            </td>
-                            <td class="text-left py-4 px-4">{{ $dokumen->kategori }}</td>
-                            <td class="text-left py-4 px-4">
-                                <span class="px-2 py-1 bg-blue-100 text-blue-800 text-xs rounded font-semibold">{{ $dokumen->jenis_dokumen }}</span>
-                            </td>
-                            <td class="text-left py-4 px-4 font-medium">{{ $dokumen->tahun }}</td>
-                            <td class="text-center py-4 px-4">
-                                @if ($dokumen->file_path)
-                                    <a href="{{ asset('storage/' . $dokumen->file_path) }}" target="_blank" class="inline-flex items-center justify-center bg-green-500 hover:bg-green-600 text-white py-1 px-3 rounded text-sm transition">
-                                        <i class="fas fa-download mr-1"></i> Unduh
-                                    </a>
-                                @else
-                                    <span class="text-gray-400 text-sm">Tidak ada file</span>
-                                @endif
-                            </td>
-                        </tr>
-                    @empty
-                        <tr>
-                            <td colspan="5" class="text-center py-8">
-                                <div class="flex flex-col items-center justify-center">
-                                    <i class="fas fa-box-open text-4xl text-gray-300 mb-3"></i>
-                                    <p class="text-gray-500 font-medium">Tidak ada dokumen yang ditemukan.</p>
+<div class="bg-gray-50 pb-16">
+    <div class="container mx-auto px-4 -mt-8 relative z-20">
+        <!-- Kotak Filter Glassmorphism -->
+        <div class="bg-white/90 backdrop-blur-md p-6 md:p-8 rounded-2xl shadow-xl border border-gray-100 mb-10 transition-all duration-300 hover:shadow-2xl">
+            <form action="{{ route('frontend.informasi-pemkab.index') }}" method="GET" id="filterForm">
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-6 items-end">
+                    
+                    <!-- Filter Kategori -->
+                    <div class="relative" style="z-index: 50;">
+                        <label for="kategori" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-layer-group text-blue-500 mr-1"></i> Kategori
+                        </label>
+                        <select name="kategori" id="kategori" class="w-full custom-select2" onchange="resetJenisAndSubmit()">
+                            <option value="">Semua Kategori</option>
+                            @foreach($kategori_jenis as $kat => $jenis)
+                                <option value="{{ $kat }}" {{ request('kategori') == $kat ? 'selected' : '' }}>{{ $kat }}</option>
+                            @endforeach
+                        </select>
+                    </div>
+                    
+                    <!-- Filter Jenis Dokumen -->
+                    <div class="relative" style="z-index: 49;">
+                        <label for="jenis_dokumen" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-file-alt text-blue-500 mr-1"></i> Jenis Dokumen
+                        </label>
+                        <select name="jenis_dokumen" id="jenis_dokumen" class="w-full custom-select2" onchange="this.form.submit()">
+                            <option value="">Semua Jenis Dokumen</option>
+                        </select>
+                    </div>
+
+                    <!-- Filter Tahun -->
+                    <div class="relative">
+                        <label for="tahun" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-calendar-alt text-blue-500 mr-1"></i> Tahun
+                        </label>
+                        <select name="tahun" id="tahun" class="w-full custom-select2" onchange="this.form.submit()">
+                            <option value="">Semua Tahun</option>
+                            @php
+                                $currentYear = date('Y');
+                                $startYear = 2000;
+                            @endphp
+                            @for($y = $currentYear; $y >= $startYear; $y--)
+                                <option value="{{ $y }}" {{ request('tahun') == $y ? 'selected' : '' }}>{{ $y }}</option>
+                            @endfor
+                        </select>
+                    </div>
+
+                    <!-- Pencarian Teks -->
+                    <div class="relative flex flex-col">
+                        <label for="search" class="block text-sm font-semibold text-gray-700 mb-2">
+                            <i class="fas fa-search text-blue-500 mr-1"></i> Pencarian
+                        </label>
+                        <div class="flex items-center space-x-2">
+                            <div class="relative flex-grow">
+                                <div class="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                                    <i class="fas fa-search text-gray-400"></i>
                                 </div>
-                            </td>
-                        </tr>
-                    @endforelse
-                </tbody>
-            </table>
+                                <input type="text" name="search" id="search" value="{{ request('search') }}" placeholder="Ketik judul..." 
+                                    class="w-full pl-10 pr-3 rounded-xl border border-gray-300 focus:border-blue-500 focus:ring-2 focus:ring-blue-200 transition-all h-[44px] text-sm bg-gray-50 focus:bg-white">
+                            </div>
+                            <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white shadow-md hover:shadow-lg rounded-xl h-[44px] px-5 transition-all flex items-center justify-center">
+                                Cari
+                            </button>
+                            <a href="{{ route('frontend.informasi-pemkab.index') }}" class="bg-gray-100 hover:bg-gray-200 text-gray-600 shadow-sm rounded-xl h-[44px] px-4 transition-all flex items-center justify-center border border-gray-200" title="Reset Filter">
+                                <i class="fas fa-sync-alt"></i>
+                            </a>
+                        </div>
+                    </div>
+                </div>
+            </form>
         </div>
-        
-        <!-- Pagination -->
-        <div class="mt-6">
-            {{ $informasi_pemkabs->appends(request()->query())->links() }}
+
+        <!-- Indikator Filter Aktif -->
+        @if(request('kategori') || request('jenis_dokumen') || request('tahun') || request('search'))
+        <div class="flex flex-wrap items-center gap-2 mb-6 px-2">
+            <span class="text-sm text-gray-500 font-medium">Filter aktif:</span>
+            @if(request('kategori')) <span class="bg-blue-100 text-blue-700 px-3 py-1 rounded-full text-xs font-semibold shadow-sm border border-blue-200">{{ request('kategori') }}</span> @endif
+            @if(request('jenis_dokumen')) <span class="bg-indigo-100 text-indigo-700 px-3 py-1 rounded-full text-xs font-semibold shadow-sm border border-indigo-200">{{ request('jenis_dokumen') }}</span> @endif
+            @if(request('tahun')) <span class="bg-purple-100 text-purple-700 px-3 py-1 rounded-full text-xs font-semibold shadow-sm border border-purple-200">Tahun: {{ request('tahun') }}</span> @endif
+            @if(request('search')) <span class="bg-gray-200 text-gray-700 px-3 py-1 rounded-full text-xs font-semibold shadow-sm border border-gray-300">Pencarian: "{{ request('search') }}"</span> @endif
+            
+            <a href="{{ route('frontend.informasi-pemkab.index') }}" class="text-red-500 hover:text-red-700 text-xs font-medium ml-2 underline decoration-dashed underline-offset-4">Hapus Semua Filter</a>
+        </div>
+        @endif
+
+        <!-- Daftar Dokumen Grid/List -->
+        <div class="bg-white rounded-2xl shadow-sm border border-gray-100 overflow-hidden relative" style="z-index: 10;">
+            <div class="overflow-x-auto">
+                <table class="min-w-full w-full whitespace-nowrap">
+                    <thead>
+                        <tr class="bg-gray-50/80 border-b border-gray-200 text-left">
+                            <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase">Detail Dokumen</th>
+                            <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-48">Kategori</th>
+                            <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-32 text-center">Tahun</th>
+                            <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-32 text-center">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-100">
+                        @forelse ($informasi_pemkabs as $dokumen)
+                            <tr class="hover:bg-blue-50/50 transition-colors group">
+                                <td class="py-4 px-6 whitespace-normal">
+                                    <div class="flex items-start">
+                                        <div class="flex-shrink-0 mt-1">
+                                            <div class="w-10 h-10 rounded-xl bg-gradient-to-tr from-blue-100 to-indigo-50 flex items-center justify-center border border-blue-100 shadow-sm text-blue-600">
+                                                <i class="fas fa-file-pdf text-lg"></i>
+                                            </div>
+                                        </div>
+                                        <div class="ml-4">
+                                            <h3 class="text-base font-bold text-gray-800 group-hover:text-blue-700 transition-colors leading-tight">
+                                                {{ $dokumen->judul }}
+                                            </h3>
+                                            @if($dokumen->deskripsi)
+                                                <p class="text-sm text-gray-500 mt-1 line-clamp-1 group-hover:line-clamp-none transition-all duration-300">
+                                                    {{ $dokumen->deskripsi }}
+                                                </p>
+                                            @endif
+                                            @if($dokumen->organization)
+                                                <p class="text-xs text-blue-600 font-semibold mt-1.5 flex items-center">
+                                                    <i class="fas fa-building mr-1.5 opacity-70"></i> {{ $dokumen->organization->name }}
+                                                </p>
+                                            @endif
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="py-4 px-6 whitespace-normal align-top">
+                                    <span class="inline-block px-3 py-1 bg-gray-100 text-gray-700 text-xs font-semibold rounded-lg border border-gray-200 mb-1">
+                                        {{ $dokumen->kategori }}
+                                    </span>
+                                    <br>
+                                    <span class="inline-block px-3 py-1 bg-blue-50 text-blue-700 text-xs font-semibold rounded-lg border border-blue-100 mt-1">
+                                        {{ $dokumen->jenis_dokumen }}
+                                    </span>
+                                </td>
+                                <td class="py-4 px-6 text-center align-top">
+                                    <span class="inline-block bg-gray-50 px-3 py-1.5 rounded-lg text-sm font-bold text-gray-600 border border-gray-200">
+                                        {{ $dokumen->tahun }}
+                                    </span>
+                                </td>
+                                <td class="py-4 px-6 text-center align-top">
+                                    @if ($dokumen->file_path)
+                                        <a href="{{ asset('storage/' . $dokumen->file_path) }}" target="_blank" 
+                                           class="inline-flex items-center justify-center bg-white border-2 border-green-500 text-green-600 hover:bg-green-500 hover:text-white hover:shadow-lg py-2 px-4 rounded-xl text-sm font-bold transition-all duration-300 transform hover:-translate-y-1">
+                                            <i class="fas fa-cloud-download-alt mr-2"></i> Unduh
+                                        </a>
+                                    @else
+                                        <span class="inline-flex items-center justify-center bg-gray-100 text-gray-400 py-2 px-4 rounded-xl text-sm font-medium">
+                                            Tidak tersedia
+                                        </span>
+                                    @endif
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="py-16 text-center">
+                                    <div class="flex flex-col items-center justify-center">
+                                        <div class="w-24 h-24 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                                            <i class="fas fa-folder-open text-4xl text-gray-300"></i>
+                                        </div>
+                                        <h3 class="text-xl font-bold text-gray-700 mb-2">Belum Ada Dokumen</h3>
+                                        <p class="text-gray-500">Silakan sesuaikan filter pencarian Anda.</p>
+                                    </div>
+                                </td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+            
+            <!-- Pagination -->
+            @if($informasi_pemkabs->hasPages())
+            <div class="px-6 py-4 border-t border-gray-100 bg-gray-50">
+                {{ $informasi_pemkabs->appends(request()->query())->links() }}
+            </div>
+            @endif
         </div>
     </div>
 </div>
 
-<!-- Select2 & Logic -->
+<!-- Select2 & Scripts -->
 <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
 <style>
     .select2-container .select2-selection--single {
-        height: 42px !important;
+        height: 44px !important;
         border: 1px solid #d1d5db !important;
-        border-radius: 0.5rem !important;
+        border-radius: 0.75rem !important;
         display: flex;
         align-items: center;
+        background-color: #f9fafb !important;
+        transition: all 0.2s;
+    }
+    .select2-container--open .select2-selection--single {
+        background-color: #ffffff !important;
+        border-color: #3b82f6 !important;
+        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2) !important;
     }
     .select2-container--default .select2-selection--single .select2-selection__arrow {
-        height: 40px !important;
+        height: 42px !important;
     }
     .select2-container--default .select2-selection--single .select2-selection__rendered {
         color: #374151 !important;
-        line-height: 40px !important;
+        font-weight: 500;
+        padding-left: 1rem !important;
     }
     .select2-dropdown {
-        border-radius: 0.5rem !important;
-        border-color: #d1d5db !important;
-        box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06);
+        border-radius: 0.75rem !important;
+        border-color: #e5e7eb !important;
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1), 0 4px 6px -2px rgba(0, 0, 0, 0.05) !important;
+        overflow: hidden;
+    }
+    .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
+        background-color: #eff6ff !important;
+        color: #1d4ed8 !important;
     }
 </style>
+
 <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
 <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
 <script>
     const mapping = @json($kategori_jenis);
     const oldJenis = "{{ request('jenis_dokumen') }}";
     
+    function resetJenisAndSubmit() {
+        // Reset jenis_dokumen so it doesn't send old invalid value for the new category
+        let $jenis = $('#jenis_dokumen');
+        $jenis.empty();
+        $jenis.append('<option value="">Semua Jenis Dokumen</option>');
+        
+        // Submit the form immediately to refresh the URL and page
+        document.getElementById('filterForm').submit();
+    }
+
     $(document).ready(function() {
         $('.custom-select2').select2({
             width: '100%',
-            dropdownAutoWidth: true
+            dropdownAutoWidth: true,
+            minimumResultsForSearch: 10
         });
 
-        $('#kategori').on('change', function() {
-            let kategori = $(this).val();
-            let $jenis = $('#jenis_dokumen');
+        // Initialize Jenis Dokumen based on current URL Kategori
+        let currentKategori = $('#kategori').val();
+        let $jenis = $('#jenis_dokumen');
+        
+        if (currentKategori && mapping[currentKategori]) {
+            $jenis.prop('disabled', false);
+            $jenis.removeClass('bg-gray-100 cursor-not-allowed').addClass('bg-gray-50');
             
-            $jenis.empty();
-            
-            if (kategori && mapping[kategori]) {
-                $jenis.prop('disabled', false);
-                $jenis.removeClass('bg-gray-100 cursor-not-allowed');
-                $jenis.append('<option value="">Semua Jenis Dokumen</option>');
-                
-                mapping[kategori].forEach(function(item) {
+            // Re-populate options
+            mapping[currentKategori].forEach(function(item) {
+                // If it's already there (from backend), don't duplicate, but since we start empty except for placeholder:
+                if($jenis.find("option[value='" + item + "']").length === 0) {
                     let selected = (oldJenis === item) ? 'selected' : '';
                     $jenis.append(`<option value="${item}" ${selected}>${item}</option>`);
-                });
-            } else {
-                $jenis.prop('disabled', true);
-                $jenis.addClass('bg-gray-100 cursor-not-allowed');
-                $jenis.append('<option value="">-- Pilih Kategori Dulu --</option>');
-            }
-        });
-
-        // Trigger on load for active filter
-        if ($('#kategori').val()) {
-            $('#kategori').trigger('change');
+                }
+            });
+        } else {
+            $jenis.prop('disabled', true);
+            $jenis.addClass('bg-gray-100 cursor-not-allowed').removeClass('bg-gray-50');
+            $jenis.empty().append('<option value="">-- Pilih Kategori Dulu --</option>');
         }
     });
 </script>
