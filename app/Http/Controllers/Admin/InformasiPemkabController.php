@@ -35,21 +35,29 @@ class InformasiPemkabController extends Controller
             'link' => 'required_if:upload_method,link|url|max:2048',
         ]);
 
-        $data = $request->except(['file', 'link', 'upload_method']);
-        
-        if ($request->upload_method === 'file' && $request->hasFile('file')) {
-            $data['file_path'] = $request->file('file')->store('informasi_pemkab', 'public');
-        } elseif ($request->upload_method === 'link' && $request->filled('link')) {
-            $data['file_path'] = $request->input('link');
+        try {
+            $data = $request->except(['file', 'link', 'upload_method']);
+            
+            if ($request->upload_method === 'file' && $request->hasFile('file')) {
+                $data['file_path'] = $request->file('file')->store('informasi_pemkab', 'public');
+            } elseif ($request->upload_method === 'link' && $request->filled('link')) {
+                $data['file_path'] = $request->input('link');
+            }
+
+            if (empty($data['file_path'])) {
+                throw new \Exception('File atau Link dokumen gagal diproses.');
+            }
+
+            $data['user_id'] = Auth::id();
+            $data['unit_id'] = Auth::user()->unit_id ?? null;
+            $data['ip_address'] = $request->ip();
+
+            InformasiPemkab::create($data);
+
+            return redirect()->route('admin.informasi-pemkab.index')->with('success', 'Dokumen berhasil ditambahkan');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
         }
-
-        $data['user_id'] = Auth::id();
-        $data['unit_id'] = Auth::user()->unit_id ?? null;
-        $data['ip_address'] = $request->ip();
-
-        InformasiPemkab::create($data);
-
-        return redirect()->route('admin.informasi-pemkab.index')->with('success', 'Dokumen Informasi Pemkab berhasil ditambahkan.');
     }
 
     public function edit($id)
@@ -62,7 +70,7 @@ class InformasiPemkabController extends Controller
     public function update(Request $request, $id)
     {
         $informasi_pemkab = InformasiPemkab::findOrFail($id);
-        
+
         $request->validate([
             'judul' => 'required|string|max:255',
             'kategori' => 'required|string',
@@ -74,25 +82,38 @@ class InformasiPemkabController extends Controller
             'link' => 'nullable|url|max:2048',
         ]);
 
-        $data = $request->except(['file', 'link', 'upload_method']);
-        
-        if ($request->upload_method === 'file' && $request->hasFile('file')) {
-            if ($informasi_pemkab->file_path && !str_starts_with($informasi_pemkab->file_path, 'http')) {
-                Storage::disk('public')->delete($informasi_pemkab->file_path);
+        try {
+            $data = $request->except(['file', 'link', 'upload_method']);
+            
+            if ($request->upload_method === 'file' && $request->hasFile('file')) {
+                // Delete old file if it exists and is not a link
+                if ($informasi_pemkab->file_path && !str_starts_with($informasi_pemkab->file_path, 'http')) {
+                    Storage::disk('public')->delete($informasi_pemkab->file_path);
+                }
+                $data['file_path'] = $request->file('file')->store('informasi_pemkab', 'public');
+            } elseif ($request->upload_method === 'link' && $request->filled('link')) {
+                // Delete old file if it exists and is not a link
+                if ($informasi_pemkab->file_path && !str_starts_with($informasi_pemkab->file_path, 'http')) {
+                    Storage::disk('public')->delete($informasi_pemkab->file_path);
+                }
+                $data['file_path'] = $request->input('link');
             }
-            $data['file_path'] = $request->file('file')->store('informasi_pemkab', 'public');
-        } elseif ($request->upload_method === 'link' && $request->filled('link')) {
-            if ($informasi_pemkab->file_path && !str_starts_with($informasi_pemkab->file_path, 'http')) {
-                Storage::disk('public')->delete($informasi_pemkab->file_path);
+
+            // Keep the old file_path if upload method is link but it was already a link and they left it blank (validation handles this mostly)
+            if (empty($data['file_path']) && empty($request->file) && empty($request->link)) {
+                $data['file_path'] = $informasi_pemkab->file_path;
             }
-            $data['file_path'] = $request->input('link');
+            
+            if (empty($data['file_path'])) {
+                throw new \Exception('File atau Link dokumen gagal diproses.');
+            }
+
+            $informasi_pemkab->update($data);
+
+            return redirect()->route('admin.informasi-pemkab.index')->with('success', 'Dokumen berhasil diperbarui');
+        } catch (\Exception $e) {
+            return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
         }
-        
-        $data['ip_address'] = $request->ip();
-
-        $informasi_pemkab->update($data);
-
-        return redirect()->route('admin.informasi-pemkab.index')->with('success', 'Dokumen Informasi Pemkab berhasil diperbarui.');
     }
 
     public function destroy($id)

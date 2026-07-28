@@ -15,6 +15,21 @@
             <x-breadcrumbs :breadcrumbs="[['title' => 'Beranda', 'url' => route('home'), 'icon' => 'fas fa-home'],['title' => 'Informasi Pemkab', 'url' => route('frontend.informasi-pemkab.index'), 'icon' => 'fas fa-file-alt'],['title' => 'Edit Dokumen', 'url' => '#', 'icon' => 'fas fa-edit'],]" />
         </div>
 
+        @if(session('error'))
+        <div class="mb-6 bg-red-50/90 border border-red-200 text-red-700 px-6 py-4 rounded-2xl shadow-sm flex items-start backdrop-blur-sm relative z-20">
+            <div class="flex-shrink-0 mt-0.5">
+                <i class="fas fa-exclamation-circle text-red-500 text-xl"></i>
+            </div>
+            <div class="ml-4">
+                <h3 class="text-sm font-bold text-red-800">Gagal Memproses Dokumen</h3>
+                <p class="mt-1 text-sm">{{ session('error') }}</p>
+                @if(str_contains(session('error'), 'SQLSTATE'))
+                    <p class="mt-2 text-xs opacity-75 font-mono">Pastikan Anda sudah menjalankan perintah: php artisan migrate --force</p>
+                @endif
+            </div>
+        </div>
+        @endif
+
         <div class="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/50">
             <div class="bg-gradient-to-r from-amber-500 via-orange-500 to-amber-600 p-8 md:p-10 text-white relative overflow-hidden">
                 <!-- Dekorasi Header Card -->
