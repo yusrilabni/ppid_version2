@@ -11,8 +11,8 @@
     </div>
 
     <div class="container max-w-5xl mx-auto px-4 relative z-10">
-        <div class="mb-6 bg-white/10 backdrop-blur-md inline-block px-4 py-2 rounded-xl border border-white/20">
-            <x-breadcrumbs :breadcrumbs="[['title' => 'Beranda', 'url' => route('home'), 'icon' => 'fas fa-home text-blue-100'],['title' => 'Informasi Pemkab', 'url' => route('frontend.informasi-pemkab.index'), 'icon' => 'fas fa-file-alt text-blue-100'],['title' => 'Tambah Dokumen', 'url' => '#', 'icon' => 'fas fa-plus-circle text-white'],]" />
+        <div class="mb-6">
+            <x-breadcrumbs :breadcrumbs="[['title' => 'Beranda', 'url' => route('home'), 'icon' => 'fas fa-home'],['title' => 'Informasi Pemkab', 'url' => route('frontend.informasi-pemkab.index'), 'icon' => 'fas fa-file-alt'],['title' => 'Tambah Dokumen', 'url' => '#', 'icon' => 'fas fa-plus-circle'],]" />
         </div>
 
         <div class="bg-white/95 backdrop-blur-xl rounded-3xl shadow-2xl overflow-hidden border border-white/50">
