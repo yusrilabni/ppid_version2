@@ -17,6 +17,10 @@
         </div>
 
         <div class="flex justify-between items-center mb-4">
+            <div class="w-full relative">
+                <h1 class="text-4xl md:text-5xl font-extrabold text-white tracking-tight drop-shadow-lg">
+                    Informasi Pemkab
+                </h1>
                 
                 @auth
                     @can('create', App\Models\Informasi::class)
