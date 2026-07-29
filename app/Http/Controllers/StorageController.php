@@ -53,6 +53,12 @@ class StorageController extends Controller
             }
         }
 
-        abort(404, "File tidak ditemukan di semua lokasi penyimpanan: " . $path);
+        // Log path detail hanya ke server log (tidak tampil ke publik)
+        \Illuminate\Support\Facades\Log::warning('StorageController: File not found in any storage location.', [
+            'requested_path' => $path,
+            'ip' => request()->ip(),
+        ]);
+
+        abort(404, 'File tidak ditemukan.');
     }
 }
