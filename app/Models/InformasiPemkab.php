@@ -80,4 +80,9 @@ class InformasiPemkab extends Model
     {
         return $this->belongsTo(Organization::class, 'unit_id', 'remote_id');
     }
+
+    public function informasi()
+    {
+        return $this->hasOne(Informasi::class, 'informasi_pemkab_id');
+    }
 }

@@ -149,21 +149,47 @@
                                 </span>
                             </li>
                             <li class="pt-4 border-t border-gray-100 flex flex-col">
+                                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Kategori Utama</span>
+                                <span class="text-sm font-semibold text-indigo-700 bg-indigo-50 border border-indigo-100 px-3 py-1.5 rounded-lg inline-block w-fit">
+                                    <i class="fas fa-folder-open mr-1"></i> {{ $informasi_pemkab->kategori }}
+                                </span>
+                            </li>
+                            <li class="pt-4 border-t border-gray-100 flex flex-col">
                                 <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Jenis Dokumen</span>
                                 <span class="text-sm font-semibold text-gray-700 bg-gray-100 px-3 py-1.5 rounded-lg inline-block w-fit">
                                     {{ $informasi_pemkab->jenis_dokumen }}
                                 </span>
                             </li>
+                            @if($informasi_pemkab->informasi)
                             <li class="pt-4 border-t border-gray-100 flex flex-col">
-                                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Status Publikasi</span>
-                                <span class="text-sm font-bold text-green-600 flex items-center">
-                                    <i class="fas fa-check-circle mr-1.5"></i> Telah Dipublikasikan
+                                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Klasifikasi PPID</span>
+                                <span class="text-sm font-semibold text-blue-700 bg-blue-50 border border-blue-100 px-3 py-1.5 rounded-lg inline-block w-fit">
+                                    <i class="fas fa-tag mr-1"></i> {{ $informasi_pemkab->informasi->category }}
                                 </span>
+                            </li>
+                            @endif
+                            <li class="pt-4 border-t border-gray-100 flex flex-col">
+                                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Sifat Akses</span>
+                                @if($informasi_pemkab->visibility == 'public')
+                                    <span class="text-sm font-bold text-green-600 flex items-center">
+                                        <i class="fas fa-globe mr-1.5"></i> Publik
+                                    </span>
+                                @else
+                                    <span class="text-sm font-bold text-orange-500 flex items-center">
+                                        <i class="fas fa-lock mr-1.5"></i> Private (Link Terbatas)
+                                    </span>
+                                @endif
                             </li>
                             <li class="pt-4 border-t border-gray-100 flex flex-col">
                                 <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Tahun Dokumen</span>
                                 <span class="text-sm font-semibold text-gray-700 flex items-center">
                                     <i class="fas fa-calendar mr-1.5 text-blue-400"></i> {{ $informasi_pemkab->tahun }}
+                                </span>
+                            </li>
+                            <li class="pt-4 border-t border-gray-100 flex flex-col">
+                                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Tanggal Diunggah</span>
+                                <span class="text-sm font-semibold text-gray-700 flex items-center">
+                                    <i class="fas fa-clock mr-1.5 text-blue-400"></i> {{ $informasi_pemkab->created_at->translatedFormat('d F Y') }}
                                 </span>
                             </li>
                         </ul>
