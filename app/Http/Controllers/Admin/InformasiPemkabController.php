@@ -209,6 +209,6 @@ class InformasiPemkabController extends Controller
             $informasi_pemkab->delete();
         });
 
-        return redirect()->route('admin.informasi-pemkab.index')->with('success', 'Dokumen berhasil dihapus.');
+        return redirect()->back()->with('success', 'Dokumen berhasil dihapus.');
     }
 }
