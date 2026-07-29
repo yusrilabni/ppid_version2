@@ -18,12 +18,31 @@ class InformasiPemkabController extends Controller
         return view('admin.informasi-pemkab.index', compact('informasi_pemkabs'));
     }
 
-    private function mapToPpidCategory($kategori)
+    private function mapToPpidCategory($kategori, $jenis_dokumen)
     {
-        $berkala = ['Perencanaan', 'Keuangan', 'Monitoring, Evaluasi dan Pelaporan', 'Statistik dan Data', 'Pengumuman Lainnya'];
-        if (in_array($kategori, $berkala)) {
+        // Daftar jenis dokumen yang otomatis masuk ke "Informasi Berkala"
+        $berkala_jenis = [
+            'RPJPD', 'RPJMD', 'RKPD', 'Renstra', 'Renja', 'RKA', 'KUA', 'PPAS', // Perencanaan
+            'APBD', 'APBD Perubahan', 'DPA', 'DPPA', 'LKPD', 'LRA', 'LO', 'Neraca', 'CaLK', 'IPKD', 'Laporan Keuangan', // Keuangan
+            'LKjIP', 'LKPJ', 'LPPD', 'SAKIP', 'Laporan Triwulan', 'Laporan Tahunan', // Pelaporan
+            'Statistik Sektoral', 'Metadata Statistik', 'Buku Statistik', // Statistik
+            'Pengumuman Lainnya'
+        ];
+
+        // Daftar jenis dokumen yang otomatis masuk ke "Informasi Serta Merta"
+        // (Bisa ditambahkan jika ada edaran darurat dll)
+        $serta_merta_jenis = [
+            'Surat Edaran'
+        ];
+
+        if (in_array($jenis_dokumen, $berkala_jenis)) {
             return 'Informasi Berkala';
+        } elseif (in_array($jenis_dokumen, $serta_merta_jenis)) {
+            return 'Informasi Serta Merta';
         }
+        
+        // Sisanya (seperti Peraturan, Aset, Kepegawaian, SOP, MoU, Audit, dll) 
+        // akan otomatis masuk ke "Informasi Setiap Saat"
         return 'Informasi Setiap Saat';
     }
 
@@ -84,7 +103,7 @@ class InformasiPemkabController extends Controller
                         'content' => 'Dokumen ini bersumber dari Informasi Pemkab.',
                         'file' => $file,
                         'url' => $url,
-                        'category' => $this->mapToPpidCategory($informasi_pemkab->kategori),
+                        'category' => $this->mapToPpidCategory($informasi_pemkab->kategori, $informasi_pemkab->jenis_dokumen),
                         'jenis_dokumen' => $informasi_pemkab->jenis_dokumen,
                         'status' => 'BERLAKU',
                         'tahun' => $informasi_pemkab->tahun,
@@ -184,7 +203,7 @@ class InformasiPemkabController extends Controller
                             'deskripsi' => $informasi_pemkab->deskripsi ?? 'Dokumen Pemkab Kategori ' . $informasi_pemkab->kategori,
                             'file' => $file,
                             'url' => $url,
-                            'category' => $this->mapToPpidCategory($informasi_pemkab->kategori),
+                            'category' => $this->mapToPpidCategory($informasi_pemkab->kategori, $informasi_pemkab->jenis_dokumen),
                             'jenis_dokumen' => $informasi_pemkab->jenis_dokumen,
                             'tahun' => $informasi_pemkab->tahun,
                         ]);
@@ -195,7 +214,7 @@ class InformasiPemkabController extends Controller
                             'content' => 'Dokumen ini bersumber dari Informasi Pemkab.',
                             'file' => $file,
                             'url' => $url,
-                            'category' => $this->mapToPpidCategory($informasi_pemkab->kategori),
+                            'category' => $this->mapToPpidCategory($informasi_pemkab->kategori, $informasi_pemkab->jenis_dokumen),
                             'jenis_dokumen' => $informasi_pemkab->jenis_dokumen,
                             'status' => 'BERLAKU',
                             'tahun' => $informasi_pemkab->tahun,
