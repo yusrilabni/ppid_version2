@@ -69,7 +69,7 @@
             </div>
 
             <div class="p-8 md:p-10" x-data="pemkabForm()">
-                <form action="{{ route('admin.informasi-pemkab.store') }}" method="POST" enctype="multipart/form-data">
+                <form action="{{ route('admin.informasi-pemkab.store') }}" method="POST" enctype="multipart/form-data" @submit="if(submitting) { $event.preventDefault(); } else { submitting = true; }">
                     @csrf
                     <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
                         <!-- Judul -->
@@ -262,8 +262,13 @@
                         <a href="{{ route('frontend.informasi-pemkab.index') }}" class="mt-3 sm:mt-0 px-8 py-3.5 bg-white text-gray-700 font-bold rounded-xl border-2 border-gray-200 hover:bg-gray-50 hover:border-gray-300 transition-all duration-300 flex items-center justify-center">
                             Batal
                         </a>
-                        <button type="submit" class="px-8 py-3.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold rounded-xl hover:from-blue-700 hover:to-blue-800 shadow-lg shadow-blue-500/30 hover:shadow-blue-600/40 transition-all duration-300 transform hover:-translate-y-0.5 flex items-center justify-center">
-                            <i class="fas fa-paper-plane mr-2"></i> Publikasikan Dokumen
+                        <button type="submit" 
+                            :disabled="submitting"
+                            :class="{ 'opacity-70 cursor-not-allowed': submitting, 'hover:-translate-y-0.5 hover:from-blue-700 hover:to-blue-800 hover:shadow-blue-600/40': !submitting }"
+                            class="px-8 py-3.5 bg-gradient-to-r from-blue-600 to-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-500/30 transition-all duration-300 transform flex items-center justify-center">
+                            <i class="fas fa-paper-plane mr-2" x-show="!submitting"></i> 
+                            <i class="fas fa-circle-notch fa-spin mr-2" x-show="submitting" x-cloak></i>
+                            <span x-text="submitting ? 'Menyimpan...' : 'Publikasikan Dokumen'"></span>
                         </button>
                     </div>
                 </form>
@@ -329,6 +334,7 @@
             statusDokumen: '{{ old('status', 'published') }}',
             visibility: '{{ old('visibility', 'public') }}',
             showPrivateModal: false,
+            submitting: false,
             
             init() {
                 // Initialize jenis options if old value exists

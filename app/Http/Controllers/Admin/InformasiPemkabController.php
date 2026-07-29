@@ -69,6 +69,20 @@ class InformasiPemkabController extends Controller
         ]);
 
         try {
+            $user_id = Auth::id();
+            $unit_id = Auth::user()->unit_id ?? null;
+
+            // Server-side Double Submit Protection (Title + Unit check within 10 seconds)
+            $existing = InformasiPemkab::where('judul', $request->judul)
+                                 ->where('unit_id', $unit_id)
+                                 ->where('created_at', '>=', now()->subSeconds(10))
+                                 ->first();
+            
+            if ($existing) {
+                return redirect()->route('frontend.informasi-pemkab.index')
+                    ->with('success', 'Dokumen sudah berhasil ditambahkan sebelumnya.');
+            }
+
             $data = $request->except(['file', 'link', 'upload_method']);
             
             if ($request->upload_method === 'file' && $request->hasFile('file')) {
@@ -81,8 +95,8 @@ class InformasiPemkabController extends Controller
                 throw new \Exception('File atau Link dokumen gagal diproses.');
             }
 
-            $data['user_id'] = Auth::id();
-            $data['unit_id'] = Auth::user()->unit_id ?? null;
+            $data['user_id'] = $user_id;
+            $data['unit_id'] = $unit_id;
             $data['ip_address'] = $request->ip();
 
             DB::transaction(function () use ($data, $request) {
