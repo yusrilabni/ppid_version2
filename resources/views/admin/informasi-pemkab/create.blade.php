@@ -177,13 +177,22 @@
                                     <label class="block text-gray-700 text-sm font-bold mb-3">Visibilitas</label>
                                     <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
                                         <label class="flex-1 flex items-center p-3 border border-gray-200 rounded-xl bg-white cursor-pointer hover:border-blue-300 transition-all">
-                                            <input type="radio" name="visibility" value="public" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" {{ old('visibility', 'public') == 'public' ? 'checked' : '' }}>
+                                            <input type="radio" name="visibility" value="public" x-model="visibility" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" {{ old('visibility', 'public') == 'public' ? 'checked' : '' }}>
                                             <span class="ml-3 text-sm font-bold text-gray-800">Publik <span class="block font-normal text-xs text-gray-500">Dapat dilihat semua orang</span></span>
                                         </label>
                                         <label class="flex-1 flex items-center p-3 border border-gray-200 rounded-xl bg-white cursor-pointer hover:border-blue-300 transition-all">
-                                            <input type="radio" name="visibility" value="private" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" {{ old('visibility') == 'private' ? 'checked' : '' }}>
+                                            <input type="radio" name="visibility" value="private" x-model="visibility" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" {{ old('visibility') == 'private' ? 'checked' : '' }}>
                                             <span class="ml-3 text-sm font-bold text-gray-800">Privat <span class="block font-normal text-xs text-gray-500">Hanya untuk internal</span></span>
                                         </label>
+                                    </div>
+                                    <div x-show="visibility === 'private'" x-collapse x-cloak class="mt-4">
+                                        <div class="bg-orange-50 border border-orange-200 rounded-xl p-4 flex items-start shadow-sm">
+                                            <i class="fas fa-lock text-orange-500 mt-0.5 text-lg mr-3"></i>
+                                            <p class="text-sm text-orange-800 font-medium leading-relaxed">
+                                                <strong class="block mb-1">Ketentuan Akses Privat:</strong>
+                                                Dokumen ini tidak akan dipublikasikan secara umum dan tidak akan muncul di daftar Informasi Berkala maupun Setiap Saat. Dokumen hanya dapat dilihat di dalam sistem jika login sebagai Admin/Superadmin. Namun, Anda dapat menyalin link detailnya nanti dan membagikannya secara langsung kepada pihak yang bersangkutan, sehingga <span class="font-bold">hanya yang memiliki link tersebut yang dapat melihat dokumennya</span>.
+                                            </p>
+                                        </div>
                                     </div>
                                     @error('visibility')
                                         <p class="text-red-500 text-xs mt-2 font-medium"><i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}</p>
@@ -278,6 +287,7 @@
             mapping: @json($kategori_jenis),
             uploadMethod: '{{ old('upload_method', 'file') }}',
             statusDokumen: '{{ old('status', 'published') }}',
+            visibility: '{{ old('visibility', 'public') }}',
             
             init() {
                 // Initialize jenis options if old value exists
