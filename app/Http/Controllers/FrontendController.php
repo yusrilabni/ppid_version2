@@ -477,9 +477,21 @@ class FrontendController extends Controller
     public function visitUrl($id)
     {
         $informasi = Informasi::findOrFail($id);
+
+        $url = $informasi->url;
+
+        // Validasi URL: hanya izinkan skema http dan https untuk mencegah Open Redirect
+        if (
+            !$url ||
+            !filter_var($url, FILTER_VALIDATE_URL) ||
+            !in_array(strtolower(parse_url($url, PHP_URL_SCHEME)), ['http', 'https'])
+        ) {
+            abort(400, 'Tautan tidak valid atau tidak dapat dibuka.');
+        }
+
         $informasi->increment('download_count');
 
-        return redirect()->away($informasi->url);
+        return redirect()->away($url);
     }
 
     public function page($page, $subpage = null)

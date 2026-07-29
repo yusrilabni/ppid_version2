@@ -147,13 +147,23 @@ class StandarLayananController extends Controller
      */
     public function visitUrl(SubStandarLayanan $subStandarLayanan)
     {
-        // Increment download_count as requested by user for external link clicks
-        $subStandarLayanan->increment('download_count'); 
+        $url = $subStandarLayanan->url;
 
-        if (!$subStandarLayanan->url) {
+        if (!$url) {
             abort(404, 'URL tidak ditemukan.');
         }
 
-        return redirect()->away($subStandarLayanan->url);
+        // Validasi URL: hanya izinkan skema http dan https untuk mencegah Open Redirect
+        if (
+            !filter_var($url, FILTER_VALIDATE_URL) ||
+            !in_array(strtolower(parse_url($url, PHP_URL_SCHEME)), ['http', 'https'])
+        ) {
+            abort(400, 'Tautan tidak valid atau tidak dapat dibuka.');
+        }
+
+        // Increment download_count as requested by user for external link clicks
+        $subStandarLayanan->increment('download_count');
+
+        return redirect()->away($url);
     }
 }
