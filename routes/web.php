@@ -39,7 +39,7 @@ Route::get('/dip/{year}/export', [DIPController::class, 'export'])->name('dip.ex
 Route::get('/laporan/permohonan', [LaporanPermohonanController::class, 'index'])->name('laporan.permohonan.index');
 Route::get('/laporan/permohonan/create', [LaporanPermohonanController::class, 'create'])->name('laporan.permohonan.create');
 Route::get('/laporan/permohonan/saya', [LaporanPermohonanController::class, 'myRequests'])->name('laporan.permohonan.saya')->middleware('auth');
-Route::post('/laporan/permohonan/store', [LaporanPermohonanController::class, 'store'])->name('laporan.permohonan.store')->middleware('auth');
+Route::post('/laporan/permohonan/store', [LaporanPermohonanController::class, 'store'])->name('laporan.permohonan.store')->middleware(['auth', 'throttle:10,1']);
 Route::get('/laporan/permohonan/{permohonanInformasi}', [LaporanPermohonanController::class, 'show'])->name('laporan.permohonan.show');
 Route::get('/laporan/permohonan/{permohonanInformasi}/edit', [LaporanPermohonanController::class, 'edit'])->name('laporan.permohonan.edit')->middleware('auth');
 Route::put('/laporan/permohonan/{permohonanInformasi}', [LaporanPermohonanController::class, 'update'])->name('laporan.permohonan.update')->middleware('auth');
@@ -143,74 +143,72 @@ Route::get('/laporan/ppid/file/{id}', [FrontendController::class, 'serveLaporanF
 // Storage & Fallback
 Route::get('storage/{path}', [App\Http\Controllers\StorageController::class, 'show'])->where('path', '.*')->name('storage.fallback');
 
-// Route Debug WhatsApp
-Route::get('/wa-debug-view', function() {
-    $path = public_path('wa_debug.json');
-    if (!file_exists($path)) return response()->json(['error' => 'File debug belum tercipta. Silakan akses webhook terlebih dahulu.'], 404);
-    return response()->json(json_decode(file_get_contents($path), true));
-});
+// Route Debug WhatsApp (PROTECTED: Auth + Admin Only)
+Route::middleware(['auth', \App\Http\Middleware\AdminMiddleware::class])->group(function () {
+    Route::get('/wa-debug-view', function() {
+        $path = public_path('wa_debug.json');
+        if (!file_exists($path)) return response()->json(['error' => 'File debug belum tercipta.'], 404);
+        return response()->json(json_decode(file_get_contents($path), true));
+    })->name('wa.debug.view');
 
-Route::get('/test-wa-trigger', function() {
-    $url = url('/api/whatsapp/webhook'); // Gunakan URL dinamis
-    $data = [
-        'from' => 'nomor_test_manual@c.us',
-        'body' => '#status'
-    ];
+    Route::get('/test-wa-trigger', function() {
+        $url = url('/api/whatsapp/webhook');
+        $data = ['from' => 'nomor_test_manual@c.us', 'body' => '#status'];
 
-    $ch = curl_init($url);
-    curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
-    curl_setopt($ch, CURLOPT_POST, true);
-    curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
-    curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
-    curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, false);
+        $ch = curl_init($url);
+        curl_setopt($ch, CURLOPT_RETURNTRANSFER, true);
+        curl_setopt($ch, CURLOPT_POST, true);
+        curl_setopt($ch, CURLOPT_POSTFIELDS, json_encode($data));
+        curl_setopt($ch, CURLOPT_HTTPHEADER, ['Content-Type: application/json']);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYHOST, 2);
 
-    $response = curl_exec($ch);
-    $info = curl_getinfo($ch);
-    curl_close($ch);
+        $response = curl_exec($ch);
+        $info = curl_getinfo($ch);
+        curl_close($ch);
 
-    return response()->json([
-        'url_target' => $url,
-        'http_code' => $info['http_code'],
-        'response' => json_decode($response, true) ?: $response,
-        'info' => 'Jika http_code 200, silakan cek /wa-debug-view'
-    ]);
-});
-
-Route::get('/test-wa-connection', function() {
-    $apiUrl = config('ppid.whatsapp.api_url');
-    $apiKey = config('ppid.whatsapp.api_key');
-    
-    try {
-        $response = \Illuminate\Support\Facades\Http::withHeaders([
-            'x-api-key' => $apiKey
-        ])->timeout(5)->get(str_replace('/api/send', '', $apiUrl)); // Coba akses root gateway
-        
         return response()->json([
-            'target' => $apiUrl,
-            'status' => 'CONNECTED',
-            'response' => $response->body()
+            'url_target' => $url,
+            'http_code' => $info['http_code'],
+            'response' => json_decode($response, true) ?: $response,
         ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'target' => $apiUrl,
-            'status' => 'FAILED',
-            'error' => $e->getMessage(),
-            'hint' => 'Jika error Connection Timed Out, berarti Hosting cPanel Anda memblokir Port 3000.'
-        ]);
-        }
-        });
+    })->name('wa.test.trigger');
 
-        Route::get('/test-wa-send/{phone}', function($phone) {
-            $result = \App\Helpers\GeneralHelper::sendWhatsApp($phone, "Halo! Ini adalah pesan tes dari Sistem PPID. Jika Anda menerima ini, berarti integrasi WhatsApp sudah SUKSES! 🚀");
+    Route::get('/test-wa-connection', function() {
+        $apiUrl = config('ppid.whatsapp.api_url');
+        $apiKey = config('ppid.whatsapp.api_key');
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::withHeaders([
+                'x-api-key' => $apiKey
+            ])->timeout(5)->get(str_replace('/api/send', '', $apiUrl));
 
             return response()->json([
-                'target_phone' => $phone,
-                'send_status' => $result ? 'SUCCESS' : 'FAILED',
-                'gateway_response' => json_decode(\App\Helpers\GeneralHelper::$lastWaResponse, true) ?: \App\Helpers\GeneralHelper::$lastWaResponse,
-                'info' => $result ? 'Silakan cek WhatsApp Anda.' : 'Periksa gateway_response di atas untuk melihat penyebab kegagalan.'
+                'status' => 'CONNECTED',
+                'http_code' => $response->status(),
             ]);
-        });
+        } catch (\Exception $e) {
+            return response()->json([
+                'status' => 'FAILED',
+                'error' => $e->getMessage(),
+                'hint' => 'Hosting mungkin memblokir Port tersebut.'
+            ]);
+        }
+    })->name('wa.test.connection');
+
+    Route::get('/test-wa-send/{phone}', function($phone) {
+        // Validasi format nomor telepon
+        if (!preg_match('/^[0-9]{8,15}$/', $phone)) {
+            return response()->json(['error' => 'Format nomor tidak valid.'], 422);
+        }
+        $result = \App\Helpers\GeneralHelper::sendWhatsApp($phone, "Halo! Ini adalah pesan tes dari Sistem PPID. Jika Anda menerima ini, berarti integrasi WhatsApp sudah SUKSES! 🚀");
+        return response()->json([
+            'target_phone' => $phone,
+            'send_status' => $result ? 'SUCCESS' : 'FAILED',
+            'gateway_response' => json_decode(\App\Helpers\GeneralHelper::$lastWaResponse, true) ?: \App\Helpers\GeneralHelper::$lastWaResponse,
+        ]);
+    })->name('wa.test.send')->middleware('throttle:3,1');
+});
 
         // Laravel ERD (Bypass environment check - DISABLED IN PRODUCTION)
 if (app()->environment('local')) {

@@ -13,8 +13,20 @@ class TelegramWebhookController extends Controller
 {
     public function handle(Request $request)
     {
+        // ===== SECURITY: Validasi Secret Token dari Telegram =====
+        $expectedToken = env('TELEGRAM_WEBHOOK_SECRET');
+        $receivedToken = $request->header('X-Telegram-Bot-Api-Secret-Token');
+
+        if ($expectedToken && $receivedToken !== $expectedToken) {
+            Log::warning('Telegram Webhook: Invalid secret token received.', [
+                'ip' => $request->ip(),
+            ]);
+            return response()->json(['ok' => false, 'reason' => 'Unauthorized'], 403);
+        }
+        // =========================================================
+
         $update = $request->all();
-        Log::info('Telegram Webhook received: ', $update);
+        Log::info('Telegram Webhook received: ', ['type' => array_keys($update)]);
 
         if (!isset($update['callback_query'])) {
             return response()->json(['ok' => true]);
@@ -30,19 +42,23 @@ class TelegramWebhookController extends Controller
         // 1. Segera beri tahu Telegram bahwa klik sudah diterima (Menghilangkan Loading Spinner)
         $this->answerCallback($callbackQueryId);
 
-        // Security check: Gunakan ID Supergroup yang baru secara eksplisit
-        $allowedChatId = "-1003717845788"; 
-        if ($chatId != $allowedChatId) {
+        // Security check: Verifikasi Chat ID dari env
+        $allowedChatId = env('TELEGRAM_CHAT_ID');
+        if ($allowedChatId && $chatId != $allowedChatId) {
             Log::warning("Telegram Webhook unauthorized Chat ID: " . $chatId);
             return response()->json(['ok' => true]);
         }
 
         if (str_starts_with($data, 'respond_awal_')) {
-            $permohonanId = str_replace('respond_awal_', '', $data);
-            $this->processAutoRespond($permohonanId, $fromName, $messageId);
+            $permohonanId = (int) str_replace('respond_awal_', '', $data);
+            if ($permohonanId > 0) {
+                $this->processAutoRespond($permohonanId, $fromName, $messageId);
+            }
         } elseif (str_starts_with($data, 'reject_permohonan_')) {
-            $permohonanId = str_replace('reject_permohonan_', '', $data);
-            $this->processAutoReject($permohonanId, $fromName, $messageId);
+            $permohonanId = (int) str_replace('reject_permohonan_', '', $data);
+            if ($permohonanId > 0) {
+                $this->processAutoReject($permohonanId, $fromName, $messageId);
+            }
         }
 
         return response()->json(['ok' => true]);
@@ -116,7 +132,12 @@ class TelegramWebhookController extends Controller
     private function updateTelegramMessage($messageId, $text)
     {
         $token = env('TELEGRAM_BOT_TOKEN');
-        $chatId = env('TELEGRAM_CHAT_ID', "-1003717845788");
+        $chatId = env('TELEGRAM_CHAT_ID');
+
+        if (!$token || !$chatId) {
+            Log::warning('Telegram config missing, cannot update message.');
+            return;
+        }
 
         \Illuminate\Support\Facades\Http::post("https://api.telegram.org/bot{$token}/editMessageText", [
             'chat_id' => $chatId,

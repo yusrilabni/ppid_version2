@@ -13,7 +13,7 @@ class GeneralHelper
         $charactersLength = strlen($characters);
         $randomString = '';
         for ($i = 0; $i < $length; $i++) {
-            $randomString .= $characters[rand(0, $charactersLength - 1)];
+            $randomString .= $characters[random_int(0, $charactersLength - 1)];
         }
         return $randomString;
     }
@@ -55,8 +55,8 @@ class GeneralHelper
      */
     public static function sendTelegramMessage($message, $buttons = null)
     {
-        $token = env('TELEGRAM_BOT_TOKEN', "8684002355:AAEvGLpwQVKHF8nkmeznuLOjTclkU52pzlk");
-        $chat_id = env('TELEGRAM_CHAT_ID', "-1003717845788");
+        $token = env('TELEGRAM_BOT_TOKEN');
+        $chat_id = env('TELEGRAM_CHAT_ID');
 
         if (!$token || !$chat_id) {
             Log::warning('Telegram configuration is missing.');
@@ -124,7 +124,7 @@ class GeneralHelper
         ]);
         curl_setopt($ch, CURLOPT_TIMEOUT, 15);
         curl_setopt($ch, CURLOPT_CONNECTTIMEOUT, 10);
-        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, false);
+        curl_setopt($ch, CURLOPT_SSL_VERIFYPEER, true);
 
         $response = curl_exec($ch);
         $err = curl_error($ch);

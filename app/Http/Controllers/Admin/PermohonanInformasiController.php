@@ -35,7 +35,7 @@ class PermohonanInformasiController extends Controller
         $request->validate([
             'permohonan_informasi_id' => 'required|exists:permohonan_informasi,id',
             'message' => 'required|string',
-            'response_type' => 'required|string',
+            'response_type' => 'required|string|in:Respon Awal,Tindaklanjut Permohonan,Pemberian Informasi,Penolakan,Klarifikasi',
             'file' => 'nullable|file|max:2048',
             'link' => 'nullable|url',
         ]);
