@@ -37,4 +37,9 @@ return Application::configure(basePath: dirname(__DIR__))
         $exceptions->render(function (\Illuminate\Session\TokenMismatchException $e, $request) {
             return redirect('/');
         });
+
+        // Tangkap PostTooLargeException agar tidak menampilkan error 500
+        $exceptions->render(function (\Illuminate\Http\Exceptions\PostTooLargeException $e, $request) {
+            return redirect()->back()->withInput()->with('error', 'Ukuran file atau data yang diunggah terlalu besar. Harap unggah file yang lebih kecil sesuai batas maksimal server.');
+        });
     })->create();

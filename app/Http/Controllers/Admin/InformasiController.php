@@ -305,7 +305,7 @@ class InformasiController extends Controller
             if ($request->file_type === 'url') {
                 $validationRules['url'] = 'required|string';
             } else {
-                $validationRules['file'] = 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,webp|max:2048'; // Kembali ke 2MB dengan pembatasan MIME
+                $validationRules['file'] = 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,webp|max:10240'; // Naikkan ke 10MB agar kompresi gambar jalan
             }
 
             \Log::info('VALIDATION_START');
@@ -378,13 +378,15 @@ class InformasiController extends Controller
         if ($request->input('file_type') === 'url') {
             $validationRules['url'] = 'required|string';
         } else {
-            $validationRules['file'] = 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,png|max:2048';
+            $validationRules['file'] = 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,png|max:10240';
         }
         
         $validatedData = $request->validate($validationRules);
 
         try {
-            DB::transaction(function () use ($request, $informasi, $validatedData, $isSuperAdmin, $user) {
+            $oldFileToDelete = null; // Simpan path file lama
+
+            DB::transaction(function () use ($request, $informasi, $validatedData, $isSuperAdmin, $user, &$oldFileToDelete) {
                 // Map back to database columns
                 $dataToUpdate = [
                     'title' => $validatedData['title'],
@@ -412,7 +414,7 @@ class InformasiController extends Controller
 
                 if ($request->input('file_type') === 'url') {
                     if ($informasi->file) {
-                        Storage::disk('public')->delete($informasi->file);
+                        $oldFileToDelete = $informasi->file;
                     }
                     $dataToUpdate['file'] = null;
                     
@@ -424,7 +426,7 @@ class InformasiController extends Controller
                 } else {
                     if ($request->hasFile('file')) {
                         if ($informasi->file) {
-                            Storage::disk('public')->delete($informasi->file);
+                            $oldFileToDelete = $informasi->file;
                         }
                         $dataToUpdate['file'] = $this->storeFileWithCompression($request->file('file'));
                     }
@@ -453,6 +455,12 @@ class InformasiController extends Controller
 
                 $informasi->update($dataToUpdate);
             });
+
+            // BERHASIL UPDATE DATABASE, HAPUS FILE LAMA DARI DISK
+            if ($oldFileToDelete) {
+                Storage::disk('public')->delete($oldFileToDelete);
+            }
+
         } catch (AuthorizationException $e) {
             return redirect()->route('informasi-crud.edit', ['informasi' => $informasi->id])
                 ->withInput($request->input())
@@ -471,6 +479,7 @@ class InformasiController extends Controller
      */
     private function storeFileWithCompression($file)
     {
+        ini_set('memory_limit', '256M'); // Cegah OOM saat kompresi gambar besar
         $extension = strtolower($file->getClientOriginalExtension());
 
         // Cek apakah file adalah gambar

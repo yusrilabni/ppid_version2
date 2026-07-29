@@ -61,7 +61,7 @@ class InformasiPemkabController extends Controller
             'tahun' => 'required|integer',
             'deskripsi' => 'nullable|string',
             'upload_method' => 'required|in:file,link',
-            'file' => 'nullable|required_if:upload_method,file|file|mimes:pdf,doc,docx,xls,xlsx,zip,rar|max:2048',
+            'file' => 'nullable|required_if:upload_method,file|file|mimes:pdf,doc,docx,xls,xlsx,zip,rar|max:10240',
             'link' => 'nullable|required_if:upload_method,link|url|max:2048',
             'status' => 'required|in:draft,published,scheduled',
             'visibility' => 'required|in:public,private',
@@ -146,7 +146,7 @@ class InformasiPemkabController extends Controller
             'tahun' => 'required|integer',
             'deskripsi' => 'nullable|string',
             'upload_method' => 'required|in:file,link',
-            'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,zip,rar|max:2048',
+            'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,zip,rar|max:10240',
             'link' => 'nullable|url|max:2048',
             'status' => 'required|in:draft,published,scheduled',
             'visibility' => 'required|in:public,private',
@@ -156,16 +156,16 @@ class InformasiPemkabController extends Controller
         try {
             $data = $request->except(['file', 'link', 'upload_method']);
             
+            $oldFilePath = null; // Simpan file lama untuk dihapus NANTI
+
             if ($request->upload_method === 'file' && $request->hasFile('file')) {
-                // Delete old file if it exists and is not a link
                 if ($informasi_pemkab->file_path && !str_starts_with($informasi_pemkab->file_path, 'http')) {
-                    Storage::disk('public')->delete($informasi_pemkab->file_path);
+                    $oldFilePath = $informasi_pemkab->file_path;
                 }
                 $data['file_path'] = $request->file('file')->store('informasi_pemkab', 'public');
             } elseif ($request->upload_method === 'link' && $request->filled('link')) {
-                // Delete old file if it exists and is not a link
                 if ($informasi_pemkab->file_path && !str_starts_with($informasi_pemkab->file_path, 'http')) {
-                    Storage::disk('public')->delete($informasi_pemkab->file_path);
+                    $oldFilePath = $informasi_pemkab->file_path;
                 }
                 $data['file_path'] = $request->input('link');
             }
@@ -173,6 +173,7 @@ class InformasiPemkabController extends Controller
             // Keep the old file_path if upload method is link but it was already a link and they left it blank (validation handles this mostly)
             if (empty($data['file_path']) && empty($request->file) && empty($request->link)) {
                 $data['file_path'] = $informasi_pemkab->file_path;
+                $oldFilePath = null; // Batal menghapus karena tidak ada file baru
             }
             
             if (empty($data['file_path'])) {
@@ -227,6 +228,11 @@ class InformasiPemkabController extends Controller
                 }
             });
 
+            // BERHASIL UPDATE DATABASE, HAPUS FILE LAMA DARI DISK
+            if ($oldFilePath) {
+                Storage::disk('public')->delete($oldFilePath);
+            }
+
             return redirect()->route('frontend.informasi-pemkab.index')->with('success', 'Dokumen berhasil diperbarui');
         } catch (\Exception $e) {
             return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
@@ -245,10 +251,7 @@ class InformasiPemkabController extends Controller
         }
 
         DB::transaction(function () use ($informasi_pemkab) {
-            $informasi = Informasi::where('informasi_pemkab_id', $informasi_pemkab->id)->first();
-            if ($informasi) {
-                $informasi->delete();
-            }
+            Informasi::where('informasi_pemkab_id', $informasi_pemkab->id)->delete();
             $informasi_pemkab->delete();
         });
 
