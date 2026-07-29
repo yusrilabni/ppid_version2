@@ -339,17 +339,20 @@
                 this.$watch('visibility', (value) => {
                     if (value === 'private') {
                         this.showPrivateModal = true;
+                        document.body.classList.add('overflow-hidden');
                     }
                 });
             },
             
             cancelPrivate() {
                 this.showPrivateModal = false;
+                document.body.classList.remove('overflow-hidden');
                 this.visibility = 'public'; // Revert back to public
             },
             
             acceptPrivate() {
                 this.showPrivateModal = false;
+                document.body.classList.remove('overflow-hidden');
                 // keep visibility as private
             },
 
