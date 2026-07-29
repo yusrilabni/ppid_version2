@@ -177,22 +177,13 @@
                                     <label class="block text-gray-700 text-sm font-bold mb-3">Visibilitas</label>
                                     <div class="flex flex-col sm:flex-row space-y-3 sm:space-y-0 sm:space-x-4">
                                         <label class="flex-1 flex items-center p-3 border border-gray-200 rounded-xl bg-white cursor-pointer hover:border-blue-300 transition-all">
-                                            <input type="radio" name="visibility" value="public" x-model="visibility" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" {{ old('visibility', 'public') == 'public' ? 'checked' : '' }}>
+                                            <input type="radio" name="visibility" value="public" x-model="visibility" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
                                             <span class="ml-3 text-sm font-bold text-gray-800">Publik <span class="block font-normal text-xs text-gray-500">Dapat dilihat semua orang</span></span>
                                         </label>
                                         <label class="flex-1 flex items-center p-3 border border-gray-200 rounded-xl bg-white cursor-pointer hover:border-blue-300 transition-all">
-                                            <input type="radio" name="visibility" value="private" x-model="visibility" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500" {{ old('visibility') == 'private' ? 'checked' : '' }}>
+                                            <input type="radio" name="visibility" value="private" x-model="visibility" class="w-4 h-4 text-blue-600 border-gray-300 focus:ring-blue-500">
                                             <span class="ml-3 text-sm font-bold text-gray-800">Privat <span class="block font-normal text-xs text-gray-500">Hanya untuk internal</span></span>
                                         </label>
-                                    </div>
-                                    <div x-show="visibility === 'private'" x-collapse x-cloak class="mt-4">
-                                        <div class="bg-orange-50 border border-orange-200 rounded-xl p-4 flex items-start shadow-sm">
-                                            <i class="fas fa-lock text-orange-500 mt-0.5 text-lg mr-3"></i>
-                                            <p class="text-sm text-orange-800 font-medium leading-relaxed">
-                                                <strong class="block mb-1">Ketentuan Akses Privat:</strong>
-                                                Dokumen ini tidak akan dipublikasikan secara umum dan tidak akan muncul di daftar Informasi Berkala maupun Setiap Saat. Dokumen hanya dapat dilihat di dalam sistem jika login sebagai Admin/Superadmin. Namun, Anda dapat menyalin link detailnya nanti dan membagikannya secara langsung kepada pihak yang bersangkutan, sehingga <span class="font-bold">hanya yang memiliki link tersebut yang dapat melihat dokumennya</span>.
-                                            </p>
-                                        </div>
                                     </div>
                                     @error('visibility')
                                         <p class="text-red-500 text-xs mt-2 font-medium"><i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}</p>
@@ -279,6 +270,51 @@
             </div>
         </div>
     </div>
+
+    <!-- Modal Konfirmasi Private -->
+    <div x-data="{}" x-show="showPrivateModal" class="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto overflow-x-hidden" style="display: none;" x-cloak>
+        <!-- Backdrop -->
+        <div x-show="showPrivateModal" 
+             x-transition:enter="ease-out duration-300" 
+             x-transition:enter-start="opacity-0" 
+             x-transition:enter-end="opacity-100" 
+             x-transition:leave="ease-in duration-200" 
+             x-transition:leave-start="opacity-100" 
+             x-transition:leave-end="opacity-0" 
+             class="fixed inset-0 bg-black/60 backdrop-blur-sm"
+             @click="cancelPrivate()"></div>
+
+        <!-- Modal Panel -->
+        <div x-show="showPrivateModal"
+             x-transition:enter="ease-out duration-300"
+             x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+             x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+             x-transition:leave="ease-in duration-200"
+             x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+             x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+             class="relative bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 sm:p-8 m-4 z-[101]">
+             
+             <div class="flex items-center justify-center w-20 h-20 rounded-full bg-orange-100 mx-auto mb-6 shadow-inner">
+                 <i class="fas fa-lock text-4xl text-orange-500"></i>
+             </div>
+
+             <h3 class="text-2xl font-black text-gray-900 text-center mb-4 tracking-tight">Ketentuan Privat</h3>
+             
+             <p class="text-sm text-gray-600 text-center mb-8 leading-relaxed">
+                 Dokumen ini <strong class="text-red-600">tidak akan dibuka untuk umum</strong>.<br><br>
+                 Hanya dapat dilihat oleh Admin yang login. Anda dapat membagikan <strong class="text-gray-800">link detailnya</strong> nanti kepada orang yang bersangkutan, sehingga hanya yang memiliki link tersebut yang dapat melihatnya.
+             </p>
+
+             <div class="flex flex-col space-y-3">
+                 <button type="button" @click="acceptPrivate()" class="w-full px-6 py-3.5 bg-orange-500 text-white font-bold rounded-xl hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/30">
+                     Ya, Saya Setuju
+                 </button>
+                 <button type="button" @click="cancelPrivate()" class="w-full px-6 py-3 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition-colors">
+                     Batal (Kembali ke Publik)
+                 </button>
+             </div>
+        </div>
+    </div>
 </div>
 
 <script>
@@ -288,6 +324,7 @@
             uploadMethod: '{{ old('upload_method', 'file') }}',
             statusDokumen: '{{ old('status', 'published') }}',
             visibility: '{{ old('visibility', 'public') }}',
+            showPrivateModal: false,
             
             init() {
                 // Initialize jenis options if old value exists
@@ -295,8 +332,25 @@
                 if (initialKat) {
                     this.kategoriChanged(initialKat);
                 }
+
+                // Watch visibility changes
+                this.$watch('visibility', (value) => {
+                    if (value === 'private') {
+                        this.showPrivateModal = true;
+                    }
+                });
             },
             
+            cancelPrivate() {
+                this.showPrivateModal = false;
+                this.visibility = 'public'; // Revert back to public
+            },
+            
+            acceptPrivate() {
+                this.showPrivateModal = false;
+                // keep visibility as private
+            },
+
             kategoriChanged(val) {
                 let opts = [];
                 if (val && this.mapping[val]) {
