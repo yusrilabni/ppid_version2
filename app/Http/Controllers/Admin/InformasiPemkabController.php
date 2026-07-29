@@ -5,8 +5,10 @@ namespace App\Http\Controllers\Admin;
 use App\Http\Controllers\Controller;
 use Illuminate\Http\Request;
 use App\Models\InformasiPemkab;
+use App\Models\Informasi;
 use Illuminate\Support\Facades\Storage;
 use Illuminate\Support\Facades\Auth;
+use Illuminate\Support\Facades\DB;
 
 class InformasiPemkabController extends Controller
 {
@@ -14,6 +16,15 @@ class InformasiPemkabController extends Controller
     {
         $informasi_pemkabs = InformasiPemkab::with(['user', 'organization'])->latest()->get();
         return view('admin.informasi-pemkab.index', compact('informasi_pemkabs'));
+    }
+
+    private function mapToPpidCategory($kategori)
+    {
+        $berkala = ['Perencanaan', 'Keuangan', 'Monitoring, Evaluasi dan Pelaporan', 'Statistik dan Data', 'Pengumuman Lainnya'];
+        if (in_array($kategori, $berkala)) {
+            return 'Informasi Berkala';
+        }
+        return 'Informasi Setiap Saat';
     }
 
     public function create()
@@ -55,7 +66,33 @@ class InformasiPemkabController extends Controller
             $data['unit_id'] = Auth::user()->unit_id ?? null;
             $data['ip_address'] = $request->ip();
 
-            InformasiPemkab::create($data);
+            DB::transaction(function () use ($data, $request) {
+                $informasi_pemkab = InformasiPemkab::create($data);
+                
+                $file = null;
+                $url = null;
+                if ($request->upload_method === 'link') {
+                    $url = $informasi_pemkab->file_path;
+                } else {
+                    $file = $informasi_pemkab->file_path;
+                }
+
+                Informasi::create([
+                    'title' => $informasi_pemkab->judul,
+                    'deskripsi' => $informasi_pemkab->deskripsi ?? 'Dokumen Pemkab Kategori ' . $informasi_pemkab->kategori,
+                    'content' => 'Dokumen ini bersumber dari Informasi Pemkab.',
+                    'file' => $file,
+                    'url' => $url,
+                    'category' => $this->mapToPpidCategory($informasi_pemkab->kategori),
+                    'jenis_dokumen' => $informasi_pemkab->jenis_dokumen,
+                    'status' => 'BERLAKU',
+                    'tahun' => $informasi_pemkab->tahun,
+                    'tanggal_upload' => date('Y-m-d H:i:s'),
+                    'user_id' => $informasi_pemkab->user_id,
+                    'unit_id' => $informasi_pemkab->unit_id,
+                    'informasi_pemkab_id' => $informasi_pemkab->id,
+                ]);
+            });
 
             return redirect()->route('frontend.informasi-pemkab.index')->with('success', 'Dokumen berhasil ditambahkan');
         } catch (\Exception $e) {
@@ -121,7 +158,31 @@ class InformasiPemkabController extends Controller
                 throw new \Exception('File atau Link dokumen gagal diproses.');
             }
 
-            $informasi_pemkab->update($data);
+            DB::transaction(function () use ($informasi_pemkab, $data, $request) {
+                $informasi_pemkab->update($data);
+                
+                $file = null;
+                $url = null;
+                // Determine file or url based on the updated path
+                if (str_starts_with($informasi_pemkab->file_path, 'http')) {
+                    $url = $informasi_pemkab->file_path;
+                } else {
+                    $file = $informasi_pemkab->file_path;
+                }
+
+                $informasi = Informasi::where('informasi_pemkab_id', $informasi_pemkab->id)->first();
+                if ($informasi) {
+                    $informasi->update([
+                        'title' => $informasi_pemkab->judul,
+                        'deskripsi' => $informasi_pemkab->deskripsi ?? 'Dokumen Pemkab Kategori ' . $informasi_pemkab->kategori,
+                        'file' => $file,
+                        'url' => $url,
+                        'category' => $this->mapToPpidCategory($informasi_pemkab->kategori),
+                        'jenis_dokumen' => $informasi_pemkab->jenis_dokumen,
+                        'tahun' => $informasi_pemkab->tahun,
+                    ]);
+                }
+            });
 
             return redirect()->route('frontend.informasi-pemkab.index')->with('success', 'Dokumen berhasil diperbarui');
         } catch (\Exception $e) {
@@ -139,7 +200,14 @@ class InformasiPemkabController extends Controller
         if ($informasi_pemkab->file_path && !str_starts_with($informasi_pemkab->file_path, 'http')) {
             Storage::disk('public')->delete($informasi_pemkab->file_path);
         }
-        $informasi_pemkab->delete();
+
+        DB::transaction(function () use ($informasi_pemkab) {
+            $informasi = Informasi::where('informasi_pemkab_id', $informasi_pemkab->id)->first();
+            if ($informasi) {
+                $informasi->delete();
+            }
+            $informasi_pemkab->delete();
+        });
 
         return redirect()->route('admin.informasi-pemkab.index')->with('success', 'Dokumen berhasil dihapus.');
     }

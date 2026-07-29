@@ -1,61 +1,86 @@
-# 📋 Catatan Progres Pengembangan Fitur Informasi Pemkab
+# 📋 Catatan Progres & Dokumentasi Teknis Fitur "Informasi Pemkab"
 
-Dokumen ini berisi rangkuman seluruh pembaruan, penambahan fitur, dan perbaikan tampilan yang telah dilakukan pada modul **Informasi Pemkab** (Front-end & Back-end). Dokumen ini berfungsi sebagai panduan jika diperlukan modifikasi atau perbaikan di masa mendatang.
-
----
-
-## 1. Implementasi URL Slug (SEO & Keamanan)
-- **Perubahan**: Mengubah akses URL dari berbasis ID (contoh: `/informasi-pemkab/1`) menjadi berbasis Slug yang terbaca (contoh: `/informasi-pemkab/lhkpn-kepala-dinas-perpustakaan-1`).
-- **File Terdampak**: 
-  - `app/Models/InformasiPemkab.php`: Penambahan method `boot()` dan `generateUniqueSlug()` untuk mem-parsing judul menjadi slug secara otomatis setiap kali dokumen baru dibuat.
-  - `routes/web.php`: Parameter route `show` dan `download` diubah untuk menerima {slug}.
-  - Blade views (`index`, `show`, `edit`): Mengganti `$dokumen->id` menjadi `$dokumen->slug ?? $dokumen->id`.
-
-## 2. Sistem Visibilitas & "Share Link" (Private vs Publik)
-- **Perubahan**: Dokumen dengan status *Private* tidak akan muncul di daftar/halaman index publik, tetapi **dapat diakses (dilihat & diunduh)** oleh siapa pun jika memiliki link langsung (URL Detail).
-- **File Terdampak**: 
-  - `app/Http/Controllers/Front/InformasiPemkabController.php`: Menghapus autentikasi ketat (`auth()->check()`) yang memblokir akses ke fungsi `show()` dan `download()`. Query di fungsi `index()` tetap memfilter status private.
-
-## 3. Pembatasan Hak Akses Aksi (Edit & Hapus)
-- **Perubahan**: Pengguna (Dinas/Unit) hanya bisa mengedit dan menghapus dokumen yang mereka unggah sendiri. Dinas A tidak bisa menghapus dokumen milik Dinas B. Superadmin tetap bisa menghapus semuanya.
-- **File Terdampak**:
-  - `resources/views/frontend/informasi-pemkab/index.blade.php`: Pengkondisian di dalam tabel menggunakan `auth()->user()->isAdmin() || $dokumen->organization_id == auth()->user()->unit_id`.
-
-## 4. Statistik (Jumlah Dilihat & Diunduh)
-- **Perubahan**: Sistem kini menghitung secara otomatis berapa kali sebuah dokumen dilihat (dibuka detailnya) dan berapa kali dokumen tersebut diunduh.
-- **File Terdampak**: 
-  - `app/Http/Controllers/Front/InformasiPemkabController.php`: Penambahan metode `increment('views_count')` pada fungsi `show` dan `increment('downloads_count')` pada fungsi `download`.
-  - **⚠️ PERHATIAN**: Sistem masih membutuhkan eksekusi `php artisan migrate` di server produksi (Production) untuk membuat kolom `slug`, `views_count`, dan `downloads_count` di database. Tanpa migration ini, fitur ini akan *error* saat dijalankan.
-
-## 5. Perbaikan UI/UX (Antarmuka Pengguna)
-- **Tombol Aksi**: Teks tombol yang panjang diubah menjadi ikon (*FontAwesome*) bergaya horizontal.
-- **Preview Dokumen**: Halaman detail (`show.blade.php`) kini memiliki kotak pratinjau (*iframe*) yang langsung menampilkan isi PDF layaknya modul galeri.
-- **Metadata**: 
-  - Label "Dinas / Instansi" diubah menjadi "Diunggah oleh:".
-  - Label "Tanggal Rilis" disederhanakan menjadi "Tahun Dokumen".
-  - Jika deskripsi kosong, kotak deskripsi otomatis disembunyikan.
-- **Watermark**: Latar belakang dengan logo lambang kabupaten dikonfigurasi agar ukurannya proporsional dan tidak merusak tata letak tabel (menggunakan filter grayscale dengan opacity super rendah).
-
-## 6. Layout Responsif (Mobile & Desktop)
-- **Desktop/Tablet**: Daftar dokumen dirender dalam bentuk tabel utuh bergaya modern yang bersih.
-- **Mobile/Android**: Tabel disembunyikan dan otomatis berubah menjadi tampilan berbasis **Card (Kartu)** murni:
-  - Kartu melengkung (*rounded*) dengan *shadow*.
-  - Ikon file, judul, badge "Private", teks deskripsi (dipotong rapi / *truncate*), dan informasi metadata disusun vertikal berurutan.
-  - Kategori & Tahun dikelompokkan dalam lencana (*chips*) horizontal.
-  - Tombol aksi merentang agar ramah sentuhan (Touch-Friendly).
-- **File Terdampak**: Menggunakan kelas bawaan Tailwind `hidden md:block` (untuk tabel) dan `block md:hidden` (untuk kartu) pada `index.blade.php`.
-
-## 7. Breadcrumbs & Spacing
-- **Breadcrumbs**: 
-  - Dikembalikan ke format rata kiri (*align-left*).
-  - Ditambahkan ikon (*FontAwesome*) spesifik (Rumah, Layer, PDF, Plus, Pensil) untuk setiap *item*.
-  - Diatur agar `flex-wrap` sehingga jika panjang di layar HP, teks akan turun ke baris baru dengan rapi tanpa merusak layout.
-- **Spacing (Margin Atas)**:
-  - Mengurangi padding atas yang berlebihan (`pt-20` menjadi `pt-6` atau `pt-4`) di keempat halaman (`index`, `show`, `create`, `edit`) agar *breadcrumbs* dan judul tidak turun terlalu jauh dari batas atas *navbar*.
+Dokumen ini adalah rekam jejak **sangat komprehensif** mengenai seluruh perombakan fitur **Informasi Pemkab**. Jika suatu saat Anda (atau developer lain) ingin melakukan kustomisasi lanjutan, Anda cukup merujuk pada penjelasan di bawah ini.
 
 ---
 
-### Tindakan Selanjutnya yang Belum Tuntas (Pending Action)
-1. **Menjalankan Migration di Server Database (Production)**: Perlu dilakukan oleh *Database Administrator* (DBA) atau Developer yang memegang akses terminal server dengan menjalankan perintah:
-   `php artisan migrate`
-   *(Atau secara manual menambahkan kolom string `slug`, integer `views_count`, dan integer `downloads_count` ke tabel `informasi_pemkabs`).*
+## 1. Fitur URL Slug Dinamis (Pengganti ID)
+Agar URL lebih cantik, aman, dan bagus untuk SEO, kita mengganti URL angka acak (`/1`) menjadi URL teks/slug (`/lhkpn-kepala-dinas-1`).
+
+### 📂 File yang Dimodifikasi:
+- **`app/Models/InformasiPemkab.php`**
+  - **Penambahan**: Metode `boot()` untuk memantau saat dokumen baru di-*create*.
+  - **Logika Kode**: Saat dokumen di-*save*, sistem akan mengambil isi `$model->judul` dan memformatnya menjadi *slug* menggunakan `Str::slug()`.
+  - Sistem juga akan mengecek ke database melalui fungsi `generateUniqueSlug()`. Jika ada dokumen dengan judul sama, otomatis akan ditambahkan angka di belakangnya (contoh: `lhkpn-kepala-dinas-1`, `lhkpn-kepala-dinas-2`).
+- **`routes/web.php`**
+  - Mengubah penamaan rute dari yang asalnya menangkap ID menjadi menangkap URL utuh:
+    ```php
+    Route::get('/{informasi_pemkab:slug}', [InformasiPemkabController::class, 'show']);
+    ```
+
+## 2. Hak Akses (Visibilitas Private & Fitur Share Link)
+Dokumen *Private* kini tidak lagi di-blokir sepenuhnya. Tujuannya agar Anda bisa membagikan link dokumen ke orang tertentu (Share Link).
+
+### 📂 File yang Dimodifikasi:
+- **`app/Http/Controllers/Front/InformasiPemkabController.php`**
+  - Pada fungsi `index()`: *Query* tetap difilter (`where('visibility', 'public')`) agar dokumen private tidak pernah muncul di daftar depan.
+  - Pada fungsi `show()` dan `download()`: Sistem pengecekan login (`if(auth()->check())`) **dihapus**. Artinya, siapa pun yang punya link (slug) dokumen *private* tetap bisa mengakses halaman detail dan mengunduh filenya.
+- **`resources/views/frontend/informasi-pemkab/index.blade.php`** (Untuk Admin/User Login)
+  - Memberikan warna *background* oranye kemerahan (`bg-orange-50/40`) pada tabel/kartu jika dokumen berstatus Private.
+  - Menambahkan *badge* kecil bernada `<i class="fas fa-lock"></i> Private`.
+
+## 3. Logika Aksi Edit & Hapus (Hak Kepemilikan)
+Sebelumnya siapa saja yang login bisa menghapus dokumen dinas lain. Sekarang sudah dibatasi.
+
+### 📂 File yang Dimodifikasi:
+- **`resources/views/frontend/informasi-pemkab/index.blade.php`**
+  - **Potongan Logika**:
+    ```blade
+    @if(auth()->check() && (auth()->user()->isAdmin() || $dokumen->organization_id == auth()->user()->unit_id))
+        <!-- Tombol Edit & Hapus akan muncul di sini -->
+    @endif
+    ```
+  - **Penjelasan**: Tombol *Edit* dan *Hapus* hanya dimunculkan jika user yang login adalah `Superadmin` ATAU ID Instansi/Dinas user (`auth()->user()->unit_id`) cocok dengan ID Instansi pemilik dokumen (`$dokumen->organization_id`).
+
+## 4. Pelacakan Statistik (Jumlah Dilihat & Diunduh)
+Sistem sekarang mencatat berapa kali suatu dokumen dilirik dan di-download secara *real-time*.
+
+### 📂 File yang Dimodifikasi:
+- **`app/Http/Controllers/Front/InformasiPemkabController.php`**
+  - **Fungsi `show($slug)`**: Menambahkan perintah `$informasi_pemkab->increment('views_count');` tepat sebelum me-render *view* `show.blade.php`.
+  - **Fungsi `download($slug)`**: Menambahkan perintah `$informasi_pemkab->increment('downloads_count');` tepat sebelum memaksa *browser* untuk mengunduh (`response()->download()`).
+- **`database/migrations/xxxx_add_slug_views_downloads_to_informasi_pemkabs_table.php`**
+  - Ini adalah *file migration* yang telah kita buat.
+  - ⚠️ **SANGAT PENTING (BLOKER)**: Fitur ini tidak akan berjalan di *server production* sebelum perintah `php artisan migrate` dijalankan. Jika tidak dijalankan, kolom `views_count` di *database* dianggap tidak ada dan akan menyebabkan tampilan *error* / putih.
+
+## 5. Perombakan Total UI/UX & Desain Responsif (Tailwind)
+Tampilan daftar dan detail dokumen telah disulap agar berkelas premium, estetik, dan *Mobile-Friendly*.
+
+### 📂 File yang Dimodifikasi:
+- **`resources/views/frontend/informasi-pemkab/show.blade.php`** (Halaman Detail)
+  - **Fitur Pratinjau (Iframe Viewer)**: Menyisipkan `<iframe src="{{ asset(...) }}#toolbar=0"></iframe>` agar isi PDF langsung bisa dibaca di dalam *website* tanpa harus men-downloadnya terlebih dahulu.
+  - Menyembunyikan blok deskripsi jika admin tidak mengisi deskripsinya (`@if($dokumen->deskripsi)`).
+  - Label bahasa kaku seperti "Dinas/Instansi" diganti dengan teks mengalir seperti "Diunggah oleh:".
+- **`resources/views/frontend/informasi-pemkab/index.blade.php`** (Halaman Daftar Utama)
+  - **Desktop View (Tabel murni)**: 
+    - Dibungkus dalam `<div class="hidden md:block">`. Tabel menggunakan class Tailwind standar agar kokoh di PC/Laptop.
+  - **Mobile View (Card murni)**:
+    - Dibungkus dalam `<div class="block md:hidden">`. 
+    - Menggunakan struktur susunan kotak (*Cards*) di mana *icon* diletakkan di kiri atas, disusul judul tebal yang terpotong rapi (`line-clamp-2`), dan deretan lencana (*badge/chips*) informasi seperti Tahun dan Kategori saling berjajar menggunakan `flex-wrap gap-1.5`.
+    - Semua tombol aksi (Mata, Unduh, Edit, Hapus) menggunakan *icon* dari **FontAwesome** tanpa teks panjang, direntangkan di dasar *Card* agar nyaman disentuh ibu jari layar HP.
+  - **Background Watermark**: Logo Kabupaten Sinjai direpetisi menggunakan trik `opacity: 0.03` dan `filter: grayscale(100%)` agar tetap elegan dan tidak menutupi kejelasan teks di depannya.
+
+## 6. Penyesuaian Spacing & Jarak Breadcrumbs
+Anda meminta agar jarak antara navigasi (*navbar*) dan judul/breadcrumbs tidak terlalu jauh memakan tempat.
+
+### 📂 File yang Dimodifikasi:
+- **`resources/views/frontend/informasi-pemkab/index.blade.php`** & **`show.blade.php`**: Class lama `pt-20` (padding atas 5rem/80px) dipangkas menjadi `pt-6 md:pt-10` agar pas menempel tanpa terlihat terlalu "jatuh" ke tengah.
+- **`resources/views/admin/informasi-pemkab/create.blade.php`** & **`edit.blade.php`**: Class `pt-8` dipangkas menjadi `pt-4 md:pt-6`.
+- *Breadcrumbs* kini disejajarkan ke rata kiri (`justify-start w-full text-left`) di semua layar, lengkap dengan penambahan ikon visual (contoh: `<i class="fas fa-home"></i> Beranda`).
+
+---
+
+## 📝 Kesimpulan & To-Do List Akhir
+Semua rancangan kode dan fungsi logika telah tersimpan dengan aman di repositori. 
+Langkah terakhir yang wajib diselesaikan oleh Administrator Server:
+✅ **Jalankan Migration**: Masuk ke terminal *server production/hosting* lalu ketikkan perintah: `php artisan migrate`. Ini akan memasukkan tabel/kolom baru (Slug & Counter Statistik) ke sistem database. Tanpa ini, halaman detail berpotensi *crash*.

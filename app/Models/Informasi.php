@@ -30,6 +30,7 @@ class Informasi extends Model
         'sub_standar_layanan_id',
         'official_id',
         'lhkpn_id',
+        'informasi_pemkab_id',
     ];
 
     protected $casts = [
