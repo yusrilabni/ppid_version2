@@ -294,49 +294,51 @@
                     </div>
 
                     <!-- Modal Konfirmasi Private -->
-                    <div x-show="showPrivateModal" class="fixed inset-0 z-[100] flex items-center justify-center overflow-y-auto overflow-x-hidden" style="display: none;" x-cloak>
-                        <!-- Backdrop -->
-                        <div x-show="showPrivateModal" 
-                             x-transition:enter="ease-out duration-300" 
-                             x-transition:enter-start="opacity-0" 
-                             x-transition:enter-end="opacity-100" 
-                             x-transition:leave="ease-in duration-200" 
-                             x-transition:leave-start="opacity-100" 
-                             x-transition:leave-end="opacity-0" 
-                             class="fixed inset-0 bg-black/60 backdrop-blur-sm"
-                             @click="cancelPrivate()"></div>
+                    <template x-teleport="body">
+                        <div x-show="showPrivateModal" class="fixed inset-0 z-[9999] flex items-center justify-center overflow-y-auto overflow-x-hidden" style="display: none;" x-cloak>
+                            <!-- Backdrop -->
+                            <div x-show="showPrivateModal" 
+                                 x-transition:enter="ease-out duration-300" 
+                                 x-transition:enter-start="opacity-0" 
+                                 x-transition:enter-end="opacity-100" 
+                                 x-transition:leave="ease-in duration-200" 
+                                 x-transition:leave-start="opacity-100" 
+                                 x-transition:leave-end="opacity-0" 
+                                 class="fixed inset-0 bg-black/60 backdrop-blur-sm"
+                                 @click="cancelPrivate()"></div>
 
-                        <!-- Modal Panel -->
-                        <div x-show="showPrivateModal"
-                             x-transition:enter="ease-out duration-300"
-                             x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                             x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
-                             x-transition:leave="ease-in duration-200"
-                             x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
-                             x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
-                             class="relative bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 sm:p-8 m-4 z-[101]">
-                             
-                             <div class="flex items-center justify-center w-20 h-20 rounded-full bg-orange-100 mx-auto mb-6 shadow-inner">
-                                 <i class="fas fa-lock text-4xl text-orange-500"></i>
-                             </div>
+                            <!-- Modal Panel -->
+                            <div x-show="showPrivateModal"
+                                 x-transition:enter="ease-out duration-300"
+                                 x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                 x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100"
+                                 x-transition:leave="ease-in duration-200"
+                                 x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100"
+                                 x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95"
+                                 class="relative bg-white rounded-3xl shadow-2xl w-full max-w-md p-6 sm:p-8 m-4 z-[10000]">
+                                 
+                                 <div class="flex items-center justify-center w-20 h-20 rounded-full bg-orange-100 mx-auto mb-6 shadow-inner">
+                                     <i class="fas fa-lock text-4xl text-orange-500"></i>
+                                 </div>
 
-                             <h3 class="text-2xl font-black text-gray-900 text-center mb-4 tracking-tight">Ketentuan Privat</h3>
-                             
-                             <p class="text-sm text-gray-600 text-center mb-8 leading-relaxed">
-                                 Dokumen ini <strong class="text-red-600">tidak akan dibuka untuk umum</strong>.<br><br>
-                                 Hanya dapat dilihat oleh Admin yang login. Anda dapat membagikan <strong class="text-gray-800">link detailnya</strong> nanti kepada orang yang bersangkutan, sehingga hanya yang memiliki link tersebut yang dapat melihatnya.
-                             </p>
+                                 <h3 class="text-2xl font-black text-gray-900 text-center mb-4 tracking-tight">Ketentuan Privat</h3>
+                                 
+                                 <p class="text-sm text-gray-600 text-center mb-8 leading-relaxed">
+                                     Dokumen ini <strong class="text-red-600">tidak akan dibuka untuk umum</strong>.<br><br>
+                                     Hanya dapat dilihat oleh Admin yang login. Anda dapat membagikan <strong class="text-gray-800">link detailnya</strong> nanti kepada orang yang bersangkutan, sehingga hanya yang memiliki link tersebut yang dapat melihatnya.
+                                 </p>
 
-                             <div class="flex flex-col space-y-3">
-                                 <button type="button" @click="acceptPrivate()" class="w-full px-6 py-3.5 bg-orange-500 text-white font-bold rounded-xl hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/30">
-                                     Ya, Saya Setuju
-                                 </button>
-                                 <button type="button" @click="cancelPrivate()" class="w-full px-6 py-3 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition-colors">
-                                     Batal (Kembali ke Publik)
-                                 </button>
-                             </div>
+                                 <div class="flex flex-col space-y-3">
+                                     <button type="button" @click="acceptPrivate()" class="w-full px-6 py-3.5 bg-orange-500 text-white font-bold rounded-xl hover:bg-orange-600 transition-colors shadow-lg shadow-orange-500/30">
+                                         Ya, Saya Setuju
+                                     </button>
+                                     <button type="button" @click="cancelPrivate()" class="w-full px-6 py-3 bg-gray-100 text-gray-700 font-bold rounded-xl hover:bg-gray-200 transition-colors">
+                                         Batal (Kembali ke Publik)
+                                     </button>
+                                 </div>
+                            </div>
                         </div>
-                    </div>
+                    </template>
                 </form>
             </div>
         </div>
