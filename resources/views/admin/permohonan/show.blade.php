@@ -869,7 +869,7 @@
                                         <label for="response_type_followup" class="flex items-center cursor-pointer">
                                             <div class="relative">
                                                 <input type="radio" id="response_type_followup" name="response_type"
-                                                    value="Tindaklanjut" class="sr-only peer" @if (!$defaultInitialChecked) checked @endif>
+                                                    value="Tindaklanjut Permohonan" class="sr-only peer" @if (!$defaultInitialChecked) checked @endif>
                                                 <div
                                                     class="h-6 w-6 rounded-full border-2 border-gray-300 peer-checked:border-purple-500 peer-checked:bg-purple-500 flex items-center justify-center transition-all duration-200">
                                                     <div class="h-2.5 w-2.5 rounded-full bg-white hidden peer-checked:block"></div>
@@ -886,7 +886,7 @@
                                     </div>
                                 </div>
                             @else
-                                <input type="hidden" name="response_type" value="Tindaklanjut">
+                                <input type="hidden" name="response_type" value="Tindaklanjut Permohonan">
                             @endif
 
                             <!-- Submit Button -->
