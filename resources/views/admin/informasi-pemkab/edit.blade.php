@@ -217,7 +217,7 @@
                                     <input type="radio" name="upload_method" value="file" x-model="uploadMethod" class="w-5 h-5 text-amber-600 border-gray-300 focus:ring-amber-500">
                                     <div class="ml-3">
                                         <span class="block text-sm font-bold text-gray-800">Upload File Lokal</span>
-                                        <span class="block text-xs text-gray-500 mt-0.5">PDF, Word, Excel, ZIP (Max 2MB)</span>
+                                        <span class="block text-xs text-gray-500 mt-0.5">PDF, Word, Excel, ZIP, PNG, JPG, WEBP, SVG (Max 10MB)</span>
                                     </div>
                                 </label>
                                 <label class="flex items-center cursor-pointer p-4 border border-amber-100 rounded-xl bg-white shadow-sm hover:shadow-md hover:border-amber-300 transition-all">
@@ -236,7 +236,7 @@
                             <div x-show="uploadMethod === 'file'" x-collapse x-cloak>
                                 <div class="bg-white p-5 rounded-xl border border-gray-200 shadow-sm">
                                     <label for="file" class="block text-gray-700 text-sm font-bold mb-3">Upload File Baru (Biarkan kosong jika tidak diubah)</label>
-                                    <input type="file" name="file" id="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.zip,.rar"
+                                    <input type="file" name="file" id="file" accept=".pdf,.doc,.docx,.xls,.xlsx,.zip,.rar,.png,.jpg,.jpeg,.webp,.svg"
                                         class="w-full text-sm text-gray-600 file:mr-4 file:py-3 file:px-6 file:rounded-xl file:border-0 file:text-sm file:font-bold file:bg-amber-100 file:text-amber-700 hover:file:bg-amber-200 transition-all cursor-pointer bg-gray-50 rounded-xl border border-gray-100">
                                     
                                     @if(!$isLink && $informasi_pemkab->file_path)

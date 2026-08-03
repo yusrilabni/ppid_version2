@@ -61,7 +61,7 @@ class InformasiPemkabController extends Controller
             'tahun' => 'required|integer',
             'deskripsi' => 'nullable|string',
             'upload_method' => 'required|in:file,link',
-            'file' => 'nullable|required_if:upload_method,file|file|mimes:pdf,doc,docx,xls,xlsx,zip,rar|max:10240',
+            'file' => 'nullable|required_if:upload_method,file|file|mimes:pdf,doc,docx,xls,xlsx,zip,rar,png,jpg,jpeg,webp,svg|max:10240',
             'link' => 'nullable|required_if:upload_method,link|url|max:2048',
             'status' => 'required|in:draft,published,scheduled',
             'visibility' => 'required|in:public,private',
@@ -86,7 +86,21 @@ class InformasiPemkabController extends Controller
             $data = $request->except(['file', 'link', 'upload_method']);
             
             if ($request->upload_method === 'file' && $request->hasFile('file')) {
-                $data['file_path'] = $request->file('file')->store('informasi_pemkab', 'public');
+                $file = $request->file('file');
+                $extension = strtolower($file->getClientOriginalExtension());
+                
+                if (in_array($extension, ['png', 'jpg', 'jpeg'])) {
+                    $imageManager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+                    $imageInstance = $imageManager->read($file->path());
+                    $imageInstance = $imageInstance->toWebp(100);
+                    
+                    $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.webp';
+                    $filePath = 'informasi_pemkab/' . $fileName;
+                    \Illuminate\Support\Facades\Storage::disk('public')->put($filePath, $imageInstance->toString());
+                    $data['file_path'] = $filePath;
+                } else {
+                    $data['file_path'] = $file->store('informasi_pemkab', 'public');
+                }
             } elseif ($request->upload_method === 'link' && $request->filled('link')) {
                 $data['file_path'] = $request->input('link');
             }
@@ -160,7 +174,7 @@ class InformasiPemkabController extends Controller
             'tahun' => 'required|integer',
             'deskripsi' => 'nullable|string',
             'upload_method' => 'required|in:file,link',
-            'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,zip,rar|max:10240',
+            'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,zip,rar,png,jpg,jpeg,webp,svg|max:10240',
             'link' => 'nullable|url|max:2048',
             'status' => 'required|in:draft,published,scheduled',
             'visibility' => 'required|in:public,private',
@@ -176,7 +190,22 @@ class InformasiPemkabController extends Controller
                 if ($informasi_pemkab->file_path && !str_starts_with($informasi_pemkab->file_path, 'http')) {
                     $oldFilePath = $informasi_pemkab->file_path;
                 }
-                $data['file_path'] = $request->file('file')->store('informasi_pemkab', 'public');
+                
+                $file = $request->file('file');
+                $extension = strtolower($file->getClientOriginalExtension());
+                
+                if (in_array($extension, ['png', 'jpg', 'jpeg'])) {
+                    $imageManager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+                    $imageInstance = $imageManager->read($file->path());
+                    $imageInstance = $imageInstance->toWebp(100);
+                    
+                    $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.webp';
+                    $filePath = 'informasi_pemkab/' . $fileName;
+                    \Illuminate\Support\Facades\Storage::disk('public')->put($filePath, $imageInstance->toString());
+                    $data['file_path'] = $filePath;
+                } else {
+                    $data['file_path'] = $file->store('informasi_pemkab', 'public');
+                }
             } elseif ($request->upload_method === 'link' && $request->filled('link')) {
                 if ($informasi_pemkab->file_path && !str_starts_with($informasi_pemkab->file_path, 'http')) {
                     $oldFilePath = $informasi_pemkab->file_path;
