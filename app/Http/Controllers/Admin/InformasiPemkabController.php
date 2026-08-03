@@ -90,6 +90,8 @@ class InformasiPemkabController extends Controller
                 $extension = strtolower($file->getClientOriginalExtension());
                 
                 if (in_array($extension, ['png', 'jpg', 'jpeg'])) {
+                    // Increase memory limit to prevent OOM during WebP conversion of large images
+                    ini_set('memory_limit', '512M');
                     $imageManager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
                     $imageInstance = $imageManager->read($file->path());
                     $imageInstance = $imageInstance->toWebp(100);
@@ -200,6 +202,8 @@ class InformasiPemkabController extends Controller
                 $extension = strtolower($file->getClientOriginalExtension());
                 
                 if (in_array($extension, ['png', 'jpg', 'jpeg'])) {
+                    // Increase memory limit to prevent OOM during WebP conversion of large images
+                    ini_set('memory_limit', '512M');
                     $imageManager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
                     $imageInstance = $imageManager->read($file->path());
                     $imageInstance = $imageInstance->toWebp(100);

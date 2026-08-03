@@ -98,6 +98,7 @@ class GaleriController extends Controller
             $image = $request->file('image');
 
             // Use Intervention Image to process the image
+            ini_set('memory_limit', '512M');
             $imageManager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
             $imageInstance = $imageManager->read($image->path());
 
@@ -237,6 +238,7 @@ class GaleriController extends Controller
             $image = $request->file('image');
 
             // Use Intervention Image to process the image
+            ini_set('memory_limit', '512M');
             $imageManager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
             $imageInstance = $imageManager->read($image->path());
 
