@@ -48,7 +48,11 @@ class FrontendController extends Controller
         });
 
         $galeri = Cache::remember('galeri_home_pinned', 3600, function () {
-            return Galeri::orderBy('is_pinned', 'desc')->orderBy('created_at', 'desc')->take(8)->get();
+            $query = Galeri::query();
+            if (\Illuminate\Support\Facades\Schema::hasColumn('galeris', 'is_pinned')) {
+                $query->orderBy('is_pinned', 'desc');
+            }
+            return $query->orderBy('created_at', 'desc')->take(8)->get();
         });
         
         // --- START of Statistics Logic ---
@@ -190,7 +194,11 @@ class FrontendController extends Controller
 
     public function allGaleri()
     {
-        $galeri = Galeri::orderBy('is_pinned', 'desc')->orderBy('created_at', 'desc')->paginate(12); // Fetch all galleries, paginated
+        $query = Galeri::query();
+        if (\Illuminate\Support\Facades\Schema::hasColumn('galeris', 'is_pinned')) {
+            $query->orderBy('is_pinned', 'desc');
+        }
+        $galeri = $query->orderBy('created_at', 'desc')->paginate(12); // Fetch all galleries, paginated
         
         $breadcrumbs = [
             ['title' => 'Beranda', 'url' => route('home'), 'icon' => 'fas fa-home'],

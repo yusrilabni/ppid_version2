@@ -18,7 +18,14 @@ class GaleriController extends Controller
      */
     public function index()
     {
-        $galeris = Galeri::orderBy('is_pinned', 'desc')->orderBy('created_at', 'desc')->get();
+        $query = Galeri::query();
+        
+        if (\Illuminate\Support\Facades\Schema::hasColumn('galeris', 'is_pinned')) {
+            $query->orderBy('is_pinned', 'desc');
+        }
+        
+        $galeris = $query->orderBy('created_at', 'desc')->get();
+        
         return view('admin.galeri.index', compact('galeris'));
     }
 
@@ -30,6 +37,10 @@ class GaleriController extends Controller
      */
     public function togglePin(Galeri $galeri)
     {
+        if (!\Illuminate\Support\Facades\Schema::hasColumn('galeris', 'is_pinned')) {
+            return back()->with('deleted', 'Fitur Pin belum aktif. Silakan hubungi admin server untuk menjalankan php artisan migrate.');
+        }
+
         $galeri->update([
             'is_pinned' => !$galeri->is_pinned
         ]);
