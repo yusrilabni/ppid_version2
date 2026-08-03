@@ -90,13 +90,18 @@ class InformasiPemkabController extends Controller
                 $extension = strtolower($file->getClientOriginalExtension());
                 
                 if (in_array($extension, ['png', 'jpg', 'jpeg'])) {
-                    $imageManager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+                    $imageManager = new \Intervention\Image\ImageManager(\Intervention\Image\Drivers\Gd\Driver::class);
                     $imageInstance = $imageManager->read($file->path());
                     $imageInstance = $imageInstance->toWebp(100);
                     
+                    $imagePath = tempnam(sys_get_temp_dir(), 'informasi_pemkab_') . '.webp';
+                    $imageInstance->save($imagePath);
+                    
                     $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.webp';
                     $filePath = 'informasi_pemkab/' . $fileName;
-                    \Illuminate\Support\Facades\Storage::disk('public')->put($filePath, $imageInstance->toString());
+                    \Illuminate\Support\Facades\Storage::disk('public')->put($filePath, file_get_contents($imagePath));
+                    
+                    unlink($imagePath);
                     $data['file_path'] = $filePath;
                 } else {
                     $data['file_path'] = $file->store('informasi_pemkab', 'public');
@@ -195,13 +200,18 @@ class InformasiPemkabController extends Controller
                 $extension = strtolower($file->getClientOriginalExtension());
                 
                 if (in_array($extension, ['png', 'jpg', 'jpeg'])) {
-                    $imageManager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+                    $imageManager = new \Intervention\Image\ImageManager(\Intervention\Image\Drivers\Gd\Driver::class);
                     $imageInstance = $imageManager->read($file->path());
                     $imageInstance = $imageInstance->toWebp(100);
                     
+                    $imagePath = tempnam(sys_get_temp_dir(), 'informasi_pemkab_') . '.webp';
+                    $imageInstance->save($imagePath);
+                    
                     $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.webp';
                     $filePath = 'informasi_pemkab/' . $fileName;
-                    \Illuminate\Support\Facades\Storage::disk('public')->put($filePath, $imageInstance->toString());
+                    \Illuminate\Support\Facades\Storage::disk('public')->put($filePath, file_get_contents($imagePath));
+                    
+                    unlink($imagePath);
                     $data['file_path'] = $filePath;
                 } else {
                     $data['file_path'] = $file->store('informasi_pemkab', 'public');
