@@ -84,7 +84,17 @@
                                     </a>
                                 </div>
                             @else
-                                <iframe src="{{ asset('storage/' . $informasi_pemkab->file_path) }}#toolbar=0" class="w-full h-full border-0"></iframe>
+                                @php
+                                    $extension = pathinfo($informasi_pemkab->file_path, PATHINFO_EXTENSION);
+                                    $isImage = in_array(strtolower($extension), ['png', 'jpg', 'jpeg', 'webp', 'svg', 'gif']);
+                                @endphp
+                                @if($isImage)
+                                    <div class="w-full h-full flex items-center justify-center p-4 bg-gray-100 overflow-hidden">
+                                        <img src="{{ asset('storage/' . $informasi_pemkab->file_path) }}" alt="{{ $informasi_pemkab->judul }}" class="max-w-full max-h-full object-contain rounded-lg shadow-sm">
+                                    </div>
+                                @else
+                                    <iframe src="{{ asset('storage/' . $informasi_pemkab->file_path) }}#toolbar=0" class="w-full h-full border-0"></iframe>
+                                @endif
                             @endif
                         @else
                             <div class="w-full h-full flex items-center justify-center text-gray-400 flex-col">
