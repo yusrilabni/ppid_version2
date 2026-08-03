@@ -90,7 +90,7 @@ class InformasiPemkabController extends Controller
                 $extension = strtolower($file->getClientOriginalExtension());
                 
                 if (in_array($extension, ['png', 'jpg', 'jpeg'])) {
-                    $imageManager = new \Intervention\Image\ImageManager(\Intervention\Image\Drivers\Gd\Driver::class);
+                    $imageManager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
                     $imageInstance = $imageManager->read($file->path());
                     $imageInstance = $imageInstance->toWebp(100);
                     
@@ -149,7 +149,7 @@ class InformasiPemkabController extends Controller
             });
 
             return redirect()->route('frontend.informasi-pemkab.index')->with('success', 'Dokumen berhasil ditambahkan');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
         }
     }
@@ -200,7 +200,7 @@ class InformasiPemkabController extends Controller
                 $extension = strtolower($file->getClientOriginalExtension());
                 
                 if (in_array($extension, ['png', 'jpg', 'jpeg'])) {
-                    $imageManager = new \Intervention\Image\ImageManager(\Intervention\Image\Drivers\Gd\Driver::class);
+                    $imageManager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
                     $imageInstance = $imageManager->read($file->path());
                     $imageInstance = $imageInstance->toWebp(100);
                     
@@ -287,7 +287,7 @@ class InformasiPemkabController extends Controller
             }
 
             return redirect()->route('frontend.informasi-pemkab.index')->with('success', 'Dokumen berhasil diperbarui');
-        } catch (\Exception $e) {
+        } catch (\Throwable $e) {
             return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
         }
     }

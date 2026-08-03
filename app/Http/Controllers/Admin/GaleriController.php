@@ -98,7 +98,7 @@ class GaleriController extends Controller
             $image = $request->file('image');
 
             // Use Intervention Image to process the image
-            $imageManager = new \Intervention\Image\ImageManager(\Intervention\Image\Drivers\Gd\Driver::class);
+            $imageManager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
             $imageInstance = $imageManager->read($image->path());
 
             // Convert to WebP and reduce quality if needed to keep under 2MB
@@ -237,7 +237,7 @@ class GaleriController extends Controller
             $image = $request->file('image');
 
             // Use Intervention Image to process the image
-            $imageManager = new \Intervention\Image\ImageManager(\Intervention\Image\Drivers\Gd\Driver::class);
+            $imageManager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
             $imageInstance = $imageManager->read($image->path());
 
             // Convert to WebP and reduce quality if needed to keep under 2MB
