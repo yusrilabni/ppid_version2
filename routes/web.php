@@ -12,6 +12,14 @@ use App\Http\Controllers\Frontend\DIPController;
 use App\Http\Controllers\Frontend\LhkpnController;
 use App\Http\Controllers\Frontend\ExtraToolsController;
 
+use App\Models\Berita;
+
+Route::get('/sitemap.xml', function () {
+    $posts = Berita::all();
+    return response()->view('sitemap', compact('posts'))
+        ->header('Content-Type', 'application/xml');
+});
+
 // Proxy route for DIP Unit
 Route::get('/dipunit', [DinasController::class, 'index'])->name('dipunit.index');
 Route::get('/dipunit/dip/{organization:slug}', [DinasController::class, 'opdDip'])->name('opd.dip.show');
