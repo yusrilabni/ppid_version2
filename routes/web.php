@@ -13,9 +13,17 @@ use App\Http\Controllers\Frontend\LhkpnController;
 use App\Http\Controllers\Frontend\ExtraToolsController;
 
 Route::get('/sitemap.xml', function () {
-    return response()->view('sitemap', [
-        'posts' => collect()
-    ])->header('Content-Type', 'application/xml');
+    $xml = '<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+    <url>
+        <loc>' . url('/') . '</loc>
+        <lastmod>' . now()->toAtomString() . '</lastmod>
+        <changefreq>daily</changefreq>
+        <priority>1.0</priority>
+    </url>
+</urlset>';
+
+    return response($xml)->header('Content-Type', 'application/xml');
 });
 
 // Proxy route for DIP Unit
