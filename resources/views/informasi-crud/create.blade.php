@@ -64,7 +64,16 @@
                         @csrf
                         <input type="hidden" name="replacement_id" id="replacement_id">
                         <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
-                            <div class="md:col-span-2"><label for="title" class="block text-gray-700 text-sm font-semibold mb-2">Judul Informasi <span class="text-red-500">*</span></label><input type="text" name="title" id="title" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" value="{{ old('title') }}" required minlength="5" placeholder="Masukkan judul informasi"></div>
+                            <div class="md:col-span-2">
+                                <label for="title" class="block text-gray-700 text-sm font-semibold mb-2">Judul Informasi <span class="text-red-500">*</span></label>
+                                <div class="flex space-x-2">
+                                    <input type="text" name="title" id="title" class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" value="{{ old('title') }}" required minlength="5" placeholder="Masukkan judul ringkas atau kata kunci untuk AI">
+                                    <button type="button" id="btn-generate-ai" class="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition-all flex items-center justify-center min-w-[140px]">
+                                        <i class="fas fa-magic mr-2"></i> Generate AI
+                                    </button>
+                                </div>
+                                <p class="text-xs text-gray-500 mt-1">Ketik topik singkat lalu klik Generate AI untuk melengkapi form secara otomatis.</p>
+                            </div>
                             <div class="md:col-span-2"><label for="doc_desc" class="block text-gray-700 text-sm font-semibold mb-2">Deskripsi Singkat <span class="text-red-500">*</span></label><textarea name="doc_desc" id="doc_desc" rows="3" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" placeholder="Deskripsi singkat tentang informasi ini" required>{{ old('doc_desc') }}</textarea></div>        
                             <div class="md:col-span-2"><label for="doc_content" class="block text-gray-700 text-sm font-semibold mb-2">Konten Informasi Lengkap</label><textarea name="doc_content" id="doc_content" rows="6" class="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" placeholder="Konten lengkap informasi publik">{{ old('doc_content') }}</textarea></div>
                             @php
@@ -364,6 +373,70 @@
             checkButton.style.display = 'none';
             submitButton.style.display = 'inline-block';
         });
+
+        const btnGenerateAi = document.getElementById('btn-generate-ai');
+        if (btnGenerateAi) {
+            btnGenerateAi.addEventListener('click', function() {
+                const titleVal = titleInput.value.trim();
+                if (titleVal.length < 3) {
+                    alert('Masukkan minimal 3 karakter topik/judul sebelum menggunakan AI.');
+                    return;
+                }
+
+                const originalText = this.innerHTML;
+                this.innerHTML = '<i class="fas fa-spinner fa-spin mr-2"></i> Generating...';
+                this.disabled = true;
+
+                fetch("{{ route('admin.ai.generate-informasi') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ prompt: titleVal })
+                })
+                .then(response => response.json())
+                .then(res => {
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+
+                    if (res.success && res.data) {
+                        const data = res.data;
+                        if (data.title) titleInput.value = data.title;
+                        if (data.doc_desc) document.getElementById('doc_desc').value = data.doc_desc;
+                        if (data.doc_content) document.getElementById('doc_content').value = data.doc_content;
+                        
+                        // Set category (if matches)
+                        if (data.category) {
+                            const catInput = document.querySelector('input[name="category"]');
+                            if (catInput) {
+                                catInput.value = data.category;
+                                // If it uses custom select Alpine component, dispatch event
+                                catInput.dispatchEvent(new Event('input', { bubbles: true }));
+                            }
+                        }
+
+                        // Set jenis_dokumen
+                        if (data.jenis_dokumen) {
+                            const jenisInput = document.querySelector('input[name="jenis_dokumen"]');
+                            if (jenisInput) {
+                                jenisInput.value = data.jenis_dokumen;
+                                jenisInput.dispatchEvent(new Event('input', { bubbles: true }));
+                            }
+                        }
+                    } else {
+                        alert(res.message || 'Gagal menghasilkan informasi dengan AI.');
+                    }
+                })
+                .catch(error => {
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                    console.error('AI Error:', error);
+                    alert('Terjadi kesalahan koneksi saat memanggil AI.');
+                });
+            });
+        }
 
         // Auto-show pedoman modal if triggered from session and not shown in current browser session
         @if(isset($show_pedoman_modal) && $show_pedoman_modal)

@@ -38,6 +38,8 @@ Route::middleware(['auth', AdminMiddleware::class])->group(function () {
     
     Route::get('dashboard', [DashboardController::class, 'index'])->name('dashboard');
 
+    Route::post('ai-settings/generate', [\App\Http\Controllers\Admin\AiSettingController::class, 'generateInformasi'])->name('ai.generate-informasi');
+
     // Informasi CRUD
     Route::post('informasi-crud/save', [InformasiController::class, 'store'])->name('informasi-crud.save');
     Route::post('proses-tambah-informasi', [InformasiController::class, 'store'])->name('informasi.stealth_store');
