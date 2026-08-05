@@ -171,15 +171,25 @@ class AiSettingController extends Controller
         }
 
         $promptTitle = $request->input('prompt');
+        $context = $request->input('context', 'biasa');
 
-        $categories = ['Informasi Berkala', 'Informasi Setiap Saat', 'Informasi Serta Merta', 'Informasi Dikecualikan'];
-        $jenisDokumen = [
-            'Profil Badan Publik', 'Informasi Organisasi & Kepegawaian', 'Dokumen Strategis',
-            'Program & Kegiatan', 'Laporan Kinerja Instansi', 'Informasi Keuangan',
-            'Pengadaan Barang/Jasa', 'Daftar Aset dan Inventaris', 'Standar Layanan & SOP PPID',
-            'Daftar Informasi Publik & Laporan PPID', 'Regulasi & Peraturan', 'Perjanjian Kerja Sama / MoU',
-            'Pengumuman & Siaran Pers', 'Informasi Serta Merta', 'Lainnya'
-        ];
+        if ($context === 'pemkab') {
+            $kategori_jenis = \App\Models\InformasiPemkab::KATEGORI_JENIS_DOKUMEN;
+            $categories = array_keys($kategori_jenis);
+            $jenisDokumen = [];
+            foreach ($kategori_jenis as $items) {
+                $jenisDokumen = array_merge($jenisDokumen, $items);
+            }
+        } else {
+            $categories = ['Informasi Berkala', 'Informasi Setiap Saat', 'Informasi Serta Merta', 'Informasi Dikecualikan'];
+            $jenisDokumen = [
+                'Profil Badan Publik', 'Informasi Organisasi & Kepegawaian', 'Dokumen Strategis',
+                'Program & Kegiatan', 'Laporan Kinerja Instansi', 'Informasi Keuangan',
+                'Pengadaan Barang/Jasa', 'Daftar Aset dan Inventaris', 'Standar Layanan & SOP PPID',
+                'Daftar Informasi Publik & Laporan PPID', 'Regulasi & Peraturan', 'Perjanjian Kerja Sama / MoU',
+                'Pengumuman & Siaran Pers', 'Informasi Serta Merta', 'Lainnya'
+            ];
+        }
 
         $currentYear = date('Y');
         $systemPrompt = "Anda adalah asisten AI yang membantu admin PPID membuat detail informasi publik yang profesional dan sesuai aturan KIP (Keterbukaan Informasi Publik). 

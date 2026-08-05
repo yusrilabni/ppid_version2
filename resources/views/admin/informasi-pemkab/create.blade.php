@@ -409,7 +409,7 @@
                         'X-CSRF-TOKEN': '{{ csrf_token() }}',
                         'Accept': 'application/json'
                     },
-                    body: JSON.stringify({ prompt: titleVal })
+                    body: JSON.stringify({ prompt: titleVal, context: 'pemkab' })
                 })
                 .then(response => response.json())
                 .then(res => {
