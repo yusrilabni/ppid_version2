@@ -22,8 +22,9 @@
                 </div>
 
                 <div>
-                    <label for="model" class="block text-sm font-medium text-gray-700 mb-1">Model (Contoh: gemini-1.5-flash, gemini-1.5-pro)</label>
-                    <input type="text" name="model" id="model" value="{{ old('model') }}" required class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <label for="model" class="block text-sm font-medium text-gray-700 mb-1">Model (Kosongkan atau ketik "auto" untuk deteksi otomatis dari sistem)</label>
+                    <input type="text" name="model" id="model" value="{{ old('model', 'auto') }}" class="w-full rounded-md border-gray-300 shadow-sm focus:border-blue-500 focus:ring-blue-500">
+                    <p class="text-xs text-gray-500 mt-1">Biarkan berisi "auto", sistem akan mendeteksi dan memilih model terbaik (misal gemini-2.5-flash) yang tersedia di API Key Anda.</p>
                     @error('model')
                         <p class="text-red-500 text-xs mt-1">{{ $message }}</p>
                     @enderror

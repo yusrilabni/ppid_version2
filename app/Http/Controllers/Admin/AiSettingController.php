@@ -22,11 +22,52 @@ class AiSettingController extends Controller
         return view('admin.ai_settings.create');
     }
 
+    private function detectBestModel($apiKey, $defaultModel = 'gemini-1.5-flash')
+    {
+        try {
+            $response = Http::get("https://generativelanguage.googleapis.com/v1beta/models?key={$apiKey}");
+            if ($response->successful()) {
+                $data = $response->json();
+                if (isset($data['models']) && is_array($data['models'])) {
+                    $availableModels = [];
+                    foreach ($data['models'] as $m) {
+                        if (isset($m['supportedGenerationMethods']) && in_array('generateContent', $m['supportedGenerationMethods'])) {
+                            $name = str_replace('models/', '', $m['name']);
+                            $availableModels[] = $name;
+                        }
+                    }
+
+                    // Prioritaskan model flash yang cepat dan murah
+                    $priorities = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash-latest', 'gemini-1.5-flash', 'gemini-pro', 'gemini-1.0-pro'];
+                    foreach ($priorities as $p) {
+                        if (in_array($p, $availableModels)) {
+                            return $p;
+                        }
+                    }
+
+                    // Jika tidak ada di prioritas, ambil model flash pertama yang tersedia
+                    foreach ($availableModels as $am) {
+                        if (str_contains($am, 'flash')) {
+                            return $am;
+                        }
+                    }
+
+                    // Jika tidak ada flash, ambil model pertama yang bisa generateContent
+                    if (count($availableModels) > 0) {
+                        return $availableModels[0];
+                    }
+                }
+            }
+        } catch (\Exception $e) {
+            // Abaikan jika error, kembalikan default
+        }
+        return $defaultModel;
+    }
+
     public function store(Request $request)
     {
         $request->validate([
             'provider' => 'required|string|max:255',
-            'model' => 'required|string|max:255',
             'api_key' => 'required|string',
             'is_active' => 'boolean'
         ]);
@@ -35,16 +76,23 @@ class AiSettingController extends Controller
             AiSetting::where('is_active', true)->update(['is_active' => false]);
         }
 
-        $modelName = trim(str_replace('models/', '', $request->model));
+        $apiKey = trim($request->api_key);
+        
+        // Deteksi model otomatis jika form model kosong atau kita timpa saja
+        $modelName = $request->filled('model') ? trim(str_replace('models/', '', $request->model)) : $this->detectBestModel($apiKey);
+        // Jika user asal mengisi model yang salah, kita bisa perbaiki dengan detectBestModel
+        if (empty($modelName) || $modelName === 'auto') {
+            $modelName = $this->detectBestModel($apiKey);
+        }
 
         AiSetting::create([
             'provider' => trim($request->provider),
             'model' => $modelName,
-            'api_key' => trim($request->api_key),
+            'api_key' => $apiKey,
             'is_active' => $request->has('is_active') ? true : false,
         ]);
 
-        return redirect()->route('admin.ai-settings.index')->with('success', 'AI Setting created successfully.');
+        return redirect()->route('admin.ai-settings.index')->with('success', 'AI Setting created successfully with model: ' . $modelName);
     }
 
     public function edit(AiSetting $aiSetting)
@@ -56,7 +104,6 @@ class AiSettingController extends Controller
     {
         $request->validate([
             'provider' => 'required|string|max:255',
-            'model' => 'required|string|max:255',
             'api_key' => 'required|string',
             'is_active' => 'boolean'
         ]);
@@ -65,12 +112,17 @@ class AiSettingController extends Controller
             AiSetting::where('id', '!=', $aiSetting->id)->update(['is_active' => false]);
         }
 
-        $modelName = trim(str_replace('models/', '', $request->model));
+        $apiKey = trim($request->api_key);
+        
+        $modelName = $request->filled('model') ? trim(str_replace('models/', '', $request->model)) : $this->detectBestModel($apiKey, $aiSetting->model);
+        if (empty($modelName) || $modelName === 'auto') {
+            $modelName = $this->detectBestModel($apiKey, $aiSetting->model);
+        }
 
         $aiSetting->update([
             'provider' => trim($request->provider),
             'model' => $modelName,
-            'api_key' => trim($request->api_key),
+            'api_key' => $apiKey,
             'is_active' => $request->has('is_active') ? true : false,
         ]);
 
