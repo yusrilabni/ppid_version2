@@ -37,8 +37,16 @@ class AiSettingController extends Controller
                         }
                     }
 
-                    // Prioritaskan model flash yang cepat dan murah
-                    $priorities = ['gemini-2.5-flash', 'gemini-2.0-flash', 'gemini-1.5-flash-latest', 'gemini-1.5-flash', 'gemini-pro', 'gemini-1.0-pro'];
+                    // Prioritaskan model flash yang lebih baru
+                    $priorities = [
+                        'gemini-flash-latest', 
+                        'gemini-3.6-flash', 
+                        'gemini-3.5-flash', 
+                        'gemini-3.1-flash-lite', 
+                        'gemini-2.5-flash-lite',
+                        'gemini-2.0-flash', 
+                        'gemini-pro-latest'
+                    ];
                     foreach ($priorities as $p) {
                         if (in_array($p, $availableModels)) {
                             return $p;
