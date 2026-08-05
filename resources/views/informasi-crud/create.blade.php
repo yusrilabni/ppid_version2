@@ -68,8 +68,11 @@
                                 <label for="title" class="block text-gray-700 text-sm font-semibold mb-2">Judul Informasi <span class="text-red-500">*</span></label>
                                 <div class="flex space-x-2">
                                     <input type="text" name="title" id="title" class="flex-1 px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition duration-200" value="{{ old('title') }}" required minlength="5" placeholder="Masukkan judul ringkas atau kata kunci untuk AI">
-                                    <button type="button" id="btn-generate-ai" class="bg-gradient-to-r from-purple-500 to-indigo-600 hover:from-purple-600 hover:to-indigo-700 text-white font-medium py-3 px-4 rounded-lg shadow-md transition-all flex items-center justify-center min-w-[140px]">
-                                        <i class="fas fa-magic mr-2"></i> Generate AI
+                                    <button type="button" id="btn-generate-ai" class="relative group bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 text-white font-bold py-3 px-6 rounded-xl shadow-[0_0_15px_rgba(168,85,247,0.5)] hover:shadow-[0_0_25px_rgba(168,85,247,0.7)] transition-all duration-300 flex items-center justify-center min-w-[160px] transform hover:-translate-y-1 z-10">
+                                        <div class="absolute -inset-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-xl blur opacity-30 group-hover:opacity-70 transition duration-500 group-hover:duration-200 -z-10"></div>
+                                        <span class="relative flex items-center gap-2">
+                                            <i class="fas fa-sparkles animate-pulse"></i> Generate AI
+                                        </span>
                                     </button>
                                 </div>
                                 <p class="text-xs text-gray-500 mt-1">Ketik topik singkat lalu klik Generate AI untuk melengkapi form secara otomatis.</p>
