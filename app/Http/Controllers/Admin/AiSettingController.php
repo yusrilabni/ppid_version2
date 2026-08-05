@@ -135,10 +135,13 @@ Tanpa teks tambahan atau markdown block.";
 
         $userPrompt = "Topik/Judul singkat dari admin: " . $promptTitle;
 
+        // Bersihkan prefix 'models/' jika user tidak sengaja memasukkannya
+        $modelName = str_replace('models/', '', $activeSetting->model);
+
         try {
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json'
-            ])->post("https://generativelanguage.googleapis.com/v1beta/models/{$activeSetting->model}:generateContent?key={$activeSetting->api_key}", [
+            ])->post("https://generativelanguage.googleapis.com/v1beta/models/{$modelName}:generateContent?key={$activeSetting->api_key}", [
                 'contents' => [
                     [
                         'role' => 'user',
