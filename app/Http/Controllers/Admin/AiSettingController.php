@@ -35,10 +35,12 @@ class AiSettingController extends Controller
             AiSetting::where('is_active', true)->update(['is_active' => false]);
         }
 
+        $modelName = trim(str_replace('models/', '', $request->model));
+
         AiSetting::create([
-            'provider' => $request->provider,
-            'model' => $request->model,
-            'api_key' => $request->api_key,
+            'provider' => trim($request->provider),
+            'model' => $modelName,
+            'api_key' => trim($request->api_key),
             'is_active' => $request->has('is_active') ? true : false,
         ]);
 
@@ -63,10 +65,12 @@ class AiSettingController extends Controller
             AiSetting::where('id', '!=', $aiSetting->id)->update(['is_active' => false]);
         }
 
+        $modelName = trim(str_replace('models/', '', $request->model));
+
         $aiSetting->update([
-            'provider' => $request->provider,
-            'model' => $request->model,
-            'api_key' => $request->api_key,
+            'provider' => trim($request->provider),
+            'model' => $modelName,
+            'api_key' => trim($request->api_key),
             'is_active' => $request->has('is_active') ? true : false,
         ]);
 
@@ -135,13 +139,14 @@ Tanpa teks tambahan atau markdown block.";
 
         $userPrompt = "Topik/Judul singkat dari admin: " . $promptTitle;
 
-        // Bersihkan prefix 'models/' jika user tidak sengaja memasukkannya
-        $modelName = str_replace('models/', '', $activeSetting->model);
+        // Bersihkan prefix 'models/' jika user tidak sengaja memasukkannya dan buang spasi berlebih
+        $modelName = trim(str_replace('models/', '', $activeSetting->model));
+        $apiKey = trim($activeSetting->api_key);
 
         try {
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json'
-            ])->post("https://generativelanguage.googleapis.com/v1beta/models/{$modelName}:generateContent?key={$activeSetting->api_key}", [
+            ])->post("https://generativelanguage.googleapis.com/v1beta/models/{$modelName}:generateContent?key={$apiKey}", [
                 'contents' => [
                     [
                         'role' => 'user',
