@@ -157,8 +157,13 @@ Tanpa teks tambahan atau markdown block.";
                 $result = $response->json();
                 $generatedText = $result['candidates'][0]['content']['parts'][0]['text'] ?? '';
                 
+                // Bersihkan text dari markdown code blocks jika ada (misal: ```json ... ```)
+                $cleanText = preg_replace('/```json\s*/i', '', $generatedText);
+                $cleanText = preg_replace('/```\s*/', '', $cleanText);
+                $cleanText = trim($cleanText);
+
                 // Parse JSON
-                $data = json_decode($generatedText, true);
+                $data = json_decode($cleanText, true);
 
                 if ($data) {
                     // Catat penggunaan
@@ -172,11 +177,19 @@ Tanpa teks tambahan atau markdown block.";
                         'data' => $data
                     ]);
                 }
+                
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Format balasan AI tidak sesuai (bukan JSON yang valid). Silakan coba lagi.'
+                ], 500);
             }
+
+            $errorResult = $response->json();
+            $errorMessage = $errorResult['error']['message'] ?? 'API Key atau Model tidak valid.';
 
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal menguraikan respons dari AI. Coba lagi.'
+                'message' => 'Gagal memanggil AI: ' . $errorMessage
             ], 500);
 
         } catch (\Exception $e) {
