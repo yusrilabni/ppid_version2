@@ -75,8 +75,17 @@
                         <!-- Judul -->
                         <div class="md:col-span-2">
                             <label for="judul" class="block text-gray-700 text-sm font-bold mb-3">Judul Dokumen <span class="text-red-500">*</span></label>
-                            <input type="text" name="judul" id="judul" value="{{ old('judul') }}" placeholder="Masukkan judul yang deskriptif..."
-                                class="w-full px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-300 font-medium text-gray-800 placeholder-gray-400 shadow-sm">
+                            <div class="flex space-x-2">
+                                <input type="text" name="judul" id="judul" value="{{ old('judul') }}" placeholder="Masukkan judul yang deskriptif..."
+                                    class="flex-1 px-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-300 font-medium text-gray-800 placeholder-gray-400 shadow-sm">
+                                <button type="button" id="btn-generate-ai" class="relative group bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 hover:from-indigo-600 hover:via-purple-600 hover:to-pink-600 text-white font-bold py-4 px-6 rounded-xl shadow-[0_0_15px_rgba(168,85,247,0.5)] hover:shadow-[0_0_25px_rgba(168,85,247,0.7)] transition-all duration-300 flex items-center justify-center min-w-[160px] transform hover:-translate-y-1 z-10">
+                                    <div class="absolute -inset-1 bg-gradient-to-r from-indigo-500 via-purple-500 to-pink-500 rounded-xl blur opacity-30 group-hover:opacity-70 transition duration-500 group-hover:duration-200 -z-10"></div>
+                                    <span class="relative flex items-center gap-2">
+                                        <i class="fas fa-sparkles animate-pulse"></i> Generate AI
+                                    </span>
+                                </button>
+                            </div>
+                            <p class="text-xs text-gray-500 mt-1 font-medium">Ketik topik/judul singkat lalu klik Generate AI untuk melengkapi form secara otomatis.</p>
                             @error('judul')
                                 <p class="text-red-500 text-xs mt-2 font-medium"><i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}</p>
                             @enderror
@@ -376,6 +385,88 @@
                 }));
             }
         }));
+
+        // AI Generation Logic
+        const btnGenerateAi = document.getElementById('btn-generate-ai');
+        const titleInput = document.getElementById('judul');
+
+        if (btnGenerateAi && titleInput) {
+            btnGenerateAi.addEventListener('click', function() {
+                const titleVal = titleInput.value.trim();
+                if (titleVal.length < 3) {
+                    alert('Masukkan minimal 3 karakter topik/judul sebelum menggunakan AI.');
+                    return;
+                }
+
+                const originalText = this.innerHTML;
+                this.innerHTML = '<span class="relative flex items-center gap-2"><i class="fas fa-spinner fa-spin"></i> Generating...</span>';
+                this.disabled = true;
+
+                fetch("{{ route('admin.ai.generate-informasi') }}", {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                        'X-CSRF-TOKEN': '{{ csrf_token() }}',
+                        'Accept': 'application/json'
+                    },
+                    body: JSON.stringify({ prompt: titleVal })
+                })
+                .then(response => response.json())
+                .then(res => {
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+
+                    if (res.success && res.data) {
+                        const data = res.data;
+                        if (data.title) titleInput.value = data.title;
+                        if (data.doc_desc) document.getElementById('deskripsi').value = data.doc_desc;
+                        
+                        // Set category
+                        if (data.category) {
+                            const catInput = document.querySelector('input[name="kategori"]');
+                            if (catInput) {
+                                catInput.value = data.category;
+                                catInput.dispatchEvent(new Event('input', { bubbles: true }));
+                            }
+                        }
+
+                        // Tunggu sebentar agar Alpine merender opsi jenis_dokumen yang baru berdasarkan kategori
+                        setTimeout(() => {
+                            if (data.jenis_dokumen) {
+                                const jenisInput = document.querySelector('input[name="jenis_dokumen"]');
+                                if (jenisInput) {
+                                    jenisInput.value = data.jenis_dokumen;
+                                    jenisInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                }
+                            }
+                        }, 500);
+
+                        // Set tahun (karena tahun ini tipe number, kita ambil tahunnya saja dari YYYY-MM-DD)
+                        if (data.tahun) {
+                            const tahunInput = document.getElementById('tahun');
+                            if (tahunInput) {
+                                tahunInput.value = data.tahun.split('-')[0];
+                                tahunInput.dispatchEvent(new Event('input', { bubbles: true }));
+                            }
+                        }
+                        
+                        // Set status dokumen
+                        if (data.status) {
+                            // Untuk Informasi Pemkab, tidak ada ARSIP/BERLAKU
+                            // Tapi status dokumennya published, draft, scheduled
+                        }
+                    } else {
+                        alert(res.message || 'Gagal menghasilkan informasi dengan AI.');
+                    }
+                })
+                .catch(error => {
+                    this.innerHTML = originalText;
+                    this.disabled = false;
+                    console.error('AI Error:', error);
+                    alert('Terjadi kesalahan koneksi saat memanggil AI.');
+                });
+            });
+        }
     });
 </script>
 @endsection
