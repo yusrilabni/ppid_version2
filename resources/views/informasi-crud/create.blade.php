@@ -428,6 +428,24 @@
                                 jenisInput.dispatchEvent(new Event('input', { bubbles: true }));
                             }
                         }
+
+                        // Set tahun
+                        if (data.tahun) {
+                            const tahunInput = document.getElementById('tahun');
+                            if (tahunInput) {
+                                tahunInput.value = data.tahun;
+                                tahunInput.dispatchEvent(new Event('input', { bubbles: true }));
+                            }
+                        }
+
+                        // Set status
+                        if (data.status) {
+                            const statusInput = document.querySelector('input[name="status"][value="' + data.status.toUpperCase() + '"]');
+                            if (statusInput) {
+                                statusInput.checked = true;
+                                statusInput.dispatchEvent(new Event('change', { bubbles: true }));
+                            }
+                        }
                     } else {
                         alert(res.message || 'Gagal menghasilkan informasi dengan AI.');
                     }

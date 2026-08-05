@@ -181,6 +181,7 @@ class AiSettingController extends Controller
             'Pengumuman & Siaran Pers', 'Informasi Serta Merta', 'Lainnya'
         ];
 
+        $currentYear = date('Y');
         $systemPrompt = "Anda adalah asisten AI yang membantu admin PPID membuat detail informasi publik yang profesional dan sesuai aturan KIP (Keterbukaan Informasi Publik). 
 Tugas Anda:
 1. Perbaiki judul dokumen agar lebih baku dan profesional.
@@ -188,14 +189,20 @@ Tugas Anda:
 3. Buat konten/penjelasan yang lengkap terkait dokumen tersebut.
 4. Pilih SATU kategori dari daftar berikut yang paling sesuai: " . implode(', ', $categories) . "
 5. Pilih SATU jenis dokumen dari daftar berikut yang paling sesuai: " . implode(', ', $jenisDokumen) . "
+6. Tentukan tahun dokumen ('tahun') dalam format 'YYYY-MM-DD' berdasarkan konteks di judul (jika hanya tahu tahunnya, gunakan 'YYYY-01-01'). Jika tidak ada, gunakan tahun sekarang (" . $currentYear . "-01-01).
+7. Tentukan status ('status'). Jika dokumen tersebut merujuk pada " . ($currentYear - 2) . " atau lebih lama, isi dengan 'ARSIP'. Jika lebih baru atau tahun ini, isi dengan 'BERLAKU'.
 
-Berikan jawaban HANYA dalam format JSON dengan kunci:
-- title
-- doc_desc
-- doc_content
-- category
-- jenis_dokumen
-Tanpa teks tambahan atau markdown block.";
+Berikan jawaban HANYA dalam format JSON dengan kunci persis seperti berikut:
+{
+  \"title\": \"...\",
+  \"doc_desc\": \"...\",
+  \"doc_content\": \"...\",
+  \"category\": \"...\",
+  \"jenis_dokumen\": \"...\",
+  \"tahun\": \"YYYY-MM-DD\",
+  \"status\": \"BERLAKU atau ARSIP\"
+}
+Tanpa teks tambahan atau markdown block di luar JSON.";
 
         $userPrompt = "Topik/Judul singkat dari admin: " . $promptTitle;
 
