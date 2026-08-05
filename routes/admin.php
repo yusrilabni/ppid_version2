@@ -81,6 +81,9 @@ Route::middleware(['auth', SuperadminMiddleware::class])->group(function () {
     // Redis Monitoring
     Route::get('/redis-check', [App\Http\Controllers\Admin\RedisMonitorController::class, 'check'])->name('redis.check');
 
+    // AI Settings
+    Route::resource('ai-settings', \App\Http\Controllers\Admin\AiSettingController::class);
+
     Route::resource('profil-ppid', ProfilPpidController::class);
     
     // Sliders & Settings

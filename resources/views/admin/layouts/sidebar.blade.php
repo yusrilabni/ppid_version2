@@ -128,6 +128,10 @@
                     <i class="fas fa-chart-line w-4 mr-3"></i>
                     <span class="menu-text">Laporan PPID</span>
                 </a>
+                <a href="{{ route('admin.ai-settings.index') }}" class="flex items-center px-4 py-2 text-blue-200 hover:bg-blue-700 hover:bg-opacity-50 hover:text-white rounded-lg transition-colors duration-200 my-1 menu-item @if(request()->routeIs('admin.ai-settings.*')) bg-blue-700 bg-opacity-75 @endif" title="Pengaturan AI">
+                    <i class="fas fa-robot w-4 mr-3"></i>
+                    <span class="menu-text">Pengaturan AI</span>
+                </a>
                 @endif            </div>
         </nav>
     </div>
