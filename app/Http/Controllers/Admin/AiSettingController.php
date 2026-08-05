@@ -186,7 +186,7 @@ class AiSettingController extends Controller
 Tugas Anda:
 1. Perbaiki judul dokumen agar lebih baku dan profesional.
 2. Buat deskripsi singkat yang mendeskripsikan dokumen tersebut (1-2 paragraf).
-3. Buat konten/penjelasan yang lengkap terkait dokumen tersebut.
+3. Buat konten/penjelasan (doc_content). PENTING: Gunakan bahasa yang umum dan obyektif. Jangan berlebihan (overclaim) atau mengarang data spesifik yang tidak ada di judul. Cukup berikan penjelasan generik standar mengenai apa isi dokumen tersebut pada umumnya.
 4. Pilih SATU kategori dari daftar berikut yang paling sesuai: " . implode(', ', $categories) . "
 5. Pilih SATU jenis dokumen dari daftar berikut yang paling sesuai: " . implode(', ', $jenisDokumen) . "
 6. Tentukan tahun dokumen ('tahun') dalam format 'YYYY-MM-DD' berdasarkan konteks di judul (jika hanya tahu tahunnya, gunakan 'YYYY-01-01'). Jika tidak ada, gunakan tahun sekarang (" . $currentYear . "-01-01).
