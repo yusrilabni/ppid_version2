@@ -423,20 +423,18 @@
                         
                         // Set category
                         if (data.category) {
-                            const catInput = document.querySelector('input[name="kategori"]');
-                            if (catInput) {
-                                catInput.value = data.category;
-                                catInput.dispatchEvent(new Event('input', { bubbles: true }));
+                            const catContainer = document.getElementById('container_kategori');
+                            if (catContainer && window.Alpine) {
+                                Alpine.$data(catContainer).select({value: data.category, label: data.category});
                             }
                         }
 
                         // Tunggu sebentar agar Alpine merender opsi jenis_dokumen yang baru berdasarkan kategori
                         setTimeout(() => {
                             if (data.jenis_dokumen) {
-                                const jenisInput = document.querySelector('input[name="jenis_dokumen"]');
-                                if (jenisInput) {
-                                    jenisInput.value = data.jenis_dokumen;
-                                    jenisInput.dispatchEvent(new Event('input', { bubbles: true }));
+                                const jenisContainer = document.getElementById('container_jenis_dokumen');
+                                if (jenisContainer && window.Alpine) {
+                                    Alpine.$data(jenisContainer).select({value: data.jenis_dokumen, label: data.jenis_dokumen});
                                 }
                             }
                         }, 500);
