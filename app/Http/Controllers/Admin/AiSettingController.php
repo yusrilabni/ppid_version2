@@ -173,22 +173,23 @@ class AiSettingController extends Controller
         $promptTitle = $request->input('prompt');
         $context = $request->input('context', 'biasa');
 
+        $kategoriDanJenis = "";
         if ($context === 'pemkab') {
             $kategori_jenis = \App\Models\InformasiPemkab::KATEGORI_JENIS_DOKUMEN;
             $categories = array_keys($kategori_jenis);
-            $jenisDokumen = [];
-            foreach ($kategori_jenis as $items) {
-                $jenisDokumen = array_merge($jenisDokumen, $items);
+            foreach ($kategori_jenis as $kat => $jenis) {
+                $kategoriDanJenis .= "- Kategori '$kat' memiliki jenis dokumen: " . implode(', ', $jenis) . "\n";
             }
         } else {
             $categories = ['Informasi Berkala', 'Informasi Setiap Saat', 'Informasi Serta Merta', 'Informasi Dikecualikan'];
-            $jenisDokumen = [
+            $jenisList = [
                 'Profil Badan Publik', 'Informasi Organisasi & Kepegawaian', 'Dokumen Strategis',
                 'Program & Kegiatan', 'Laporan Kinerja Instansi', 'Informasi Keuangan',
                 'Pengadaan Barang/Jasa', 'Daftar Aset dan Inventaris', 'Standar Layanan & SOP PPID',
                 'Daftar Informasi Publik & Laporan PPID', 'Regulasi & Peraturan', 'Perjanjian Kerja Sama / MoU',
                 'Pengumuman & Siaran Pers', 'Informasi Serta Merta', 'Lainnya'
             ];
+            $kategoriDanJenis = "- Pilih SATU kategori: " . implode(', ', $categories) . "\n- Pilih SATU jenis dokumen: " . implode(', ', $jenisList);
         }
 
         $currentYear = date('Y');
@@ -197,10 +198,11 @@ Tugas Anda:
 1. Perbaiki judul dokumen agar lebih baku dan profesional.
 2. Buat deskripsi singkat yang mendeskripsikan dokumen tersebut (1-2 paragraf).
 3. Buat konten/penjelasan (doc_content). PENTING: Gunakan bahasa yang umum dan obyektif. Jangan berlebihan (overclaim) atau mengarang data spesifik yang tidak ada di judul. Cukup berikan penjelasan generik standar mengenai apa isi dokumen tersebut pada umumnya.
-4. Pilih SATU kategori dari daftar berikut yang paling sesuai: " . implode(', ', $categories) . "
-5. Pilih SATU jenis dokumen dari daftar berikut yang paling sesuai: " . implode(', ', $jenisDokumen) . "
-6. Tentukan tahun dokumen ('tahun') dalam format 'YYYY-MM-DD' berdasarkan konteks di judul (jika hanya tahu tahunnya, gunakan 'YYYY-01-01'). Jika tidak ada, gunakan tahun sekarang (" . $currentYear . "-01-01).
-7. Tentukan status ('status'). Jika dokumen tersebut merujuk pada " . ($currentYear - 2) . " atau lebih lama, isi dengan 'ARSIP'. Jika lebih baru atau tahun ini, isi dengan 'BERLAKU'.
+4. Pilih kategori dan jenis dokumen yang sesuai dan berkaitan erat dari panduan berikut:
+$kategoriDanJenis
+PENTING: Jenis dokumen yang dipilih HARUS merupakan anak dari Kategori yang Anda pilih (sesuai daftar di atas).
+5. Tentukan tahun dokumen ('tahun') dalam format 'YYYY-MM-DD' berdasarkan konteks di judul (jika hanya tahu tahunnya, gunakan 'YYYY-01-01'). Jika tidak ada, gunakan tahun sekarang (" . $currentYear . "-01-01).
+6. Tentukan status ('status'). Jika dokumen tersebut merujuk pada " . ($currentYear - 2) . " atau lebih lama, isi dengan 'ARSIP'. Jika lebih baru atau tahun ini, isi dengan 'BERLAKU'.
 
 Berikan jawaban HANYA dalam format JSON dengan kunci persis seperti berikut:
 {
