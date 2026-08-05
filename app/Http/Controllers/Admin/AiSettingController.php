@@ -203,6 +203,11 @@ Tanpa teks tambahan atau markdown block.";
         $modelName = trim(str_replace('models/', '', $activeSetting->model));
         $apiKey = trim($activeSetting->api_key);
 
+        // Paksa ganti ke model terbaru jika database masih merekam model lawas yang ditolak
+        if ($modelName === 'gemini-2.5-flash' || $modelName === 'auto') {
+            $modelName = 'gemini-flash-latest';
+        }
+
         try {
             $response = Http::withHeaders([
                 'Content-Type' => 'application/json'
