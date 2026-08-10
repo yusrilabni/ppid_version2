@@ -168,7 +168,7 @@ class ProfilController extends Controller
         $position = Position::where('slug', 'kepala-opd')->first();
         
         $query = Official::with(['organization', 'position']);
-        $query->where('status', '!=', 'draft');
+        $query->where('status', 'active');
 
         // Fetch all officials belonging to Village/Kelurahan organizations
         $allOfficials = $query->get()->filter(function($official) {
