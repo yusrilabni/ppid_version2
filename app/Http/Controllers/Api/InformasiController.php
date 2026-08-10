@@ -8,6 +8,8 @@ use App\Helpers\GeneralHelper;
 use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 
+use Illuminate\Support\Facades\Cache;
+
 class InformasiController extends Controller
 {
     /**
@@ -15,7 +17,9 @@ class InformasiController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        try {
+        $cacheKey = 'all_informasi_' . md5(json_encode($request->all()));
+        
+        $informasi = Cache::tags(['informasi'])->rememberForever($cacheKey, function () use ($request) {
             $query = Informasi::with('official.position')
                 ->whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP']);
 
@@ -98,6 +102,11 @@ class InformasiController extends Controller
                 }
                 return $item;
             });
+            
+            return $informasi;
+        });
+
+        try {
 
             return response()->json([
                 'success' => true,

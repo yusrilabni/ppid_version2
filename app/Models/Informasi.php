@@ -41,6 +41,18 @@ class Informasi extends Model
     {
         parent::boot();
 
+        static::created(function ($model) {
+            \Illuminate\Support\Facades\Cache::tags(['informasi'])->flush();
+        });
+
+        static::updated(function ($model) {
+            \Illuminate\Support\Facades\Cache::tags(['informasi'])->flush();
+        });
+
+        static::deleted(function ($model) {
+            \Illuminate\Support\Facades\Cache::tags(['informasi'])->flush();
+        });
+
         static::saving(function ($model) {
             $slug = Str::slug($model->title);
             $originalSlug = $slug;
