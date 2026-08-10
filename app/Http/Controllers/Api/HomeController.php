@@ -52,14 +52,14 @@ class HomeController extends Controller
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'sliders' => Slider::latest()->take(5)->get(),
-                    'latest_informasi' => Informasi::with('user')->whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])->orderBy('tanggal_upload', 'desc')->take(5)->get()->map(function($item) use ($unitData) {
+                    'sliders' => Slider::where('active', true)->orderBy('order', 'asc')->get(),
+                    'latest_informasi' => Informasi::with('user')->whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])->orderBy('tanggal_upload', 'desc')->take(16)->get()->map(function($item) use ($unitData) {
                         $unit = $unitData->get((string)$item->unit_id);
                         $item->organization_name = $unit['unit_nama'] ?? 'Unit Kerja';
                         return $item;
                     }),
                     'news' => $rss_items,
-                    'gallery' => Galeri::latest()->take(10)->get(),
+                    'gallery' => Galeri::orderBy('is_pinned', 'desc')->orderBy('created_at', 'desc')->take(8)->get(),
                     'statistics' => [
                         'total_informasi' => Informasi::whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])->count(),
                         'total_permohonan' => PermohonanInformasi::count(),
