@@ -63,6 +63,7 @@ Route::prefix('v1')->group(function () {
     Route::get('/profil/pejabat-daerah', [ProfilController::class, 'listKepalaOpd']);
     Route::get('/profil/tentang-opd', [ProfilController::class, 'opdList']);
     Route::get('/profil/tentang-opd/{slug}', [ProfilController::class, 'opdDetail']);
+    Route::get('/profil/unit-lokal', [ProfilController::class, 'unitLokalList']);
     Route::get('/profil/{slug}', [ProfilController::class, 'showOfficial']);
 
     // === NEW: Frontend SPA Routes ===
@@ -145,4 +146,3 @@ Route::prefix('v1')->group(function () {
 Route::get('/health', [HealthController::class, 'index']);
 Route::post('/telegram/webhook', [\App\Http\Controllers\Api\TelegramWebhookController::class, 'handle']);
 Route::match(['get', 'post'], '/whatsapp/webhook', [\App\Http\Controllers\Api\WhatsAppWebhookController::class, 'handle']);
-Route::get('/profil/unit-lokal', [\App\Http\Controllers\Api\ProfilController::class, 'unitLokalList']);
