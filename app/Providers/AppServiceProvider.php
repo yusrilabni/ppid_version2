@@ -42,6 +42,17 @@ class AppServiceProvider extends ServiceProvider
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
 
+        // Cache Invalidation untuk Endpoint Home
+        $homeModels = [\App\Models\Slider::class, \App\Models\Informasi::class, \App\Models\Galeri::class, \App\Models\PermohonanInformasi::class, \App\Models\SurveyResponse::class];
+        foreach ($homeModels as $model) {
+            $model::saved(function() {
+                \Illuminate\Support\Facades\Cache::forget('all_home');
+            });
+            $model::deleted(function() {
+                \Illuminate\Support\Facades\Cache::forget('all_home');
+            });
+        }
+
         // Removed the log entry from here
         $this->bootRoutes();
 

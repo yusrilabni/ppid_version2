@@ -21,44 +21,44 @@ class HomeController extends Controller
     {
         try {
             $unitData = GeneralHelper::getUnitData();
-            $rss_items = [];
-            
-            try {
-                $response = Http::timeout(10)->get('https://humas.sinjaikab.go.id/v1/rss-widget/index.php');
-                if ($response->successful()) {
-                    $rss_data = $response->json();
-                    if (is_array($rss_data)) {
-                        foreach (array_slice($rss_data, 0, 10) as $item) {
-                            // FIX: Deteksi Gambar jika berupa Array (Enclosure/Thumbnail)
-                            $img = $item['thumbnail'] ?? $item['enclosure'] ?? $item['image'] ?? '';
-                            if (is_array($img) && isset($img['url'])) {
-                                $img = $img['url'];
-                            } elseif (is_array($img) && isset($img[0])) {
-                                $img = $img[0];
-                            }
+            $rss_items = \Illuminate\Support\Facades\Cache::remember('rss_news', 3600, function () {
+                $items = [];
+                try {
+                    $response = Http::timeout(3)->get('https://humas.sinjaikab.go.id/v1/rss-widget/index.php');
+                    if ($response->successful()) {
+                        $rss_data = $response->json();
+                        if (is_array($rss_data)) {
+                            foreach (array_slice($rss_data, 0, 10) as $item) {
+                                // FIX: Deteksi Gambar jika berupa Array (Enclosure/Thumbnail)
+                                $img = $item['thumbnail'] ?? $item['enclosure'] ?? $item['image'] ?? '';
+                                if (is_array($img) && isset($img['url'])) {
+                                    $img = $img['url'];
+                                } elseif (is_array($img) && isset($img[0])) {
+                                    $img = $img[0];
+                                }
 
-                            $rss_items[] = [
-                                'title' => $item['title'] ?? '',
-                                'link' => $item['link'] ?? '#',
-                                'pubDate' => isset($item['pubDate']) ? Carbon::parse($item['pubDate'])->translatedFormat('d M Y') : 'Terbaru',
-                                'image' => (string)$img, // Pastikan jadi String URL
-                                'views' => rand(150, 600)
-                            ];
+                                $items[] = [
+                                    'title' => $item['title'] ?? '',
+                                    'link' => $item['link'] ?? '#',
+                                    'pubDate' => isset($item['pubDate']) ? Carbon::parse($item['pubDate'])->translatedFormat('d M Y') : 'Terbaru',
+                                    'image' => (string)$img, // Pastikan jadi String URL
+                                    'views' => rand(150, 600)
+                                ];
+                            }
                         }
                     }
-                }
-            } catch (\Exception $e) {}
+                } catch (\Exception $e) {}
+                return $items;
+            });
 
-            return response()->json([
-                'success' => true,
-                'data' => [
+            $dbData = \Illuminate\Support\Facades\Cache::rememberForever('all_home', function () use ($unitData) {
+                return [
                     'sliders' => Slider::where('active', true)->orderBy('order', 'asc')->get(),
                     'latest_informasi' => Informasi::with('user')->whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])->orderBy('tanggal_upload', 'desc')->take(16)->get()->map(function($item) use ($unitData) {
                         $unit = $unitData->get((string)$item->unit_id);
                         $item->organization_name = $unit['unit_nama'] ?? 'Unit Kerja';
                         return $item;
                     }),
-                    'news' => $rss_items,
                     'gallery' => Galeri::orderBy('is_pinned', 'desc')->orderBy('created_at', 'desc')->take(8)->get(),
                     'statistics' => [
                         'total_informasi' => Informasi::whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])->count(),
@@ -75,12 +75,19 @@ class HomeController extends Controller
                             'text' => $t->detail_informasi ? preg_replace('/\s+/', ' ', trim(strip_tags($t->detail_informasi))) : 'Layanan Memuaskan',
                         ];
                     }),
-                    'contact' => [
-                        'alamat' => 'Jl. Persatuan Raya No. 5, Sinjai',
-                        'email' => 'ppid@sinjaikab.go.id',
-                        'telepon' => '08123456789'
-                    ]
-                ]
+                ];
+            });
+
+            $dbData['news'] = $rss_items;
+            $dbData['contact'] = [
+                'alamat' => 'Jl. Persatuan Raya No. 5, Sinjai',
+                'email' => 'ppid@sinjaikab.go.id',
+                'telepon' => '08123456789'
+            ];
+
+            return response()->json([
+                'success' => true,
+                'data' => $dbData
             ]);
         } catch (\Exception $e) {
             return response()->json(['success' => false, 'error' => $e->getMessage()], 500);

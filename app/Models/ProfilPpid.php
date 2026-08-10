@@ -30,4 +30,21 @@ class ProfilPpid extends Model
         'status' => 'boolean',
         'mission' => 'array',
     ];
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::created(function ($model) {
+            \Illuminate\Support\Facades\Cache::forget('all_profil_ppid');
+        });
+
+        static::updated(function ($model) {
+            \Illuminate\Support\Facades\Cache::forget('all_profil_ppid');
+        });
+
+        static::deleted(function ($model) {
+            \Illuminate\Support\Facades\Cache::forget('all_profil_ppid');
+        });
+    }
 }
