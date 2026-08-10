@@ -53,7 +53,7 @@ class HomeController extends Controller
                 'success' => true,
                 'data' => [
                     'sliders' => Slider::latest()->take(5)->get(),
-                    'latest_informasi' => Informasi::whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])->orderBy('tanggal_upload', 'desc')->take(5)->get()->map(function($item) use ($unitData) {
+                    'latest_informasi' => Informasi::with('user')->whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])->orderBy('tanggal_upload', 'desc')->take(5)->get()->map(function($item) use ($unitData) {
                         $unit = $unitData->get((string)$item->unit_id);
                         $item->organization_name = $unit['unit_nama'] ?? 'Unit Kerja';
                         return $item;
