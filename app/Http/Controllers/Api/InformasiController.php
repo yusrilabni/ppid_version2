@@ -41,7 +41,7 @@ class InformasiController extends Controller
             }
 
             // Filter Unit (Dinas)
-            if ($request->has('unit_id') && $request->get('unit_id') !== '') {
+            if ($request->has('unit_id') && $request->filled('unit_id')) {
                 $query->where('unit_id', $request->get('unit_id'));
             }
 
@@ -138,6 +138,15 @@ class InformasiController extends Controller
             } else {
                 $item->uploader_name = $item->user->name;
             }
+
+            // Get related informasi
+            $item->related_informasis = Informasi::where('category', $item->category)
+                ->where('unit_id', $item->unit_id)
+                ->where('id', '!=', $item->id)
+                ->whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])
+                ->orderBy('created_at', 'desc')
+                ->limit(4)
+                ->get();
 
             return response()->json([
                 'success' => true,
