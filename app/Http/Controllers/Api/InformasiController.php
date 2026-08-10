@@ -40,6 +40,11 @@ class InformasiController extends Controller
                 $query->where('category', $request->get('category'));
             }
 
+            // Filter Unit (Dinas)
+            if ($request->has('unit_id') && $request->get('unit_id') !== '') {
+                $query->where('unit_id', $request->get('unit_id'));
+            }
+
             // Filter Status
             if ($request->has('status') && $request->get('status') !== 'Semua') {
                 $query->where('status', $request->get('status'));
