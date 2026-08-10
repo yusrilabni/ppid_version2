@@ -58,6 +58,61 @@ Route::prefix('v1')->group(function () {
     Route::post('/register', [App\Http\Controllers\Api\RegisterController::class, 'register']);
     Route::post('/contact', [ContactController::class, 'store']);
 
+    // === NEW: Frontend SPA Routes ===
+    
+    // Survey public listing
+    Route::get('/surveys', function () {
+        $surveys = \App\Models\Survey::where('is_active', true)
+            ->select('id', 'title', 'description', 'created_at')
+            ->orderBy('created_at', 'desc')
+            ->get();
+        return response()->json(['success' => true, 'data' => $surveys]);
+    });
+
+    // Standar Layanan
+    Route::get('/standar-layanan', function () {
+        $items = \App\Models\StandarLayanan::with('subStandarLayanans')
+            ->orderBy('created_at', 'desc')
+            ->get();
+        return response()->json(['success' => true, 'data' => $items]);
+    });
+
+    Route::get('/standar-layanan/{id}', function ($id) {
+        $item = \App\Models\StandarLayanan::with(['subStandarLayanans.informasi'])->findOrFail($id);
+        return response()->json(['success' => true, 'data' => $item]);
+    });
+
+    // Regulasi
+    Route::get('/regulasi', function () {
+        $items = \App\Models\Regulasi::orderBy('created_at', 'desc')->get();
+        return response()->json(['success' => true, 'data' => $items]);
+    });
+
+    // SOP
+    Route::get('/sop', function () {
+        $items = \App\Models\Sop::orderBy('created_at', 'desc')->get();
+        return response()->json(['success' => true, 'data' => $items]);
+    });
+
+    // Maklumat Layanan
+    Route::get('/maklumat-layanan', function () {
+        $item = \App\Models\MaklumatLayanan::first();
+        return response()->json(['success' => true, 'data' => $item]);
+    });
+
+    // Search
+    Route::get('/search', function (\Illuminate\Http\Request $request) {
+        $query = $request->get('q', '');
+        $page = $request->get('page', 1);
+        $items = \App\Models\Informasi::where('title', 'like', "%{$query}%")
+            ->orWhere('ringkasan', 'like', "%{$query}%")
+            ->where('status', 'AKTIF')
+            ->with('organization')
+            ->orderBy('created_at', 'desc')
+            ->paginate(12);
+        return response()->json(['success' => true, 'data' => $items]);
+    });
+
     // --- PROTECTED ROUTES (Perlu Token Sanctum) ---
 
     Route::middleware('auth:sanctum')->group(function () {
