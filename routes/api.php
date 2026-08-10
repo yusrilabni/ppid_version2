@@ -4,6 +4,7 @@ use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
 
 // Import Controllers
+use App\Http\Controllers\Api\ProfilController;
 use App\Http\Controllers\Api\OfficialController;
 use App\Http\Controllers\Api\InformasiController;
 use App\Http\Controllers\Api\LaporanController;
@@ -57,6 +58,12 @@ Route::prefix('v1')->group(function () {
     Route::post('/login', [App\Http\Controllers\Api\LoginController::class, 'login']);
     Route::post('/register', [App\Http\Controllers\Api\RegisterController::class, 'register']);
     Route::post('/contact', [ContactController::class, 'store']);
+
+    // Profil Routes (for frontend client matching blade UI)
+    Route::get('/profil/pejabat-daerah', [ProfilController::class, 'listKepalaOpd']);
+    Route::get('/profil/tentang-opd', [ProfilController::class, 'opdList']);
+    Route::get('/profil/tentang-opd/{slug}', [ProfilController::class, 'opdDetail']);
+    Route::get('/profil/{slug}', [ProfilController::class, 'showOfficial']);
 
     // === NEW: Frontend SPA Routes ===
     
