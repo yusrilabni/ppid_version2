@@ -17,7 +17,7 @@ class ProfilController extends Controller
         $specialPositions = [
             'bupati' => 'bupati-sinjai',
             'wakil-bupati' => 'wakil-bupati-sinjai',
-            'sekretariat-daerah' => 'sekretaris-daerah-sinjai'
+            'sekretaris-daerah' => 'sekretaris-daerah-sinjai'
         ];
         
         $icon = 'user';
