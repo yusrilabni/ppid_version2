@@ -19,15 +19,19 @@ class InformasiController extends Controller
             $query = Informasi::with('official.position')
                 ->whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP']);
 
-            // Pencarian Umum (Judul, Kategori, Dinas)
-            if ($request->has('q')) {
-                $search = $request->get('q');
-                $query->where(function($q) use ($search) {
-                    $q->where('title', 'LIKE', '%' . $search . '%')
-                      ->orWhere('category', 'LIKE', '%' . $search . '%')
-                      ->orWhereHas('official.organization', function($org) use ($search) {
-                          $org->where('name', 'LIKE', '%' . $search . '%');
+            // Pencarian Umum
+            $searchTerm = $request->get('search', $request->get('q'));
+            if ($searchTerm) {
+                $words = explode(' ', $searchTerm);
+                $query->where(function ($q) use ($searchTerm, $words) {
+                    $q->where('title', 'LIKE', '%' . $searchTerm . '%')
+                      ->orWhere('category', 'LIKE', '%' . $searchTerm . '%')
+                      ->orWhereHas('official.organization', function($org) use ($searchTerm) {
+                          $org->where('name', 'LIKE', '%' . $searchTerm . '%');
                       });
+                    foreach ($words as $word) {
+                        $q->orWhere('title', 'LIKE', '%' . $word . '%');
+                    }
                 });
             }
 
@@ -41,13 +45,37 @@ class InformasiController extends Controller
                 $query->where('status', $request->get('status'));
             }
 
-            // Filter Tanggal (jika ada)
+            // Filter Tanggal
+            if ($request->has('date_from') && $request->get('date_from') != '') {
+                $query->whereDate('tanggal_upload', '>=', $request->get('date_from'));
+            }
+            if ($request->has('date_to') && $request->get('date_to') != '') {
+                $query->whereDate('tanggal_upload', '<=', $request->get('date_to'));
+            }
             if ($request->has('date')) {
                 $query->whereDate('tanggal_upload', $request->get('date'));
             }
 
+            // Sorting
+            $sort = $request->get('sort', 'tanggal_upload_desc');
+            switch ($sort) {
+                case 'title_asc':
+                    $query->orderBy('title', 'asc');
+                    break;
+                case 'title_desc':
+                    $query->orderBy('title', 'desc');
+                    break;
+                case 'tanggal_upload_asc':
+                    $query->orderBy('tanggal_upload', 'asc');
+                    break;
+                case 'tanggal_upload_desc':
+                default:
+                    $query->orderBy('tanggal_upload', 'desc');
+                    break;
+            }
+
             $perPage = $request->get('per_page', 10);
-            $informasi = $query->orderBy('tanggal_upload', 'desc')->paginate($perPage);
+            $informasi = $query->paginate($perPage);
 
             $unitData = GeneralHelper::getUnitData();
             

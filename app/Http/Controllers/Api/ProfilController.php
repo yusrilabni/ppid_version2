@@ -124,24 +124,52 @@ class ProfilController extends Controller
 
     public function opdList()
     {
-        $organizations = Organization::with('strukturOrganisasi.informasi')->get();
+        $organizations = Organization::with(['strukturOrganisasi.informasi', 'officials' => function($query) {
+            $query->where('status', 'active');
+        }])->get();
         $unitData = collect(GeneralHelper::getUnitData());
 
-        $organizations->each(function ($organization) use ($unitData) {
+        $groupedOrganizations = [
+            'OPD' => [],
+            'Kecamatan' => [],
+            'Wilayah (Desa & Kelurahan)' => []
+        ];
+
+        $organizations->each(function ($organization) use ($unitData, &$groupedOrganizations) {
+            if (stripos($organization->name, 'PEMERINTAH DAERAH') !== false) return;
+
+            $name = $organization->name;
             $matchingUnit = $unitData->get($organization->remote_id);
-            if ($matchingUnit) {
-                if (empty($matchingUnit['unit_alamat']) || $matchingUnit['unit_alamat'] === '0') {
-                    $organization->api_address = 'Alamat belum ditambahkan';
-                } else {
-                    $organization->api_address = $matchingUnit['unit_alamat'];
-                }
-            } else {
+            $organization->api_address = $matchingUnit['unit_alamat'] ?? 'Alamat belum ditambahkan';
+            if (empty($organization->api_address) || $organization->api_address === '0') {
                 $organization->api_address = 'Alamat belum ditambahkan';
+            }
+            $kecamatanName = $matchingUnit['kecamatan'] ?? null;
+
+            if (stripos($name, 'Dinas') !== false || stripos($name, 'Badan') !== false) {
+                $groupedOrganizations['OPD'][] = $organization;
+            } elseif (stripos($name, 'Kecamatan') !== false) {
+                $groupedOrganizations['Kecamatan'][] = $organization;
+            } elseif (stripos($name, 'Desa') !== false || stripos($name, 'Kelurahan') !== false) {
+                $kecKey = $kecamatanName ?? 'Lainnya';
+                if (!isset($groupedOrganizations['Wilayah (Desa & Kelurahan)'][$kecKey])) {
+                    $groupedOrganizations['Wilayah (Desa & Kelurahan)'][$kecKey] = [];
+                }
+                $groupedOrganizations['Wilayah (Desa & Kelurahan)'][$kecKey][] = $organization;
+            } else {
+                $groupedOrganizations['OPD'][] = $organization;
             }
         });
 
+        if (!empty($groupedOrganizations['Wilayah (Desa & Kelurahan)'])) {
+            ksort($groupedOrganizations['Wilayah (Desa & Kelurahan)']);
+        }
+
+        $groupedOrganizations = array_filter($groupedOrganizations, fn($group) => count($group) > 0);
+
         return response()->json([
-            'organizations' => $organizations
+            'groupedOrganizations' => $groupedOrganizations,
+            'organizations' => $organizations // keeping for backward compatibility if needed temporarily
         ]);
     }
 
