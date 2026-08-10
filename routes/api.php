@@ -145,3 +145,4 @@ Route::prefix('v1')->group(function () {
 Route::get('/health', [HealthController::class, 'index']);
 Route::post('/telegram/webhook', [\App\Http\Controllers\Api\TelegramWebhookController::class, 'handle']);
 Route::match(['get', 'post'], '/whatsapp/webhook', [\App\Http\Controllers\Api\WhatsAppWebhookController::class, 'handle']);
+Route::get('/profil/unit-lokal', [\App\Http\Controllers\Api\ProfilController::class, 'unitLokalList']);
