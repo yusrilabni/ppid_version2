@@ -57,21 +57,26 @@ class InformasiController extends Controller
             }
 
             // Sorting
-            $sort = $request->get('sort', 'tanggal_upload_desc');
-            switch ($sort) {
-                case 'title_asc':
-                    $query->orderBy('title', 'asc');
-                    break;
-                case 'title_desc':
-                    $query->orderBy('title', 'desc');
-                    break;
-                case 'tanggal_upload_asc':
-                    $query->orderBy('tanggal_upload', 'asc');
-                    break;
-                case 'tanggal_upload_desc':
-                default:
-                    $query->orderBy('tanggal_upload', 'desc');
-                    break;
+            if ($request->get('sort_created', 1) == 1) {
+                // Urutkan berdasarkan waktu upload/edit terbaru (created_at) seperti di Version 2
+                $query->orderBy('created_at', 'desc');
+            } else {
+                $sort = $request->get('sort', 'tanggal_upload_desc');
+                switch ($sort) {
+                    case 'title_asc':
+                        $query->orderBy('title', 'asc');
+                        break;
+                    case 'title_desc':
+                        $query->orderBy('title', 'desc');
+                        break;
+                    case 'tanggal_upload_asc':
+                        $query->orderBy('tanggal_upload', 'asc');
+                        break;
+                    case 'tanggal_upload_desc':
+                    default:
+                        $query->orderBy('tanggal_upload', 'desc');
+                        break;
+                }
             }
 
             $perPage = $request->get('per_page', 10);
