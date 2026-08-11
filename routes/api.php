@@ -70,6 +70,10 @@ Route::prefix('v1')->group(function () {
     Route::get('/dipunit', [App\Http\Controllers\Api\DinasController::class, 'index']);
     Route::get('/dipunit/dip/{organization:slug}', [App\Http\Controllers\Api\DinasController::class, 'opdDip']);
 
+    // API Endpoint for Global DIP
+    Route::get('/dip', [App\Http\Controllers\Frontend\DIPController::class, 'index']);
+    Route::get('/dip/{year}', [App\Http\Controllers\Frontend\DIPController::class, 'show']);
+
     // === NEW: Frontend SPA Routes ===
     
     // Survey public listing

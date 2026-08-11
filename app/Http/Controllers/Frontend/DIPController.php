@@ -29,6 +29,15 @@ class DIPController extends Controller
     {
         $latestYear = Informasi::max('tahun');
 
+        if (request()->is('api/*') || request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'latestYear' => $latestYear
+                ]
+            ]);
+        }
+
         if (!$latestYear) {
             return view('frontend.pages.dip.no-data');
         }
@@ -73,6 +82,20 @@ class DIPController extends Controller
         // Get all unit data and create a map
         $allUnits = $this->getUnitData();
         
+        if (request()->is('api/*') || request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'year' => $year,
+                    'informasiTahunIni' => $informasiTahunIni,
+                    'informasiDikecualikan' => $informasiDikecualikan,
+                    'informasiPemutakhiran' => $informasiPemutakhiran,
+                    'informasiEksDikecualikan' => $informasiEksDikecualikan,
+                    'unitMap' => $allUnits,
+                ]
+            ]);
+        }
+
         return view('frontend.pages.dip.show', [
             'year' => $year,
             'informasiTahunIni' => $informasiTahunIni,
