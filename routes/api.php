@@ -135,6 +135,10 @@ Route::prefix('v1')->group(function () {
     // LHKPN
     Route::get('/lhkpn', [App\Http\Controllers\Api\LhkpnController::class, 'index']);
 
+    // PBJ
+    Route::get('/pbj/years', [App\Http\Controllers\Api\PbjController::class, 'getYears']);
+    Route::get('/pbj', [App\Http\Controllers\Api\PbjController::class, 'getQuestions']);
+
     // Standar Layanan
     Route::get('/standar-layanan', function () {
         $items = \App\Models\StandarLayanan::with('subStandarLayanans')
