@@ -126,7 +126,7 @@ Route::prefix('v1')->group(function () {
     // Survey public listing
     Route::get('/surveys', function () {
         $surveys = \App\Models\Survey::where('status', 'Aktif')
-            ->select('id', 'title', 'description', 'created_at')
+            ->select('id', 'title', 'description', 'type', 'slug', 'created_at')
             ->orderBy('created_at', 'desc')
             ->get();
         return response()->json(['success' => true, 'data' => $surveys]);
