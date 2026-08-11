@@ -216,7 +216,7 @@ Route::prefix('v1')->group(function () {
                     }
                 });
             }
-        })->where('status', 'AKTIF');
+        });
 
         $allResults = $informasiQuery->get()->map(function($item) use ($searchLower, $words) {
             $titleLower = strtolower($item->title);
