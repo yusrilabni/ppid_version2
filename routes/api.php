@@ -190,7 +190,7 @@ Route::prefix('v1')->group(function () {
             return response()->json([
                 'success' => true,
                 'data' => [
-                    'informasi' => ['data' => [], 'links' => []],
+                    'informasi' => ['data' => [], 'links' => [], 'total' => 0],
                     'standarLayanan' => [],
                     'organizations' => []
                 ]
@@ -203,7 +203,7 @@ Route::prefix('v1')->group(function () {
             return strlen($w) > 1;
         });
 
-        // Informasi Publik
+        // 1. Informasi Publik (dengan scoring mirip FrontendController)
         $informasiQuery = \App\Models\Informasi::with(['user', 'organization']);
         $informasiQuery->where(function($q) use ($searchTerm, $words) {
             $q->where('title', 'like', '%' . $searchTerm . '%')
@@ -216,22 +216,62 @@ Route::prefix('v1')->group(function () {
                     }
                 });
             }
-        })->where('status', 'AKTIF')->latest();
-        $informasiResults = $informasiQuery->paginate(12)->appends(['q' => $searchTerm]);
+        })->where('status', 'AKTIF');
 
-        // Standar Layanan File (Dokumen)
-        $standarLayananResults = \App\Models\StandarLayananFile::with('standarLayanan')
-            ->where('title', 'like', '%' . $searchTerm . '%')
-            ->orWhere('tahun_dokumen', 'like', '%' . $searchTerm . '%')
-            ->latest()
-            ->limit(10)
-            ->get();
+        $allResults = $informasiQuery->get()->map(function($item) use ($searchLower, $words) {
+            $titleLower = strtolower($item->title);
+            similar_text($titleLower, $searchLower, $percent);
+            $score = $percent * 20;
 
-        // Organizations (Unit/OPD)
-        $orgResults = \App\Models\Organization::where('name', 'like', '%' . $searchTerm . '%')
-            ->orWhere('singkatan', 'like', '%' . $searchTerm . '%')
-            ->limit(5)
-            ->get();
+            if ($titleLower === $searchLower) $score += 5000;
+            if (str_contains($titleLower, $searchLower)) $score += 1000;
+            
+            if (!empty($words)) {
+                $wordMatches = 0;
+                foreach ($words as $word) {
+                    if (str_contains($titleLower, $word)) {
+                        $wordMatches++;
+                        $score += 200;
+                    }
+                }
+                if ($wordMatches === count($words)) {
+                    $score += 1000;
+                }
+            }
+
+            if ($score < 50 && !str_contains($titleLower, $searchLower)) {
+                $score -= 1000; 
+            }
+
+            $item->search_score = $score;
+            return $item;
+        })->filter(function($item) {
+            return $item->search_score > 0;
+        })->sortByDesc('search_score');
+
+        $currentPage = $request->input('page', 1);
+        $perPage = 12;
+        $currentItems = $allResults->slice(($currentPage - 1) * $perPage, $perPage)->values();
+        
+        $informasiResults = new \Illuminate\Pagination\LengthAwarePaginator(
+            $currentItems,
+            $allResults->count(),
+            $perPage,
+            $currentPage,
+            ['path' => $request->url(), 'query' => $request->query()]
+        );
+
+        // 2. Standar Layanan (SubStandarLayanan)
+        $standarLayananQuery = \App\Models\SubStandarLayanan::with('standarLayanan')->where('title', 'like', '%' . $searchTerm . '%');
+        if (!empty($words)) {
+            foreach ($words as $word) {
+                $standarLayananQuery->orWhere('title', 'like', '%' . $word . '%');
+            }
+        }
+        $standarLayananResults = $standarLayananQuery->take(10)->get();
+
+        // 3. Organizations (Unit/OPD)
+        $orgResults = \App\Models\Organization::where('name', 'like', "%{$searchTerm}%")->take(5)->get();
 
         return response()->json([
             'success' => true,
