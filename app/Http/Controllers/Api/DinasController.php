@@ -176,6 +176,19 @@ class DinasController extends Controller
         $informasiTahunIni = $informasiTahunIniRaw->groupBy(['category', 'jenis_dokumen', 'unit_display_name']);
         $unitName = $unitData->get($remoteId)['unit_nama'] ?? $organization->name;
 
+        if (request()->is('api/*') || request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'organization' => $organization,
+                    'year' => $year,
+                    'availableYears' => $availableYears,
+                    'informasiTahunIni' => $informasiTahunIni,
+                    'unitName' => $unitName
+                ]
+            ]);
+        }
+
         return view('frontend.opd.dip', [
             'organization' => $organization,
             'year' => $year,

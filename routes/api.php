@@ -68,6 +68,7 @@ Route::prefix('v1')->group(function () {
 
     // API Endpoint for DIP Unit
     Route::get('/dipunit', [App\Http\Controllers\Api\DinasController::class, 'index']);
+    Route::get('/dipunit/dip/{organization:slug}', [App\Http\Controllers\Api\DinasController::class, 'opdDip']);
 
     // === NEW: Frontend SPA Routes ===
     
