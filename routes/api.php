@@ -132,6 +132,9 @@ Route::prefix('v1')->group(function () {
         return response()->json(['success' => true, 'data' => $surveys]);
     });
 
+    // LHKPN
+    Route::get('/lhkpn', [App\Http\Controllers\Api\LhkpnController::class, 'index']);
+
     // Standar Layanan
     Route::get('/standar-layanan', function () {
         $items = \App\Models\StandarLayanan::with('subStandarLayanans')
