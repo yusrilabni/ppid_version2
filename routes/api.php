@@ -75,8 +75,8 @@ Route::prefix('v1')->group(function () {
     Route::get('/dip/{year}', [App\Http\Controllers\Frontend\DIPController::class, 'show']);
 
     // API Endpoint for Standar Layanan
-    Route::get('/standar-layanan/{slug}', [App\Http\Controllers\Frontend\StandarLayananController::class, 'showBySlug']);
     Route::get('/standar-layanan/file/{subStandarLayanan:slug}', [App\Http\Controllers\Frontend\StandarLayananController::class, 'showFileDetail']);
+    Route::get('/standar-layanan/{slug}', [App\Http\Controllers\Frontend\StandarLayananController::class, 'showBySlug']);
 
     // === NEW: Frontend SPA Routes ===
     
