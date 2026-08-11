@@ -125,7 +125,7 @@ Route::prefix('v1')->group(function () {
 
     // Survey public listing
     Route::get('/surveys', function () {
-        $surveys = \App\Models\Survey::where('is_active', true)
+        $surveys = \App\Models\Survey::where('status', 'Aktif')
             ->select('id', 'title', 'description', 'created_at')
             ->orderBy('created_at', 'desc')
             ->get();
