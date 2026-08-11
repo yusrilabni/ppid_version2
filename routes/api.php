@@ -66,6 +66,9 @@ Route::prefix('v1')->group(function () {
     Route::get('/profil/unit-lokal', [ProfilController::class, 'unitLokalList']);
     Route::get('/profil/{slug}', [ProfilController::class, 'showOfficial']);
 
+    // API Endpoint for DIP Unit
+    Route::get('/dipunit', [App\Http\Controllers\Api\DinasController::class, 'index']);
+
     // === NEW: Frontend SPA Routes ===
     
     // Survey public listing

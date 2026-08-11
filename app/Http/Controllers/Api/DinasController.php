@@ -95,6 +95,17 @@ class DinasController extends Controller
         uasort($kecamatans, fn($a, $b) => strcasecmp($a['name'], $b['name']));
         ksort($villagesByKecamatan);
 
+        if (request()->is('api/*') || request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'opds' => array_values($opds),
+                    'kecamatans' => array_values($kecamatans),
+                    'villagesByKecamatan' => $villagesByKecamatan
+                ]
+            ]);
+        }
+
         return view('frontend.opd.list_dip', compact('opds', 'kecamatans', 'villagesByKecamatan'));
     }
 
