@@ -273,22 +273,21 @@
                                                                     placeholder="Penjelasan detail..." {{ $question->is_required ? 'required' : '' }}
                                                                     x-on:input="handleInputChange($event)"></textarea>
                                                             </div>
-                                                        @elseif (in_array($question->question_type, ['Pilihan Ganda', 'Pilihan Ganda (Berbobot)']))
-                                                            <div class="grid grid-cols-1 gap-3">
-                                                                @foreach ($question->options->sortBy('order') as $option)
-                                                                    <label
-                                                                        class="option-item flex items-center p-4 md:p-5 rounded-xl border-2 border-gray-50 hover:border-blue-300 hover:bg-blue-50 cursor-pointer transition-all duration-200"
-                                                                        onclick="selectRadioOption(this)">
-                                                                        <input type="radio"
-                                                                            name="answers[{{ $question->id }}]"
-                                                                            value="{{ $option->id }}"
-                                                                            class="h-5 w-5 text-blue-600 focus:ring-blue-500 border-gray-300 mr-3 md:mr-4 flex-shrink-0"
-                                                                            {{ $question->is_required ? 'required' : '' }}
-                                                                            x-on:change="handleInputChange($event)">
-                                                                        <span
-                                                                            class="text-gray-800 text-base md:text-lg flex-1 min-w-0 break-words">{{ $option->option_text }}</span>
-                                                                    </label>
-                                                                @endforeach
+                                                        @elseif (in_array($question->question_type, ['Dropdown', 'Pilihan Ganda', 'Pilihan Ganda (Berbobot)']))
+                                                            <div class="relative">
+                                                                @php
+                                                                    $options = $question->options->sortBy('order')->map(function($opt) {
+                                                                        return ['value' => (string)$opt->id, 'label' => $opt->option_text];
+                                                                    })->toArray();
+                                                                @endphp
+                                                                <x-custom-select 
+                                                                    name="answers[{{ $question->id }}]" 
+                                                                    :options="$options"
+                                                                    placeholder="-- Pilih --"
+                                                                    :searchable="true"
+                                                                    :required="$question->is_required"
+                                                                    @change="handleInputChange({ target: $el.querySelector('input[type=hidden]') })"
+                                                                />
                                                             </div>
                                                         @elseif ($question->question_type === 'Checkbox')
                                                             <div class="grid grid-cols-1 gap-3">
@@ -305,22 +304,6 @@
                                                                             class="text-gray-800 text-base md:text-lg flex-1 min-w-0 break-words">{{ $option->option_text }}</span>
                                                                     </label>
                                                                 @endforeach
-                                                            </div>
-                                                        @elseif ($question->question_type === 'Dropdown')
-                                                            <div class="relative">
-                                                                @php
-                                                                    $options = $question->options->sortBy('order')->map(function($opt) {
-                                                                        return ['value' => (string)$opt->id, 'label' => $opt->option_text];
-                                                                    })->toArray();
-                                                                @endphp
-                                                                <x-custom-select 
-                                                                    name="answers[{{ $question->id }}]" 
-                                                                    :options="$options"
-                                                                    placeholder="-- Pilih --"
-                                                                    :searchable="true"
-                                                                    :required="$question->is_required"
-                                                                    @change="handleInputChange({ target: $el.querySelector('input[type=hidden]') })"
-                                                                />
                                                             </div>
                                                         @elseif ($question->question_type === 'Skala Kepuasan')
                                                             <div
