@@ -80,6 +80,49 @@ Route::prefix('v1')->group(function () {
 
     // === NEW: Frontend SPA Routes ===
     
+    Route::get('/laporan-permohonan', function (\Illuminate\Http\Request $request) {
+        $query = \App\Models\PermohonanInformasi::query()
+            ->whereIn('privacy_status', ['Publik', 'Anonim'])
+            ->whereIn('status_permohonan', ['selesai', 'ditolak']);
+
+        if ($request->has('search') && $request->search != '') {
+            $searchTerm = $request->search;
+            $query->where(function ($q) use ($searchTerm) {
+                $q->where('nama_pemohon', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('unique_code', 'like', '%' . $searchTerm . '%')
+                    ->orWhere('detail_informasi', 'like', '%' . $searchTerm . '%');
+            });
+        }
+
+        if ($request->has('date_from') && $request->date_from != '') {
+            $query->whereDate('created_at', '>=', $request->date_from);
+        }
+        if ($request->has('date_to') && $request->date_to != '') {
+            $query->whereDate('created_at', '<=', $request->date_to);
+        }
+
+        $sort = $request->get('sort', 'created_at_desc');
+        switch ($sort) {
+            case 'nama_pemohon_asc':
+                $query->orderBy('nama_pemohon', 'asc');
+                break;
+            case 'nama_pemohon_desc':
+                $query->orderBy('nama_pemohon', 'desc');
+                break;
+            case 'created_at_asc':
+                $query->orderBy('created_at', 'asc');
+                break;
+            default:
+                $query->orderBy('created_at', 'desc');
+                break;
+        }
+
+        $perPage = $request->get('per_page', 10);
+        $permohonan = $query->paginate($perPage);
+
+        return response()->json(['success' => true, 'data' => $permohonan]);
+    });
+
     // Survey public listing
     Route::get('/surveys', function () {
         $surveys = \App\Models\Survey::where('is_active', true)

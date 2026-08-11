@@ -125,8 +125,8 @@ class StandarLayananController extends Controller
             'url' => $subStandarLayanan->url,
         ]);
 
-        // Eager load parent category title for breadcrumbs
-        $subStandarLayanan->load('standarLayanan'); 
+        // Eager load parent category title for breadcrumbs and related metadata
+        $subStandarLayanan->load('standarLayanan', 'informasi.organization', 'informasi.user'); 
 
         // Get category icon for breadcrumbs
         $menuConfig = config('menu');
