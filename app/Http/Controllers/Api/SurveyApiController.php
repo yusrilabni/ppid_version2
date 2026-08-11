@@ -39,6 +39,8 @@ class SurveyApiController extends Controller
         }
 
         // Limit IP to prevent spamming within 24 hours
+        // DINONAKTIFKAN SEMENTARA agar admin/penguji bisa melakukan tes berulang kali
+        /*
         $ipExists = SurveyResponse::where('survey_id', $survey->id)
             ->where('respondent_ip', $request->ip())
             ->where('created_at', '>=', now()->subHours(24))
@@ -50,6 +52,7 @@ class SurveyApiController extends Controller
                 'message' => 'Anda sudah mengisi survei ini dalam 24 jam terakhir.'
             ], 429);
         }
+        */
 
         $rules = [];
         foreach ($survey->questions as $question) {
