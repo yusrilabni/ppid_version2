@@ -183,6 +183,66 @@ Route::prefix('v1')->group(function () {
         return response()->json(['success' => true, 'data' => $items]);
     });
 
+    // Global Search (untuk SearchPage Vue)
+    Route::get('/global-search', function (\Illuminate\Http\Request $request) {
+        $query = $request->get('q', '');
+        if (empty($query)) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'informasi' => ['data' => [], 'links' => []],
+                    'standarLayanan' => [],
+                    'organizations' => []
+                ]
+            ]);
+        }
+
+        $searchTerm = trim($query);
+        $searchLower = strtolower($searchTerm);
+        $words = array_filter(explode(' ', $searchTerm), function($w) {
+            return strlen($w) > 1;
+        });
+
+        // Informasi Publik
+        $informasiQuery = \App\Models\Informasi::with(['user', 'organization']);
+        $informasiQuery->where(function($q) use ($searchTerm, $words) {
+            $q->where('title', 'like', '%' . $searchTerm . '%')
+              ->orWhere('deskripsi', 'like', '%' . $searchTerm . '%');
+            if (!empty($words)) {
+                $q->orWhere(function($subQ) use ($words) {
+                    foreach ($words as $word) {
+                        $subQ->orWhere('title', 'like', '%' . $word . '%')
+                             ->orWhere('deskripsi', 'like', '%' . $word . '%');
+                    }
+                });
+            }
+        })->where('status', 'AKTIF')->latest();
+        $informasiResults = $informasiQuery->paginate(12)->appends(['q' => $searchTerm]);
+
+        // Standar Layanan File (Dokumen)
+        $standarLayananResults = \App\Models\StandarLayananFile::with('standarLayanan')
+            ->where('title', 'like', '%' . $searchTerm . '%')
+            ->orWhere('tahun_dokumen', 'like', '%' . $searchTerm . '%')
+            ->latest()
+            ->limit(10)
+            ->get();
+
+        // Organizations (Unit/OPD)
+        $orgResults = \App\Models\Organization::where('name', 'like', '%' . $searchTerm . '%')
+            ->orWhere('singkatan', 'like', '%' . $searchTerm . '%')
+            ->limit(5)
+            ->get();
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'informasi' => $informasiResults,
+                'standarLayanan' => $standarLayananResults,
+                'organizations' => $orgResults,
+            ]
+        ]);
+    });
+
     // --- PROTECTED ROUTES (Perlu Token Sanctum) ---
 
     Route::middleware('auth:sanctum')->group(function () {
