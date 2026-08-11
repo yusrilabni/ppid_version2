@@ -55,6 +55,13 @@ class StandarLayananController extends Controller
                                                                                                  ->first();
                                                     
                                                             if ($activeSubLayanan) {
+                                                                if (request()->is('api/*') || request()->wantsJson()) {
+                                                                    return response()->json([
+                                                                        'success' => true,
+                                                                        'redirect' => true,
+                                                                        'redirectUrl' => '/standar-layanan/file/' . $activeSubLayanan->slug
+                                                                    ]);
+                                                                }
                                                                 return redirect()->route('frontend.standar-layanan.file-detail', $activeSubLayanan);
                                                             }
                                                         }                                $standarLayanan = $foundLayanan;            
@@ -88,8 +95,20 @@ class StandarLayananController extends Controller
                         }]);
                     }
             
-                    return view('frontend.standar-layanan.show', compact('standarLayanan', 'categoryIcon'));
-                }    /**
+        if (request()->is('api/*') || request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'standarLayanan' => $standarLayanan,
+                    'categoryIcon' => $categoryIcon,
+                    'isGallery' => isset($allImages) && $allImages ? true : false,
+                    'subLayanans' => isset($subLayanans) ? $subLayanans : $standarLayanan->subStandarLayanans
+                ]
+            ]);
+        }
+        
+        return view('frontend.standar-layanan.show', compact('standarLayanan', 'categoryIcon'));
+    }    /**
      * Display details of a specific SubStandarLayanan file.
      */
     public function showFileDetail(SubStandarLayanan $subStandarLayanan)
