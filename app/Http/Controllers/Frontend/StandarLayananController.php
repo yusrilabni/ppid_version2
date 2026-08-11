@@ -141,6 +141,16 @@ class StandarLayananController extends Controller
             }
         }
 
+        if (request()->is('api/*') || request()->wantsJson()) {
+            return response()->json([
+                'success' => true,
+                'data' => [
+                    'subStandarLayanan' => $subStandarLayanan,
+                    'categoryIcon' => $categoryIcon
+                ]
+            ]);
+        }
+
         return view('frontend.standar-layanan.file-detail', compact('subStandarLayanan', 'categoryIcon'));
     }
 

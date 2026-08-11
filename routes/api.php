@@ -76,6 +76,7 @@ Route::prefix('v1')->group(function () {
 
     // API Endpoint for Standar Layanan
     Route::get('/standar-layanan/{slug}', [App\Http\Controllers\Frontend\StandarLayananController::class, 'showBySlug']);
+    Route::get('/standar-layanan/file/{subStandarLayanan:slug}', [App\Http\Controllers\Frontend\StandarLayananController::class, 'showFileDetail']);
 
     // === NEW: Frontend SPA Routes ===
     
