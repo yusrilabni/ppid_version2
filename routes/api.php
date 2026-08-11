@@ -131,6 +131,10 @@ Route::prefix('v1')->group(function () {
             ->get();
         return response()->json(['success' => true, 'data' => $surveys]);
     });
+    
+    // Survey single detail and submit
+    Route::get('/surveys/{survey:slug}', [App\Http\Controllers\Api\SurveyApiController::class, 'show']);
+    Route::post('/surveys/{survey:slug}/submit', [App\Http\Controllers\Api\SurveyApiController::class, 'submit']);
 
     // LHKPN
     Route::get('/lhkpn', [App\Http\Controllers\Api\LhkpnController::class, 'index']);
