@@ -117,10 +117,11 @@ class HomeController extends Controller
                 }
             }
 
+            $profilData = \App\Models\ProfilPpid::where('status', true)->first() ?: \App\Models\ProfilPpid::first();
             $dbData['contact'] = [
-                'alamat' => 'Jl. Persatuan Raya No. 5, Sinjai',
-                'email' => 'ppid@sinjaikab.go.id',
-                'telepon' => '08123456789'
+                'alamat' => $profilData->address ?? 'Jl. Persatuan Raya No. 5, Sinjai',
+                'email' => $profilData->email ?? 'ppid@sinjaikab.go.id',
+                'telepon' => $profilData->phone ?? '08123456789'
             ];
 
             return response()->json([
