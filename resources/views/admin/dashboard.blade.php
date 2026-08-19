@@ -284,19 +284,6 @@
                                     <p class="text-[9px] font-black text-purple-400 uppercase mt-1">Tokens</p>
                                 </div>
                             </div>
-                            
-                            <div class="w-full bg-gray-200 rounded-full h-1.5">
-                                @php
-                                    $percent = min(100, ($ai['usage_today'] / max(1, $ai['limit_per_day'])) * 100);
-                                    $color = $percent > 80 ? 'bg-red-500' : ($percent > 50 ? 'bg-yellow-400' : 'bg-green-500');
-                                @endphp
-                                <div class="{{ $color }} h-1.5 rounded-full" style="width: {{ $percent }}%"></div>
-                            </div>
-                            
-                            <div class="flex justify-between text-[9px] font-bold uppercase tracking-tighter text-gray-400">
-                                <span>Estimasi Limit: ~{{ number_format($ai['limit_per_day']) }}</span>
-                                <span>Sisa: ~{{ number_format($ai['remaining']) }}</span>
-                            </div>
                         </div>
                     </div>
                 @empty

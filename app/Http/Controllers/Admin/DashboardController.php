@@ -161,8 +161,6 @@ class DashboardController extends Controller
                 'is_active' => $token->is_active,
                 'usage_today' => $usage,
                 'token_words_today' => $tokenWords,
-                'limit_per_day' => 1500, // Estimasi Gemini Flash free tier
-                'remaining' => max(0, 1500 - $usage),
             ];
         }
 
