@@ -43,13 +43,15 @@ class AppServiceProvider extends ServiceProvider
         }
 
         // Cache Invalidation untuk Endpoint Home
-        $homeModels = [\App\Models\Slider::class, \App\Models\Informasi::class, \App\Models\Galeri::class, \App\Models\PermohonanInformasi::class, \App\Models\SurveyResponse::class];
+        $homeModels = [\App\Models\ProfilPpid::class, \App\Models\Slider::class, \App\Models\Informasi::class, \App\Models\Galeri::class, \App\Models\PermohonanInformasi::class, \App\Models\SurveyResponse::class];
         foreach ($homeModels as $model) {
             $model::saved(function() {
                 \Illuminate\Support\Facades\Cache::forget('all_home');
+                \Illuminate\Support\Facades\Cache::forget('profil_api_data');
             });
             $model::deleted(function() {
                 \Illuminate\Support\Facades\Cache::forget('all_home');
+                \Illuminate\Support\Facades\Cache::forget('profil_api_data');
             });
         }
 
