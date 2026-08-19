@@ -146,7 +146,7 @@
             <div class="flex items-center">
                 <div class="flex-shrink-0">
                     @if(Auth::user()->profile_photo_path)
-                        <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" alt="Profile" class="w-8 h-8 rounded-full object-cover">
+                        <img src="{{ asset('storage/' . Auth::user()->profile_photo_path) }}" alt="Profile" width="32" height="32" class="w-8 h-8 rounded-full object-cover">
                     @else
                         <div class="bg-gray-200 border-2 border-dashed rounded-full w-8 h-8 flex items-center justify-center">
                             <i class="fas fa-user text-gray-600 text-xs"></i>

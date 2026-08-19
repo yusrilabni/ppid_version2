@@ -23,30 +23,37 @@ class HomeController extends Controller
             $rss_items = \Illuminate\Support\Facades\Cache::remember('rss_news', 3600, function () {
                 $items = [];
                 try {
-                    $response = Http::timeout(3)->get('https://humas.sinjaikab.go.id/v1/rss-widget/index.php');
+                    $response = Http::timeout(5)->get('https://humas.sinjaikab.go.id/v1/rss');
                     if ($response->successful()) {
-                        $rss_data = $response->json();
-                        if (is_array($rss_data)) {
-                            foreach (array_slice($rss_data, 0, 10) as $item) {
-                                // FIX: Deteksi Gambar jika berupa Array (Enclosure/Thumbnail)
-                                $img = $item['thumbnail'] ?? $item['enclosure'] ?? $item['image'] ?? '';
-                                if (is_array($img) && isset($img['url'])) {
-                                    $img = $img['url'];
-                                } elseif (is_array($img) && isset($img[0])) {
-                                    $img = $img[0];
+                        $xml = simplexml_load_string($response->body());
+                        if ($xml && isset($xml->channel->item)) {
+                            $count = 0;
+                            foreach ($xml->channel->item as $item) {
+                                if ($count >= 10) break;
+                                
+                                // Parse enclosure (thumbnail)
+                                $img = '';
+                                if (isset($item->enclosure)) {
+                                    $attributes = $item->enclosure->attributes();
+                                    if (isset($attributes['url'])) {
+                                        $img = (string) $attributes['url'];
+                                    }
                                 }
-
+                                
                                 $items[] = [
-                                    'title' => $item['title'] ?? '',
-                                    'link' => $item['link'] ?? '#',
-                                    'pubDate' => isset($item['pubDate']) ? Carbon::parse($item['pubDate'])->translatedFormat('d M Y') : 'Terbaru',
-                                    'image' => (string)$img, // Pastikan jadi String URL
+                                    'title' => (string) $item->title,
+                                    'link' => (string) $item->link,
+                                    'pubDate' => isset($item->pubDate) ? Carbon::parse((string) $item->pubDate)->translatedFormat('d M Y') : 'Terbaru',
+                                    'image' => $img,
                                     'views' => rand(150, 600)
                                 ];
+                                $count++;
                             }
                         }
                     }
-                } catch (\Exception $e) {}
+                } catch (\Exception $e) {
+                    Log::error('Gagal fetch RSS Humas: ' . $e->getMessage());
+                }
                 return $items;
             });
 
