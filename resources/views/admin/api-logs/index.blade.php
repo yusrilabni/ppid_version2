@@ -2,18 +2,21 @@
 
 @section('title', 'API Tracker')
 
-@section('content')
-<div class="container mx-auto p-4 sm:p-6 lg:p-8">
-    <div class="flex flex-col sm:flex-row sm:justify-between sm:items-center mb-8">
-        <div>
-            <h1 class="text-2xl md:text-3xl font-bold text-gray-900 mb-2">API Tracker</h1>
-            <p class="text-gray-600">Pantau log aktivitas API Anda</p>
+@section('header')
+    <div class="flex justify-between items-center">
+        <h2 class="font-semibold text-xl text-gray-800 leading-tight">
+            {{ __('API Tracker') }}
+        </h2>
+        <div class="text-sm text-gray-500">
+            Pantau aktivitas dan keamanan lalu lintas API
         </div>
     </div>
+@endsection
 
-    <div class="bg-white rounded-2xl shadow-lg overflow-hidden">
-        <div class="px-6 py-4 border-b border-gray-200 flex justify-between items-center">
-            <h2 class="text-lg font-semibold text-gray-800">Semua Log</h2>
+@section('content')
+<div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
+    <div class="flex justify-between items-center mb-6">
+        <h3 class="text-lg font-semibold text-gray-800">Riwayat API (Log)</h3>
             <form action="{{ route('admin.api-logs.index') }}" method="GET" class="flex space-x-2">
                 <select name="risk_level" class="border-gray-300 rounded-md shadow-sm text-sm" onchange="this.form.submit()">
                     <option value="">Semua Risiko</option>
@@ -142,48 +145,4 @@ function closeModal() {
     document.getElementById('payloadModal').classList.add('hidden');
 }
 </script>
-
-<style>
-    .pagination {
-        display: flex;
-        list-style: none;
-        padding: 0;
-        margin: 0;
-    }
-    .pagination li {
-        margin: 0 2px;
-    }
-    .pagination li a,
-    .pagination li span {
-        display: inline-flex;
-        align-items: center;
-        justify-content: center;
-        min-width: 2.5rem;
-        height: 2.5rem;
-        padding: 0 0.5rem;
-        border-radius: 0.5rem;
-        font-weight: 500;
-        text-decoration: none;
-        transition: all 0.3s ease;
-    }
-    .pagination li a {
-        color: #4b5563;
-        border: 1px solid #e5e7eb;
-        background-color: white;
-    }
-    .pagination li a:hover {
-        background-color: #f9fafb;
-        border-color: #d1d5db;
-    }
-    .pagination li.active span {
-        background-color: #3b82f6;
-        color: white;
-        border-color: #3b82f6;
-    }
-    .pagination li.disabled span {
-        color: #9ca3af;
-        background-color: #f3f4f6;
-        border-color: #e5e7eb;
-    }
-</style>
 @endsection
