@@ -19,7 +19,10 @@ return [
 
     'allowed_methods' => ['*'],
 
-    'allowed_origins' => ['*'],
+    'allowed_origins' => [
+        'https://ppid.sinjaikab.go.id',
+        'https://ppidkab.sinjaikab.go.id',
+    ],
 
     'allowed_origins_patterns' => [
         '#^https://.*\.vercel\.app$#',

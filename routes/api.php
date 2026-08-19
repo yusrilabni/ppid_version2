@@ -23,7 +23,7 @@ use App\Http\Controllers\Api\HealthController;
 |--------------------------------------------------------------------------
 */
 
-Route::prefix('v1')->group(function () {
+Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
 
     // API Paket Lengkap untuk Beranda Android
     Route::get('/home', [App\Http\Controllers\Api\HomeController::class, 'index']);
@@ -193,10 +193,10 @@ Route::prefix('v1')->group(function () {
         return response()->json(['success' => true, 'data' => $items]);
     });
 
-    // Global Search (untuk SearchPage Vue)
-    Route::get('/global-search', function (\Illuminate\Http\Request $request) {
+    // Global Search (untuk SearchPage Vue) — throttle ketat: maks 10 req/menit per IP
+    Route::middleware('throttle:10,1')->get('/global-search', function (\Illuminate\Http\Request $request) {
         $query = $request->get('q', '');
-        if (empty($query)) {
+        if (empty($query) || strlen(trim($query)) < 3) {
             return response()->json([
                 'success' => true,
                 'data' => [
@@ -295,7 +295,7 @@ Route::prefix('v1')->group(function () {
 
     // --- PROTECTED ROUTES (Perlu Token Sanctum) ---
 
-    Route::get('/clear-home', function() {
+    Route::middleware('auth:sanctum')->get('/clear-home', function() {
         \Illuminate\Support\Facades\Cache::forget('all_home');
         return response()->json(['success' => true, 'message' => 'Cache cleared!']);
     });
