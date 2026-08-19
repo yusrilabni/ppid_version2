@@ -7,4 +7,9 @@ use Illuminate\Database\Eloquent\Model;
 class AiUsageLog extends Model
 {
     protected $fillable = ['user_id', 'endpoint'];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 }

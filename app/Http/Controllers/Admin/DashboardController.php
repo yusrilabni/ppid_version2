@@ -166,6 +166,40 @@ class DashboardController extends Controller
             ];
         }
 
+        // AI Usage User Details
+        $aiUsageToday = \App\Models\AiUsageLog::with('user')
+            ->where('created_at', '>=', \Carbon\Carbon::now()->startOfDay())
+            ->get();
+            
+        $unitData = \App\Helpers\GeneralHelper::getUnitData();
+        $aiUserStats = [];
+        
+        foreach($aiUsageToday as $log) {
+            $userId = $log->user_id;
+            if (!isset($aiUserStats[$userId])) {
+                $user = $log->user;
+                $unitName = 'Super Admin / Umum';
+                if ($user && $user->unit_id) {
+                    $unit = $unitData->get((string)$user->unit_id);
+                    if ($unit && isset($unit['unit_nama'])) {
+                        $unitName = $unit['unit_nama'];
+                    }
+                }
+                
+                $aiUserStats[$userId] = [
+                    'name' => $user ? $user->display_name : 'User Tidak Diketahui',
+                    'dinas' => $unitName,
+                    'count' => 0
+                ];
+            }
+            $aiUserStats[$userId]['count']++;
+        }
+        
+        // Sort users by highest usage
+        usort($aiUserStats, function($a, $b) {
+            return $b['count'] <=> $a['count'];
+        });
+
         $stats = [
 
             'slider' => ['total' => $sliderCount, 'active' => $activeSliderCount],
@@ -207,7 +241,8 @@ class DashboardController extends Controller
             'chartData',
             'externalWebsitesCount',
             'externalLogs',
-            'aiStats'
+            'aiStats',
+            'aiUserStats'
         ));
     }
 

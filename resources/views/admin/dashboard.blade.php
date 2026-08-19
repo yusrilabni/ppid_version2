@@ -247,56 +247,97 @@
     </div>
 
     <!-- AI Usage Tracking Section -->
-    <div class="mt-8 bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
-        <div class="flex items-center justify-between mb-6">
-            <h3 class="text-lg font-black text-gray-800 uppercase tracking-tight flex items-center gap-3">
-                <span class="w-1.5 h-6 bg-purple-600 rounded-full"></span>
-                Tracking Penggunaan AI (Hari Ini)
-            </h3>
-            <a href="{{ route('admin.ai-settings.index') }}" class="text-[10px] font-black text-purple-600 hover:underline uppercase">Kelola Token</a>
+    <div class="grid grid-cols-1 lg:grid-cols-3 gap-8 mt-8">
+        {{-- Token Tracking --}}
+        <div class="lg:col-span-2 bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-black text-gray-800 uppercase tracking-tight flex items-center gap-3">
+                    <span class="w-1.5 h-6 bg-purple-600 rounded-full"></span>
+                    Tracking Penggunaan AI (Hari Ini)
+                </h3>
+                <a href="{{ route('admin.ai-settings.index') }}" class="text-[10px] font-black text-purple-600 hover:underline uppercase">Kelola Token</a>
+            </div>
+            
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                @forelse($aiStats as $ai)
+                    <div class="bg-gray-50 rounded-2xl p-5 border {{ $ai['is_active'] ? 'border-purple-200' : 'border-gray-100 opacity-70' }}">
+                        <div class="flex justify-between items-start mb-4">
+                            <div>
+                                <p class="text-xs font-black text-gray-800">{{ $ai['provider'] }}</p>
+                                <p class="text-[9px] text-gray-500 font-bold uppercase tracking-tighter">{{ $ai['model'] }}</p>
+                            </div>
+                            @if($ai['is_active'])
+                                <span class="bg-purple-100 text-purple-700 text-[8px] font-black uppercase px-2 py-1 rounded-lg">Aktif</span>
+                            @else
+                                <span class="bg-gray-200 text-gray-600 text-[8px] font-black uppercase px-2 py-1 rounded-lg">Nonaktif</span>
+                            @endif
+                        </div>
+                        
+                        <div class="space-y-2">
+                            <div class="flex justify-between items-end">
+                                <p class="text-2xl font-black text-gray-900 leading-none">{{ number_format($ai['usage_today']) }}</p>
+                                <p class="text-[9px] font-black text-gray-400 uppercase text-right">Requests<br><span class="text-purple-600">{{ number_format($ai['token_words_today']) }} Tokens</span></p>
+                            </div>
+                            
+                            <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                @php
+                                    $percent = min(100, ($ai['usage_today'] / max(1, $ai['limit_per_day'])) * 100);
+                                    $color = $percent > 80 ? 'bg-red-500' : ($percent > 50 ? 'bg-yellow-400' : 'bg-green-500');
+                                @endphp
+                                <div class="{{ $color }} h-1.5 rounded-full" style="width: {{ $percent }}%"></div>
+                            </div>
+                            
+                            <div class="flex justify-between text-[9px] font-bold uppercase tracking-tighter text-gray-400">
+                                <span>Estimasi Limit: ~{{ number_format($ai['limit_per_day']) }}</span>
+                                <span>Sisa: ~{{ number_format($ai['remaining']) }}</span>
+                            </div>
+                        </div>
+                    </div>
+                @empty
+                    <div class="col-span-full py-8 text-center bg-gray-50 rounded-2xl">
+                        <i class="fas fa-robot text-3xl text-gray-300 mb-3"></i>
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Belum ada API Key yang dikonfigurasi</p>
+                    </div>
+                @endforelse
+            </div>
         </div>
-        
-        <div class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-4 gap-6">
-            @forelse($aiStats as $ai)
-                <div class="bg-gray-50 rounded-2xl p-5 border {{ $ai['is_active'] ? 'border-purple-200' : 'border-gray-100 opacity-70' }}">
-                    <div class="flex justify-between items-start mb-4">
-                        <div>
-                            <p class="text-xs font-black text-gray-800">{{ $ai['provider'] }}</p>
-                            <p class="text-[9px] text-gray-500 font-bold uppercase tracking-tighter">{{ $ai['model'] }}</p>
+
+        {{-- Top Users AI --}}
+        <div class="bg-white p-8 rounded-[2.5rem] shadow-sm border border-gray-100 flex flex-col overflow-hidden relative">
+            <div class="flex items-center justify-between mb-6">
+                <h3 class="text-lg font-black text-gray-800 uppercase tracking-tight flex items-center gap-3">
+                    <span class="w-1.5 h-6 bg-pink-500 rounded-full"></span>
+                    Pengguna AI
+                </h3>
+                <span class="text-[10px] font-black text-pink-500 bg-pink-50 px-3 py-1 rounded-full uppercase">{{ count($aiUserStats) }} OPD</span>
+            </div>
+            
+            <div class="flex-1 overflow-y-auto pr-2 custom-scrollbar">
+                @forelse($aiUserStats as $userStat)
+                    <div class="flex items-center justify-between p-4 mb-3 bg-gray-50 rounded-2xl border border-transparent hover:border-pink-200 transition-all group/item">
+                        <div class="flex items-center gap-3 min-w-0">
+                            <div class="w-10 h-10 rounded-xl bg-white flex items-center justify-center text-gray-400 shadow-sm group-hover/item:text-pink-500 transition-colors">
+                                <i class="fas fa-user-astronaut text-sm"></i>
+                            </div>
+                            <div class="min-w-0">
+                                <p class="text-xs font-black text-gray-800 truncate">{{ $userStat['name'] }}</p>
+                                <p class="text-[9px] text-gray-400 font-bold uppercase tracking-tighter truncate" title="{{ $userStat['dinas'] }}">{{ Str::limit($userStat['dinas'], 30) }}</p>
+                            </div>
                         </div>
-                        @if($ai['is_active'])
-                            <span class="bg-purple-100 text-purple-700 text-[8px] font-black uppercase px-2 py-1 rounded-lg">Aktif</span>
-                        @else
-                            <span class="bg-gray-200 text-gray-600 text-[8px] font-black uppercase px-2 py-1 rounded-lg">Nonaktif</span>
-                        @endif
-                    </div>
-                    
-                    <div class="space-y-2">
-                        <div class="flex justify-between items-end">
-                            <p class="text-2xl font-black text-gray-900 leading-none">{{ number_format($ai['usage_today']) }}</p>
-                            <p class="text-[9px] font-black text-gray-400 uppercase text-right">Requests<br><span class="text-purple-600">{{ number_format($ai['token_words_today']) }} Tokens</span></p>
-                        </div>
-                        
-                        <div class="w-full bg-gray-200 rounded-full h-1.5">
-                            @php
-                                $percent = min(100, ($ai['usage_today'] / max(1, $ai['limit_per_day'])) * 100);
-                                $color = $percent > 80 ? 'bg-red-500' : ($percent > 50 ? 'bg-yellow-400' : 'bg-green-500');
-                            @endphp
-                            <div class="{{ $color }} h-1.5 rounded-full" style="width: {{ $percent }}%"></div>
-                        </div>
-                        
-                        <div class="flex justify-between text-[9px] font-bold uppercase tracking-tighter text-gray-400">
-                            <span>Estimasi Limit: ~{{ number_format($ai['limit_per_day']) }}</span>
-                            <span>Sisa: ~{{ number_format($ai['remaining']) }}</span>
+                        <div class="text-right">
+                            <p class="text-sm font-black text-gray-900">{{ number_format($userStat['count']) }}</p>
+                            <p class="text-[8px] font-black text-gray-300 uppercase tracking-tighter">Kali</p>
                         </div>
                     </div>
-                </div>
-            @empty
-                <div class="col-span-full py-8 text-center bg-gray-50 rounded-2xl">
-                    <i class="fas fa-robot text-3xl text-gray-300 mb-3"></i>
-                    <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest">Belum ada API Key yang dikonfigurasi</p>
-                </div>
-            @endforelse
+                @empty
+                    <div class="flex flex-col items-center justify-center h-full text-center py-10">
+                        <div class="w-16 h-16 bg-gray-50 rounded-full flex items-center justify-center mb-4">
+                            <i class="fas fa-bed text-gray-200 text-2xl"></i>
+                        </div>
+                        <p class="text-[10px] font-black text-gray-400 uppercase tracking-widest leading-loose">Belum ada OPD yang<br>memakai AI hari ini</p>
+                    </div>
+                @endforelse
+            </div>
         </div>
     </div>
 
