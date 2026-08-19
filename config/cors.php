@@ -24,9 +24,7 @@ return [
         'https://ppidkab.sinjaikab.go.id',
     ],
 
-    'allowed_origins_patterns' => [
-        '#^https://.*\.vercel\.app$#',
-    ],
+    'allowed_origins_patterns' => [],
 
     'allowed_headers' => ['*'],
 
