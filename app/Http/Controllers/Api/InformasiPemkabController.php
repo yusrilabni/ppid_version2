@@ -50,7 +50,10 @@ class InformasiPemkabController extends Controller
 
     public function show($slug)
     {
-        $informasi_pemkab = InformasiPemkab::where('slug', $slug)->orWhere('id', $slug)->firstOrFail();
+        $informasi_pemkab = InformasiPemkab::with(['organization', 'informasi'])
+            ->where('slug', $slug)
+            ->orWhere('id', $slug)
+            ->firstOrFail();
 
         if ($informasi_pemkab->status !== 'published' && $informasi_pemkab->status !== 'scheduled') {
             abort(404);
