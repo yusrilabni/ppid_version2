@@ -39,6 +39,10 @@ Route::prefix('v1')->group(function () {
     Route::get('/informasi/{slug}', [InformasiController::class, 'show']);
     Route::get('/laporan', [LaporanController::class, 'index']);
     Route::get('/laporan/ppid/file/{token}', [App\Http\Controllers\FrontendController::class, 'serveLaporanFile']);
+    
+    // Informasi Pemkab
+    Route::get('/informasi-pemkab', [App\Http\Controllers\Api\InformasiPemkabController::class, 'index']);
+    Route::get('/informasi-pemkab/{slug}', [App\Http\Controllers\Api\InformasiPemkabController::class, 'show']);
 
     // Permohonan Informasi (Formulir via Android)
     Route::post('/permohonan', [PermohonanInformasiController::class, 'store']);
