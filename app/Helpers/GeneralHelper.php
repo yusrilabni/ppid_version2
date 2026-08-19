@@ -161,41 +161,55 @@ class GeneralHelper
      */
     public static function syncExternalUnitsIfNeeded()
     {
-        return \Illuminate\Support\Facades\Cache::remember('external_units_data_v2', 86400, function () {
-            try {
-                // 1. Get OPD Units
-                $unitResponse = Http::timeout(3)->get('http://apps.sinjaikab.go.id/api/pegawai/get_unit');
-                $units = $unitResponse->successful() ? $unitResponse->json() : [];
+        $cached = \Illuminate\Support\Facades\Cache::get('external_units_data_v2');
+        
+        if (empty($cached)) {
+            $lock = \Illuminate\Support\Facades\Cache::lock('sync_external_units_lock', 15);
+            
+            if ($lock->get()) {
+                try {
+                    // 1. Get OPD Units
+                    $unitResponse = Http::timeout(3)->get('http://apps.sinjaikab.go.id/api/pegawai/get_unit');
+                    $units = $unitResponse->successful() ? $unitResponse->json() : [];
 
-                // 2. Get Desa
-                $desaResponse = Http::timeout(3)->get('http://apps.sinjaikab.go.id/api/pegawai/get_wilayah?tipe=Desa');
-                $desaData = $desaResponse->successful() ? $desaResponse->json() : [];
+                    // 2. Get Desa
+                    $desaResponse = Http::timeout(3)->get('http://apps.sinjaikab.go.id/api/pegawai/get_wilayah?tipe=Desa');
+                    $desaData = $desaResponse->successful() ? $desaResponse->json() : [];
 
-                // 3. Get Kelurahan
-                $kelurahanResponse = Http::timeout(3)->get('http://apps.sinjaikab.go.id/api/pegawai/get_wilayah?tipe=Kelurahan');
-                $kelurahanData = $kelurahanResponse->successful() ? $kelurahanResponse->json() : [];
+                    // 3. Get Kelurahan
+                    $kelurahanResponse = Http::timeout(3)->get('http://apps.sinjaikab.go.id/api/pegawai/get_wilayah?tipe=Kelurahan');
+                    $kelurahanData = $kelurahanResponse->successful() ? $kelurahanResponse->json() : [];
 
-                // Grouping Wilayah by Kecamatan
-                $allWilayah = collect(array_merge($desaData, $kelurahanData));
-                $villagesGrouped = $allWilayah->map(function($item) {
-                    $item['desa_id'] = (string)$item['desa_id'];
-                    $item['desa_nama'] = trim($item['desa_nama']);
-                    $item['kecamatan_nama'] = trim($item['kecamatan_nama']);
-                    return $item;
-                })->sortBy('desa_nama')->groupBy('kecamatan_nama')->toArray();
+                    // Grouping Wilayah by Kecamatan
+                    $allWilayah = collect(array_merge($desaData, $kelurahanData));
+                    $villagesGrouped = $allWilayah->map(function($item) {
+                        $item['desa_id'] = (string)$item['desa_id'];
+                        $item['desa_nama'] = trim($item['desa_nama']);
+                        $item['kecamatan_nama'] = trim($item['kecamatan_nama']);
+                        return $item;
+                    })->sortBy('desa_nama')->groupBy('kecamatan_nama')->toArray();
 
-                return [
-                    'units' => $units,
-                    'villages_grouped' => $villagesGrouped,
-                    'last_sync_date' => now()->format('Y-m-d'),
-                    'last_sync_time' => now()->format('H:i:s')
-                ];
-            } catch (\Exception $e) {
-                Log::error('Auto Sync Units Error: ' . $e->getMessage());
-                // Fallback to empty structure so application doesn't crash
-                return ['units' => [], 'villages_grouped' => []];
+                    $cached = [
+                        'units' => $units,
+                        'villages_grouped' => $villagesGrouped,
+                        'last_sync_date' => now()->format('Y-m-d'),
+                        'last_sync_time' => now()->format('H:i:s')
+                    ];
+                    
+                    \Illuminate\Support\Facades\Cache::put('external_units_data_v2', $cached, 86400);
+                } catch (\Exception $e) {
+                    Log::error('Auto Sync Units Error: ' . $e->getMessage());
+                    $cached = ['units' => [], 'villages_grouped' => []];
+                } finally {
+                    $lock->release();
+                }
+            } else {
+                sleep(2);
+                $cached = \Illuminate\Support\Facades\Cache::get('external_units_data_v2') ?? ['units' => [], 'villages_grouped' => []];
             }
-        });
+        }
+        
+        return $cached;
     }
 
     public static function getUnitData()

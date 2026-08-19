@@ -77,7 +77,8 @@ class User extends Authenticatable
         $apiUrl = config('ppid.api_url', 'http://apps.sinjaikab.go.id/api/pegawai/');
         
         try {
-            $response = Http::timeout(10)->get($apiUrl . 'user_auth/', [
+            // Gunakan POST agar kredensial tidak bocor melalui query string
+            $response = Http::asForm()->timeout(10)->post($apiUrl . 'user_auth/', [
                 'username' => $nip,
                 'password' => $password,
             ]);

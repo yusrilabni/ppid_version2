@@ -50,34 +50,51 @@ class HomeController extends Controller
                 return $items;
             });
 
-            $dbData = \Illuminate\Support\Facades\Cache::rememberForever('all_home', function () {
-                $unitData = GeneralHelper::getUnitData();
-                
-                return [
-                    'sliders' => Slider::where('active', true)->orderBy('order', 'asc')->get(),
-                    'latest_informasi' => Informasi::with('user')->whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])->orderBy('tanggal_upload', 'desc')->take(16)->get()->map(function($item) use ($unitData) {
-                        $unit = $unitData->get((string)$item->unit_id);
-                        $item->organization_name = $unit['unit_nama'] ?? 'Unit Kerja';
-                        return $item;
-                    }),
-                    'gallery' => Galeri::orderBy('is_pinned', 'desc')->orderBy('created_at', 'desc')->take(8)->get(),
-                    'statistics' => [
-                        'total_informasi' => Informasi::whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])->count(),
-                        'total_permohonan' => PermohonanInformasi::count(),
-                        'total_survey' => SurveyResponse::count(),
-                        'tingkat_kepuasan' => round((PermohonanInformasi::whereNotNull('rating')->avg('rating') / 5) * 100) ?: 0,
-                        'rata_rata_respon' => 1,
-                        'tingkat_penyelesaian' => PermohonanInformasi::count() > 0 ? round((PermohonanInformasi::where('status_permohonan', 'selesai')->count() / PermohonanInformasi::count()) * 100) : 0,
-                    ],
-                    'ticker' => PermohonanInformasi::whereNotNull('rating')->orderBy('updated_at', 'desc')->take(10)->get()->map(function($t){
-                        return [
-                            'nama_pemohon' => $t->nama_pemohon,
-                            'rating' => $t->rating,
-                            'text' => $t->detail_informasi ? preg_replace('/\s+/', ' ', trim(strip_tags($t->detail_informasi))) : 'Layanan Memuaskan',
+            $dbData = \Illuminate\Support\Facades\Cache::get('all_home');
+            
+            if (empty($dbData)) {
+                $lock = \Illuminate\Support\Facades\Cache::lock('build_all_home_lock', 30);
+                if ($lock->get()) {
+                    try {
+                        $unitData = GeneralHelper::getUnitData();
+                        
+                        $dbData = [
+                            'sliders' => Slider::where('active', true)->orderBy('order', 'asc')->get(),
+                            'latest_informasi' => Informasi::with('user')->whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])->orderBy('tanggal_upload', 'desc')->take(16)->get()->map(function($item) use ($unitData) {
+                                $unit = $unitData->get((string)$item->unit_id);
+                                $item->organization_name = $unit['unit_nama'] ?? 'Unit Kerja';
+                                return $item;
+                            }),
+                            'gallery' => Galeri::orderBy('is_pinned', 'desc')->orderBy('created_at', 'desc')->take(8)->get(),
+                            'statistics' => [
+                                'total_informasi' => Informasi::whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])->count(),
+                                'total_permohonan' => PermohonanInformasi::count(),
+                                'total_survey' => SurveyResponse::count(),
+                                'tingkat_kepuasan' => round((PermohonanInformasi::whereNotNull('rating')->avg('rating') / 5) * 100) ?: 0,
+                                'rata_rata_respon' => 1,
+                                'tingkat_penyelesaian' => PermohonanInformasi::count() > 0 ? round((PermohonanInformasi::where('status_permohonan', 'selesai')->count() / PermohonanInformasi::count()) * 100) : 0,
+                            ],
+                            'ticker' => PermohonanInformasi::whereNotNull('rating')->orderBy('updated_at', 'desc')->take(10)->get()->map(function($t){
+                                return [
+                                    'nama_pemohon' => $t->nama_pemohon,
+                                    'rating' => $t->rating,
+                                    'text' => $t->detail_informasi ? preg_replace('/\s+/', ' ', trim(strip_tags($t->detail_informasi))) : 'Layanan Memuaskan',
+                                ];
+                            }),
                         ];
-                    }),
-                ];
-            });
+                        \Illuminate\Support\Facades\Cache::forever('all_home', $dbData);
+                    } finally {
+                        $lock->release();
+                    }
+                } else {
+                    // Block and wait if another process is building the cache
+                    $dbData = \Illuminate\Support\Facades\Cache::get('all_home');
+                    if (empty($dbData)) {
+                        sleep(2);
+                        $dbData = \Illuminate\Support\Facades\Cache::get('all_home') ?? [];
+                    }
+                }
+            }
 
             $dbData['news'] = $rss_items;
             $dbData['contact'] = [
