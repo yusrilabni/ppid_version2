@@ -20,43 +20,6 @@ class HomeController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $rss_items = \Illuminate\Support\Facades\Cache::remember('rss_news', 3600, function () {
-                $items = [];
-                try {
-                    $response = Http::timeout(5)->get('https://humas.sinjaikab.go.id/v1/rss');
-                    if ($response->successful()) {
-                        $xml = simplexml_load_string($response->body());
-                        if ($xml && isset($xml->channel->item)) {
-                            $count = 0;
-                            foreach ($xml->channel->item as $item) {
-                                if ($count >= 10) break;
-                                
-                                // Parse enclosure (thumbnail)
-                                $img = '';
-                                if (isset($item->enclosure)) {
-                                    $attributes = $item->enclosure->attributes();
-                                    if (isset($attributes['url'])) {
-                                        $img = (string) $attributes['url'];
-                                    }
-                                }
-                                
-                                $items[] = [
-                                    'title' => (string) $item->title,
-                                    'link' => (string) $item->link,
-                                    'pubDate' => isset($item->pubDate) ? Carbon::parse((string) $item->pubDate)->translatedFormat('d M Y') : 'Terbaru',
-                                    'image' => $img,
-                                    'views' => rand(150, 600)
-                                ];
-                                $count++;
-                            }
-                        }
-                    }
-                } catch (\Exception $e) {
-                    Log::error('Gagal fetch RSS Humas: ' . $e->getMessage());
-                }
-                return $items;
-            });
-
             $dbData = \Illuminate\Support\Facades\Cache::get('all_home');
             
             if (empty($dbData)) {
@@ -103,7 +66,6 @@ class HomeController extends Controller
                 }
             }
 
-            $dbData['news'] = $rss_items;
             $dbData['contact'] = [
                 'alamat' => 'Jl. Persatuan Raya No. 5, Sinjai',
                 'email' => 'ppid@sinjaikab.go.id',
