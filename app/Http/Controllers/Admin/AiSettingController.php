@@ -80,9 +80,10 @@ class AiSettingController extends Controller
             'is_active' => 'boolean'
         ]);
 
-        if ($request->has('is_active')) {
-            AiSetting::where('is_active', true)->update(['is_active' => false]);
-        }
+        // Allow multiple active API keys
+        // if ($request->has('is_active')) {
+        //     AiSetting::where('is_active', true)->update(['is_active' => false]);
+        // }
 
         $apiKey = trim($request->api_key);
         
@@ -116,9 +117,10 @@ class AiSettingController extends Controller
             'is_active' => 'boolean'
         ]);
 
-        if ($request->has('is_active')) {
-            AiSetting::where('id', '!=', $aiSetting->id)->update(['is_active' => false]);
-        }
+        // Allow multiple active API keys
+        // if ($request->has('is_active')) {
+        //     AiSetting::where('id', '!=', $aiSetting->id)->update(['is_active' => false]);
+        // }
 
         $apiKey = trim($request->api_key);
         
@@ -161,9 +163,9 @@ class AiSettingController extends Controller
             }
         }
 
-        $activeSetting = AiSetting::where('is_active', true)->first();
+        $activeSettings = AiSetting::where('is_active', true)->get();
 
-        if (!$activeSetting) {
+        if ($activeSettings->isEmpty()) {
             return response()->json([
                 'success' => false,
                 'message' => 'Tidak ada API Key AI yang aktif. Hubungi Super Admin.'
@@ -218,77 +220,79 @@ Tanpa teks tambahan atau markdown block di luar JSON.";
 
         $userPrompt = "Topik/Judul singkat dari admin: " . $promptTitle;
 
-        // Bersihkan prefix 'models/' jika user tidak sengaja memasukkannya dan buang spasi berlebih
-        $modelName = trim(str_replace('models/', '', $activeSetting->model));
-        $apiKey = trim($activeSetting->api_key);
+        $lastErrorMessage = '';
 
-        // Paksa ganti ke model terbaru jika database masih merekam model lawas yang ditolak
-        if ($modelName === 'gemini-2.5-flash' || $modelName === 'auto') {
-            $modelName = 'gemini-flash-latest';
-        }
+        foreach ($activeSettings as $activeSetting) {
+            // Bersihkan prefix 'models/' jika user tidak sengaja memasukkannya dan buang spasi berlebih
+            $modelName = trim(str_replace('models/', '', $activeSetting->model));
+            $apiKey = trim($activeSetting->api_key);
 
-        try {
-            $response = Http::withHeaders([
-                'Content-Type' => 'application/json'
-            ])->post("https://generativelanguage.googleapis.com/v1beta/models/{$modelName}:generateContent?key={$apiKey}", [
-                'contents' => [
-                    [
-                        'role' => 'user',
-                        'parts' => [
-                            ['text' => $systemPrompt . "\n\n" . $userPrompt]
-                        ]
-                    ]
-                ],
-                'generationConfig' => [
-                    'temperature' => 0.7,
-                    'responseMimeType' => 'application/json'
-                ]
-            ]);
-
-            if ($response->successful()) {
-                $result = $response->json();
-                $generatedText = $result['candidates'][0]['content']['parts'][0]['text'] ?? '';
-                
-                // Bersihkan text dari markdown code blocks jika ada (misal: ```json ... ```)
-                $cleanText = preg_replace('/```json\s*/i', '', $generatedText);
-                $cleanText = preg_replace('/```\s*/', '', $cleanText);
-                $cleanText = trim($cleanText);
-
-                // Parse JSON
-                $data = json_decode($cleanText, true);
-
-                if ($data) {
-                    // Catat penggunaan
-                    AiUsageLog::create([
-                        'user_id' => $user->id,
-                        'endpoint' => 'generate-informasi'
-                    ]);
-
-                    return response()->json([
-                        'success' => true,
-                        'data' => $data
-                    ]);
-                }
-                
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Format balasan AI tidak sesuai (bukan JSON yang valid). Silakan coba lagi.'
-                ], 500);
+            // Paksa ganti ke model terbaru jika database masih merekam model lawas yang ditolak
+            if ($modelName === 'gemini-2.5-flash' || $modelName === 'auto') {
+                $modelName = 'gemini-flash-latest';
             }
 
-            $errorResult = $response->json();
-            $errorMessage = $errorResult['error']['message'] ?? 'API Key atau Model tidak valid.';
+            try {
+                $response = Http::withHeaders([
+                    'Content-Type' => 'application/json'
+                ])->post("https://generativelanguage.googleapis.com/v1beta/models/{$modelName}:generateContent?key={$apiKey}", [
+                    'contents' => [
+                        [
+                            'role' => 'user',
+                            'parts' => [
+                                ['text' => $systemPrompt . "\n\n" . $userPrompt]
+                            ]
+                        ]
+                    ],
+                    'generationConfig' => [
+                        'temperature' => 0.7,
+                        'responseMimeType' => 'application/json'
+                    ]
+                ]);
 
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal memanggil AI: ' . $errorMessage
-            ], 500);
+                if ($response->successful()) {
+                    $result = $response->json();
+                    $generatedText = $result['candidates'][0]['content']['parts'][0]['text'] ?? '';
+                    
+                    // Bersihkan text dari markdown code blocks jika ada (misal: ```json ... ```)
+                    $cleanText = preg_replace('/```json\s*/i', '', $generatedText);
+                    $cleanText = preg_replace('/```\s*/', '', $cleanText);
+                    $cleanText = trim($cleanText);
 
-        } catch (\Exception $e) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()
-            ], 500);
+                    // Parse JSON
+                    $data = json_decode($cleanText, true);
+
+                    if ($data) {
+                        // Catat penggunaan
+                        AiUsageLog::create([
+                            'user_id' => $user->id,
+                            'endpoint' => 'generate-informasi'
+                        ]);
+
+                        return response()->json([
+                            'success' => true,
+                            'data' => $data
+                        ]);
+                    }
+                    
+                    $lastErrorMessage = 'Format balasan AI tidak sesuai (bukan JSON yang valid).';
+                    continue; // Coba token selanjutnya
+                }
+
+                $errorResult = $response->json();
+                $lastErrorMessage = $errorResult['error']['message'] ?? 'API Key atau Model tidak valid.';
+                continue; // Coba token selanjutnya
+
+            } catch (\Exception $e) {
+                $lastErrorMessage = $e->getMessage();
+                continue; // Coba token selanjutnya
+            }
         }
+
+        // Jika semua token habis/gagal
+        return response()->json([
+            'success' => false,
+            'message' => 'Token API AI telah habis limit atau bermasalah. Silakan lakukan pengisian manual saja. (Pesan sistem: ' . $lastErrorMessage . ')'
+        ], 500);
     }
 }
