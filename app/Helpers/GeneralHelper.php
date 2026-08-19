@@ -161,59 +161,41 @@ class GeneralHelper
      */
     public static function syncExternalUnitsIfNeeded()
     {
-        $filePath = 'external_units.json';
-        $today = now()->format('Y-m-d');
+        return \Illuminate\Support\Facades\Cache::remember('external_units_data_v2', 86400, function () {
+            try {
+                // 1. Get OPD Units
+                $unitResponse = Http::timeout(3)->get('http://apps.sinjaikab.go.id/api/pegawai/get_unit');
+                $units = $unitResponse->successful() ? $unitResponse->json() : [];
 
-        // Cek apakah file ada dan apakah sudah disinkronisasi hari ini
-        if (\Illuminate\Support\Facades\Storage::exists($filePath)) {
-            $cached = json_decode(\Illuminate\Support\Facades\Storage::get($filePath), true);
-            if (isset($cached['last_sync_date']) && $cached['last_sync_date'] === $today) {
-                return $cached; // Sudah update hari ini, tidak perlu tarik API
+                // 2. Get Desa
+                $desaResponse = Http::timeout(3)->get('http://apps.sinjaikab.go.id/api/pegawai/get_wilayah?tipe=Desa');
+                $desaData = $desaResponse->successful() ? $desaResponse->json() : [];
+
+                // 3. Get Kelurahan
+                $kelurahanResponse = Http::timeout(3)->get('http://apps.sinjaikab.go.id/api/pegawai/get_wilayah?tipe=Kelurahan');
+                $kelurahanData = $kelurahanResponse->successful() ? $kelurahanResponse->json() : [];
+
+                // Grouping Wilayah by Kecamatan
+                $allWilayah = collect(array_merge($desaData, $kelurahanData));
+                $villagesGrouped = $allWilayah->map(function($item) {
+                    $item['desa_id'] = (string)$item['desa_id'];
+                    $item['desa_nama'] = trim($item['desa_nama']);
+                    $item['kecamatan_nama'] = trim($item['kecamatan_nama']);
+                    return $item;
+                })->sortBy('desa_nama')->groupBy('kecamatan_nama')->toArray();
+
+                return [
+                    'units' => $units,
+                    'villages_grouped' => $villagesGrouped,
+                    'last_sync_date' => now()->format('Y-m-d'),
+                    'last_sync_time' => now()->format('H:i:s')
+                ];
+            } catch (\Exception $e) {
+                Log::error('Auto Sync Units Error: ' . $e->getMessage());
+                // Fallback to empty structure so application doesn't crash
+                return ['units' => [], 'villages_grouped' => []];
             }
-        }
-
-        // Jika belum update hari ini, tarik dari API
-        try {
-            // 1. Get OPD Units
-            $unitResponse = Http::timeout(10)->get('http://apps.sinjaikab.go.id/api/pegawai/get_unit');
-            $units = $unitResponse->successful() ? $unitResponse->json() : [];
-
-            // 2. Get Desa
-            $desaResponse = Http::timeout(10)->get('http://apps.sinjaikab.go.id/api/pegawai/get_wilayah?tipe=Desa');
-            $desaData = $desaResponse->successful() ? $desaResponse->json() : [];
-
-            // 3. Get Kelurahan
-            $kelurahanResponse = Http::timeout(10)->get('http://apps.sinjaikab.go.id/api/pegawai/get_wilayah?tipe=Kelurahan');
-            $kelurahanData = $kelurahanResponse->successful() ? $kelurahanResponse->json() : [];
-
-            // Grouping Wilayah by Kecamatan
-            $allWilayah = collect(array_merge($desaData, $kelurahanData));
-            $villagesGrouped = $allWilayah->map(function($item) {
-                // Ensure IDs and names are string and trimmed
-                $item['desa_id'] = (string)$item['desa_id'];
-                $item['desa_nama'] = trim($item['desa_nama']);
-                $item['kecamatan_nama'] = trim($item['kecamatan_nama']);
-                return $item;
-            })->sortBy('desa_nama')->groupBy('kecamatan_nama')->toArray();
-
-            $finalData = [
-                'units' => $units,
-                'villages_grouped' => $villagesGrouped,
-                'last_sync_date' => $today,
-                'last_sync_time' => now()->format('H:i:s')
-            ];
-
-            \Illuminate\Support\Facades\Storage::put($filePath, json_encode($finalData));
-            return $finalData;
-        } catch (\Exception $e) {
-            Log::error('Auto Sync Units Error: ' . $e->getMessage());
-            // Jika gagal API, tetap gunakan data lama jika ada
-            if (\Illuminate\Support\Facades\Storage::exists($filePath)) {
-                return json_decode(\Illuminate\Support\Facades\Storage::get($filePath), true);
-            }
-        }
-
-        return ['units' => [], 'villages_grouped' => []];
+        });
     }
 
     public static function getUnitData()
