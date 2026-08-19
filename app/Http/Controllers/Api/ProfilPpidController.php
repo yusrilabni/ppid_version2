@@ -12,7 +12,11 @@ class ProfilPpidController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $profil = ProfilPpid::where('status', true)->first() ?: ProfilPpid::first();
+            $profil = ProfilPpid::where('status', true)->first() ?: ProfilPpid::orderBy('updated_at', 'desc')->first();
+
+            if (!$profil) {
+                return response()->json(['success' => false, 'error' => 'No profil found']);
+            }
 
             $data = [
                 'vision' => $profil->vision ?? 'Mewujudkan pelayanan informasi publik yang transparan, akuntabel, dan profesional.',

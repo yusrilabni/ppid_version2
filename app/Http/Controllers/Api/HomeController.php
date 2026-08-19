@@ -117,6 +117,7 @@ class HomeController extends Controller
                 }
             }
 
+            // Always fetch contact fresh from DB to avoid caching issues with ProfilPpid updates
             $profilData = \App\Models\ProfilPpid::where('status', true)->first() ?: \App\Models\ProfilPpid::first();
             $dbData['contact'] = [
                 'alamat' => $profilData->address ?? 'Jl. Persatuan Raya No. 5, Sinjai',
