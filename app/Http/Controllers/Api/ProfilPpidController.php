@@ -12,30 +12,28 @@ class ProfilPpidController extends Controller
     public function index(): JsonResponse
     {
         try {
-            $data = Cache::rememberForever('all_profil_ppid', function () {
-                $profil = ProfilPpid::where('status', true)->first() ?: ProfilPpid::first();
+            $profil = ProfilPpid::where('status', true)->first() ?: ProfilPpid::first();
 
-                return [
-                    'vision' => $profil->vision ?? 'Mewujudkan pelayanan informasi publik yang transparan, akuntabel, dan profesional.',
-                    'mission' => $profil->mission ?? [
-                        'Meningkatkan kualitas pelayanan informasi publik.',
-                        'Meningkatkan profesionalisme SDM pengelola informasi.',
-                        'Memperkuat sarana dan prasarana layanan informasi.',
-                        'Mendorong partisipasi masyarakat dalam pengawasan publik.'
-                    ],
-                    'phone' => $profil->phone ?? '085156878911',
-                    'email' => $profil->email ?? 'ppidkabsinjai@gmail.com',
-                    'address' => $profil->address ?? 'Jl. Persatuan Raya No. 5, Kec. Sinjai Utara, Kab. Sinjai',
-                    'maps_url' => $profil->maps_url ?? 'https://maps.app.goo.gl/N9S8J8vYvX3Z3Z3Z3',
-                    'instagram' => $profil->instagram,
-                    'facebook' => $profil->facebook,
-                    'twitter' => $profil->twitter,
-                    'tiktok' => $profil->tiktok,
-                    'youtube' => $profil->youtube,
-                    'website' => $profil->website,
-                    'structure_image' => $profil->structure_image ? url('storage/' . $profil->structure_image) : null,
-                ];
-            });
+            $data = [
+                'vision' => $profil->vision ?? 'Mewujudkan pelayanan informasi publik yang transparan, akuntabel, dan profesional.',
+                'mission' => $profil->mission ?? [
+                    'Meningkatkan kualitas pelayanan informasi publik.',
+                    'Meningkatkan profesionalisme SDM pengelola informasi.',
+                    'Memperkuat sarana dan prasarana layanan informasi.',
+                    'Mendorong partisipasi masyarakat dalam pengawasan publik.'
+                ],
+                'phone' => $profil->phone ?? '085156878911',
+                'email' => $profil->email ?? 'ppidkabsinjai@gmail.com',
+                'address' => $profil->address ?? 'Jl. Persatuan Raya No. 5, Kec. Sinjai Utara, Kab. Sinjai',
+                'maps_url' => $profil->maps_url ?? 'https://maps.app.goo.gl/N9S8J8vYvX3Z3Z3Z3',
+                'instagram' => $profil->instagram,
+                'facebook' => $profil->facebook,
+                'twitter' => $profil->twitter,
+                'tiktok' => $profil->tiktok,
+                'youtube' => $profil->youtube,
+                'website' => $profil->website,
+                'structure_image' => $profil->structure_image ? url('storage/' . $profil->structure_image) : null,
+            ];
 
             return response()->json([
                 'success' => true,
