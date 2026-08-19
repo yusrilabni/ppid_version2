@@ -273,7 +273,8 @@
                             @endif
                         </div>
                         
-                        <div class="space-y-2">
+                        <div class="space-y-4">
+                            <!-- Big Numbers -->
                             <div class="grid grid-cols-2 gap-2">
                                 <div>
                                     <p class="text-2xl font-black text-gray-900 leading-none">{{ number_format($ai['usage_today']) }}</p>
@@ -281,7 +282,39 @@
                                 </div>
                                 <div class="text-right">
                                     <p class="text-2xl font-black text-purple-600 leading-none">{{ number_format($ai['token_words_today']) }}</p>
-                                    <p class="text-[9px] font-black text-purple-400 uppercase mt-1">Tokens</p>
+                                    <p class="text-[9px] font-black text-purple-400 uppercase mt-1">Token Teks</p>
+                                </div>
+                            </div>
+
+                            <hr class="border-gray-100">
+
+                            <!-- Sisa Requests -->
+                            <div>
+                                <div class="flex justify-between items-end mb-1">
+                                    <p class="text-[10px] font-black text-gray-500 uppercase">Sisa Req</p>
+                                    <p class="text-[10px] font-black text-gray-900">{{ number_format($ai['remaining_req']) }} <span class="text-gray-400 font-normal">/ {{ number_format($ai['limit_req']) }}</span></p>
+                                </div>
+                                <div class="w-full bg-gray-200 rounded-full h-1.5">
+                                    @php
+                                        $percentReq = min(100, ($ai['usage_today'] / $ai['limit_req']) * 100);
+                                        $colorReq = $percentReq > 80 ? 'bg-red-500' : ($percentReq > 50 ? 'bg-yellow-400' : 'bg-blue-500');
+                                    @endphp
+                                    <div class="{{ $colorReq }} h-1.5 rounded-full" style="width: {{ $percentReq }}%"></div>
+                                </div>
+                            </div>
+
+                            <!-- Sisa Token Teks -->
+                            <div>
+                                <div class="flex justify-between items-end mb-1">
+                                    <p class="text-[10px] font-black text-purple-500 uppercase">Sisa Token Teks</p>
+                                    <p class="text-[10px] font-black text-purple-900">{{ number_format($ai['remaining_tokens']) }} <span class="text-purple-400 font-normal">/ 1.5M</span></p>
+                                </div>
+                                <div class="w-full bg-purple-100 rounded-full h-1.5">
+                                    @php
+                                        $percentTok = min(100, ($ai['token_words_today'] / $ai['limit_tokens']) * 100);
+                                        $colorTok = $percentTok > 80 ? 'bg-red-500' : ($percentTok > 50 ? 'bg-orange-400' : 'bg-purple-500');
+                                    @endphp
+                                    <div class="{{ $colorTok }} h-1.5 rounded-full" style="width: {{ $percentTok }}%"></div>
                                 </div>
                             </div>
                         </div>

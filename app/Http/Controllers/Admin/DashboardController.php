@@ -161,6 +161,10 @@ class DashboardController extends Controller
                 'is_active' => $token->is_active,
                 'usage_today' => $usage,
                 'token_words_today' => $tokenWords,
+                'limit_req' => 1500,
+                'remaining_req' => max(0, 1500 - $usage),
+                'limit_tokens' => 1500000,
+                'remaining_tokens' => max(0, 1500000 - $tokenWords),
             ];
         }
 
