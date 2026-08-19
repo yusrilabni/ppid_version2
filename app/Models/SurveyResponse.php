@@ -28,4 +28,17 @@ class SurveyResponse extends Model
     {
         return $this->hasMany(SurveyAnswer::class, 'response_id');
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saved(function () {
+            \Illuminate\Support\Facades\Cache::forget('all_home');
+        });
+
+        static::deleted(function () {
+            \Illuminate\Support\Facades\Cache::forget('all_home');
+        });
+    }
 }

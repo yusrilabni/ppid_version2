@@ -53,4 +53,17 @@ class PermohonanInformasi extends Model
     {
         return 'unique_code';
     }
+
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saved(function () {
+            \Illuminate\Support\Facades\Cache::forget('all_home');
+        });
+
+        static::deleted(function () {
+            \Illuminate\Support\Facades\Cache::forget('all_home');
+        });
+    }
 }

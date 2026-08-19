@@ -23,4 +23,17 @@ class Galeri extends Model
         return $this->belongsTo(User::class);
     }
 
+    protected static function boot()
+    {
+        parent::boot();
+
+        static::saved(function () {
+            \Illuminate\Support\Facades\Cache::forget('all_home');
+        });
+
+        static::deleted(function () {
+            \Illuminate\Support\Facades\Cache::forget('all_home');
+        });
+    }
+
 }

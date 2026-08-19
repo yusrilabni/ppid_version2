@@ -42,15 +42,18 @@ class Informasi extends Model
         parent::boot();
 
         static::created(function ($model) {
-            \Illuminate\Support\Facades\Cache::tags(['informasi'])->flush();
+            \Illuminate\Support\Facades\Cache::forget('all_home');
+            try { \Illuminate\Support\Facades\Cache::tags(['informasi'])->flush(); } catch (\Exception $e) {}
         });
 
         static::updated(function ($model) {
-            \Illuminate\Support\Facades\Cache::tags(['informasi'])->flush();
+            \Illuminate\Support\Facades\Cache::forget('all_home');
+            try { \Illuminate\Support\Facades\Cache::tags(['informasi'])->flush(); } catch (\Exception $e) {}
         });
 
         static::deleted(function ($model) {
-            \Illuminate\Support\Facades\Cache::tags(['informasi'])->flush();
+            \Illuminate\Support\Facades\Cache::forget('all_home');
+            try { \Illuminate\Support\Facades\Cache::tags(['informasi'])->flush(); } catch (\Exception $e) {}
         });
 
         static::saving(function ($model) {

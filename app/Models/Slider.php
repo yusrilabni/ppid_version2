@@ -26,10 +26,12 @@ class Slider extends Model
 
         static::saved(function () {
             Cache::forget('home_sliders');
+            Cache::forget('all_home');
         });
 
         static::deleted(function () {
             Cache::forget('home_sliders');
+            Cache::forget('all_home');
         });
     }
 }
