@@ -25,6 +25,10 @@ return Application::configure(basePath: dirname(__DIR__))
             'superadmin' => \App\Http\Middleware\SuperadminMiddleware::class,
             'check.pbj.access' => \App\Http\Middleware\CheckPbjAccess::class,
         ]);
+
+        $middleware->api(append: [
+            \App\Http\Middleware\ApiTrackerMiddleware::class,
+        ]);
     })
     ->withExceptions(function (Exceptions $exceptions) {
         // Tangkap HttpException dengan status 419 (Page Expired)

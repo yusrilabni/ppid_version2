@@ -147,6 +147,9 @@ Route::middleware(['auth', SuperadminMiddleware::class])->group(function () {
     Route::get('reports/export/permohonan', [ReportController::class, 'exportPermohonan'])->name('reports.permohonan.export');
     Route::get('reports/export/visitors', [ReportController::class, 'exportVisitors'])->name('reports.visitors.export');
     Route::get('reports/export/survey', [ReportController::class, 'exportSurvey'])->name('reports.survey.export');
+
+    // API Tracker
+    Route::get('api-logs', [\App\Http\Controllers\Admin\ApiLogController::class, 'index'])->name('api-logs.index');
 });
 
 // CACHE BUSTER SAKTI (HANYA SUPERADMIN)
