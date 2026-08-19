@@ -268,6 +268,13 @@ Tanpa teks tambahan atau markdown block di luar JSON.";
                             'user_id' => $user->id,
                             'endpoint' => 'generate-informasi'
                         ]);
+                        
+                        // Catat penggunaan per token di Cache untuk dashboard
+                        $cacheKey = "ai_usage_token_" . $activeSetting->id . "_" . date('Y-m-d');
+                        if (!\Illuminate\Support\Facades\Cache::has($cacheKey)) {
+                            \Illuminate\Support\Facades\Cache::put($cacheKey, 0, now()->addDays(2));
+                        }
+                        \Illuminate\Support\Facades\Cache::increment($cacheKey);
 
                         return response()->json([
                             'success' => true,
