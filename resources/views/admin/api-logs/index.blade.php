@@ -18,7 +18,7 @@
     <div class="flex justify-between items-center mb-6">
         <h3 class="text-lg font-semibold text-gray-800">Riwayat API (Log)</h3>
             <form action="{{ route('admin.api-logs.index') }}" method="GET" class="flex space-x-2">
-                <select name="risk_level" class="border-gray-300 rounded-md shadow-sm text-sm" onchange="this.form.submit()">
+                <select name="risk_level" aria-label="Filter Risiko" class="border-gray-300 rounded-md shadow-sm text-sm" onchange="this.form.submit()">
                     <option value="">Semua Risiko</option>
                     <option value="good" {{ request('risk_level') == 'good' ? 'selected' : '' }}>Good</option>
                     <option value="middle" {{ request('risk_level') == 'middle' ? 'selected' : '' }}>Middle</option>
