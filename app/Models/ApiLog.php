@@ -13,6 +13,7 @@ class ApiLog extends Model
         'method',
         'url',
         'ip_address',
+        'origin',
         'user_agent',
         'payload',
         'user_id',

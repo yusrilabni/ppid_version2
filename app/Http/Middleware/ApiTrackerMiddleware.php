@@ -55,12 +55,30 @@ class ApiTrackerMiddleware
         } elseif ($response->getStatusCode() >= 400) {
             $riskLevel = 'middle';
         }
+        
+        $originHeader = $request->header('origin') ?: $request->header('referer');
+        $originType = 'Lainnya / Direct Access';
+        
+        if ($originHeader) {
+            $parsed = parse_url($originHeader);
+            $host = $parsed['host'] ?? '';
+            $scheme = $parsed['scheme'] ?? '';
+            $originClean = $scheme . '://' . $host;
+            
+            $allowedOrigins = config('cors.allowed_origins', []);
+            if (in_array($originClean, $allowedOrigins) || in_array($originHeader, $allowedOrigins)) {
+                $originType = 'Aplikasi Frontend Legal';
+            } else {
+                $originType = 'Aplikasi Eksternal / Bot';
+            }
+        }
 
         // Do not log very sensitive things in production, but here we just follow instructions
         ApiLog::create([
             'method' => $request->method(),
             'url' => $url,
             'ip_address' => $request->ip(),
+            'origin' => $originType,
             'user_agent' => $request->userAgent(),
             'payload' => $payload,
             'user_id' => auth()->id(), // null if not logged in

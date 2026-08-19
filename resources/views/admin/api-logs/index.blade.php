@@ -30,16 +30,17 @@
         <div class="overflow-x-auto">
             <table class="w-full">
                 <thead>
-                    <tr class="bg-gray-50">
-                        <th class="py-4 px-6 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">Waktu</th>
-                        <th class="py-4 px-6 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">IP & Method</th>
-                        <th class="py-4 px-6 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">URL</th>
-                        <th class="py-4 px-6 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">Status</th>
-                        <th class="py-4 px-6 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">Risiko</th>
-                        <th class="py-4 px-6 text-left text-xs font-semibold uppercase tracking-wider text-gray-600">Aksi</th>
+                    <tr class="bg-gray-50 border-b border-gray-200">
+                        <th class="py-3 px-6 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Waktu</th>
+                        <th class="py-3 px-6 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">IP & Method</th>
+                        <th class="py-3 px-6 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Asal Akses</th>
+                        <th class="py-3 px-6 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">URL</th>
+                        <th class="py-3 px-6 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Status</th>
+                        <th class="py-3 px-6 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Risiko</th>
+                        <th class="py-3 px-6 text-left text-xs font-semibold uppercase tracking-wider text-gray-500">Aksi</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-gray-200">
+                <tbody class="divide-y divide-gray-100">
                     @forelse($apiLogs as $log)
                         <tr class="hover:bg-gray-50 transition-colors duration-200">
                             <td class="py-4 px-6 text-sm text-gray-600">
@@ -48,6 +49,21 @@
                             <td class="py-4 px-6">
                                 <div class="text-sm font-medium text-gray-900">{{ $log->ip_address }}</div>
                                 <div class="text-xs text-gray-500 mt-1 font-bold">{{ $log->method }}</div>
+                            </td>
+                            <td class="py-4 px-6">
+                                @if($log->origin === 'Aplikasi Frontend Legal')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                        {{ $log->origin }}
+                                    </span>
+                                @elseif($log->origin === 'Aplikasi Eksternal / Bot')
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                        {{ $log->origin }}
+                                    </span>
+                                @else
+                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                        {{ $log->origin ?? 'Direct URL' }}
+                                    </span>
+                                @endif
                             </td>
                             <td class="py-4 px-6">
                                 <div class="text-sm text-gray-900 break-all w-64 md:w-auto">
@@ -85,7 +101,7 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="6" class="py-8 px-6 text-center text-gray-500">
+                            <td colspan="7" class="py-8 px-6 text-center text-gray-500">
                                 Belum ada log API.
                             </td>
                         </tr>
