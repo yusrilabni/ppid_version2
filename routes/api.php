@@ -27,6 +27,7 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
 
     // API Paket Lengkap untuk Beranda Android
     Route::get('/home', [App\Http\Controllers\Api\HomeController::class, 'index']);
+    Route::get('/rss-news', [App\Http\Controllers\Api\HomeController::class, 'rssNews']);
 
     // --- PUBLIC ROUTES (Tanpa Login) ---
 
