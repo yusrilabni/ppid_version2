@@ -39,10 +39,14 @@ class LhkpnController extends Controller
             ->orderByRaw("FIELD(slug, 'bupati-sinjai', 'wakil-bupati-sinjai', 'sekretaris-daerah-sinjai', 'asisten-i-pemerintahan-dan-kesra', 'asisten-ii-perekonomian-dan-pembangunan', 'asisten-iii-administrasi-umum', 'staf-ahli-bidang-politik-hukum-dan-pemerintahan', 'staf-ahli-bidang-ekonomi-keuangan-dan-pembangunan', 'staf-ahli-bidang-sosial-dan-sumber-daya-manusia')")
             ->get();
 
+        $specialPositionIds = $specialPositions->pluck('id');
+        $officials = Official::with(['lhkpns', 'organization'])
+            ->whereIn('position_id', $specialPositionIds)
+            ->get()
+            ->keyBy('position_id');
+
         foreach ($specialPositions as $position) {
-            $official = Official::with('lhkpns')
-                ->where('position_id', $position->id)
-                ->first();
+            $official = $officials->get($position->id);
 
             $group = 'pimpinan';
             $pimpinanSlugsOnly = ['bupati-sinjai', 'wakil-bupati-sinjai', 'sekretaris-daerah-sinjai'];

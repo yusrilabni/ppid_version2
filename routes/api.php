@@ -122,7 +122,7 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
                 break;
         }
 
-        $perPage = $request->get('per_page', 10);
+        $perPage = min((int) $request->get('per_page', 10), 100);
         $permohonan = $query->paginate($perPage);
 
         return response()->json(['success' => true, 'data' => $permohonan]);
@@ -228,7 +228,7 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
             }
         });
 
-        $allResults = $informasiQuery->get()->map(function($item) use ($searchLower, $words) {
+        $allResults = $informasiQuery->limit(200)->get()->map(function($item) use ($searchLower, $words) {
             $titleLower = strtolower($item->title);
             similar_text($titleLower, $searchLower, $percent);
             $score = $percent * 20;
@@ -322,5 +322,7 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
 
 // Fallback rute lama (jika masih ada yang pakai, agar tidak langsung error)
 Route::get('/health', [HealthController::class, 'index']);
-Route::post('/telegram/webhook', [\App\Http\Controllers\Api\TelegramWebhookController::class, 'handle']);
-Route::match(['get', 'post'], '/whatsapp/webhook', [\App\Http\Controllers\Api\WhatsAppWebhookController::class, 'handle']);
+Route::middleware('throttle:30,1')->group(function () {
+    Route::post('/telegram/webhook', [\App\Http\Controllers\Api\TelegramWebhookController::class, 'handle']);
+    Route::match(['get', 'post'], '/whatsapp/webhook', [\App\Http\Controllers\Api\WhatsAppWebhookController::class, 'handle']);
+});

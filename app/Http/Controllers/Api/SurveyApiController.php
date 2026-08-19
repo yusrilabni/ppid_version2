@@ -39,8 +39,6 @@ class SurveyApiController extends Controller
         }
 
         // Limit IP to prevent spamming within 24 hours
-        // DINONAKTIFKAN SEMENTARA agar admin/penguji bisa melakukan tes berulang kali
-        /*
         $ipExists = SurveyResponse::where('survey_id', $survey->id)
             ->where('respondent_ip', $request->ip())
             ->where('created_at', '>=', now()->subHours(24))
@@ -52,7 +50,6 @@ class SurveyApiController extends Controller
                 'message' => 'Anda sudah mengisi survei ini dalam 24 jam terakhir.'
             ], 429);
         }
-        */
 
         $rules = [];
         foreach ($survey->questions as $question) {
@@ -72,15 +69,30 @@ class SurveyApiController extends Controller
         ]);
 
         $answers = $validatedData['answers'] ?? [];
+        
+        // Prevent abuse: limit answers to number of questions + some buffer
+        if (count($answers) > count($survey->questions) + 5) {
+            return response()->json(['success' => false, 'message' => 'Terlalu banyak jawaban'], 422);
+        }
+
+        $insertData = [];
+        $now = now();
         foreach ($answers as $questionId => $answer) {
             if (is_null($answer)) continue;
 
             $answerText = is_array($answer) ? json_encode($answer) : $answer;
             
-            $response->answers()->create([
+            $insertData[] = [
+                'response_id' => $response->id,
                 'question_id' => $questionId,
                 'answer_text' => $answerText,
-            ]);
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
+        }
+
+        if (!empty($insertData)) {
+            \App\Models\SurveyAnswer::insert($insertData);
         }
 
         return response()->json([
