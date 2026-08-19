@@ -13,8 +13,12 @@ class LaporanController extends Controller
     {
         try {
             $laporan = Laporan::where('published', true)
-                              ->orderBy('created_at', 'desc')
-                              ->get();
+                              ->orderBy('tahun', 'desc')
+                              ->get()
+                              ->map(function($item) {
+                                  $item->encoded_id = strtoupper(base_convert(($item->id + 100000000) * 7, 10, 36));
+                                  return $item;
+                              });
 
             return response()->json($laporan);
         } catch (\Exception $e) {
