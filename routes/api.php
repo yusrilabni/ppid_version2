@@ -289,7 +289,13 @@ Route::prefix('v1')->group(function () {
 
     // --- PROTECTED ROUTES (Perlu Token Sanctum) ---
 
+    Route::get('/clear-home', function() {
+        \Illuminate\Support\Facades\Cache::forget('all_home');
+        return response()->json(['success' => true, 'message' => 'Cache cleared!']);
+    });
+
     Route::middleware('auth:sanctum')->group(function () {
+
         Route::get('/user', function (Request $request) {
             return $request->user();
         });
