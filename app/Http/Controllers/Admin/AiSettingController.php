@@ -269,6 +269,9 @@ Tanpa teks tambahan atau markdown block di luar JSON.";
                             'endpoint' => 'generate-informasi'
                         ]);
                         
+                        // Extract Token Usage
+                        $totalTokens = $result['usageMetadata']['totalTokenCount'] ?? 0;
+
                         // Catat penggunaan per token di Cache untuk dashboard
                         $cacheKey = "ai_usage_token_" . $activeSetting->id . "_" . date('Y-m-d');
                         if (!\Illuminate\Support\Facades\Cache::has($cacheKey)) {
@@ -276,9 +279,19 @@ Tanpa teks tambahan atau markdown block di luar JSON.";
                         }
                         \Illuminate\Support\Facades\Cache::increment($cacheKey);
 
+                        // Catat jumlah token (teks) yang dihabiskan
+                        $tokenCacheKey = "ai_tokens_count_" . $activeSetting->id . "_" . date('Y-m-d');
+                        if (!\Illuminate\Support\Facades\Cache::has($tokenCacheKey)) {
+                            \Illuminate\Support\Facades\Cache::put($tokenCacheKey, 0, now()->addDays(2));
+                        }
+                        if ($totalTokens > 0) {
+                            \Illuminate\Support\Facades\Cache::increment($tokenCacheKey, $totalTokens);
+                        }
+
                         return response()->json([
                             'success' => true,
-                            'data' => $data
+                            'data' => $data,
+                            'usage' => $result['usageMetadata'] ?? []
                         ]);
                     }
                     

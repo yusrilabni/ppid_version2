@@ -150,12 +150,17 @@ class DashboardController extends Controller
         $aiStats = [];
         foreach($aiTokens as $token) {
             $cacheKey = "ai_usage_token_{$token->id}_" . date('Y-m-d');
+            $tokenCountKey = "ai_tokens_count_{$token->id}_" . date('Y-m-d');
+            
             $usage = \Illuminate\Support\Facades\Cache::get($cacheKey, 0);
+            $tokenWords = \Illuminate\Support\Facades\Cache::get($tokenCountKey, 0);
+            
             $aiStats[] = [
                 'provider' => $token->provider,
                 'model' => $token->model,
                 'is_active' => $token->is_active,
                 'usage_today' => $usage,
+                'token_words_today' => $tokenWords,
                 'limit_per_day' => 1500, // Estimasi Gemini Flash free tier
                 'remaining' => max(0, 1500 - $usage),
             ];

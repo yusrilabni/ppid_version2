@@ -274,7 +274,7 @@
                     <div class="space-y-2">
                         <div class="flex justify-between items-end">
                             <p class="text-2xl font-black text-gray-900 leading-none">{{ number_format($ai['usage_today']) }}</p>
-                            <p class="text-[9px] font-black text-gray-400 uppercase">Requests</p>
+                            <p class="text-[9px] font-black text-gray-400 uppercase text-right">Requests<br><span class="text-purple-600">{{ number_format($ai['token_words_today']) }} Tokens</span></p>
                         </div>
                         
                         <div class="w-full bg-gray-200 rounded-full h-1.5">
