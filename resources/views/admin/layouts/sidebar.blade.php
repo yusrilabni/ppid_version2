@@ -165,7 +165,7 @@
             <div x-show="isMobile" class="flex items-center">
                 <form method="POST" action="{{ route('logout') }}">
                     @csrf
-                    <button type="submit" class="text-blue-200 hover:text-white p-2">
+                    <button type="submit" aria-label="Logout" class="text-blue-200 hover:text-white p-2">
                         <i class="fas fa-sign-out-alt"></i>
                     </button>
                 </form>
