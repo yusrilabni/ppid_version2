@@ -29,7 +29,7 @@ class HomeController extends Controller
                         if ($xml && isset($xml->channel->item)) {
                             $count = 0;
                             foreach ($xml->channel->item as $item) {
-                                if ($count >= 10) break;
+                                if ($count >= 16) break;
                                 
                                 $img = '';
                                 if (isset($item->enclosure)) {
