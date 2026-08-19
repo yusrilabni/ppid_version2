@@ -20,6 +20,7 @@ class HomeController extends Controller
     public function index(): JsonResponse
     {
         try {
+            $unitData = GeneralHelper::getUnitData();
             $rss_items = \Illuminate\Support\Facades\Cache::remember('rss_news', 3600, function () {
                 $items = [];
                 try {
@@ -50,9 +51,7 @@ class HomeController extends Controller
                 return $items;
             });
 
-            $dbData = \Illuminate\Support\Facades\Cache::rememberForever('all_home', function () {
-                $unitData = GeneralHelper::getUnitData();
-                
+            $dbData = \Illuminate\Support\Facades\Cache::rememberForever('all_home', function () use ($unitData) {
                 return [
                     'sliders' => Slider::where('active', true)->orderBy('order', 'asc')->get(),
                     'latest_informasi' => Informasi::with('user')->whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])->orderBy('tanggal_upload', 'desc')->take(16)->get()->map(function($item) use ($unitData) {
