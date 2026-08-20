@@ -14,6 +14,56 @@
 @endsection
 
 @section('content')
+@php
+    $cards = [
+        ['title' => 'Per Menit', 'value' => $stats['per_minute'], 'standard' => 100, 'warning' => 300],
+        ['title' => 'Per Jam', 'value' => $stats['per_hour'], 'standard' => 3000, 'warning' => 10000],
+        ['title' => 'Per Hari', 'value' => $stats['per_day'], 'standard' => 50000, 'warning' => 150000],
+        ['title' => 'Per Minggu', 'value' => $stats['per_week'], 'standard' => 300000, 'warning' => 800000],
+        ['title' => 'Per Bulan', 'value' => $stats['per_month'], 'standard' => 1000000, 'warning' => 3000000],
+        ['title' => 'Per Tahun', 'value' => $stats['per_year'], 'standard' => 10000000, 'warning' => 30000000],
+    ];
+@endphp
+
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
+    @foreach($cards as $card)
+        @php
+            $status = 'Normal';
+            $color = 'text-green-600';
+            $bg = 'bg-green-50';
+            $iconColor = 'text-green-500';
+            $icon = 'M5 13l4 4L19 7'; // check icon
+            if ($card['value'] > $card['warning']) {
+                $status = 'Bahaya';
+                $color = 'text-red-600';
+                $bg = 'bg-red-50';
+                $iconColor = 'text-red-500';
+                $icon = 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z'; // alert triangle
+            } elseif ($card['value'] > $card['standard']) {
+                $status = 'Waspada';
+                $color = 'text-yellow-600';
+                $bg = 'bg-yellow-50';
+                $iconColor = 'text-yellow-500';
+                $icon = 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'; // info circle
+            }
+        @endphp
+        <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-4 flex flex-col relative overflow-hidden transition hover:shadow-md">
+            <div class="flex justify-between items-start mb-2">
+                <div class="text-sm font-medium text-gray-500">{{ $card['title'] }}</div>
+                <div class="p-1.5 rounded-full {{ $bg }}">
+                    <svg class="w-4 h-4 {{ $iconColor }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $icon }}"></path>
+                    </svg>
+                </div>
+            </div>
+            <div class="text-2xl font-bold text-gray-800 mb-1">{{ number_format($card['value'], 0, ',', '.') }}</div>
+            <div class="text-xs text-gray-500 flex justify-between items-center mt-auto pt-2 border-t border-gray-50">
+                <span>Wajar: {{ number_format($card['standard'], 0, ',', '.') }}</span>
+                <span class="font-medium px-2 py-0.5 rounded-full text-[10px] {{ $bg }} {{ $color }}">{{ $status }}</span>
+            </div>
+        </div>
+    @endforeach
+</div>
 <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
     <div class="flex justify-between items-center mb-6">
         <h3 class="text-lg font-semibold text-gray-800">Riwayat API (Log)</h3>
