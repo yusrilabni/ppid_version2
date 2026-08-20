@@ -16,57 +16,94 @@
 @section('content')
 @php
     $cards = [
-        ['title' => 'Per Menit', 'value' => $stats['per_minute'], 'standard' => 100, 'warning' => 300],
-        ['title' => 'Per Jam', 'value' => $stats['per_hour'], 'standard' => 3000, 'warning' => 10000],
-        ['title' => 'Per Hari', 'value' => $stats['per_day'], 'standard' => 50000, 'warning' => 150000],
-        ['title' => 'Per Minggu', 'value' => $stats['per_week'], 'standard' => 300000, 'warning' => 800000],
-        ['title' => 'Per Bulan', 'value' => $stats['per_month'], 'standard' => 1000000, 'warning' => 3000000],
-        ['title' => 'Per Tahun', 'value' => $stats['per_year'], 'standard' => 10000000, 'warning' => 30000000],
+        ['title' => 'Per Menit', 'value' => $stats['per_minute'], 'standard' => 100, 'warning' => 300, 'desc' => 'Lonjakan instan'],
+        ['title' => 'Per Jam', 'value' => $stats['per_hour'], 'standard' => 3000, 'warning' => 10000, 'desc' => 'Lalu lintas sejam terakhir'],
+        ['title' => 'Per Hari', 'value' => $stats['per_day'], 'standard' => 50000, 'warning' => 150000, 'desc' => 'Total aktivitas harian'],
+        ['title' => 'Per Minggu', 'value' => $stats['per_week'], 'standard' => 300000, 'warning' => 800000, 'desc' => 'Tren akses mingguan'],
+        ['title' => 'Per Bulan', 'value' => $stats['per_month'], 'standard' => 1000000, 'warning' => 3000000, 'desc' => 'Akumulasi akses bulanan'],
+        ['title' => 'Per Tahun', 'value' => $stats['per_year'], 'standard' => 10000000, 'warning' => 30000000, 'desc' => 'Total keseluruhan tahun ini'],
     ];
 @endphp
 
-<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-4 mb-6">
+<div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-6 gap-5 mb-8">
     @foreach($cards as $card)
         @php
             $status = 'Normal';
-            $color = 'text-green-600';
-            $bg = 'bg-green-50';
-            $iconColor = 'text-green-500';
-            $icon = 'M5 13l4 4L19 7'; // check icon
+            $colorText = 'text-teal-600';
+            $colorBg = 'bg-teal-50';
+            $borderColor = 'border-teal-100';
+            $glowColor = 'shadow-teal-100/50';
+            $iconColor = 'text-teal-500';
+            $iconBg = 'bg-teal-100';
+            $icon = 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'; // check-circle
+            
+            $percentage = min(100, ($card['value'] / max(1, $card['warning'])) * 100);
+            $progressColor = 'bg-teal-500';
+
             if ($card['value'] > $card['warning']) {
-                $status = 'Bahaya';
-                $color = 'text-red-600';
-                $bg = 'bg-red-50';
-                $iconColor = 'text-red-500';
-                $icon = 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z'; // alert triangle
+                $status = 'Bahaya (Spam)';
+                $colorText = 'text-rose-600';
+                $colorBg = 'bg-rose-50';
+                $borderColor = 'border-rose-200';
+                $glowColor = 'shadow-rose-200/50';
+                $iconColor = 'text-rose-600';
+                $iconBg = 'bg-rose-100';
+                $icon = 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'; // alert-circle
+                $progressColor = 'bg-rose-500';
             } elseif ($card['value'] > $card['standard']) {
                 $status = 'Waspada';
-                $color = 'text-yellow-600';
-                $bg = 'bg-yellow-50';
-                $iconColor = 'text-yellow-500';
-                $icon = 'M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'; // info circle
+                $colorText = 'text-amber-600';
+                $colorBg = 'bg-amber-50';
+                $borderColor = 'border-amber-200';
+                $glowColor = 'shadow-amber-200/50';
+                $iconColor = 'text-amber-500';
+                $iconBg = 'bg-amber-100';
+                $icon = 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z'; // alert-triangle
+                $progressColor = 'bg-amber-500';
             }
         @endphp
-        <div class="bg-white rounded-lg shadow-sm border border-gray-100 p-4 flex flex-col relative overflow-hidden transition hover:shadow-md">
-            <div class="flex justify-between items-start mb-2">
-                <div class="text-sm font-medium text-gray-500">{{ $card['title'] }}</div>
-                <div class="p-1.5 rounded-full {{ $bg }}">
-                    <svg class="w-4 h-4 {{ $iconColor }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+        <div class="relative bg-white rounded-2xl p-5 border {{ $borderColor }} shadow-lg {{ $glowColor }} hover:-translate-y-1 transition-all duration-300 overflow-hidden group">
+            <!-- Background Decoration -->
+            <div class="absolute -right-6 -top-6 w-24 h-24 rounded-full {{ $iconBg }} opacity-20 group-hover:scale-150 transition-transform duration-500"></div>
+            
+            <div class="flex justify-between items-start mb-4 relative z-10">
+                <div>
+                    <h4 class="text-xs font-bold text-gray-500 uppercase tracking-wider">{{ $card['title'] }}</h4>
+                    <p class="text-[10px] text-gray-400 mt-0.5 truncate">{{ $card['desc'] }}</p>
+                </div>
+                <div class="p-2 rounded-xl {{ $iconBg }} shadow-sm">
+                    <svg class="w-5 h-5 {{ $iconColor }}" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="{{ $icon }}"></path>
                     </svg>
                 </div>
             </div>
-            <div class="text-2xl font-bold text-gray-800 mb-1">{{ number_format($card['value'], 0, ',', '.') }}</div>
-            <div class="text-xs text-gray-500 flex justify-between items-center mt-auto pt-2 border-t border-gray-50">
-                <span>Wajar: {{ number_format($card['standard'], 0, ',', '.') }}</span>
-                <span class="font-medium px-2 py-0.5 rounded-full text-[10px] {{ $bg }} {{ $color }}">{{ $status }}</span>
+            
+            <div class="relative z-10 mt-2">
+                <div class="text-3xl font-black text-gray-800 mb-1 tracking-tight">{{ number_format($card['value'], 0, ',', '.') }}</div>
+                
+                <!-- Progress Bar -->
+                <div class="w-full bg-gray-100 rounded-full h-1.5 mt-3 mb-2 overflow-hidden">
+                    <div class="h-1.5 rounded-full {{ $progressColor }} transition-all duration-1000" style="width: {{ $percentage }}%"></div>
+                </div>
+                
+                <div class="flex justify-between items-center text-[11px] font-medium mt-2">
+                    <span class="text-gray-400">Batas: {{ number_format($card['standard'], 0, ',', '.') }}</span>
+                    <span class="px-2 py-1 rounded-md {{ $colorBg }} {{ $colorText }} font-bold border {{ $borderColor }}">{{ $status }}</span>
+                </div>
             </div>
         </div>
     @endforeach
 </div>
-<div class="bg-white rounded-lg shadow-sm border border-gray-100 p-6">
-    <div class="flex justify-between items-center mb-6">
-        <h3 class="text-lg font-semibold text-gray-800">Riwayat API (Log)</h3>
+
+<div class="bg-white rounded-2xl shadow-xl border border-gray-100 overflow-hidden">
+    <div class="flex justify-between items-center p-6 bg-gradient-to-r from-gray-50 to-white border-b border-gray-100">
+        <div>
+            <h3 class="text-xl font-bold text-gray-800 flex items-center">
+                <svg class="w-5 h-5 mr-2 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+                Riwayat Log API
+            </h3>
+            <p class="text-xs text-gray-500 mt-1">Lalu lintas request secara real-time</p>
+        </div>
             <form action="{{ route('admin.api-logs.index') }}" method="GET" class="flex space-x-2">
                 <select name="risk_level" aria-label="Filter Risiko" class="border-gray-300 rounded-md shadow-sm text-sm" onchange="this.form.submit()">
                     <option value="">Semua Risiko</option>
