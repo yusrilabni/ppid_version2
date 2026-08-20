@@ -18,7 +18,7 @@ class LoginController extends Controller
     {
         $validator = Validator::make($request->all(), [
             'login' => 'required_without:email|string',
-            'email' => 'required_without:login|string|email',
+            'email' => 'required_without:login|string',
             'password' => 'required|string',
         ]);
 
