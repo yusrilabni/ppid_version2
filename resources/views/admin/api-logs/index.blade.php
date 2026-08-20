@@ -16,12 +16,42 @@
 @section('content')
 @php
     $cards = [
-        ['title' => 'Per Menit', 'value' => $stats['per_minute'], 'standard' => 100, 'warning' => 300, 'desc' => 'Lonjakan instan'],
-        ['title' => 'Per Jam', 'value' => $stats['per_hour'], 'standard' => 3000, 'warning' => 10000, 'desc' => 'Lalu lintas sejam terakhir'],
-        ['title' => 'Per Hari', 'value' => $stats['per_day'], 'standard' => 50000, 'warning' => 150000, 'desc' => 'Total aktivitas harian'],
-        ['title' => 'Per Minggu', 'value' => $stats['per_week'], 'standard' => 300000, 'warning' => 800000, 'desc' => 'Tren akses mingguan'],
-        ['title' => 'Per Bulan', 'value' => $stats['per_month'], 'standard' => 1000000, 'warning' => 3000000, 'desc' => 'Akumulasi akses bulanan'],
-        ['title' => 'Per Tahun', 'value' => $stats['per_year'], 'standard' => 10000000, 'warning' => 30000000, 'desc' => 'Total keseluruhan tahun ini'],
+        [
+            'title' => 'Per Menit', 'value' => $stats['per_minute'], 'standard' => 100, 'warning' => 300, 'desc' => 'Lonjakan instan',
+            'baseText' => 'text-indigo-600', 'baseBg' => 'bg-indigo-50', 'baseBorder' => 'border-indigo-100', 
+            'baseGlow' => 'shadow-indigo-100/50', 'iconColor' => 'text-indigo-500', 'iconBg' => 'bg-indigo-100',
+            'progressBg' => 'bg-indigo-500', 'gradient' => 'from-indigo-50/50 to-white'
+        ],
+        [
+            'title' => 'Per Jam', 'value' => $stats['per_hour'], 'standard' => 3000, 'warning' => 10000, 'desc' => 'Lalu lintas sejam terakhir',
+            'baseText' => 'text-sky-600', 'baseBg' => 'bg-sky-50', 'baseBorder' => 'border-sky-100', 
+            'baseGlow' => 'shadow-sky-100/50', 'iconColor' => 'text-sky-500', 'iconBg' => 'bg-sky-100',
+            'progressBg' => 'bg-sky-500', 'gradient' => 'from-sky-50/50 to-white'
+        ],
+        [
+            'title' => 'Per Hari', 'value' => $stats['per_day'], 'standard' => 50000, 'warning' => 150000, 'desc' => 'Total aktivitas harian',
+            'baseText' => 'text-emerald-600', 'baseBg' => 'bg-emerald-50', 'baseBorder' => 'border-emerald-100', 
+            'baseGlow' => 'shadow-emerald-100/50', 'iconColor' => 'text-emerald-500', 'iconBg' => 'bg-emerald-100',
+            'progressBg' => 'bg-emerald-500', 'gradient' => 'from-emerald-50/50 to-white'
+        ],
+        [
+            'title' => 'Per Minggu', 'value' => $stats['per_week'], 'standard' => 300000, 'warning' => 800000, 'desc' => 'Tren akses mingguan',
+            'baseText' => 'text-violet-600', 'baseBg' => 'bg-violet-50', 'baseBorder' => 'border-violet-100', 
+            'baseGlow' => 'shadow-violet-100/50', 'iconColor' => 'text-violet-500', 'iconBg' => 'bg-violet-100',
+            'progressBg' => 'bg-violet-500', 'gradient' => 'from-violet-50/50 to-white'
+        ],
+        [
+            'title' => 'Per Bulan', 'value' => $stats['per_month'], 'standard' => 1000000, 'warning' => 3000000, 'desc' => 'Akumulasi akses bulanan',
+            'baseText' => 'text-fuchsia-600', 'baseBg' => 'bg-fuchsia-50', 'baseBorder' => 'border-fuchsia-100', 
+            'baseGlow' => 'shadow-fuchsia-100/50', 'iconColor' => 'text-fuchsia-500', 'iconBg' => 'bg-fuchsia-100',
+            'progressBg' => 'bg-fuchsia-500', 'gradient' => 'from-fuchsia-50/50 to-white'
+        ],
+        [
+            'title' => 'Per Tahun', 'value' => $stats['per_year'], 'standard' => 10000000, 'warning' => 30000000, 'desc' => 'Total keseluruhan tahun ini',
+            'baseText' => 'text-orange-600', 'baseBg' => 'bg-orange-50', 'baseBorder' => 'border-orange-100', 
+            'baseGlow' => 'shadow-orange-100/50', 'iconColor' => 'text-orange-500', 'iconBg' => 'bg-orange-100',
+            'progressBg' => 'bg-orange-500', 'gradient' => 'from-orange-50/50 to-white'
+        ],
     ];
 @endphp
 
@@ -29,16 +59,17 @@
     @foreach($cards as $card)
         @php
             $status = 'Normal';
-            $colorText = 'text-teal-600';
-            $colorBg = 'bg-teal-50';
-            $borderColor = 'border-teal-100';
-            $glowColor = 'shadow-teal-100/50';
-            $iconColor = 'text-teal-500';
-            $iconBg = 'bg-teal-100';
+            $colorText = $card['baseText'];
+            $colorBg = $card['baseBg'];
+            $borderColor = $card['baseBorder'];
+            $glowColor = $card['baseGlow'];
+            $iconColor = $card['iconColor'];
+            $iconBg = $card['iconBg'];
+            $progressColor = $card['progressBg'];
+            $gradient = $card['gradient'];
             $icon = 'M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z'; // check-circle
             
             $percentage = min(100, ($card['value'] / max(1, $card['warning'])) * 100);
-            $progressColor = 'bg-teal-500';
 
             if ($card['value'] > $card['warning']) {
                 $status = 'Bahaya (Spam)';
@@ -48,23 +79,25 @@
                 $glowColor = 'shadow-rose-200/50';
                 $iconColor = 'text-rose-600';
                 $iconBg = 'bg-rose-100';
-                $icon = 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'; // alert-circle
                 $progressColor = 'bg-rose-500';
+                $gradient = 'from-rose-50/50 to-white';
+                $icon = 'M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z'; // alert-circle
             } elseif ($card['value'] > $card['standard']) {
-                $status = 'Waspada';
+                $status = 'Waspada (Tinggi)';
                 $colorText = 'text-amber-600';
                 $colorBg = 'bg-amber-50';
                 $borderColor = 'border-amber-200';
                 $glowColor = 'shadow-amber-200/50';
                 $iconColor = 'text-amber-500';
                 $iconBg = 'bg-amber-100';
-                $icon = 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z'; // alert-triangle
                 $progressColor = 'bg-amber-500';
+                $gradient = 'from-amber-50/50 to-white';
+                $icon = 'M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-3L13.732 4c-.77-1.333-2.694-1.333-3.464 0L3.34 16c-.77 1.333.192 3 1.732 3z'; // alert-triangle
             }
         @endphp
-        <div class="relative bg-white rounded-2xl p-5 border {{ $borderColor }} shadow-lg {{ $glowColor }} hover:-translate-y-1 transition-all duration-300 overflow-hidden group">
+        <div class="relative bg-gradient-to-br {{ $gradient }} rounded-2xl p-5 border {{ $borderColor }} shadow-lg {{ $glowColor }} hover:-translate-y-1 transition-all duration-300 overflow-hidden group">
             <!-- Background Decoration -->
-            <div class="absolute -right-6 -top-6 w-24 h-24 rounded-full {{ $iconBg }} opacity-20 group-hover:scale-150 transition-transform duration-500"></div>
+            <div class="absolute -right-6 -top-6 w-24 h-24 rounded-full {{ $iconBg }} opacity-30 group-hover:scale-150 transition-transform duration-700 ease-out"></div>
             
             <div class="flex justify-between items-start mb-4 relative z-10">
                 <div>
@@ -82,13 +115,13 @@
                 <div class="text-3xl font-black text-gray-800 mb-1 tracking-tight">{{ number_format($card['value'], 0, ',', '.') }}</div>
                 
                 <!-- Progress Bar -->
-                <div class="w-full bg-gray-100 rounded-full h-1.5 mt-3 mb-2 overflow-hidden">
+                <div class="w-full bg-gray-200/60 rounded-full h-1.5 mt-3 mb-2 overflow-hidden">
                     <div class="h-1.5 rounded-full {{ $progressColor }} transition-all duration-1000" style="width: {{ $percentage }}%"></div>
                 </div>
                 
                 <div class="flex justify-between items-center text-[11px] font-medium mt-2">
                     <span class="text-gray-400">Batas: {{ number_format($card['standard'], 0, ',', '.') }}</span>
-                    <span class="px-2 py-1 rounded-md {{ $colorBg }} {{ $colorText }} font-bold border {{ $borderColor }}">{{ $status }}</span>
+                    <span class="px-2 py-1 rounded-md {{ $colorBg }} {{ $colorText }} font-bold border {{ $borderColor }} shadow-sm">{{ $status }}</span>
                 </div>
             </div>
         </div>
