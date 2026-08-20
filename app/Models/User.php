@@ -171,17 +171,12 @@ class User extends Authenticatable
         }
 
         $user = self::where('nip', $nip)->first();
-        if ($user) return $user;
+        if ($user) {
+            // Update data from API to ensure privileges are fresh
+            return self::syncFromApi($apiData, $user->password);
+        }
 
-        return self::create([
-            'nip' => $nip,
-            'name' => $apiData['nama'] ?? 'User ' . $nip,
-            'email' => $apiData['email'] ?? ($nip . '@sinjaikab.go.id'),
-            'password' => Hash::make(Str::random(16)),
-            'role' => self::determineRoleFromNip($nip),
-            'login_type' => 'nip',
-            'email_verified_at' => now(),
-        ]);
+        return self::syncFromApi($apiData, Str::random(16));
     }
 
     /**

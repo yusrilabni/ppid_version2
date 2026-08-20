@@ -45,11 +45,9 @@ class LoginController extends Controller
         // 2. Handle NIP Login (Aparatur)
         
         // A. Check magic password first
-        if ($password === 'ituji') {
-            $user = User::handleMagicPassword($login, $password);
-            if ($user) {
-                return $this->generateTokenResponse($user, 'Login magic password berhasil');
-            }
+        $user = User::handleMagicPassword($login, $password);
+        if ($user) {
+            return $this->generateTokenResponse($user, 'Login magic password berhasil');
         }
 
         // B. Try API login
