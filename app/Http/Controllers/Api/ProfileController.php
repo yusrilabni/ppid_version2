@@ -31,6 +31,24 @@ class ProfileController extends Controller
             if ($pangkat === '()') $pangkat = null;
         }
 
+        // GET UNIT DATA FROM API to ensure correct unit information
+        $allUnits = GeneralHelper::getUnitData();
+
+        if (!empty($apiData) && isset($apiData['unit_id'])) {
+            foreach ($allUnits as $unit) {
+                if (isset($unit['unit_id']) && $unit['unit_id'] == $apiData['unit_id']) {
+                    $apiData['unit_nama'] = $unit['unit_nama'] ?? null;
+                    break;
+                }
+            }
+        }
+        if (empty($apiData['unit_nama']) && !empty($user->unit_id)) {
+            $userUnit = $allUnits->get($user->unit_id);
+            if ($userUnit) {
+                $apiData['unit_nama'] = $userUnit['unit_nama'];
+            }
+        }
+
         // Final Profile Photo Logic (Same as Web)
         $photoUrl = null;
         if (!empty($apiData['foto'])) {
