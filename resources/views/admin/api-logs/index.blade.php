@@ -172,15 +172,15 @@
                             </td>
                             <td class="py-4 px-6">
                                 @if($log->origin === 'Aplikasi Frontend Legal')
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-md border text-xs font-medium bg-blue-100 text-blue-800">
                                         {{ $log->origin }}
                                     </span>
                                 @elseif($log->origin === 'Aplikasi Eksternal / Bot')
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-purple-100 text-purple-800">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-md border text-xs font-medium bg-purple-100 text-purple-800">
                                         {{ $log->origin }}
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium bg-gray-100 text-gray-800">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-md border text-xs font-medium bg-gray-100 text-gray-800">
                                         {{ $log->origin ?? 'Direct URL' }}
                                     </span>
                                 @endif
@@ -191,21 +191,21 @@
                                 </div>
                             </td>
                             <td class="py-4 px-6">
-                                <span class="inline-flex items-center px-2 py-0.5 rounded text-xs font-medium {{ $log->response_status >= 400 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' }}">
+                                <span class="inline-flex items-center px-2.5 py-1 rounded-md border text-xs font-medium {{ $log->response_status >= 400 ? 'bg-red-100 text-red-800' : 'bg-green-100 text-green-800' }}">
                                     {{ $log->response_status }} ({{ $log->response_time }}ms)
                                 </span>
                             </td>
                             <td class="py-4 px-6">
                                 @if($log->risk_level === 'good')
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-green-100 text-green-800">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-md border text-xs font-medium bg-green-100 text-green-800">
                                         Good
                                     </span>
                                 @elseif($log->risk_level === 'middle')
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-yellow-100 text-yellow-800">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-md border text-xs font-medium bg-yellow-100 text-yellow-800">
                                         Middle
                                     </span>
                                 @else
-                                    <span class="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-red-100 text-red-800">
+                                    <span class="inline-flex items-center px-2.5 py-1 rounded-md border text-xs font-medium bg-red-100 text-red-800">
                                         Hard
                                     </span>
                                 @endif
