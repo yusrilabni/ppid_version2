@@ -16,63 +16,68 @@ class GoogleLoginController extends Controller
      *
      * @return \Illuminate\Http\JsonResponse
      */
-    public function redirectToGoogle()
+    public function redirectToGoogle(Request $request)
     {
+        $action = $request->query('action', 'login'); // 'login' or 'register'
+        
         return response()->json([
-            'url' => Socialite::driver('google')->stateless()->redirect()->getTargetUrl(),
+            'url' => Socialite::driver('google')->stateless()->with(['state' => $action])->redirect()->getTargetUrl(),
         ]);
     }
 
     /**
      * Obtain the user information from Google.
      *
-     * @return \Illuminate\Http\JsonResponse
+     * @return \Illuminate\Http\RedirectResponse
      */
-    public function handleGoogleCallback()
+    public function handleGoogleCallback(Request $request)
     {
+        $action = $request->input('state', 'login');
+        
         try {
             $googleUser = Socialite::driver('google')->stateless()->user();
         } catch (\Exception $e) {
-            return response()->json(['error' => 'Failed to authenticate with Google.'], 400);
+            return redirect(config('app.frontend_url', 'https://ppid.sinjaikab.go.id') . '/login?error=auth_failed');
         }
 
-        // Check if a user with this google_id already exists
-        $user = User::where('google_id', $googleUser->id)->first();
+        $frontendUrl = config('app.frontend_url', 'https://ppid.sinjaikab.go.id');
 
-        if (!$user) {
-            // If user doesn't exist, check by email
-            $user = User::where('email', $googleUser->getEmail())->first();
+        $user = User::where('email', $googleUser->getEmail())->first();
 
+        if ($action === 'login') {
             if (!$user) {
-                // If no user with this email, create a new one
-                $user = User::create([
-                    'name' => $googleUser->getName(),
-                    'email' => $googleUser->getEmail(),
-                    'google_id' => $googleUser->getId(),
-                    'google_token' => $googleUser->token,
-                    'password' => Hash::make(Str::random(24)), // Generate a random password
-                    'nip' => null, // NIP is not required for Google login
-                    'role' => 'user', // Default role for new social users
-                ]);
-            } else {
-                // If user exists with this email but not google_id, update their google_id and token
+                // strict: must be registered first
+                return redirect($frontendUrl . '/login?error=not_registered');
+            }
+            
+            // update google_id if missing
+            if (!$user->google_id) {
                 $user->google_id = $googleUser->getId();
-                $user->google_token = $googleUser->token;
                 $user->save();
             }
+        } else if ($action === 'register') {
+            if ($user) {
+                // strict: already registered
+                return redirect($frontendUrl . '/register?error=already_registered');
+            }
+            
+            // Create new user
+            $user = User::create([
+                'name' => $googleUser->getName(),
+                'email' => $googleUser->getEmail(),
+                'google_id' => $googleUser->getId(),
+                'password' => Hash::make(Str::random(24)),
+                'role' => 'user',
+                'login_type' => 'google',
+                'email_verified_at' => now(),
+            ]);
         } else {
-            // If user exists with google_id, update their token
-            $user->google_token = $googleUser->token;
-            $user->save();
+            return redirect($frontendUrl . '/login?error=invalid_action');
         }
 
         // Generate Sanctum token
         $token = $user->createToken('google-api-token')->plainTextToken;
 
-        if ($user->role === 'superadmin') {
-            return redirect('/admin/dashboard');
-        }
-
-        return redirect('/?token=' . $token);
+        return redirect($frontendUrl . '/auth/callback?token=' . $token);
     }
 }
