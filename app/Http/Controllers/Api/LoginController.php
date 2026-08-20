@@ -17,7 +17,8 @@ class LoginController extends Controller
     public function login(Request $request)
     {
         $validator = Validator::make($request->all(), [
-            'login' => 'required|string',
+            'login' => 'required_without:email|string',
+            'email' => 'required_without:login|string|email',
             'password' => 'required|string',
         ]);
 
@@ -29,7 +30,7 @@ class LoginController extends Controller
             ], 422);
         }
 
-        $login = $request->login;
+        $login = $request->login ?? $request->email;
         $password = $request->password;
 
         // 1. Handle Email Login
