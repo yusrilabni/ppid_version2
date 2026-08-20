@@ -232,7 +232,7 @@
 
         @if ($apiLogs->hasPages())
             <div class="px-6 py-4 border-t border-gray-200">
-                {{ $apiLogs->links() }}
+                {{ $apiLogs->appends(request()->query())->links('vendor.pagination.tailwind') }}
             </div>
         @endif
     </div>
