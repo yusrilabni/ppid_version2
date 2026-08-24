@@ -18,8 +18,11 @@ class GoogleLoginController extends Controller
      */
     public function redirectToGoogle(Request $request)
     {
-        $action = $request->query('action', 'login'); // 'login' or 'register'
+        $action = $request->input('action', 'login');
         
+        // HARDCODE UNTUK MENGHINDARI CACHE BROWSER
+        config(['services.google.redirect' => 'https://ppidkab.sinjaikab.go.id/api/v1/auth/google/callback-new']);
+
         return Socialite::driver('google')->stateless()->with(['state' => $action])->redirect();
     }
 
@@ -30,7 +33,11 @@ class GoogleLoginController extends Controller
      */
     public function handleGoogleCallback(Request $request)
     {
+        $frontendUrl = config('app.frontend_url', 'https://ppid.sinjaikab.go.id');
         $action = $request->input('state', 'login');
+        
+        // HARDCODE UNTUK MENGHINDARI CACHE BROWSER
+        config(['services.google.redirect' => 'https://ppidkab.sinjaikab.go.id/api/v1/auth/google/callback-new']);
         
         try {
             if (!$request->has('code')) {

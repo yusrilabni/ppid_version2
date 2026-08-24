@@ -64,7 +64,7 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
     Route::post('/login', [App\Http\Controllers\Api\LoginController::class, 'login']);
     Route::post('/register', [App\Http\Controllers\Api\RegisterController::class, 'register']);
     Route::get('/auth/google/redirect', [App\Http\Controllers\Api\GoogleLoginController::class, 'redirectToGoogle']);
-    Route::get('/auth/google/callback', [App\Http\Controllers\Api\GoogleLoginController::class, 'handleGoogleCallback']);
+    Route::get('/auth/google/callback-new', [App\Http\Controllers\Api\GoogleLoginController::class, 'handleGoogleCallback']);
     Route::post('/contact', [ContactController::class, 'store']);
 
     // Profil Routes (for frontend client matching blade UI)
