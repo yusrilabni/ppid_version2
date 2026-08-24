@@ -69,6 +69,7 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/auth/google/unlink/request-otp', [App\Http\Controllers\Api\GoogleLoginController::class, 'requestUnlinkOtp']);
         Route::post('/auth/google/unlink/verify', [App\Http\Controllers\Api\GoogleLoginController::class, 'verifyUnlinkOtp']);
+        Route::post('/auth/google/link/verify-otp', [App\Http\Controllers\Api\GoogleLoginController::class, 'verifyLinkOtp']);
     });
 
     Route::post('/contact', [ContactController::class, 'store']);

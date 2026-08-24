@@ -62,52 +62,35 @@ class GoogleLoginController extends Controller
                 ], 401);
             }
 
-            if ($user && $user->id !== $currentUser->id) {
-                // Email Google sudah terdaftar di akun lain, lakukan peleburan (merge)
-                $roles = [$currentUser->role, $user->role];
-                if (in_array('user', $roles) && (in_array('admin', $roles) || in_array('superadmin', $roles))) {
-                    if ($user->role === 'superadmin' || ($user->role === 'admin' && $currentUser->role === 'user')) {
-                        $keptUser = clone $user;
-                        $deletedUser = clone $currentUser;
-                    } else {
-                        $keptUser = clone $currentUser;
-                        $deletedUser = clone $user;
-                    }
-                    
-                    User::where('id', $keptUser->id)->update([
-                        'google_id' => $googleUser->getId(),
-                        'nip' => $keptUser->nip ?: $deletedUser->nip,
-                        'email' => $googleUser->getEmail() // Update email to Google email
-                    ]);
-                    \App\Models\PermohonanInformasi::where('user_id', $deletedUser->id)->update(['user_id' => $keptUser->id]);
-                    User::where('id', $deletedUser->id)->delete();
-                    $user = User::find($keptUser->id);
-                } else {
-                    return response()->json([
-                        'success' => false,
-                        'message' => "Tidak bisa menautkan. Email Google ini sudah terdaftar sebagai {$user->role}, dan akun Anda saat ini adalah {$currentUser->role}.",
-                        'error_type' => 'auth_failed'
-                    ], 403);
-                }
-            } else {
-                // Belum ada yang pakai, langsung tempel ke akun saat ini
-                $currentUser->google_id = $googleUser->getId();
-                $currentUser->email = $googleUser->getEmail(); // Selalu update email ke email Google
-                $currentUser->save();
-                $user = $currentUser;
-            }
+            // Generate 6 digit OTP
+            $otp = sprintf('%06d', mt_rand(0, 999999));
             
-            // Re-issue token
-            if (method_exists($user, 'tokens')) {
-                $user->tokens()->delete();
+            // Simpan data Google ke cache untuk diproses setelah OTP diverifikasi
+            $cacheKey = 'link_otp_' . $currentUser->id;
+            \Illuminate\Support\Facades\Cache::put($cacheKey, [
+                'otp' => $otp,
+                'google_id' => $googleUser->getId(),
+                'email' => $googleUser->getEmail()
+            ], now()->addMinutes(10));
+
+            // Kirim OTP ke email Google yang dipilih
+            try {
+                \Illuminate\Support\Facades\Mail::raw("Kode verifikasi OTP Anda untuk MENAUTKAN akun Google adalah: $otp\n\nKode ini berlaku selama 10 menit.", function($msg) use ($googleUser) {
+                    $msg->to($googleUser->getEmail())
+                        ->subject('Kode Verifikasi Tautkan Google - PPID Sinjai');
+                });
+            } catch (\Exception $e) {
+                \Log::error('Failed to send link OTP email: ' . $e->getMessage());
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal mengirim email OTP.'
+                ], 500);
             }
-            $token = $user->createToken('google-api-token')->plainTextToken;
 
             return response()->json([
                 'success' => true,
-                'message' => 'Akun berhasil ditautkan dengan Google.',
-                'user' => $user,
-                'token' => $token
+                'require_otp' => true,
+                'message' => 'Kode OTP telah dikirim ke email Google Anda. Silakan masukkan kode untuk memverifikasi tautan.'
             ]);
         } else if ($action === 'login') {
             if (!$user) {
@@ -155,6 +138,80 @@ class GoogleLoginController extends Controller
         return response()->json([
             'success' => true,
             'message' => 'Autentikasi berhasil',
+            'user' => $user,
+            'token' => $token
+        ]);
+    }
+
+    /**
+     * Verify OTP and Link Google Account
+     */
+    public function verifyLinkOtp(Request $request)
+    {
+        $request->validate([
+            'otp' => 'required|string|size:6'
+        ]);
+
+        $currentUser = $request->user();
+        $cacheKey = 'link_otp_' . $currentUser->id;
+        $cachedData = \Illuminate\Support\Facades\Cache::get($cacheKey);
+
+        if (!$cachedData || $cachedData['otp'] !== $request->otp) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Kode OTP kadaluarsa atau salah.'
+            ], 400);
+        }
+
+        $googleId = $cachedData['google_id'];
+        $googleEmail = $cachedData['email'];
+
+        $user = User::where('email', $googleEmail)->first();
+
+        if ($user && $user->id !== $currentUser->id) {
+            // Merge logic
+            $roles = [$currentUser->role, $user->role];
+            if (in_array('user', $roles) && (in_array('admin', $roles) || in_array('superadmin', $roles))) {
+                if ($user->role === 'superadmin' || ($user->role === 'admin' && $currentUser->role === 'user')) {
+                    $keptUser = clone $user;
+                    $deletedUser = clone $currentUser;
+                } else {
+                    $keptUser = clone $currentUser;
+                    $deletedUser = clone $user;
+                }
+                
+                User::where('id', $keptUser->id)->update([
+                    'google_id' => $googleId,
+                    'nip' => $keptUser->nip ?: $deletedUser->nip,
+                    'email' => $googleEmail
+                ]);
+                \App\Models\PermohonanInformasi::where('user_id', $deletedUser->id)->update(['user_id' => $keptUser->id]);
+                User::where('id', $deletedUser->id)->delete();
+                $user = User::find($keptUser->id);
+            } else {
+                return response()->json([
+                    'success' => false,
+                    'message' => "Tidak bisa menautkan. Email Google ini sudah terdaftar sebagai {$user->role}."
+                ], 403);
+            }
+        } else {
+            // Normal Link
+            $currentUser->google_id = $googleId;
+            $currentUser->email = $googleEmail;
+            $currentUser->save();
+            $user = $currentUser;
+        }
+
+        \Illuminate\Support\Facades\Cache::forget($cacheKey);
+
+        if (method_exists($user, 'tokens')) {
+            $user->tokens()->delete();
+        }
+        $token = $user->createToken('google-api-token')->plainTextToken;
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Akun berhasil ditautkan dengan Google.',
             'user' => $user,
             'token' => $token
         ]);
