@@ -20,8 +20,8 @@ class GoogleLoginController extends Controller
     {
         $action = $request->input('action', 'login');
         
-        // HARDCODE UNTUK MENGHINDARI CACHE BROWSER
-        config(['services.google.redirect' => 'https://ppidkab.sinjaikab.go.id/api/v1/auth/google/callback-new']);
+        // HARDCODE UNTUK SPA FLOW
+        config(['services.google.redirect' => 'https://ppid.sinjaikab.go.id/google-callback']);
 
         return Socialite::driver('google')->stateless()->with(['state' => $action])->redirect();
     }
@@ -36,8 +36,8 @@ class GoogleLoginController extends Controller
         $frontendUrl = config('app.frontend_url', 'https://ppid.sinjaikab.go.id');
         $action = $request->input('state', 'login');
         
-        // HARDCODE UNTUK MENGHINDARI CACHE BROWSER
-        config(['services.google.redirect' => 'https://ppidkab.sinjaikab.go.id/api/v1/auth/google/callback-new']);
+        // HARDCODE UNTUK SPA FLOW
+        config(['services.google.redirect' => 'https://ppid.sinjaikab.go.id/google-callback']);
         
         try {
             if (!$request->has('code')) {
@@ -45,17 +45,21 @@ class GoogleLoginController extends Controller
             }
             $googleUser = Socialite::driver('google')->stateless()->user();
         } catch (\Exception $e) {
-            return redirect(config('app.frontend_url', 'https://ppid.sinjaikab.go.id') . '/login?error=auth_failed&msg=' . urlencode($e->getMessage()));
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal autentikasi dengan Google: ' . $e->getMessage()
+            ], 400);
         }
-
-        $frontendUrl = config('app.frontend_url', 'https://ppid.sinjaikab.go.id');
 
         $user = User::where('email', $googleUser->getEmail())->first();
 
         if ($action === 'login') {
             if (!$user) {
-                // strict: must be registered first
-                return redirect($frontendUrl . '/login?error=not_registered');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Email Anda belum terdaftar di sistem. Silakan buat akun terlebih dahulu.',
+                    'error_type' => 'not_registered'
+                ], 403);
             }
             
             // update google_id if missing
@@ -65,8 +69,11 @@ class GoogleLoginController extends Controller
             }
         } else if ($action === 'register') {
             if ($user) {
-                // strict: already registered
-                return redirect($frontendUrl . '/register?error=already_registered');
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Email Anda sudah terdaftar. Silakan login.',
+                    'error_type' => 'already_registered'
+                ], 403);
             }
             
             // Create new user
@@ -80,12 +87,20 @@ class GoogleLoginController extends Controller
                 'email_verified_at' => now(),
             ]);
         } else {
-            return redirect($frontendUrl . '/login?error=invalid_action');
+            return response()->json([
+                'success' => false,
+                'message' => 'Aksi tidak valid.'
+            ], 400);
         }
 
         // Generate Sanctum token
         $token = $user->createToken('google-api-token')->plainTextToken;
 
-        return redirect($frontendUrl . '/auth/callback?token=' . $token);
+        return response()->json([
+            'success' => true,
+            'message' => 'Login berhasil',
+            'user' => $user,
+            'token' => $token
+        ]);
     }
 }
