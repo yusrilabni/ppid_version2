@@ -34,7 +34,7 @@ class GoogleLoginController extends Controller
         
         try {
             if (!$request->has('code')) {
-                throw new \Exception('EMPTY PARAMS! URL: ' . $request->fullUrl() . ' | IP: ' . $request->ip() . ' | Headers: ' . json_encode($request->headers->all()));
+                throw new \Exception('EMPTY PARAMS! Redirect URI in config: ' . config('services.google.redirect'));
             }
             $googleUser = Socialite::driver('google')->stateless()->user();
         } catch (\Exception $e) {
