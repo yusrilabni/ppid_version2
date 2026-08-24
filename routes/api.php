@@ -312,6 +312,7 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
         // Profile Management
         Route::get('/profile', [App\Http\Controllers\Api\ProfileController::class, 'show']);
         Route::post('/profile', [App\Http\Controllers\Api\ProfileController::class, 'update']);
+        Route::post('/profile/merge', [App\Http\Controllers\Api\ProfileController::class, 'mergeAccount']);
 
         // My Information Requests (Mobile Tracking)
         Route::get('/my-requests', [PermohonanInformasiController::class, 'myRequests']);

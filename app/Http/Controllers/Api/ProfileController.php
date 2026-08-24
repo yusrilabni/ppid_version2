@@ -136,4 +136,112 @@ class ProfileController extends Controller
             ]
         ]);
     }
+
+    /**
+     * Merge current account with another account.
+     */
+    public function mergeAccount(Request $request)
+    {
+        $validator = Validator::make($request->all(), [
+            'identifier' => 'required|string', // can be email or NIP
+            'password' => 'required|string'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Validasi gagal',
+                'errors' => $validator->errors()
+            ], 422);
+        }
+
+        $currentUser = $request->user();
+
+        // Cari akun target berdasarkan email atau nip
+        $targetUser = User::where('email', $request->identifier)
+            ->orWhere('nip', $request->identifier)
+            ->first();
+
+        if (!$targetUser) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akun target tidak ditemukan. Pastikan Email atau NIP benar.'
+            ], 404);
+        }
+
+        if (!\Illuminate\Support\Facades\Hash::check($request->password, $targetUser->password)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Katasandi akun target salah.'
+            ], 403);
+        }
+
+        if ($targetUser->id === $currentUser->id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Tidak bisa menggabungkan dengan akun yang sama.'
+            ], 400);
+        }
+
+        $role1 = $currentUser->role;
+        $role2 = $targetUser->role;
+        
+        $roles = [$role1, $role2];
+        
+        if (in_array('user', $roles) && (in_array('admin', $roles) || in_array('superadmin', $roles))) {
+            // Valid combination
+        } else {
+            return response()->json([
+                'success' => false,
+                'message' => "Tidak diizinkan menggabungkan akun sesama role (misal Admin dengan Admin, atau User dengan User), atau Superadmin dengan Admin."
+            ], 403);
+        }
+
+        // Tentukan mana yang akan dipertahankan (yang punya role lebih tinggi)
+        if ($targetUser->role === 'superadmin' || ($targetUser->role === 'admin' && $currentUser->role === 'user')) {
+            $keptUser = clone $targetUser;
+            $deletedUser = clone $currentUser;
+        } else {
+            $keptUser = clone $currentUser;
+            $deletedUser = clone $targetUser;
+        }
+
+        // Pindahkan google_id jika ada
+        if ($deletedUser->google_id && !$keptUser->google_id) {
+            $keptUser->google_id = $deletedUser->google_id;
+        }
+        
+        // Pindahkan NIP jika ada
+        if (!$keptUser->nip && $deletedUser->nip) {
+            $keptUser->nip = $deletedUser->nip;
+        }
+
+        // Simpan keptUser
+        User::where('id', $keptUser->id)->update([
+            'google_id' => $keptUser->google_id,
+            'nip' => $keptUser->nip
+        ]);
+
+        // Pindahkan relasi penting lainnya (jika ada, misal permohonan informasi)
+        \App\Models\PermohonanInformasi::where('user_id', $deletedUser->id)->update(['user_id' => $keptUser->id]);
+
+        // Hapus akun lama (yang inferior)
+        User::where('id', $deletedUser->id)->delete();
+
+        // Buat token baru untuk keptUser
+        $keptUserObj = User::find($keptUser->id);
+        
+        // Hapus token lama untuk keamanan
+        if (method_exists($keptUserObj, 'tokens')) {
+            $keptUserObj->tokens()->delete();
+        }
+        $token = $keptUserObj->createToken('merged-token')->plainTextToken;
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Akun berhasil digabungkan.',
+            'user' => $keptUserObj,
+            'token' => $token
+        ]);
+    }
 }
