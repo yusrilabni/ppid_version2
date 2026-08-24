@@ -104,8 +104,13 @@ class ProfilController extends Controller
         }
 
         $query = Official::where('position_id', $position->id)
-                         ->where('status', '!=', 'draft') // Default to public view logic
                          ->with(['position', 'organization']);
+
+        $user = $request->user('sanctum');
+        if (!$user || ($user && !$user->isAdmin())) { 
+            // Untuk publik/user biasa: Hanya tampilkan yang berstatus aktif
+            $query->where('status', 'active');
+        }
                          
         $kepalaOpdsRaw = $query->orderBy('full_name')->get();
         
