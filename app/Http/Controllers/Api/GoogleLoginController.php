@@ -62,6 +62,15 @@ class GoogleLoginController extends Controller
                 ], 401);
             }
 
+            // CEK DOUBLE LINK (Mencegah tautan ganda)
+            if ($currentUser->google_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Akun Anda sudah tertaut dengan Google. Silakan putuskan tautan terlebih dahulu jika ingin menggunakan akun Google lain.',
+                    'error_type' => 'already_linked'
+                ], 400);
+            }
+
             // Generate 6 digit OTP
             $otp = sprintf('%06d', mt_rand(0, 999999));
             
