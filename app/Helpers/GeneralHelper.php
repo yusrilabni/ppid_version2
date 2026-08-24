@@ -196,7 +196,7 @@ class GeneralHelper
                         'last_sync_time' => now()->format('H:i:s')
                     ];
                     
-                    \Illuminate\Support\Facades\Cache::put('external_units_data_v2', $cached, 86400);
+                    \Illuminate\Support\Facades\Cache::forever('external_units_data_v2', $cached);
                 } catch (\Exception $e) {
                     Log::error('Auto Sync Units Error: ' . $e->getMessage());
                     $cached = ['units' => [], 'villages_grouped' => []];
