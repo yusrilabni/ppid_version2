@@ -35,7 +35,7 @@ class GoogleLoginController extends Controller
         try {
             $googleUser = Socialite::driver('google')->stateless()->user();
         } catch (\Exception $e) {
-            return redirect(config('app.frontend_url', 'https://ppid.sinjaikab.go.id') . '/login?error=auth_failed');
+            return redirect(config('app.frontend_url', 'https://ppid.sinjaikab.go.id') . '/login?error=auth_failed&msg=' . urlencode($e->getMessage()));
         }
 
         $frontendUrl = config('app.frontend_url', 'https://ppid.sinjaikab.go.id');
