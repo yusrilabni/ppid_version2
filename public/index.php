@@ -68,5 +68,17 @@ require $appPath.'/vendor/autoload.php';
 // 3. Bootstrap Laravel
 $app = require_once $appPath.'/bootstrap/app.php';
 
+// --- DEBUG INJECTION START ---
+if (strpos($_SERVER['REQUEST_URI'] ?? '', 'auth/google/callback') !== false) {
+    file_put_contents($appPath . '/storage/logs/google_callback_debug.log', 
+        "[" . date('Y-m-d H:i:s') . "] URI: " . ($_SERVER['REQUEST_URI'] ?? 'NONE') . 
+        " | QUERY: " . ($_SERVER['QUERY_STRING'] ?? 'NONE') . 
+        " | IP: " . ($_SERVER['REMOTE_ADDR'] ?? 'NONE') . 
+        " | RAW: " . json_encode($_SERVER) . "\n", 
+        FILE_APPEND
+    );
+}
+// --- DEBUG INJECTION END ---
+
 // 4. Handle Request
 $app->handleRequest(Request::capture());
