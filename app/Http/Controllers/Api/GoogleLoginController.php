@@ -159,4 +159,93 @@ class GoogleLoginController extends Controller
             'token' => $token
         ]);
     }
+
+    /**
+     * Request OTP to unlink Google account
+     */
+    public function requestUnlinkOtp(Request $request)
+    {
+        $user = $request->user();
+
+        if (!$user || !$user->google_id) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akun belum ditautkan dengan Google.'
+            ], 400);
+        }
+
+        if (!$user->email || $user->email === '-') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Akun Anda tidak memiliki email yang valid untuk menerima OTP.'
+            ], 400);
+        }
+
+        // Generate 6 digit OTP
+        $otp = sprintf('%06d', mt_rand(0, 999999));
+        
+        // Save to cache for 10 minutes
+        $cacheKey = 'unlink_otp_' . $user->id;
+        \Illuminate\Support\Facades\Cache::put($cacheKey, $otp, now()->addMinutes(10));
+
+        // Send Email
+        try {
+            \Illuminate\Support\Facades\Mail::raw("Kode verifikasi OTP Anda untuk memutuskan tautan Google adalah: $otp\n\nKode ini berlaku selama 10 menit. Jangan bagikan kode ini kepada siapapun.", function($msg) use ($user) {
+                $msg->to($user->email)
+                    ->subject('Kode Verifikasi Hapus Tautan Google - PPID Sinjai');
+            });
+        } catch (\Exception $e) {
+            \Log::error('Failed to send OTP email: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengirim email OTP. Pastikan konfigurasi email server benar.'
+            ], 500);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Kode OTP telah dikirim ke email Anda.'
+        ]);
+    }
+
+    /**
+     * Verify OTP and unlink Google account
+     */
+    public function verifyUnlinkOtp(Request $request)
+    {
+        $request->validate([
+            'otp' => 'required|string|size:6'
+        ]);
+
+        $user = $request->user();
+        $cacheKey = 'unlink_otp_' . $user->id;
+        $cachedOtp = \Illuminate\Support\Facades\Cache::get($cacheKey);
+
+        if (!$cachedOtp) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Kode OTP kadaluarsa atau tidak ditemukan. Silakan minta kode baru.'
+            ], 400);
+        }
+
+        if ($cachedOtp !== $request->otp) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Kode OTP salah.'
+            ], 400);
+        }
+
+        // OTP Valid! Unlink google
+        $user->google_id = null;
+        $user->save();
+
+        // Clear cache
+        \Illuminate\Support\Facades\Cache::forget($cacheKey);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Tautan akun Google berhasil diputus.',
+            'user' => $user
+        ]);
+    }
 }

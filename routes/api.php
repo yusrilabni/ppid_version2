@@ -65,6 +65,12 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
     Route::post('/register', [App\Http\Controllers\Api\RegisterController::class, 'register']);
     Route::get('/auth/google/redirect', [App\Http\Controllers\Api\GoogleLoginController::class, 'redirectToGoogle']);
     Route::post('/auth/google/callback-spa', [App\Http\Controllers\Api\GoogleLoginController::class, 'handleGoogleCallback']);
+    
+    Route::middleware('auth:sanctum')->group(function () {
+        Route::post('/auth/google/unlink/request-otp', [App\Http\Controllers\Api\GoogleLoginController::class, 'requestUnlinkOtp']);
+        Route::post('/auth/google/unlink/verify', [App\Http\Controllers\Api\GoogleLoginController::class, 'verifyUnlinkOtp']);
+    });
+
     Route::post('/contact', [ContactController::class, 'store']);
 
     // Profil Routes (for frontend client matching blade UI)
