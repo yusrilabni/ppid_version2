@@ -237,6 +237,7 @@ class GoogleLoginController extends Controller
 
         // OTP Valid! Unlink google
         $user->google_id = null;
+        $user->email = '-'; // Hapus juga emailnya agar bersih dari database
         $user->save();
 
         // Clear cache
@@ -244,7 +245,7 @@ class GoogleLoginController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Tautan akun Google berhasil diputus.',
+            'message' => 'Tautan akun Google berhasil diputus dan data email telah dihapus.',
             'user' => $user
         ]);
     }
