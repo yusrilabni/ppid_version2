@@ -90,7 +90,8 @@ class GoogleLoginController extends Controller
             return response()->json([
                 'success' => true,
                 'require_otp' => true,
-                'message' => 'Kode OTP telah dikirim ke email Google Anda. Silakan masukkan kode untuk memverifikasi tautan.'
+                'message' => 'Kode OTP telah dikirim ke email Google Anda. Silakan masukkan kode untuk memverifikasi tautan.',
+                'email' => $googleUser->getEmail()
             ]);
         } else if ($action === 'login') {
             if (!$user) {
