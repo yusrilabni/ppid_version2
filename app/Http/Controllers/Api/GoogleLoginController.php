@@ -75,9 +75,24 @@ class GoogleLoginController extends Controller
 
             // Kirim OTP ke email Google yang dipilih
             try {
-                \Illuminate\Support\Facades\Mail::raw("Kode verifikasi OTP Anda untuk MENAUTKAN akun Google adalah: $otp\n\nKode ini berlaku selama 10 menit.", function($msg) use ($googleUser) {
+                $htmlBody = "
+                <div style='font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px;'>
+                    <h2 style='color: #2563eb; text-align: center;'>Tautkan Akun Google</h2>
+                    <p>Halo,</p>
+                    <p>Anda menerima email ini karena ada permintaan untuk <strong>menautkan</strong> akun Google ini dengan sistem PPID Kabupaten Sinjai.</p>
+                    <p>Kode Verifikasi (OTP) Anda adalah:</p>
+                    <div style='text-align: center; margin: 30px 0;'>
+                        <span style='font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #1e40af; padding: 10px 20px; background-color: #eff6ff; border-radius: 8px;'>$otp</span>
+                    </div>
+                    <p style='color: #666; font-size: 14px;'>Kode ini berlaku selama 10 menit. Jika Anda tidak merasa melakukan permintaan ini, abaikan email ini.</p>
+                    <hr style='border: none; border-top: 1px solid #eaeaea; margin: 30px 0;'>
+                    <p style='color: #999; font-size: 12px; text-align: center;'>&copy; " . date('Y') . " PPID Kabupaten Sinjai</p>
+                </div>
+                ";
+
+                \Illuminate\Support\Facades\Mail::html($htmlBody, function($msg) use ($googleUser, $otp) {
                     $msg->to($googleUser->getEmail())
-                        ->subject('Kode Verifikasi Tautkan Google - PPID Sinjai');
+                        ->subject("Kode OTP Tautkan Google Anda: $otp (" . date('H:i:s') . ")");
                 });
             } catch (\Exception $e) {
                 \Log::error('Failed to send link OTP email: ' . $e->getMessage());
@@ -249,9 +264,24 @@ class GoogleLoginController extends Controller
 
         // Send Email
         try {
-            \Illuminate\Support\Facades\Mail::raw("Kode verifikasi OTP Anda untuk memutuskan tautan Google adalah: $otp\n\nKode ini berlaku selama 10 menit. Jangan bagikan kode ini kepada siapapun.", function($msg) use ($user) {
+            $htmlBody = "
+            <div style='font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px;'>
+                <h2 style='color: #dc2626; text-align: center;'>Putuskan Tautan Google</h2>
+                <p>Halo,</p>
+                <p>Anda menerima email ini karena ada permintaan untuk <strong>memutuskan tautan</strong> akun Google Anda dari sistem PPID Kabupaten Sinjai.</p>
+                <p>Kode Verifikasi (OTP) Keamanan Anda adalah:</p>
+                <div style='text-align: center; margin: 30px 0;'>
+                    <span style='font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #991b1b; padding: 10px 20px; background-color: #fef2f2; border-radius: 8px;'>$otp</span>
+                </div>
+                <p style='color: #666; font-size: 14px;'>Kode ini berlaku selama 10 menit. Jangan bagikan kode ini kepada siapa pun untuk alasan keamanan.</p>
+                <hr style='border: none; border-top: 1px solid #eaeaea; margin: 30px 0;'>
+                <p style='color: #999; font-size: 12px; text-align: center;'>&copy; " . date('Y') . " PPID Kabupaten Sinjai</p>
+            </div>
+            ";
+
+            \Illuminate\Support\Facades\Mail::html($htmlBody, function($msg) use ($user, $otp) {
                 $msg->to($user->email)
-                    ->subject('Kode Verifikasi Hapus Tautan Google - PPID Sinjai');
+                    ->subject("Kode OTP Putuskan Tautan: $otp (" . date('H:i:s') . ")");
             });
         } catch (\Exception $e) {
             \Log::error('Failed to send OTP email: ' . $e->getMessage());
