@@ -53,7 +53,64 @@ class GoogleLoginController extends Controller
 
         $user = User::where('email', $googleUser->getEmail())->first();
 
-        if ($action === 'login') {
+        if ($action === 'link') {
+            $currentUser = $request->user('sanctum');
+            if (!$currentUser) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Sesi berakhir. Anda harus login terlebih dahulu.'
+                ], 401);
+            }
+
+            if ($user && $user->id !== $currentUser->id) {
+                // Email Google sudah terdaftar di akun lain, lakukan peleburan (merge)
+                $roles = [$currentUser->role, $user->role];
+                if (in_array('user', $roles) && (in_array('admin', $roles) || in_array('superadmin', $roles))) {
+                    if ($user->role === 'superadmin' || ($user->role === 'admin' && $currentUser->role === 'user')) {
+                        $keptUser = clone $user;
+                        $deletedUser = clone $currentUser;
+                    } else {
+                        $keptUser = clone $currentUser;
+                        $deletedUser = clone $user;
+                    }
+                    
+                    User::where('id', $keptUser->id)->update([
+                        'google_id' => $googleUser->getId(),
+                        'nip' => $keptUser->nip ?: $deletedUser->nip
+                    ]);
+                    \App\Models\PermohonanInformasi::where('user_id', $deletedUser->id)->update(['user_id' => $keptUser->id]);
+                    User::where('id', $deletedUser->id)->delete();
+                    $user = User::find($keptUser->id);
+                } else {
+                    return response()->json([
+                        'success' => false,
+                        'message' => "Tidak bisa menautkan. Email Google ini sudah terdaftar sebagai {$user->role}, dan akun Anda saat ini adalah {$currentUser->role}.",
+                        'error_type' => 'auth_failed'
+                    ], 403);
+                }
+            } else {
+                // Belum ada yang pakai, langsung tempel ke akun saat ini
+                $currentUser->google_id = $googleUser->getId();
+                if (!$currentUser->email || $currentUser->email === '-') {
+                    $currentUser->email = $googleUser->getEmail();
+                }
+                $currentUser->save();
+                $user = $currentUser;
+            }
+            
+            // Re-issue token
+            if (method_exists($user, 'tokens')) {
+                $user->tokens()->delete();
+            }
+            $token = $user->createToken('google-api-token')->plainTextToken;
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Akun berhasil ditautkan dengan Google.',
+                'user' => $user,
+                'token' => $token
+            ]);
+        } else if ($action === 'login') {
             if (!$user) {
                 return response()->json([
                     'success' => false,
@@ -98,7 +155,7 @@ class GoogleLoginController extends Controller
 
         return response()->json([
             'success' => true,
-            'message' => 'Login berhasil',
+            'message' => 'Autentikasi berhasil',
             'user' => $user,
             'token' => $token
         ]);
