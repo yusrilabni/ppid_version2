@@ -197,10 +197,11 @@ class GoogleLoginController extends Controller
             }
         } else {
             // Normal Link
-            $currentUser->google_id = $googleId;
-            $currentUser->email = $googleEmail;
-            $currentUser->save();
-            $user = $currentUser;
+            User::where('id', $currentUser->id)->update([
+                'google_id' => $googleId,
+                'email' => $googleEmail
+            ]);
+            $user = User::find($currentUser->id);
         }
 
         \Illuminate\Support\Facades\Cache::forget($cacheKey);
