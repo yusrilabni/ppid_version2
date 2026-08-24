@@ -76,7 +76,8 @@ class GoogleLoginController extends Controller
                     
                     User::where('id', $keptUser->id)->update([
                         'google_id' => $googleUser->getId(),
-                        'nip' => $keptUser->nip ?: $deletedUser->nip
+                        'nip' => $keptUser->nip ?: $deletedUser->nip,
+                        'email' => $googleUser->getEmail() // Update email to Google email
                     ]);
                     \App\Models\PermohonanInformasi::where('user_id', $deletedUser->id)->update(['user_id' => $keptUser->id]);
                     User::where('id', $deletedUser->id)->delete();
@@ -91,9 +92,7 @@ class GoogleLoginController extends Controller
             } else {
                 // Belum ada yang pakai, langsung tempel ke akun saat ini
                 $currentUser->google_id = $googleUser->getId();
-                if (!$currentUser->email || $currentUser->email === '-') {
-                    $currentUser->email = $googleUser->getEmail();
-                }
+                $currentUser->email = $googleUser->getEmail(); // Selalu update email ke email Google
                 $currentUser->save();
                 $user = $currentUser;
             }
