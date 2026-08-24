@@ -114,7 +114,15 @@ class ProfilController extends Controller
                          
         $kepalaOpdsRaw = $query->orderBy('full_name')->get();
         
-        $kepalaOpds = $kepalaOpdsRaw->groupBy(function($official) {
+        $filteredOpds = $kepalaOpdsRaw->filter(function($official) {
+            $orgNameLower = strtolower($official->organization->name ?? '');
+            if (str_contains($orgNameLower, 'desa ') || str_contains($orgNameLower, 'kelurahan ')) {
+                return false; // Abaikan Desa dan Kelurahan dari Pejabat Daerah
+            }
+            return true;
+        });
+
+        $kepalaOpds = $filteredOpds->groupBy(function($official) {
             $orgNameLower = strtolower($official->organization->name ?? '');
             if (str_contains($orgNameLower, 'kecamatan')) {
                 return 'eselon3';
@@ -193,7 +201,7 @@ class ProfilController extends Controller
         ]);
     }
 
-    public function unitLokalList()
+    public function unitLokalList(Request $request)
     {
         $cached = GeneralHelper::syncExternalUnitsIfNeeded();
         
@@ -201,7 +209,12 @@ class ProfilController extends Controller
         $position = Position::where('slug', 'kepala-opd')->first();
         
         $query = Official::with(['organization', 'position']);
-        $query->where('status', 'active');
+        
+        $user = $request->user('sanctum');
+        if (!$user || ($user && !$user->isAdmin())) { 
+            // Untuk publik/user biasa: Hanya tampilkan yang berstatus aktif
+            $query->where('status', 'active');
+        }
 
         // Fetch all officials belonging to Village/Kelurahan organizations
         $allOfficials = $query->get()->filter(function($official) {
