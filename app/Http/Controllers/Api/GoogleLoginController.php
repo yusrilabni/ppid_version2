@@ -20,9 +20,7 @@ class GoogleLoginController extends Controller
     {
         $action = $request->query('action', 'login'); // 'login' or 'register'
         
-        return response()->json([
-            'url' => Socialite::driver('google')->stateless()->with(['state' => $action])->redirect()->getTargetUrl(),
-        ]);
+        return Socialite::driver('google')->stateless()->with(['state' => $action])->redirect();
     }
 
     /**
