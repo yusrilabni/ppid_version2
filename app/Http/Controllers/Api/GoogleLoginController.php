@@ -33,8 +33,9 @@ class GoogleLoginController extends Controller
         $action = $request->input('state', 'login');
         
         try {
-            if (!$request->has('code')) {
-                throw new \Exception('NO CODE PARAMETER. URL: ' . $request->fullUrl() . ' | Params: ' . json_encode($request->all()));
+            $code = $request->input('code');
+            if (!is_string($code)) {
+                throw new \Exception('Code is not a string! Type: ' . gettype($code) . ' Value: ' . json_encode($code));
             }
             $googleUser = Socialite::driver('google')->stateless()->user();
         } catch (\Exception $e) {
