@@ -33,6 +33,9 @@ class GoogleLoginController extends Controller
         $action = $request->input('state', 'login');
         
         try {
+            if (!$request->has('code')) {
+                throw new \Exception('NO CODE PARAMETER FOUND. All params: ' . json_encode($request->all()));
+            }
             $googleUser = Socialite::driver('google')->stateless()->user();
         } catch (\Exception $e) {
             return redirect(config('app.frontend_url', 'https://ppid.sinjaikab.go.id') . '/login?error=auth_failed&msg=' . urlencode($e->getMessage()));
