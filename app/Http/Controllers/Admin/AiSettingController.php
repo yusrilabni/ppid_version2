@@ -188,7 +188,7 @@ class AiSettingController extends Controller
                 $kategoriDanJenis .= "- Kategori '$kat' memiliki jenis dokumen: " . implode(', ', $jenis) . "\n";
             }
             $jenisDokumenFormat = '["Jenis 1", "Jenis 2"]';
-            $jenisDokumenInstruction = 'Pilih SATU Kategori. Untuk Jenis Dokumen, Anda BOLEH memilih LEBIH DARI SATU jenis yang relevan (berikan dalam bentuk array of string).';
+            $jenisDokumenInstruction = 'Pilih SATU Kategori. Untuk Jenis Dokumen, Anda BOLEH memilih LEBIH DARI SATU jenis yang relevan (berikan dalam bentuk array of string). KHUSUS: Jika dokumen adalah KUA, PPAS, RKA, DPA, APBD, LKPD, atau berkaitan dengan penganggaran/keuangan, WAJIB centang juga "IPKD" selain jenis aslinya.';
         } else {
             $categories = ['Informasi Berkala', 'Informasi Setiap Saat', 'Informasi Serta Merta', 'Informasi Dikecualikan'];
             $jenisList = [
