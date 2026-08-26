@@ -38,13 +38,56 @@ Route::get('/widget', [ExtraToolsController::class, 'widgetIndex'])->name('extra
 Route::get('/widgets/embed', [ExtraToolsController::class, 'widgetLatest'])->name('extra.widgets.embed');
 
 // Proxy Share Route untuk WhatsApp Bot (mengarahkan ke Vue SPA)
+// Generator OG Image Dinamis (Resolusi 1200x630 dengan background putih agar tidak gepeng di WA)
+Route::get('/share/og-image/logo', function () {
+    $logoPath = public_path('storage/logo/Lambang_Kabupaten_Sinjai.png');
+    if (!file_exists($logoPath)) {
+        abort(404);
+    }
+    
+    // Baca gambar asli
+    $logo = imagecreatefromstring(file_get_contents($logoPath));
+    $logoW = imagesx($logo);
+    $logoH = imagesy($logo);
+    
+    // Target ukuran Open Graph (WhatsApp/FB Standard)
+    $canvasW = 1200;
+    $canvasH = 630;
+    
+    // Buat kanvas putih
+    $canvas = imagecreatetruecolor($canvasW, $canvasH);
+    $white = imagecolorallocate($canvas, 255, 255, 255);
+    imagefill($canvas, 0, 0, $white);
+    
+    // Hitung skala agar logo muat di tengah dengan padding
+    $padding = 50; // Jarak atas bawah
+    $targetH = $canvasH - ($padding * 2);
+    $scale = $targetH / $logoH;
+    $targetW = $logoW * $scale;
+    
+    // Posisi tengah
+    $dstX = ($canvasW - $targetW) / 2;
+    $dstY = $padding;
+    
+    // Salin dan ubah ukuran logo ke kanvas
+    imagecopyresampled($canvas, $logo, $dstX, $dstY, 0, 0, $targetW, $targetH, $logoW, $logoH);
+    
+    ob_start();
+    imagepng($canvas);
+    $imgData = ob_get_clean();
+    imagedestroy($canvas);
+    imagedestroy($logo);
+    
+    return response($imgData)->header('Content-Type', 'image/png')->header('Cache-Control', 'public, max-age=86400');
+})->name('share.og-image');
+
 Route::get('/share/informasi-pemkab/{slug?}', function (\Illuminate\Http\Request $request, $slug = null) {
     if ($slug) {
         // Detail Dokumen
         $dokumen = \App\Models\InformasiPemkab::where('slug', $slug)->orWhere('id', $slug)->firstOrFail();
         $title = $dokumen->judul . ' - PPID Kabupaten Sinjai';
         $desc = $dokumen->deskripsi ?? 'Transparansi Informasi Publik Pemerintah Kabupaten Sinjai';
-        $imageUrl = "https://ppidkab.sinjaikab.go.id/storage/logo/Lambang_Kabupaten_Sinjai.png";
+        $imageUrl = url('/share/og-image/logo');
         $redirectUrl = "https://ppid.sinjaikab.go.id/transparansi/informasi-pemkab/" . ($dokumen->slug ?? $dokumen->id);
     } else {
         // Index dengan Filter
@@ -53,8 +96,7 @@ Route::get('/share/informasi-pemkab/{slug?}', function (\Illuminate\Http\Request
         if ($request->jenis_dokumen) $title .= ' - ' . $request->jenis_dokumen;
         
         $desc = 'Daftar Dokumen Informasi Pemkab Kabupaten Sinjai';
-        $kategori = $request->kategori ? urlencode($request->kategori) : 'Informasi+Pemkab';
-        $imageUrl = "https://ppidkab.sinjaikab.go.id/storage/logo/Lambang_Kabupaten_Sinjai.png";
+        $imageUrl = url('/share/og-image/logo');
         
         // Build redirect URL with query params
         $queryString = $request->getQueryString();
@@ -73,6 +115,7 @@ Route::get('/share/informasi-pemkab/{slug?}', function (\Illuminate\Http\Request
     <meta property="og:type" content="website">
     <meta property="og:url" content="{$redirectUrl}">
     <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:image" content="{$imageUrl}">
     <script>window.location.replace("{$redirectUrl}");</script>
 </head>
 <body style="font-family: sans-serif; text-align: center; padding-top: 50px;">
