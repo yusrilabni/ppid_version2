@@ -5,8 +5,8 @@
 @section('meta')
     <meta property="og:title" content="{{ $pageTitle }} - PPID Kabupaten Sinjai">
     <meta property="og:description" content="Daftar {{ $pageTitle }} Kabupaten Sinjai. Transparansi Informasi Publik untuk Masyarakat.">
-    <meta property="twitter:title" content="{{ $pageTitle }} - PPID Kabupaten Sinjai">
-    <meta property="twitter:description" content="Daftar {{ $pageTitle }} Kabupaten Sinjai. Transparansi Informasi Publik untuk Masyarakat.">
+    <meta name="twitter:title" content="{{ $pageTitle }} - PPID Kabupaten Sinjai">
+    <meta name="twitter:description" content="Daftar {{ $pageTitle }} Kabupaten Sinjai. Transparansi Informasi Publik untuk Masyarakat.">
 @endsection
 
 @section('content')

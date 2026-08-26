@@ -2,13 +2,13 @@
 
 @section('meta')
     @php
-        $shareImage = asset('storage/logo/ppid_og.png');
+        $shareImage = asset('assets/images/Lambang_Kabupaten_Sinjai_OG.jpg');
         if ($sliders->count() > 0) {
             $shareImage = asset('storage/' . $sliders->first()->image);
         }
     @endphp
     <meta property="og:image" content="{{ $shareImage }}">
-    <meta property="twitter:image" content="{{ $shareImage }}">
+    <meta name="twitter:image" content="{{ $shareImage }}">
 @endsection
 
 @section('content')

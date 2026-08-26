@@ -4,7 +4,7 @@
 
 @section('meta')
     @php
-        $shareImage = asset('storage/logo/ppid_og.png');
+        $shareImage = asset('assets/images/Lambang_Kabupaten_Sinjai_OG.jpg');
         $isImage = false;
         if ($informasi_pemkab->file_path) {
             $ext = strtolower(pathinfo($informasi_pemkab->file_path, PATHINFO_EXTENSION));
@@ -25,9 +25,9 @@
     <meta property="og:image" content="{{ $shareImage }}">
     <meta property="og:image:width" content="1200">
     <meta property="og:image:height" content="630">
-    <meta property="twitter:title" content="{{ $informasi_pemkab->judul }} - PPID Kabupaten Sinjai">
-    <meta property="twitter:description" content="{{ Str::limit(strip_tags($informasi_pemkab->deskripsi ?? 'Detail Dokumen Informasi Pemkab Kabupaten Sinjai'), 160) }}">
-    <meta property="twitter:image" content="{{ $shareImage }}">
+    <meta name="twitter:title" content="{{ $informasi_pemkab->judul }} - PPID Kabupaten Sinjai">
+    <meta name="twitter:description" content="{{ Str::limit(strip_tags($informasi_pemkab->deskripsi ?? 'Detail Dokumen Informasi Pemkab Kabupaten Sinjai'), 160) }}">
+    <meta name="twitter:image" content="{{ $shareImage }}">
 @endsection
 
 @section('content')

@@ -33,8 +33,8 @@
     @hasSection('meta')
         @yield('meta')
     @else
-        <meta property="og:image" content="{{ asset('storage/logo/ppid_og.png') }}">
-        <meta property="twitter:image" content="{{ asset('storage/logo/ppid_og.png') }}">
+        <meta property="og:image" content="{{ asset('assets/images/Lambang_Kabupaten_Sinjai_OG.jpg') }}">
+        <meta name="twitter:image" content="{{ asset('assets/images/Lambang_Kabupaten_Sinjai_OG.jpg') }}">
     @endif
     
     {{-- Versi Meta Tambahan untuk Social Media --}}
@@ -43,10 +43,10 @@
     <meta property="og:image:height" content="630">
 
     <!-- Twitter -->
-    <meta property="twitter:card" content="summary_large_image">
-    <meta property="twitter:url" content="{{ url()->current() }}">
-    <meta property="twitter:title" content="PPID @hasSection('title') - @yield('title') @endif">
-    <meta property="twitter:description" content="Pejabat Pengelola Informasi dan Dokumentasi Kabupaten Sinjai - Transparansi Informasi Publik">
+    <meta name="twitter:card" content="summary_large_image">
+    <meta name="twitter:url" content="{{ url()->current() }}">
+    <meta name="twitter:title" content="PPID @hasSection('title') - @yield('title') @endif">
+    <meta name="twitter:description" content="Pejabat Pengelola Informasi dan Dokumentasi Kabupaten Sinjai - Transparansi Informasi Publik">
 
     <!-- Stationary Scroll Restoration (No Jump) -->
     <script>

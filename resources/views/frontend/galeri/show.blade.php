@@ -6,9 +6,9 @@
     <meta property="og:title" content="{{ $galeri->title }} - Galeri PPID Kabupaten Sinjai">
     <meta property="og:description" content="{{ $galeri->description ?: 'Lihat foto galeri PPID Kabupaten Sinjai.' }}">
     <meta property="og:image" content="{{ asset('storage/' . $galeri->image) }}">
-    <meta property="twitter:title" content="{{ $galeri->title }} - Galeri PPID Kabupaten Sinjai">
-    <meta property="twitter:description" content="{{ $galeri->description ?: 'Lihat foto galeri PPID Kabupaten Sinjai.' }}">
-    <meta property="twitter:image" content="{{ asset('storage/' . $galeri->image) }}">
+    <meta name="twitter:title" content="{{ $galeri->title }} - Galeri PPID Kabupaten Sinjai">
+    <meta name="twitter:description" content="{{ $galeri->description ?: 'Lihat foto galeri PPID Kabupaten Sinjai.' }}">
+    <meta name="twitter:image" content="{{ asset('storage/' . $galeri->image) }}">
 @endsection
 
 @section('content')
