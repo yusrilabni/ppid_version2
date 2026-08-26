@@ -38,6 +38,13 @@ class AuthenticatedSessionController extends Controller
 
         $request->session()->regenerate();
 
+        $user = Auth::user();
+        if ($user) {
+            $user->last_login_at = now();
+            $user->last_login_ip = $request->ip();
+            $user->save();
+        }
+
         if (Auth::user()->role === 'superadmin') {
             return redirect('/');
         }

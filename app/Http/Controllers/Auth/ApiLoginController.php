@@ -30,6 +30,11 @@ class ApiLoginController extends Controller
         if (filter_var($login, FILTER_VALIDATE_EMAIL)) {
             if (Auth::attempt(['email' => $login, 'password' => $password], $request->boolean('remember'))) {
                 $request->session()->regenerate();
+                
+                $user = Auth::user();
+                $user->last_login_at = now();
+                $user->last_login_ip = $request->ip();
+                $user->save();
 
                 if (Auth::user()->role === 'superadmin') {
                     return redirect('/');
@@ -73,6 +78,10 @@ class ApiLoginController extends Controller
                 Auth::login($user, $request->boolean('remember'));
 
                 $request->session()->regenerate();
+
+                $user->last_login_at = now();
+                $user->last_login_ip = $request->ip();
+                $user->save();
 
                 if ($user->role === 'superadmin') {
                     return redirect('/');

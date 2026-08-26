@@ -73,6 +73,10 @@ class HybridLoginController extends Controller
      */
     private function authenticated($request, $user)
     {
+        $user->last_login_at = now();
+        $user->last_login_ip = $request->ip();
+        $user->save();
+
         if ($request->filled('redirect_to')) {
             return redirect($request->input('redirect_to'));
         }
