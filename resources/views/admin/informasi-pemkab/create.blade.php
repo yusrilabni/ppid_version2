@@ -138,8 +138,13 @@
                                     });
                                     // Listen for AI mapping specific to multi-select
                                     window.addEventListener('set-jenis-dokumen', (e) => {
-                                        if(e.detail.value && !this.selected.includes(e.detail.value)) {
-                                            this.selected.push(e.detail.value);
+                                        if(e.detail.value) {
+                                            let values = Array.isArray(e.detail.value) ? e.detail.value : [e.detail.value];
+                                            values.forEach(v => {
+                                                if (!this.selected.includes(v)) {
+                                                    this.selected.push(v);
+                                                }
+                                            });
                                         }
                                     });
                                 },

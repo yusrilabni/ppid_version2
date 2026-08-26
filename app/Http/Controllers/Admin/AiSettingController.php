@@ -178,12 +178,17 @@ class AiSettingController extends Controller
         $context = $request->input('context', 'biasa');
 
         $kategoriDanJenis = "";
+        $jenisDokumenFormat = '\"...\"';
+        $jenisDokumenInstruction = 'Pilih SATU kategori dan SATU jenis dokumen yang sesuai.';
+
         if ($context === 'pemkab') {
             $kategori_jenis = \App\Models\InformasiPemkab::KATEGORI_JENIS_DOKUMEN;
             $categories = array_keys($kategori_jenis);
             foreach ($kategori_jenis as $kat => $jenis) {
                 $kategoriDanJenis .= "- Kategori '$kat' memiliki jenis dokumen: " . implode(', ', $jenis) . "\n";
             }
+            $jenisDokumenFormat = '["Jenis 1", "Jenis 2"]';
+            $jenisDokumenInstruction = 'Pilih SATU Kategori. Untuk Jenis Dokumen, Anda BOLEH memilih LEBIH DARI SATU jenis yang relevan (berikan dalam bentuk array of string).';
         } else {
             $categories = ['Informasi Berkala', 'Informasi Setiap Saat', 'Informasi Serta Merta', 'Informasi Dikecualikan'];
             $jenisList = [
@@ -198,11 +203,12 @@ class AiSettingController extends Controller
 
         $currentYear = date('Y');
         $systemPrompt = "Anda adalah asisten AI yang membantu admin PPID membuat detail informasi publik yang profesional dan sesuai aturan KIP (Keterbukaan Informasi Publik). 
+
 Tugas Anda:
 1. Perbaiki judul dokumen agar lebih baku dan profesional.
 2. Buat deskripsi singkat yang mendeskripsikan dokumen tersebut (1-2 paragraf).
 3. Buat konten/penjelasan (doc_content). PENTING: Gunakan bahasa yang umum dan obyektif. Jangan berlebihan (overclaim) atau mengarang data spesifik yang tidak ada di judul. Cukup berikan penjelasan generik standar mengenai apa isi dokumen tersebut pada umumnya.
-4. Pilih kategori dan jenis dokumen yang sesuai dan berkaitan erat dari panduan berikut:
+4. $jenisDokumenInstruction Pilih dari panduan berikut:
 $kategoriDanJenis
 PENTING: Jenis dokumen yang dipilih HARUS merupakan anak dari Kategori yang Anda pilih (sesuai daftar di atas).
 5. Tentukan tahun dokumen ('tahun') dalam format 'YYYY-MM-DD' berdasarkan konteks di judul (jika hanya tahu tahunnya, gunakan 'YYYY-01-01'). Jika tidak ada, gunakan tahun sekarang (" . $currentYear . "-01-01).
@@ -214,7 +220,7 @@ Berikan jawaban HANYA dalam format JSON dengan kunci persis seperti berikut:
   \"doc_desc\": \"...\",
   \"doc_content\": \"...\",
   \"category\": \"...\",
-  \"jenis_dokumen\": \"...\",
+  \"jenis_dokumen\": $jenisDokumenFormat,
   \"tahun\": \"YYYY-MM-DD\",
   \"status\": \"BERLAKU atau ARSIP\"
 }
