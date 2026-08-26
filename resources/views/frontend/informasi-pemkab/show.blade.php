@@ -74,7 +74,22 @@
                     </div>
                     <div class="p-0 h-[600px] w-full bg-gray-100">
                         @if ($informasi_pemkab->file_path)
-                            @if(str_starts_with($informasi_pemkab->file_path, 'http'))
+                            @php
+                                $filePath = $informasi_pemkab->file_path;
+                                $isExternal = str_starts_with($filePath, 'http');
+                                $isGoogleDrive = false;
+                                $previewUrl = $filePath;
+                                
+                                if ($isExternal && str_contains($filePath, 'drive.google.com/file/d/')) {
+                                    $isGoogleDrive = true;
+                                    // Mengubah link view/sharing gdrive menjadi link preview agar bisa di-embed
+                                    $previewUrl = preg_replace('/\/view\?.*$/', '/preview', $filePath);
+                                }
+                            @endphp
+
+                            @if($isGoogleDrive)
+                                <iframe src="{{ $previewUrl }}" class="w-full h-full border-0" allow="autoplay"></iframe>
+                            @elseif($isExternal)
                                 <div class="w-full h-full flex flex-col items-center justify-center bg-gray-100 p-8 text-center">
                                     <i class="fas fa-external-link-alt text-6xl text-gray-300 mb-4"></i>
                                     <h3 class="text-xl font-bold text-gray-700 mb-2">Dokumen Berupa Tautan Eksternal</h3>
@@ -85,15 +100,15 @@
                                 </div>
                             @else
                                 @php
-                                    $extension = pathinfo($informasi_pemkab->file_path, PATHINFO_EXTENSION);
+                                    $extension = pathinfo($filePath, PATHINFO_EXTENSION);
                                     $isImage = in_array(strtolower($extension), ['png', 'jpg', 'jpeg', 'webp', 'svg', 'gif']);
                                 @endphp
                                 @if($isImage)
                                     <div class="w-full h-full flex items-center justify-center p-4 bg-gray-100 overflow-hidden">
-                                        <img src="{{ asset('storage/' . $informasi_pemkab->file_path) }}" alt="{{ $informasi_pemkab->judul }}" class="max-w-full max-h-full object-contain rounded-lg shadow-sm">
+                                        <img src="{{ asset('storage/' . $filePath) }}" alt="{{ $informasi_pemkab->judul }}" class="max-w-full max-h-full object-contain rounded-lg shadow-sm">
                                     </div>
                                 @else
-                                    <iframe src="{{ asset('storage/' . $informasi_pemkab->file_path) }}#toolbar=0" class="w-full h-full border-0"></iframe>
+                                    <iframe src="{{ asset('storage/' . $filePath) }}#toolbar=0" class="w-full h-full border-0"></iframe>
                                 @endif
                             @endif
                         @else
@@ -197,9 +212,9 @@
                                 </span>
                             </li>
                             <li class="pt-4 border-t border-gray-100 flex flex-col">
-                                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Tanggal Diunggah</span>
+                                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Tanggal Dokumen</span>
                                 <span class="text-sm font-semibold text-gray-700 flex items-center">
-                                    <i class="fas fa-clock mr-1.5 text-blue-400"></i> {{ $informasi_pemkab->created_at->translatedFormat('d F Y') }}
+                                    <i class="fas fa-calendar-alt mr-1.5 text-blue-400"></i> {{ \Carbon\Carbon::parse($informasi_pemkab->published_at ?? ($informasi_pemkab->tahun . '-01-01'))->translatedFormat('d F Y') }}
                                 </span>
                             </li>
                         </ul>
