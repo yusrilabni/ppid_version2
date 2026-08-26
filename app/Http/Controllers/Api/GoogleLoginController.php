@@ -157,7 +157,7 @@ class GoogleLoginController extends Controller
                 $htmlBody = "
                 <div style='font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px;'>
                     <h2 style='color: #2563eb; text-align: center;'>Verifikasi Pendaftaran Akun</h2>
-                    <p>Halo " . htmlspecialchars($googleUser->getName()) . ",</p>
+                    <p>Halo " . htmlspecialchars($googleUser->getName() ?? 'Pengguna', ENT_QUOTES, 'UTF-8') . ",</p>
                     <p>Anda menerima email ini karena ada permintaan untuk mendaftar di sistem PPID Kabupaten Sinjai menggunakan akun Google ini.</p>
                     <p>Untuk menyelesaikan pendaftaran, masukkan Kode Verifikasi (OTP) berikut:</p>
                     <div style='text-align: center; margin: 30px 0;'>
