@@ -84,7 +84,23 @@ class InformasiPemkabController extends Controller
         $informasi_pemkab->increment('downloads_count');
 
         if (str_starts_with($informasi_pemkab->file_path, 'http')) {
-            return redirect($informasi_pemkab->file_path);
+            $url = $informasi_pemkab->file_path;
+            
+            // Konversi link Google Drive menjadi Direct Download Link
+            if (str_contains($url, 'drive.google.com')) {
+                // Cek format /file/d/ID/view
+                if (preg_match('/\/file\/d\/([a-zA-Z0-9_-]+)/', $url, $matches)) {
+                    $fileId = $matches[1];
+                    return redirect("https://drive.google.com/uc?export=download&id={$fileId}");
+                }
+                // Cek format /open?id=ID
+                elseif (preg_match('/[?&]id=([a-zA-Z0-9_-]+)/', $url, $matches)) {
+                    $fileId = $matches[1];
+                    return redirect("https://drive.google.com/uc?export=download&id={$fileId}");
+                }
+            }
+            
+            return redirect($url);
         }
 
         return redirect(asset('storage/' . $informasi_pemkab->file_path));
