@@ -236,11 +236,6 @@ class DashboardController extends Controller
 
         ];
 
-        $latestLogins = \App\Models\User::whereNotNull('last_login_at')
-            ->orderBy('last_login_at', 'desc')
-            ->take(8)
-            ->get();
-
         return view('admin.dashboard', compact(
             'stats',
             'allRecentActivity',
@@ -249,8 +244,7 @@ class DashboardController extends Controller
             'externalWebsitesCount',
             'externalLogs',
             'aiStats',
-            'aiUserStats',
-            'latestLogins'
+            'aiUserStats'
         ));
     }
 

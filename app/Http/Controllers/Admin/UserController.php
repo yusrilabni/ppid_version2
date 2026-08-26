@@ -15,8 +15,13 @@ class UserController extends Controller
     public function index()
     {
         $users = User::all();
+        $userLogs = collect($users)
+            ->whereNotNull('last_login_at')
+            ->sortByDesc('last_login_at')
+            ->values();
+
         $unitMap = \App\Helpers\GeneralHelper::getUnitData();
-        return view('admin.users.index', compact('users', 'unitMap'));
+        return view('admin.users.index', compact('users', 'userLogs', 'unitMap'));
     }
 
     /**
