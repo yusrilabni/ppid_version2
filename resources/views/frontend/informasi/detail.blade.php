@@ -4,7 +4,7 @@
 
 @section('meta')
     @php
-        $shareImage = asset('assets/images/Lambang_Kabupaten_Sinjai_OG.jpg');
+        $shareImage = asset('storage/logo/Lambang_Kabupaten_Sinjai_OG.jpg');
         $isImage = false;
         if ($informasi->file) {
             $ext = strtolower(pathinfo($informasi->file, PATHINFO_EXTENSION));

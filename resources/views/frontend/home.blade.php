@@ -2,7 +2,7 @@
 
 @section('meta')
     @php
-        $shareImage = asset('assets/images/Lambang_Kabupaten_Sinjai_OG.jpg');
+        $shareImage = asset('storage/logo/Lambang_Kabupaten_Sinjai_OG.jpg');
         if ($sliders->count() > 0) {
             $shareImage = asset('storage/' . $sliders->first()->image);
         }

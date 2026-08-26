@@ -40,7 +40,7 @@ Route::get('/widgets/embed', [ExtraToolsController::class, 'widgetLatest'])->nam
 // Proxy Share Route untuk WhatsApp Bot (mengarahkan ke Vue SPA)
 Route::get('/share/informasi-pemkab/{slug?}', function (\Illuminate\Http\Request $request, $slug = null) {
     // Gunakan static asset agar super ringan dan cepat
-    $imageUrl = "https://ppidkab.sinjaikab.go.id/assets/images/Lambang_Kabupaten_Sinjai_OG.jpg";
+    $imageUrl = "https://ppidkab.sinjaikab.go.id/storage/logo/Lambang_Kabupaten_Sinjai_OG.jpg";
     $currentShareUrl = $request->fullUrl();
 
     if ($slug) {

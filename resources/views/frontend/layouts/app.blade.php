@@ -33,8 +33,8 @@
     @hasSection('meta')
         @yield('meta')
     @else
-        <meta property="og:image" content="{{ asset('assets/images/Lambang_Kabupaten_Sinjai_OG.jpg') }}">
-        <meta name="twitter:image" content="{{ asset('assets/images/Lambang_Kabupaten_Sinjai_OG.jpg') }}">
+        <meta property="og:image" content="{{ asset('storage/logo/Lambang_Kabupaten_Sinjai_OG.jpg') }}">
+        <meta name="twitter:image" content="{{ asset('storage/logo/Lambang_Kabupaten_Sinjai_OG.jpg') }}">
     @endif
     
     {{-- Versi Meta Tambahan untuk Social Media --}}
