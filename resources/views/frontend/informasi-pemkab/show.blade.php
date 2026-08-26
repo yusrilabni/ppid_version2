@@ -2,6 +2,34 @@
 
 @section('title', 'Detail Dokumen - ' . $informasi_pemkab->judul)
 
+@section('meta')
+    @php
+        $shareImage = asset('storage/logo/ppid_og.png');
+        $isImage = false;
+        if ($informasi_pemkab->file_path) {
+            $ext = strtolower(pathinfo($informasi_pemkab->file_path, PATHINFO_EXTENSION));
+            if (in_array($ext, ['jpg', 'jpeg', 'png', 'gif', 'webp', 'bmp'])) {
+                $shareImage = asset('storage/' . $informasi_pemkab->file_path);
+                $isImage = true;
+            }
+        }
+        
+        // Generate placeholder based on document if no image
+        if (!$isImage) {
+            $kategoriShare = urlencode(strtoupper($informasi_pemkab->kategori ?? 'INFORMASI PEMKAB'));
+            $shareImage = "https://placehold.co/1200x630/2563eb/ffffff?text={$kategoriShare}\\nPPID+KABUPATEN+SINJAI";
+        }
+    @endphp
+    <meta property="og:title" content="{{ $informasi_pemkab->judul }} - PPID Kabupaten Sinjai">
+    <meta property="og:description" content="{{ Str::limit(strip_tags($informasi_pemkab->deskripsi ?? 'Detail Dokumen Informasi Pemkab Kabupaten Sinjai'), 160) }}">
+    <meta property="og:image" content="{{ $shareImage }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta property="twitter:title" content="{{ $informasi_pemkab->judul }} - PPID Kabupaten Sinjai">
+    <meta property="twitter:description" content="{{ Str::limit(strip_tags($informasi_pemkab->deskripsi ?? 'Detail Dokumen Informasi Pemkab Kabupaten Sinjai'), 160) }}">
+    <meta property="twitter:image" content="{{ $shareImage }}">
+@endsection
+
 @section('content')
 <!-- Hero Section -->
 <div class="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-600 pt-6 md:pt-10 pb-24 overflow-hidden">
