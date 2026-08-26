@@ -25,7 +25,9 @@ class AiSettingController extends Controller
     private function detectBestModel($apiKey, $defaultModel = 'gemini-1.5-flash')
     {
         try {
-            $response = Http::get("https://generativelanguage.googleapis.com/v1beta/models?key={$apiKey}");
+            $response = Http::withOptions([
+                'curl' => [CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4]
+            ])->timeout(15)->get("https://generativelanguage.googleapis.com/v1beta/models?key={$apiKey}");
             if ($response->successful()) {
                 $data = $response->json();
                 if (isset($data['models']) && is_array($data['models'])) {
@@ -233,7 +235,9 @@ Tanpa teks tambahan atau markdown block di luar JSON.";
             }
 
             try {
-                $response = Http::timeout(120)->withHeaders([
+                $response = Http::withOptions([
+                    'curl' => [CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4]
+                ])->timeout(60)->withHeaders([
                     'Content-Type' => 'application/json'
                 ])->post("https://generativelanguage.googleapis.com/v1beta/models/{$modelName}:generateContent?key={$apiKey}", [
                     'contents' => [
