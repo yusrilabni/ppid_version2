@@ -161,7 +161,7 @@
                         <tr class="bg-gray-100/60 border-b border-gray-200 text-left backdrop-blur-sm">
                             <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase">Detail Dokumen</th>
                             <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-48">Kategori</th>
-                            <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-32 text-center">Tahun</th>
+                            <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-32 text-center">Tanggal</th>
                             <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-48 text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -203,7 +203,7 @@
                                 </td>
                                 <td class="py-4 px-6 text-center align-middle">
                                     <span class="inline-block bg-white/80 px-3 py-1.5 rounded-lg text-sm font-bold text-gray-600 border border-gray-200 shadow-sm">
-                                        {{ $dokumen->tahun }}
+                                        {{ \Carbon\Carbon::parse($dokumen->published_at ?? ($dokumen->tahun . '-01-01'))->isoFormat('D MMM Y') }}
                                     </span>
                                 </td>
                                 <td class="py-4 px-6 text-center align-middle w-48">
