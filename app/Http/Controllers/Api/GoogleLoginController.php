@@ -140,15 +140,53 @@ class GoogleLoginController extends Controller
                 ], 403);
             }
             
-            // Create new user
-            $user = User::create([
+            // Generate 6 digit OTP for registration
+            $otp = sprintf('%06d', mt_rand(0, 999999));
+            
+            // Simpan data pendaftaran sementara ke cache
+            $cacheKey = 'register_otp_' . $googleUser->getEmail();
+            \Illuminate\Support\Facades\Cache::put($cacheKey, [
+                'otp' => $otp,
                 'name' => $googleUser->getName(),
                 'email' => $googleUser->getEmail(),
-                'google_id' => $googleUser->getId(),
-                'password' => Hash::make(Str::random(24)),
-                'role' => 'user',
-                'login_type' => 'google',
-                'email_verified_at' => now(),
+                'google_id' => $googleUser->getId()
+            ], now()->addMinutes(10));
+
+            // Kirim OTP ke email Google
+            try {
+                $htmlBody = "
+                <div style='font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px;'>
+                    <h2 style='color: #2563eb; text-align: center;'>Verifikasi Pendaftaran Akun</h2>
+                    <p>Halo " . htmlspecialchars($googleUser->getName()) . ",</p>
+                    <p>Anda menerima email ini karena ada permintaan untuk mendaftar di sistem PPID Kabupaten Sinjai menggunakan akun Google ini.</p>
+                    <p>Untuk menyelesaikan pendaftaran, masukkan Kode Verifikasi (OTP) berikut:</p>
+                    <div style='text-align: center; margin: 30px 0;'>
+                        <span style='font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #1e40af; padding: 10px 20px; background-color: #eff6ff; border-radius: 8px;'>$otp</span>
+                    </div>
+                    <p style='color: #666; font-size: 14px;'>Kode ini berlaku selama 10 menit. Jika Anda merasa tidak mendaftar, abaikan email ini.</p>
+                    <hr style='border: none; border-top: 1px solid #eaeaea; margin: 30px 0;'>
+                    <p style='color: #999; font-size: 12px; text-align: center;'>&copy; " . date('Y') . " PPID Kabupaten Sinjai</p>
+                </div>
+                ";
+
+                \Illuminate\Support\Facades\Mail::html($htmlBody, function($msg) use ($googleUser, $otp) {
+                    $msg->to($googleUser->getEmail())
+                        ->subject("Kode OTP Pendaftaran Akun: $otp (" . date('H:i:s') . ")");
+                });
+            } catch (\Exception $e) {
+                \Log::error('Failed to send register OTP email: ' . $e->getMessage());
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal mengirim email OTP.'
+                ], 500);
+            }
+
+            return response()->json([
+                'success' => true,
+                'require_otp' => true,
+                'action' => 'register',
+                'message' => 'Kode OTP telah dikirim ke email Google Anda. Silakan masukkan kode untuk memverifikasi pendaftaran.',
+                'email' => $googleUser->getEmail()
             ]);
         } else {
             return response()->json([
@@ -345,6 +383,66 @@ class GoogleLoginController extends Controller
             'success' => true,
             'message' => 'Tautan akun Google berhasil diputus dan data email telah dihapus.',
             'user' => $user
+        ]);
+    }
+
+    /**
+     * Verify OTP and Create User for Google Registration
+     */
+    public function verifyRegisterOtp(Request $request)
+    {
+        $request->validate([
+            'email' => 'required|email',
+            'otp' => 'required|string|size:6'
+        ]);
+
+        $cacheKey = 'register_otp_' . $request->email;
+        $cachedData = \Illuminate\Support\Facades\Cache::get($cacheKey);
+
+        if (!$cachedData) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Kode OTP kadaluarsa atau tidak ditemukan. Silakan ulangi pendaftaran.'
+            ], 400);
+        }
+
+        if ($cachedData['otp'] !== $request->otp) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Kode OTP salah.'
+            ], 400);
+        }
+
+        // Cek kembali apakah email sudah ada di database untuk keamanan ekstra
+        if (User::where('email', $cachedData['email'])->exists()) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email sudah terdaftar. Silakan login.'
+            ], 400);
+        }
+
+        // OTP Valid! Create user
+        $user = User::create([
+            'name' => $cachedData['name'],
+            'email' => $cachedData['email'],
+            'google_id' => $cachedData['google_id'],
+            'password' => Hash::make(Str::random(24)),
+            'role' => 'user',
+            'login_type' => 'google',
+            'email_verified_at' => now(),
+        ]);
+
+        // Hapus cache
+        \Illuminate\Support\Facades\Cache::forget($cacheKey);
+
+        // Generate token
+        $token = $user->createToken('google-api-token')->plainTextToken;
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Pendaftaran berhasil. Selamat datang di PPID Sinjai.',
+            'user' => $user,
+            'token' => $token
         ]);
     }
 }

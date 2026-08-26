@@ -65,6 +65,7 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
     Route::post('/register', [App\Http\Controllers\Api\RegisterController::class, 'register']);
     Route::get('/auth/google/redirect', [App\Http\Controllers\Api\GoogleLoginController::class, 'redirectToGoogle']);
     Route::post('/auth/google/callback-spa', [App\Http\Controllers\Api\GoogleLoginController::class, 'handleGoogleCallback']);
+    Route::post('/auth/google/register/verify-otp', [App\Http\Controllers\Api\GoogleLoginController::class, 'verifyRegisterOtp']);
     
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/auth/google/unlink/request-otp', [App\Http\Controllers\Api\GoogleLoginController::class, 'requestUnlinkOtp']);
