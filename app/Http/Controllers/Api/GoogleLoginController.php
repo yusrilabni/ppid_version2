@@ -90,7 +90,7 @@ class GoogleLoginController extends Controller
                     'verify_peer_name' => false,
                 ],
             ]);
-            app()->forget('mail.manager');
+            \Illuminate\Support\Facades\Mail::purge();
 
             // Kirim OTP ke email Google yang dipilih
             try {
@@ -170,7 +170,7 @@ class GoogleLoginController extends Controller
                     'verify_peer_name' => false,
                 ],
             ]);
-            app()->forget('mail.manager');
+            \Illuminate\Support\Facades\Mail::purge();
 
             // Kirim OTP ke email Google
             try {
@@ -337,7 +337,7 @@ class GoogleLoginController extends Controller
                 'verify_peer_name' => false,
             ],
         ]);
-        app()->forget('mail.manager');
+        \Illuminate\Support\Facades\Mail::purge();
 
         // Send Email
         try {
