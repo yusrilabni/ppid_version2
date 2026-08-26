@@ -139,17 +139,17 @@
                             @enderror
                         </div>
 
-                        <!-- Tahun -->
+                        <!-- Tanggal Dokumen -->
                         <div>
-                            <label for="tahun" class="block text-gray-700 text-sm font-bold mb-3">Tahun Dokumen <span class="text-red-500">*</span></label>
+                            <label for="tanggal_dokumen" class="block text-gray-700 text-sm font-bold mb-3">Tanggal Dokumen <span class="text-red-500">*</span></label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
                                     <i class="far fa-calendar-alt text-gray-400"></i>
                                 </div>
-                                <input type="number" name="tahun" id="tahun" value="{{ old('tahun', date('Y')) }}" min="2000" max="2099"
-                                    class="w-full pl-12 pr-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-300 font-bold text-gray-800 shadow-sm">
+                                <input type="date" name="tanggal_dokumen" id="tanggal_dokumen" value="{{ old('tanggal_dokumen', date('Y-m-d')) }}"
+                                    class="w-full pl-12 pr-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-blue-500/10 focus:border-blue-500 transition-all duration-300 font-bold text-gray-800 shadow-sm" required>
                             </div>
-                            @error('tahun')
+                            @error('tanggal_dokumen')
                                 <p class="text-red-500 text-xs mt-2 font-medium"><i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}</p>
                             @enderror
                         </div>
@@ -439,11 +439,11 @@
                             }
                         }, 500);
 
-                        // Set tahun (karena tahun ini tipe number, kita ambil tahunnya saja dari YYYY-MM-DD)
+                        // Set tahun
                         if (data.tahun) {
-                            const tahunInput = document.getElementById('tahun');
+                            const tahunInput = document.getElementById('tanggal_dokumen');
                             if (tahunInput) {
-                                tahunInput.value = data.tahun.split('-')[0];
+                                tahunInput.value = data.tahun;
                                 tahunInput.dispatchEvent(new Event('input', { bubbles: true }));
                             }
                         }

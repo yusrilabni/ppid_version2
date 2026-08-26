@@ -133,17 +133,17 @@
                             @enderror
                         </div>
 
-                        <!-- Tahun -->
+                        <!-- Tanggal Dokumen -->
                         <div>
-                            <label for="tahun" class="block text-gray-700 text-sm font-bold mb-3">Tahun Dokumen <span class="text-red-500">*</span></label>
+                            <label for="tanggal_dokumen" class="block text-gray-700 text-sm font-bold mb-3">Tanggal Dokumen <span class="text-red-500">*</span></label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
                                     <i class="far fa-calendar-alt text-gray-400"></i>
                                 </div>
-                                <input type="number" name="tahun" id="tahun" value="{{ old('tahun', $informasi_pemkab->tahun) }}" min="2000" max="2099"
-                                    class="w-full pl-12 pr-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all duration-300 font-bold text-gray-800 shadow-sm">
+                                <input type="date" name="tanggal_dokumen" id="tanggal_dokumen" value="{{ old('tanggal_dokumen', $informasi_pemkab->published_at ? \Carbon\Carbon::parse($informasi_pemkab->published_at)->format('Y-m-d') : ($informasi_pemkab->tahun . '-01-01')) }}"
+                                    class="w-full pl-12 pr-5 py-4 bg-gray-50 border border-gray-200 rounded-xl focus:bg-white focus:ring-4 focus:ring-amber-500/10 focus:border-amber-500 transition-all duration-300 font-bold text-gray-800 shadow-sm" required>
                             </div>
-                            @error('tahun')
+                            @error('tanggal_dokumen')
                                 <p class="text-red-500 text-xs mt-2 font-medium"><i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}</p>
                             @enderror
                         </div>

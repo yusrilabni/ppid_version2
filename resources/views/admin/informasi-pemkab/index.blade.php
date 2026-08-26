@@ -32,7 +32,7 @@
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Judul</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Kategori</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Jenis Dokumen</th>
-                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tahun</th>
+                        <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Tanggal</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">File</th>
                         <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Aksi</th>
                     </tr>
@@ -60,7 +60,7 @@
                                 </span>
                             </td>
                             <td class="px-6 py-4 text-sm text-gray-500">
-                                {{ $dokumen->tahun }}
+                                {{ \Carbon\Carbon::parse($dokumen->published_at ?? ($dokumen->tahun . '-01-01'))->isoFormat('D MMM Y') }}
                             </td>
                             <td class="px-6 py-4 whitespace-nowrap">
                                 @if($dokumen->file_path)

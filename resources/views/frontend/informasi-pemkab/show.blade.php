@@ -23,7 +23,7 @@
         
         <div class="flex flex-wrap items-center mt-6 gap-3">
             <span class="bg-white/20 backdrop-blur-sm text-white px-4 py-1.5 rounded-full text-sm font-semibold border border-white/30 shadow-sm flex items-center">
-                <i class="fas fa-calendar-alt mr-2 opacity-70"></i> {{ $informasi_pemkab->tahun }}
+                <i class="fas fa-calendar-alt mr-2 opacity-70"></i> {{ \Carbon\Carbon::parse($informasi_pemkab->published_at ?? ($informasi_pemkab->tahun . '-01-01'))->isoFormat('D MMMM Y') }}
             </span>
             <span class="bg-blue-700/50 backdrop-blur-sm text-blue-100 px-4 py-1.5 rounded-full text-sm font-semibold border border-blue-400/30 shadow-sm flex items-center">
                 <i class="fas fa-folder-open mr-2 opacity-70"></i> {{ $informasi_pemkab->kategori }}
@@ -191,9 +191,9 @@
                                 @endif
                             </li>
                             <li class="pt-4 border-t border-gray-100 flex flex-col">
-                                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Tahun Dokumen</span>
+                                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Tanggal Dokumen</span>
                                 <span class="text-sm font-semibold text-gray-700 flex items-center">
-                                    <i class="fas fa-calendar mr-1.5 text-blue-400"></i> {{ $informasi_pemkab->tahun }}
+                                    <i class="fas fa-calendar mr-1.5 text-blue-400"></i> {{ \Carbon\Carbon::parse($informasi_pemkab->published_at ?? ($informasi_pemkab->tahun . '-01-01'))->isoFormat('D MMMM Y') }}
                                 </span>
                             </li>
                             <li class="pt-4 border-t border-gray-100 flex flex-col">

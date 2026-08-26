@@ -284,7 +284,7 @@
                                 {{ $dokumen->jenis_dokumen }}
                             </span>
                             <span class="px-2 py-1 bg-gray-50 text-gray-600 text-[10px] sm:text-xs font-semibold rounded-md border border-gray-200">
-                                <i class="fas fa-calendar mr-1 text-gray-400"></i> {{ $dokumen->tahun }}
+                                <i class="fas fa-calendar mr-1 text-gray-400"></i> {{ \Carbon\Carbon::parse($dokumen->published_at ?? ($dokumen->tahun . '-01-01'))->isoFormat('D MMM Y') }}
                             </span>
                         </div>
 

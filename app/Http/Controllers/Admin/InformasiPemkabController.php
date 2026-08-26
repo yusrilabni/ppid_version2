@@ -116,6 +116,15 @@ class InformasiPemkabController extends Controller
                 throw new \Exception('File atau Link dokumen gagal diproses.');
             }
 
+            // Extract tahun and set published_at from tanggal_dokumen
+            $tanggalDokumen = $request->input('tanggal_dokumen');
+            if ($tanggalDokumen) {
+                $data['tahun'] = date('Y', strtotime($tanggalDokumen));
+                $data['published_at'] = $tanggalDokumen;
+            } else {
+                $data['tahun'] = $request->input('tahun', date('Y'));
+            }
+
             $data['user_id'] = $user_id;
             $data['unit_id'] = $unit_id;
             $data['ip_address'] = $request->ip();
@@ -142,7 +151,7 @@ class InformasiPemkabController extends Controller
                         'jenis_dokumen' => $informasi_pemkab->jenis_dokumen,
                         'status' => 'BERLAKU',
                         'tahun' => $informasi_pemkab->tahun,
-                        'tanggal_upload' => date('Y-m-d H:i:s'),
+                        'tanggal_upload' => $informasi_pemkab->published_at ?? date('Y-m-d H:i:s'),
                         'user_id' => $informasi_pemkab->user_id,
                         'unit_id' => $informasi_pemkab->unit_id,
                         'informasi_pemkab_id' => $informasi_pemkab->id,
@@ -237,6 +246,15 @@ class InformasiPemkabController extends Controller
                 throw new \Exception('File atau Link dokumen gagal diproses.');
             }
 
+            // Extract tahun and set published_at from tanggal_dokumen
+            $tanggalDokumen = $request->input('tanggal_dokumen');
+            if ($tanggalDokumen) {
+                $data['tahun'] = date('Y', strtotime($tanggalDokumen));
+                $data['published_at'] = $tanggalDokumen;
+            } else {
+                $data['tahun'] = $request->input('tahun', date('Y'));
+            }
+
             DB::transaction(function () use ($informasi_pemkab, $data, $request) {
                 $informasi_pemkab->update($data);
                 
@@ -264,6 +282,7 @@ class InformasiPemkabController extends Controller
                             'category' => $this->mapToPpidCategory($informasi_pemkab->kategori, $informasi_pemkab->jenis_dokumen),
                             'jenis_dokumen' => $informasi_pemkab->jenis_dokumen,
                             'tahun' => $informasi_pemkab->tahun,
+                            'tanggal_upload' => $informasi_pemkab->published_at ?? $informasi->tanggal_upload,
                         ]);
                     } else {
                         Informasi::create([
@@ -276,7 +295,7 @@ class InformasiPemkabController extends Controller
                             'jenis_dokumen' => $informasi_pemkab->jenis_dokumen,
                             'status' => 'BERLAKU',
                             'tahun' => $informasi_pemkab->tahun,
-                            'tanggal_upload' => $informasi_pemkab->created_at ? $informasi_pemkab->created_at->format('Y-m-d H:i:s') : date('Y-m-d H:i:s'),
+                            'tanggal_upload' => $informasi_pemkab->published_at ?? date('Y-m-d H:i:s'),
                             'user_id' => $informasi_pemkab->user_id,
                             'unit_id' => $informasi_pemkab->unit_id,
                             'informasi_pemkab_id' => $informasi_pemkab->id,
