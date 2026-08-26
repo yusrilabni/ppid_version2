@@ -14,7 +14,9 @@ class InformasiPemkabController extends Controller
 {
     public function index()
     {
-        $informasi_pemkabs = InformasiPemkab::with(['user', 'organization'])->latest()->get();
+        $informasi_pemkabs = InformasiPemkab::with(['user', 'organization'])
+            ->orderByRaw('COALESCE(published_at, created_at) DESC')
+            ->get();
         return view('admin.informasi-pemkab.index', compact('informasi_pemkabs'));
     }
 

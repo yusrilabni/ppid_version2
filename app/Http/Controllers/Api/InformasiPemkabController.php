@@ -39,7 +39,7 @@ class InformasiPemkabController extends Controller
               });
 
         $perPage = $request->get('per_page', 10);
-        $data = $query->latest()->paginate($perPage);
+        $data = $query->orderByRaw('COALESCE(published_at, created_at) DESC')->paginate($perPage);
         $kategori_jenis = InformasiPemkab::KATEGORI_JENIS_DOKUMEN;
 
         return response()->json([

@@ -46,7 +46,7 @@ class InformasiPemkabController extends Controller
 
         // Pagination dinamis
         $perPage = request('per_page', 10);
-        $informasi_pemkabs = $query->latest()->paginate($perPage);
+        $informasi_pemkabs = $query->orderByRaw('COALESCE(published_at, created_at) DESC')->paginate($perPage);
         $kategori_jenis = InformasiPemkab::KATEGORI_JENIS_DOKUMEN;
 
         return view('frontend.informasi-pemkab.index', compact('informasi_pemkabs', 'kategori_jenis'));
