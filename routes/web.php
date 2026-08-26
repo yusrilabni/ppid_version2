@@ -44,8 +44,7 @@ Route::get('/share/informasi-pemkab/{slug?}', function (\Illuminate\Http\Request
         $dokumen = \App\Models\InformasiPemkab::where('slug', $slug)->orWhere('id', $slug)->firstOrFail();
         $title = $dokumen->judul . ' - PPID Kabupaten Sinjai';
         $desc = $dokumen->deskripsi ?? 'Transparansi Informasi Publik Pemerintah Kabupaten Sinjai';
-        $kategori = urlencode($dokumen->kategori ?? 'Informasi Pemkab');
-        $imageUrl = "https://placehold.co/1200x630/2563eb/ffffff.png?text={$kategori}";
+        $imageUrl = "https://ppidkab.sinjaikab.go.id/storage/logo/Lambang_Kabupaten_Sinjai.png";
         $redirectUrl = "https://ppid.sinjaikab.go.id/transparansi/informasi-pemkab/" . ($dokumen->slug ?? $dokumen->id);
     } else {
         // Index dengan Filter
@@ -55,7 +54,7 @@ Route::get('/share/informasi-pemkab/{slug?}', function (\Illuminate\Http\Request
         
         $desc = 'Daftar Dokumen Informasi Pemkab Kabupaten Sinjai';
         $kategori = $request->kategori ? urlencode($request->kategori) : 'Informasi+Pemkab';
-        $imageUrl = "https://placehold.co/1200x630/2563eb/ffffff.png?text={$kategori}";
+        $imageUrl = "https://ppidkab.sinjaikab.go.id/storage/logo/Lambang_Kabupaten_Sinjai.png";
         
         // Build redirect URL with query params
         $queryString = $request->getQueryString();
