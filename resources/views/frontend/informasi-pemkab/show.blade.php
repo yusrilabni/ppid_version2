@@ -162,10 +162,17 @@
                         
                         <div class="flex-shrink-0 w-full md:w-auto text-center md:text-right">
                             @if ($informasi_pemkab->file_path)
+                                @php
+                                    $isExternal = str_starts_with($informasi_pemkab->file_path, 'http');
+                                    $isGdrive = $isExternal && str_contains($informasi_pemkab->file_path, 'drive.google.com');
+                                    $btnColor = ($isExternal && !$isGdrive) ? 'from-blue-600 to-blue-700 shadow-blue-500/30 hover:shadow-blue-600/50' : 'from-green-500 to-emerald-600 shadow-green-500/30 hover:shadow-green-600/50';
+                                    $btnIcon = ($isExternal && !$isGdrive) ? 'fa-external-link-alt' : 'fa-cloud-download-alt';
+                                    $btnText = ($isExternal && !$isGdrive) ? 'Buka Tautan Eksternal' : 'Unduh File Dokumen';
+                                @endphp
                                 <a href="{{ route('frontend.informasi-pemkab.download', $informasi_pemkab->slug ?? $informasi_pemkab->id) }}" target="_blank" 
-                                   class="w-full md:w-auto inline-flex items-center justify-center px-8 py-3.5 bg-gradient-to-r {{ str_starts_with($informasi_pemkab->file_path, 'http') ? 'from-blue-600 to-blue-700 shadow-blue-500/30 hover:shadow-blue-600/50' : 'from-green-500 to-emerald-600 shadow-green-500/30 hover:shadow-green-600/50' }} text-white font-bold rounded-xl shadow-lg transition-all duration-300 transform hover:-translate-y-1">
-                                    <i class="fas {{ str_starts_with($informasi_pemkab->file_path, 'http') ? 'fa-external-link-alt' : 'fa-cloud-download-alt' }} mr-2 text-xl"></i> 
-                                    {{ str_starts_with($informasi_pemkab->file_path, 'http') ? 'Buka Tautan Eksternal' : 'Unduh File Dokumen' }}
+                                   class="w-full md:w-auto inline-flex items-center justify-center px-8 py-3.5 bg-gradient-to-r {{ $btnColor }} text-white font-bold rounded-xl shadow-lg transition-all duration-300 transform hover:-translate-y-1">
+                                    <i class="fas {{ $btnIcon }} mr-2 text-xl"></i> 
+                                    {{ $btnText }}
                                 </a>
                                 <p class="mt-3 text-xs text-gray-500 font-semibold"><i class="fas fa-download mr-1"></i> Telah diunduh/dibuka {{ number_format($informasi_pemkab->downloads_count) }} kali</p>
                             @else
