@@ -107,7 +107,7 @@ class GoogleLoginController extends Controller
                 \Log::error('Failed to send link OTP email: ' . $e->getMessage());
                 return response()->json([
                     'success' => false,
-                    'message' => 'Gagal mengirim email OTP.'
+                    'message' => 'Gagal mengirim email OTP: ' . $e->getMessage()
                 ], 500);
             }
 
@@ -177,7 +177,7 @@ class GoogleLoginController extends Controller
                 \Log::error('Failed to send register OTP email: ' . $e->getMessage());
                 return response()->json([
                     'success' => false,
-                    'message' => 'Gagal mengirim email OTP.'
+                    'message' => 'Gagal mengirim email OTP: ' . $e->getMessage()
                 ], 500);
             }
 
@@ -334,7 +334,7 @@ class GoogleLoginController extends Controller
             \Log::error('Failed to send OTP email: ' . $e->getMessage());
             return response()->json([
                 'success' => false,
-                'message' => 'Gagal mengirim email OTP. Pastikan konfigurasi email server benar.'
+                'message' => 'Gagal mengirim email OTP: ' . $e->getMessage()
             ], 500);
         }
 
