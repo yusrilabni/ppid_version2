@@ -82,12 +82,15 @@ Route::get('/share/og-image/logo', function () {
 })->name('share.og-image');
 
 Route::get('/share/informasi-pemkab/{slug?}', function (\Illuminate\Http\Request $request, $slug = null) {
+    // Gunakan domain backend untuk gambar agar WA tidak terjebak proxy Vercel
+    $imageUrl = "https://ppidkab.sinjaikab.go.id/share/og-image/logo";
+    $currentShareUrl = $request->fullUrl();
+
     if ($slug) {
         // Detail Dokumen
         $dokumen = \App\Models\InformasiPemkab::where('slug', $slug)->orWhere('id', $slug)->firstOrFail();
         $title = $dokumen->judul . ' - PPID Kabupaten Sinjai';
         $desc = $dokumen->deskripsi ?? 'Transparansi Informasi Publik Pemerintah Kabupaten Sinjai';
-        $imageUrl = url('/share/og-image/logo');
         $redirectUrl = "https://ppid.sinjaikab.go.id/transparansi/informasi-pemkab/" . ($dokumen->slug ?? $dokumen->id);
     } else {
         // Index dengan Filter
@@ -96,7 +99,6 @@ Route::get('/share/informasi-pemkab/{slug?}', function (\Illuminate\Http\Request
         if ($request->jenis_dokumen) $title .= ' - ' . $request->jenis_dokumen;
         
         $desc = 'Daftar Dokumen Informasi Pemkab Kabupaten Sinjai';
-        $imageUrl = url('/share/og-image/logo');
         
         // Build redirect URL with query params
         $queryString = $request->getQueryString();
@@ -113,7 +115,7 @@ Route::get('/share/informasi-pemkab/{slug?}', function (\Illuminate\Http\Request
     <meta property="og:description" content="{$desc}">
     <meta property="og:image" content="{$imageUrl}">
     <meta property="og:type" content="website">
-    <meta property="og:url" content="{$redirectUrl}">
+    <meta property="og:url" content="{$currentShareUrl}">
     <meta name="twitter:card" content="summary_large_image">
     <meta name="twitter:image" content="{$imageUrl}">
     <script>window.location.replace("{$redirectUrl}");</script>
