@@ -1,6 +1,17 @@
 @extends('frontend.layouts.app')
 
-@section('title', 'Informasi Pemkab')
+@php
+    $pageTitle = 'Informasi Pemkab';
+    if (request('kategori') && request('jenis_dokumen')) {
+        $pageTitle .= ' - Kategori ' . request('kategori') . ' - Dokumen ' . request('jenis_dokumen');
+    } elseif (request('kategori')) {
+        $pageTitle .= ' - Kategori ' . request('kategori');
+    } elseif (request('jenis_dokumen')) {
+        $pageTitle .= ' - Dokumen ' . request('jenis_dokumen');
+    }
+@endphp
+
+@section('title', $pageTitle)
 
 @section('content')
 <!-- Hero Section -->
