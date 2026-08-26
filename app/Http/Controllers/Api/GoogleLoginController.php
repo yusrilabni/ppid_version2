@@ -79,37 +79,12 @@ class GoogleLoginController extends Controller
             \Illuminate\Support\Facades\Cache::put($cacheKey, [
                 'otp' => $otp,
                 'google_id' => $googleUser->getId(),
-                'email' => $googleUser->getEmail()
-            ], now()->addMinutes(10));
+                'email' => $googleUser->getEmail(),
+                'expires_at' => now()->addMinutes(1)->timestamp,
+                'cooldown_until' => now()->addMinutes(1)->timestamp
+            ], now()->addMinutes(15)); // Simpan 15 menit agar bisa resend tanpa Google auth lagi
 
-            // Kirim OTP ke email Google yang dipilih
-            try {
-                $htmlBody = "
-                <div style='font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px;'>
-                    <h2 style='color: #2563eb; text-align: center;'>Tautkan Akun Google</h2>
-                    <p>Halo,</p>
-                    <p>Anda menerima email ini karena ada permintaan untuk <strong>menautkan</strong> akun Google ini dengan sistem PPID Kabupaten Sinjai.</p>
-                    <p>Kode Verifikasi (OTP) Anda adalah:</p>
-                    <div style='text-align: center; margin: 30px 0;'>
-                        <span style='font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #1e40af; padding: 10px 20px; background-color: #eff6ff; border-radius: 8px;'>$otp</span>
-                    </div>
-                    <p style='color: #666; font-size: 14px;'>Kode ini berlaku selama 10 menit. Jika Anda tidak merasa melakukan permintaan ini, abaikan email ini.</p>
-                    <hr style='border: none; border-top: 1px solid #eaeaea; margin: 30px 0;'>
-                    <p style='color: #999; font-size: 12px; text-align: center;'>&copy; " . date('Y') . " PPID Kabupaten Sinjai</p>
-                </div>
-                ";
-
-                \Illuminate\Support\Facades\Mail::html($htmlBody, function($msg) use ($googleUser, $otp) {
-                    $msg->to($googleUser->getEmail())
-                        ->subject("Kode OTP Tautkan Google Anda: $otp (" . date('H:i:s') . ")");
-                });
-            } catch (\Exception $e) {
-                \Log::error('Failed to send link OTP email: ' . $e->getMessage());
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Gagal mengirim email OTP: ' . $e->getMessage()
-                ], 500);
-            }
+            $this->sendOtpEmail($googleUser->getEmail(), $otp, 'Tautkan Akun Google', 'menautkan', 'Google ini');
 
             return response()->json([
                 'success' => true,
@@ -149,37 +124,12 @@ class GoogleLoginController extends Controller
                 'otp' => $otp,
                 'name' => $googleUser->getName(),
                 'email' => $googleUser->getEmail(),
-                'google_id' => $googleUser->getId()
-            ], now()->addMinutes(10));
+                'google_id' => $googleUser->getId(),
+                'expires_at' => now()->addMinutes(1)->timestamp,
+                'cooldown_until' => now()->addMinutes(1)->timestamp
+            ], now()->addMinutes(15));
 
-            // Kirim OTP ke email Google
-            try {
-                $htmlBody = "
-                <div style='font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px;'>
-                    <h2 style='color: #2563eb; text-align: center;'>Verifikasi Pendaftaran Akun</h2>
-                    <p>Halo " . htmlspecialchars($googleUser->getName() ?? 'Pengguna', ENT_QUOTES, 'UTF-8') . ",</p>
-                    <p>Anda menerima email ini karena ada permintaan untuk mendaftar di sistem PPID Kabupaten Sinjai menggunakan akun Google ini.</p>
-                    <p>Untuk menyelesaikan pendaftaran, masukkan Kode Verifikasi (OTP) berikut:</p>
-                    <div style='text-align: center; margin: 30px 0;'>
-                        <span style='font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #1e40af; padding: 10px 20px; background-color: #eff6ff; border-radius: 8px;'>$otp</span>
-                    </div>
-                    <p style='color: #666; font-size: 14px;'>Kode ini berlaku selama 10 menit. Jika Anda merasa tidak mendaftar, abaikan email ini.</p>
-                    <hr style='border: none; border-top: 1px solid #eaeaea; margin: 30px 0;'>
-                    <p style='color: #999; font-size: 12px; text-align: center;'>&copy; " . date('Y') . " PPID Kabupaten Sinjai</p>
-                </div>
-                ";
-
-                \Illuminate\Support\Facades\Mail::html($htmlBody, function($msg) use ($googleUser, $otp) {
-                    $msg->to($googleUser->getEmail())
-                        ->subject("Kode OTP Pendaftaran Akun: $otp (" . date('H:i:s') . ")");
-                });
-            } catch (\Exception $e) {
-                \Log::error('Failed to send register OTP email: ' . $e->getMessage());
-                return response()->json([
-                    'success' => false,
-                    'message' => 'Gagal mengirim email OTP: ' . $e->getMessage()
-                ], 500);
-            }
+            $this->sendOtpEmail($googleUser->getEmail(), $otp, 'Pendaftaran Akun', 'mendaftar di', 'akun Google ini', $googleUser->getName());
 
             return response()->json([
                 'success' => true,
@@ -196,6 +146,9 @@ class GoogleLoginController extends Controller
         }
 
         // Generate Sanctum token
+        $user->last_login_at = now();
+        $user->last_login_ip = request()->ip();
+        $user->save();
         $token = $user->createToken('google-api-token')->plainTextToken;
 
         return response()->json([
@@ -203,6 +156,121 @@ class GoogleLoginController extends Controller
             'message' => 'Autentikasi berhasil',
             'user' => $user,
             'token' => $token
+        ]);
+    }
+
+    private function sendOtpEmail($toEmail, $otp, $title, $actionWord, $targetWord, $name = 'Pengguna')
+    {
+        try {
+            $htmlBody = "
+            <div style='font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px;'>
+                <h2 style='color: #2563eb; text-align: center;'>Verifikasi $title</h2>
+                <p>Halo " . htmlspecialchars($name, ENT_QUOTES, 'UTF-8') . ",</p>
+                <p>Anda menerima email ini karena ada permintaan untuk <strong>$actionWord</strong> sistem PPID Kabupaten Sinjai menggunakan $targetWord.</p>
+                <p>Kode Verifikasi (OTP) Keamanan Anda adalah:</p>
+                <div style='text-align: center; margin: 30px 0;'>
+                    <span style='font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #1e40af; padding: 10px 20px; background-color: #eff6ff; border-radius: 8px;'>$otp</span>
+                </div>
+                <p style='color: #666; font-size: 14px;'>Kode ini berlaku selama 1 menit. Jika Anda tidak merasa melakukan permintaan ini, abaikan email ini.</p>
+                <hr style='border: none; border-top: 1px solid #eaeaea; margin: 30px 0;'>
+                <p style='color: #999; font-size: 12px; text-align: center;'>&copy; " . date('Y') . " PPID Kabupaten Sinjai</p>
+            </div>
+            ";
+
+            \Illuminate\Support\Facades\Mail::html($htmlBody, function($msg) use ($toEmail, $otp, $title) {
+                $msg->to($toEmail)
+                    ->subject("Kode OTP $title: $otp (" . date('H:i:s') . ")");
+            });
+        } catch (\Exception $e) {
+            \Log::error('Failed to send OTP email: ' . $e->getMessage());
+        }
+    }
+
+    /**
+     * Resend OTP for Link, Unlink, and Register
+     */
+    public function resendOtp(Request $request)
+    {
+        $request->validate([
+            'action' => 'required|in:register,link,unlink',
+            'email' => 'required_if:action,register|email'
+        ]);
+
+        $action = $request->action;
+        $otp = sprintf('%06d', mt_rand(0, 999999));
+        
+        if ($action === 'register') {
+            $email = $request->email;
+            $cacheKey = 'register_otp_' . $email;
+            $cachedData = \Illuminate\Support\Facades\Cache::get($cacheKey);
+
+            if (!$cachedData) {
+                return response()->json(['success' => false, 'message' => 'Sesi pendaftaran kadaluarsa. Silakan kembali mendaftar dari awal via Google.'], 400);
+            }
+
+            if (isset($cachedData['cooldown_until']) && now()->timestamp < $cachedData['cooldown_until']) {
+                $wait = $cachedData['cooldown_until'] - now()->timestamp;
+                return response()->json(['success' => false, 'message' => "Tunggu $wait detik sebelum meminta OTP lagi."], 429);
+            }
+
+            $cachedData['otp'] = $otp;
+            $cachedData['expires_at'] = now()->addMinutes(1)->timestamp;
+            $cachedData['cooldown_until'] = now()->addMinutes(1)->timestamp;
+            
+            \Illuminate\Support\Facades\Cache::put($cacheKey, $cachedData, now()->addMinutes(15));
+            $this->sendOtpEmail($cachedData['email'], $otp, 'Pendaftaran Akun', 'mendaftar di', 'akun Google ini', $cachedData['name'] ?? 'Pengguna');
+
+        } else if ($action === 'link') {
+            $user = $request->user();
+            if (!$user) return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+
+            $cacheKey = 'link_otp_' . $user->id;
+            $cachedData = \Illuminate\Support\Facades\Cache::get($cacheKey);
+
+            if (!$cachedData) {
+                return response()->json(['success' => false, 'message' => 'Sesi tautan kadaluarsa. Silakan ulangi proses dari awal.'], 400);
+            }
+
+            if (isset($cachedData['cooldown_until']) && now()->timestamp < $cachedData['cooldown_until']) {
+                $wait = $cachedData['cooldown_until'] - now()->timestamp;
+                return response()->json(['success' => false, 'message' => "Tunggu $wait detik sebelum meminta OTP lagi."], 429);
+            }
+
+            $cachedData['otp'] = $otp;
+            $cachedData['expires_at'] = now()->addMinutes(1)->timestamp;
+            $cachedData['cooldown_until'] = now()->addMinutes(1)->timestamp;
+            
+            \Illuminate\Support\Facades\Cache::put($cacheKey, $cachedData, now()->addMinutes(15));
+            $this->sendOtpEmail($cachedData['email'], $otp, 'Tautkan Akun Google', 'menautkan', 'Google ini');
+
+        } else if ($action === 'unlink') {
+            $user = $request->user();
+            if (!$user) return response()->json(['success' => false, 'message' => 'Unauthorized'], 401);
+
+            $cacheKey = 'unlink_otp_' . $user->id;
+            $cachedData = \Illuminate\Support\Facades\Cache::get($cacheKey);
+
+            // Jika cache unlink tidak ada, kita bisa generate baru (karena unlink hanya butuh email user saat ini, bukan email google)
+            if (!$cachedData || !is_array($cachedData)) {
+                return $this->requestUnlinkOtp($request);
+            }
+
+            if (isset($cachedData['cooldown_until']) && now()->timestamp < $cachedData['cooldown_until']) {
+                $wait = $cachedData['cooldown_until'] - now()->timestamp;
+                return response()->json(['success' => false, 'message' => "Tunggu $wait detik sebelum meminta OTP lagi."], 429);
+            }
+
+            $cachedData['otp'] = $otp;
+            $cachedData['expires_at'] = now()->addMinutes(1)->timestamp;
+            $cachedData['cooldown_until'] = now()->addMinutes(1)->timestamp;
+            
+            \Illuminate\Support\Facades\Cache::put($cacheKey, $cachedData, now()->addMinutes(15));
+            $this->sendOtpEmail($user->email, $otp, 'Putuskan Tautan Google', 'memutuskan tautan', 'sistem PPID', $user->name);
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Kode OTP baru telah berhasil dikirim ke email Anda.'
         ]);
     }
 
@@ -219,16 +287,20 @@ class GoogleLoginController extends Controller
         $cacheKey = 'link_otp_' . $currentUser->id;
         $cachedData = \Illuminate\Support\Facades\Cache::get($cacheKey);
 
-        if (!$cachedData || $cachedData['otp'] !== $request->otp) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Kode OTP kadaluarsa atau salah.'
-            ], 400);
+        if (!$cachedData) {
+            return response()->json(['success' => false, 'message' => 'Sesi OTP kadaluarsa. Silakan ulangi.'], 400);
+        }
+
+        if (isset($cachedData['expires_at']) && now()->timestamp > $cachedData['expires_at']) {
+            return response()->json(['success' => false, 'message' => 'Kode OTP sudah kadaluarsa (lewat 1 menit). Silakan klik Kirim Ulang OTP.'], 400);
+        }
+
+        if ($cachedData['otp'] !== $request->otp) {
+            return response()->json(['success' => false, 'message' => 'Kode OTP salah.'], 400);
         }
 
         $googleId = $cachedData['google_id'];
         $googleEmail = $cachedData['email'];
-
         $user = User::where('email', $googleEmail)->first();
 
         if ($user && $user->id !== $currentUser->id) {
@@ -271,6 +343,9 @@ class GoogleLoginController extends Controller
         if (method_exists($user, 'tokens')) {
             $user->tokens()->delete();
         }
+        $user->last_login_at = now();
+        $user->last_login_ip = request()->ip();
+        $user->save();
         $token = $user->createToken('google-api-token')->plainTextToken;
 
         return response()->json([
@@ -302,41 +377,17 @@ class GoogleLoginController extends Controller
             ], 400);
         }
 
-        // Generate 6 digit OTP
         $otp = sprintf('%06d', mt_rand(0, 999999));
-        
-        // Save to cache for 10 minutes
         $cacheKey = 'unlink_otp_' . $user->id;
-        \Illuminate\Support\Facades\Cache::put($cacheKey, $otp, now()->addMinutes(10));
+        
+        $cachedData = [
+            'otp' => $otp,
+            'expires_at' => now()->addMinutes(1)->timestamp,
+            'cooldown_until' => now()->addMinutes(1)->timestamp
+        ];
+        \Illuminate\Support\Facades\Cache::put($cacheKey, $cachedData, now()->addMinutes(15));
 
-        // Send Email
-        try {
-            $htmlBody = "
-            <div style='font-family: Arial, sans-serif; max-width: 500px; margin: auto; padding: 20px; border: 1px solid #eaeaea; border-radius: 10px;'>
-                <h2 style='color: #dc2626; text-align: center;'>Putuskan Tautan Google</h2>
-                <p>Halo,</p>
-                <p>Anda menerima email ini karena ada permintaan untuk <strong>memutuskan tautan</strong> akun Google Anda dari sistem PPID Kabupaten Sinjai.</p>
-                <p>Kode Verifikasi (OTP) Keamanan Anda adalah:</p>
-                <div style='text-align: center; margin: 30px 0;'>
-                    <span style='font-size: 32px; font-weight: bold; letter-spacing: 5px; color: #991b1b; padding: 10px 20px; background-color: #fef2f2; border-radius: 8px;'>$otp</span>
-                </div>
-                <p style='color: #666; font-size: 14px;'>Kode ini berlaku selama 10 menit. Jangan bagikan kode ini kepada siapa pun untuk alasan keamanan.</p>
-                <hr style='border: none; border-top: 1px solid #eaeaea; margin: 30px 0;'>
-                <p style='color: #999; font-size: 12px; text-align: center;'>&copy; " . date('Y') . " PPID Kabupaten Sinjai</p>
-            </div>
-            ";
-
-            \Illuminate\Support\Facades\Mail::html($htmlBody, function($msg) use ($user, $otp) {
-                $msg->to($user->email)
-                    ->subject("Kode OTP Putuskan Tautan: $otp (" . date('H:i:s') . ")");
-            });
-        } catch (\Exception $e) {
-            \Log::error('Failed to send OTP email: ' . $e->getMessage());
-            return response()->json([
-                'success' => false,
-                'message' => 'Gagal mengirim email OTP: ' . $e->getMessage()
-            ], 500);
-        }
+        $this->sendOtpEmail($user->email, $otp, 'Putuskan Tautan Google', 'memutuskan tautan', 'sistem PPID', $user->name);
 
         return response()->json([
             'success' => true,
@@ -355,20 +406,18 @@ class GoogleLoginController extends Controller
 
         $user = $request->user();
         $cacheKey = 'unlink_otp_' . $user->id;
-        $cachedOtp = \Illuminate\Support\Facades\Cache::get($cacheKey);
+        $cachedData = \Illuminate\Support\Facades\Cache::get($cacheKey);
 
-        if (!$cachedOtp) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Kode OTP kadaluarsa atau tidak ditemukan. Silakan minta kode baru.'
-            ], 400);
+        if (!$cachedData || !is_array($cachedData)) {
+            return response()->json(['success' => false, 'message' => 'Kode OTP tidak ditemukan atau sesi kadaluarsa.'], 400);
         }
 
-        if ($cachedOtp !== $request->otp) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Kode OTP salah.'
-            ], 400);
+        if (isset($cachedData['expires_at']) && now()->timestamp > $cachedData['expires_at']) {
+            return response()->json(['success' => false, 'message' => 'Kode OTP sudah kadaluarsa (lewat 1 menit). Silakan klik Kirim Ulang OTP.'], 400);
+        }
+
+        if ($cachedData['otp'] !== $request->otp) {
+            return response()->json(['success' => false, 'message' => 'Kode OTP salah.'], 400);
         }
 
         // OTP Valid! Unlink google
@@ -376,7 +425,6 @@ class GoogleLoginController extends Controller
         $user->email = '-'; // Hapus juga emailnya agar bersih dari database
         $user->save();
 
-        // Clear cache
         \Illuminate\Support\Facades\Cache::forget($cacheKey);
 
         return response()->json([
@@ -400,25 +448,19 @@ class GoogleLoginController extends Controller
         $cachedData = \Illuminate\Support\Facades\Cache::get($cacheKey);
 
         if (!$cachedData) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Kode OTP kadaluarsa atau tidak ditemukan. Silakan ulangi pendaftaran.'
-            ], 400);
+            return response()->json(['success' => false, 'message' => 'Sesi OTP tidak ditemukan atau sudah sangat kadaluarsa.'], 400);
+        }
+
+        if (isset($cachedData['expires_at']) && now()->timestamp > $cachedData['expires_at']) {
+            return response()->json(['success' => false, 'message' => 'Kode OTP sudah kadaluarsa (lewat 1 menit). Silakan klik Kirim Ulang OTP.'], 400);
         }
 
         if ($cachedData['otp'] !== $request->otp) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Kode OTP salah.'
-            ], 400);
+            return response()->json(['success' => false, 'message' => 'Kode OTP salah.'], 400);
         }
 
-        // Cek kembali apakah email sudah ada di database untuk keamanan ekstra
         if (User::where('email', $cachedData['email'])->exists()) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Email sudah terdaftar. Silakan login.'
-            ], 400);
+            return response()->json(['success' => false, 'message' => 'Email sudah terdaftar. Silakan login.'], 400);
         }
 
         // OTP Valid! Create user
@@ -432,10 +474,8 @@ class GoogleLoginController extends Controller
             'email_verified_at' => now(),
         ]);
 
-        // Hapus cache
         \Illuminate\Support\Facades\Cache::forget($cacheKey);
 
-        // Generate token
         $token = $user->createToken('google-api-token')->plainTextToken;
 
         return response()->json([

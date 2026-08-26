@@ -81,6 +81,10 @@ class LoginController extends Controller
      */
     private function generateTokenResponse($user, $message)
     {
+        $user->last_login_at = now();
+        $user->last_login_ip = request()->ip();
+        $user->save();
+
         $token = $user->createToken('mobile_app_token')->plainTextToken;
 
         return response()->json([

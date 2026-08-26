@@ -63,14 +63,20 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
     // Auth & Kontak
     Route::post('/login', [App\Http\Controllers\Api\LoginController::class, 'login']);
     Route::post('/register', [App\Http\Controllers\Api\RegisterController::class, 'register']);
-    Route::get('/auth/google/redirect', [App\Http\Controllers\Api\GoogleLoginController::class, 'redirectToGoogle']);
-    Route::post('/auth/google/callback-spa', [App\Http\Controllers\Api\GoogleLoginController::class, 'handleGoogleCallback']);
-    Route::post('/auth/google/register/verify-otp', [App\Http\Controllers\Api\GoogleLoginController::class, 'verifyRegisterOtp']);
     
+    // Google OAuth API routes (Khusus SPA)
+    Route::get('/auth/google/redirect', [\App\Http\Controllers\Api\GoogleLoginController::class, 'redirectToGoogle']);
+    Route::post('/auth/google/callback-spa', [\App\Http\Controllers\Api\GoogleLoginController::class, 'handleGoogleCallback']);
+    
+    // OTP Verifications & Resend
+    Route::post('/auth/google/resend-otp', [\App\Http\Controllers\Api\GoogleLoginController::class, 'resendOtp']);
+    Route::post('/auth/google/register/verify-otp', [\App\Http\Controllers\Api\GoogleLoginController::class, 'verifyRegisterOtp']);
+    
+    // Unlink / Link OTP (Requires Auth)
     Route::middleware('auth:sanctum')->group(function () {
-        Route::post('/auth/google/unlink/request-otp', [App\Http\Controllers\Api\GoogleLoginController::class, 'requestUnlinkOtp']);
-        Route::post('/auth/google/unlink/verify', [App\Http\Controllers\Api\GoogleLoginController::class, 'verifyUnlinkOtp']);
-        Route::post('/auth/google/link/verify-otp', [App\Http\Controllers\Api\GoogleLoginController::class, 'verifyLinkOtp']);
+        Route::post('/auth/google/link/verify-otp', [\App\Http\Controllers\Api\GoogleLoginController::class, 'verifyLinkOtp']);
+        Route::post('/auth/google/unlink/request-otp', [\App\Http\Controllers\Api\GoogleLoginController::class, 'requestUnlinkOtp']);
+        Route::post('/auth/google/unlink/verify', [\App\Http\Controllers\Api\GoogleLoginController::class, 'verifyUnlinkOtp']);
     });
 
     Route::post('/contact', [ContactController::class, 'store']);

@@ -417,7 +417,66 @@
                 </tbody>
             </table>
         </div>
-    </div>
+    {{-- IV. GRUP: JEJAK DIGITAL (LAST LOGINS) --}}
+    <section>
+        <div class="flex items-center gap-3 mb-6">
+            <div class="w-1.5 h-6 bg-slate-800 rounded-full"></div>
+            <h2 class="text-lg font-black text-gray-800 uppercase tracking-tight">Aktivitas Login Terakhir</h2>
+        </div>
+        
+        <div class="bg-white rounded-[2.5rem] shadow-sm border border-gray-100 overflow-hidden">
+            <div class="overflow-x-auto">
+                <table class="w-full text-left border-collapse">
+                    <thead>
+                        <tr class="bg-gray-50/50">
+                            <th class="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">Pengguna</th>
+                            <th class="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">Role & Tipe</th>
+                            <th class="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100">Alamat IP</th>
+                            <th class="px-8 py-5 text-[10px] font-black text-gray-400 uppercase tracking-widest border-b border-gray-100 text-right">Waktu Login</th>
+                        </tr>
+                    </thead>
+                    <tbody class="divide-y divide-gray-50">
+                        @forelse($latestLogins ?? [] as $userLog)
+                            <tr class="hover:bg-gray-50/50 transition-colors group">
+                                <td class="px-8 py-4">
+                                    <div class="flex items-center gap-4">
+                                        <div class="w-10 h-10 rounded-full bg-slate-100 flex items-center justify-center text-slate-600 font-bold overflow-hidden">
+                                            @if($userLog->google_id)
+                                                <i class="fab fa-google text-red-500"></i>
+                                            @else
+                                                {{ strtoupper(substr($userLog->name, 0, 1)) }}
+                                            @endif
+                                        </div>
+                                        <div>
+                                            <p class="text-sm font-bold text-gray-900">{{ $userLog->name }}</p>
+                                            <p class="text-[10px] text-gray-500">{{ $userLog->email }}</p>
+                                        </div>
+                                    </div>
+                                </td>
+                                <td class="px-8 py-4">
+                                    <span class="px-3 py-1 rounded-full text-[10px] font-black uppercase tracking-wider bg-slate-100 text-slate-600">
+                                        {{ $userLog->role }}
+                                    </span>
+                                </td>
+                                <td class="px-8 py-4 text-sm font-mono text-gray-600">
+                                    {{ $userLog->last_login_ip ?? 'Tidak Diketahui' }}
+                                </td>
+                                <td class="px-8 py-4 text-right">
+                                    <div class="text-sm font-bold text-gray-800">{{ $userLog->last_login_at ? \Carbon\Carbon::parse($userLog->last_login_at)->diffForHumans() : '-' }}</div>
+                                    <div class="text-[10px] text-gray-400">{{ $userLog->last_login_at ? \Carbon\Carbon::parse($userLog->last_login_at)->format('d M Y, H:i') : '' }}</div>
+                                </td>
+                            </tr>
+                        @empty
+                            <tr>
+                                <td colspan="4" class="px-8 py-8 text-center text-gray-500 text-sm">Belum ada data aktivitas login yang terekam.</td>
+                            </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </section>
+
 </div>
 
 <style>
