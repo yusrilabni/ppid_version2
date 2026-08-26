@@ -190,6 +190,7 @@
                 <table class="min-w-full w-full whitespace-nowrap bg-transparent">
                     <thead>
                         <tr class="bg-gray-100/60 border-b border-gray-200 text-left backdrop-blur-sm">
+                            <th class="py-4 px-4 font-bold text-gray-700 text-sm tracking-wide uppercase w-16 text-center">No</th>
                             <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase">Detail Dokumen</th>
                             <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-48">Kategori</th>
                             <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-32 text-center">Tanggal</th>
@@ -199,6 +200,9 @@
                     <tbody class="divide-y divide-gray-100/50">
                         @forelse ($informasi_pemkabs as $dokumen)
                             <tr class="transition-colors group {{ $dokumen->visibility === 'private' ? 'bg-orange-50/40 hover:bg-orange-100/60' : 'hover:bg-blue-50/60' }}">
+                                <td class="py-4 px-4 whitespace-nowrap text-center align-middle">
+                                    <span class="text-sm font-semibold text-gray-600">{{ $informasi_pemkabs->firstItem() + $loop->index }}</span>
+                                </td>
                                 <td class="py-4 px-6 whitespace-normal align-middle">
                                     <div class="flex items-center">
                                         <div class="flex-shrink-0">
