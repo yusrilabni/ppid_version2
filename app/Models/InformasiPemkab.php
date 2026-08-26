@@ -56,8 +56,8 @@ class InformasiPemkab extends Model
     }
 
     public const KATEGORI_JENIS_DOKUMEN = [
-        'Perencanaan' => ['RPJPD', 'RPJMD', 'RKPD', 'Renstra', 'Renja', 'RKA', 'KUA', 'PPAS'],
-        'Keuangan' => ['APBD', 'APBD Perubahan', 'DPA', 'DPPA', 'LKPD', 'LRA', 'LO', 'Neraca', 'CaLK', 'IPKD', 'Laporan Keuangan'],
+        'Perencanaan' => ['RPJPD', 'RPJMD', 'RKPD', 'Renstra', 'Renja'],
+        'Keuangan' => ['RKA', 'KUA', 'PPAS', 'APBD', 'APBD Perubahan', 'DPA', 'DPPA', 'LKPD', 'LRA', 'LO', 'Neraca', 'CaLK', 'IPKD', 'Laporan Keuangan'],
         'Peraturan dan Kebijakan' => ['Perda', 'Perbup', 'Keputusan Bupati', 'Surat Edaran', 'Instruksi'],
         'Organisasi dan Tata Laksana' => ['SOP', 'Standar Pelayanan', 'Maklumat Pelayanan', 'Peta Proses Bisnis', 'SOTK'],
         'Pelayanan Publik' => ['Formulir', 'Panduan', 'Persyaratan', 'Alur Pelayanan'],
