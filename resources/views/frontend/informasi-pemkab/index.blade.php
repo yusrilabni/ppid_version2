@@ -161,7 +161,7 @@
                         <tr class="bg-gray-100/60 border-b border-gray-200 text-left backdrop-blur-sm">
                             <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase">Detail Dokumen</th>
                             <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-48">Kategori</th>
-                            <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-32 text-center">Tanggal</th>
+                            <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-32 text-center">Tahun</th>
                             <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-48 text-center">Aksi</th>
                         </tr>
                     </thead>
@@ -184,15 +184,15 @@
                                                     </span>
                                                 @endif
                                             </a>
-                            <tr class="hover:bg-blue-50/40 transition-colors duration-200 group">
-                                <td class="py-4 px-6 align-middle">
-                                    <div class="font-bold text-gray-800 text-base mb-1 
-                                        @if($dokumen->status == 'ARSIP') line-through text-gray-400 @endif">
-                                        {{ $dokumen->judul }}
+                                            @if($dokumen->deskripsi)
+                                                <p class="text-sm text-gray-500 mt-1 line-clamp-1 group-hover:line-clamp-none transition-all duration-300">
+                                                    {{ $dokumen->deskripsi }}
+                                                </p>
+                                            @endif
+                                        </div>
                                     </div>
-                                    <p class="text-xs text-gray-500 line-clamp-2 mt-1">{{ $dokumen->deskripsi ?? 'Dokumen Publik' }}</p>
                                 </td>
-                                <td class="py-4 px-6 align-middle">
+                                <td class="py-4 px-6 whitespace-normal align-middle">
                                     <span class="inline-block px-3 py-1 bg-white/80 text-gray-700 text-xs font-semibold rounded-lg border border-gray-200 mb-1 shadow-sm">
                                         {{ $dokumen->kategori }}
                                     </span>
@@ -203,7 +203,7 @@
                                 </td>
                                 <td class="py-4 px-6 text-center align-middle">
                                     <span class="inline-block bg-white/80 px-3 py-1.5 rounded-lg text-sm font-bold text-gray-600 border border-gray-200 shadow-sm">
-                                        {{ \Carbon\Carbon::parse($dokumen->published_at ?? ($dokumen->tahun . '-01-01'))->isoFormat('D MMM Y') }}
+                                        {{ $dokumen->tahun }}
                                     </span>
                                 </td>
                                 <td class="py-4 px-6 text-center align-middle w-48">
