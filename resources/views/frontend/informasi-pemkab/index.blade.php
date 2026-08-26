@@ -378,6 +378,13 @@
     const mapping = @json($kategori_jenis);
     const oldJenis = "{{ request('jenis_dokumen') }}";
     
+    // Kumpulkan semua jenis dokumen yang unik
+    let allTypesSet = new Set();
+    for (let cat in mapping) {
+        mapping[cat].forEach(t => allTypesSet.add(t));
+    }
+    const allTypes = Array.from(allTypesSet).sort();
+    
     function resetJenisAndSubmit() {
         // Reset jenis_dokumen so it doesn't send old invalid value for the new category
         let $jenis = $('#jenis_dokumen');
@@ -399,23 +406,24 @@
         let currentKategori = $('#kategori').val();
         let $jenis = $('#jenis_dokumen');
         
+        $jenis.prop('disabled', false);
+        $jenis.removeClass('bg-gray-100 cursor-not-allowed').addClass('bg-gray-50');
+        
+        let targetOptions = [];
         if (currentKategori && mapping[currentKategori]) {
-            $jenis.prop('disabled', false);
-            $jenis.removeClass('bg-gray-100 cursor-not-allowed').addClass('bg-gray-50');
-            
-            // Re-populate options
-            mapping[currentKategori].forEach(function(item) {
-                // If it's already there (from backend), don't duplicate, but since we start empty except for placeholder:
-                if($jenis.find("option[value='" + item + "']").length === 0) {
-                    let selected = (oldJenis === item) ? 'selected' : '';
-                    $jenis.append(`<option value="${item}" ${selected}>${item}</option>`);
-                }
-            });
+            targetOptions = mapping[currentKategori];
         } else {
-            $jenis.prop('disabled', true);
-            $jenis.addClass('bg-gray-100 cursor-not-allowed').removeClass('bg-gray-50');
-            $jenis.empty().append('<option value="">-- Pilih Kategori Dulu --</option>');
+            // Jika tidak ada kategori yang dipilih, tampilkan SEMUA jenis dokumen
+            targetOptions = allTypes;
         }
+
+        $jenis.empty();
+        $jenis.append('<option value="">Semua Jenis Dokumen</option>');
+        
+        targetOptions.forEach(function(item) {
+            let selected = (oldJenis === item) ? 'selected' : '';
+            $jenis.append(`<option value="${item}" ${selected}>${item}</option>`);
+        });
     });
 </script>
 @endsection
