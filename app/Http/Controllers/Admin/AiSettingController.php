@@ -224,12 +224,12 @@ Tanpa teks tambahan atau markdown block di luar JSON.";
 
         foreach ($activeSettings as $activeSetting) {
             // Bersihkan prefix 'models/' jika user tidak sengaja memasukkannya dan buang spasi berlebih
-            $modelName = trim(str_replace('models/', '', $activeSetting->model));
+            $modelName = trim(str_replace('models/', '', $activeSetting->model ?? 'gemini-1.5-flash'));
             $apiKey = trim($activeSetting->api_key);
 
-            // Paksa ganti ke model terbaru jika database masih merekam model lawas yang ditolak
-            if ($modelName === 'gemini-2.5-flash' || $modelName === 'auto') {
-                $modelName = 'gemini-flash-latest';
+            // Paksa ganti ke model terbaru
+            if ($modelName === 'auto' || $modelName === 'gemini-2.5-flash' || $modelName === 'gemini-flash-latest') {
+                $modelName = $this->detectBestModel($apiKey);
             }
 
             try {
