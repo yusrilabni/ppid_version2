@@ -33,6 +33,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Event Listeners
+        \Illuminate\Support\Facades\Event::listen(\Illuminate\Auth\Events\Login::class, \App\Listeners\UpdateLastLogin::class);
+
         // Register Observers
         \App\Models\Berita::observe(\App\Observers\BeritaObserver::class);
         \App\Models\Informasi::observe(\App\Observers\InformasiObserver::class);
