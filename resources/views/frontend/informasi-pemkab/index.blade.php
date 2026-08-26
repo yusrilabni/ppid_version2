@@ -40,24 +40,30 @@
     <div class="container max-w-6xl mx-auto px-4 -mt-8 relative z-20">
         <!-- Notifikasi -->
         @if(session('success'))
-            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-r-lg shadow-md animate-fade-in-down" role="alert">
-                <div class="flex items-center">
-                    <i class="fas fa-check-circle text-2xl mr-3"></i>
-                    <div>
-                        <p class="font-bold">Berhasil!</p>
-                        <p class="text-sm">{{ session('success') }}</p>
+            <div class="relative overflow-hidden bg-white rounded-2xl shadow-lg border border-green-100 mb-8 max-w-2xl mx-auto transform transition-all flex" role="alert" style="animation: slideDown 0.5s ease-out;">
+                <div class="w-2.5 bg-gradient-to-b from-green-400 to-green-600"></div>
+                <div class="p-4 flex items-center w-full">
+                    <div class="flex-shrink-0 bg-green-50 rounded-full p-2.5 flex items-center justify-center border border-green-100">
+                        <i class="fas fa-check-circle text-green-500 text-lg sm:text-xl"></i>
+                    </div>
+                    <div class="ml-4 flex-1">
+                        <h3 class="text-sm sm:text-base font-bold text-gray-800 tracking-tight">Berhasil!</h3>
+                        <p class="text-xs sm:text-sm text-gray-500 mt-0.5">{{ session('success') }}</p>
                     </div>
                 </div>
             </div>
         @endif
 
         @if(session('error'))
-            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-r-lg shadow-md animate-fade-in-down" role="alert">
-                <div class="flex items-center">
-                    <i class="fas fa-exclamation-circle text-2xl mr-3"></i>
-                    <div>
-                        <p class="font-bold">Gagal!</p>
-                        <p class="text-sm">{{ session('error') }}</p>
+            <div class="relative overflow-hidden bg-white rounded-2xl shadow-lg border border-red-100 mb-8 max-w-2xl mx-auto transform transition-all flex" role="alert" style="animation: slideDown 0.5s ease-out;">
+                <div class="w-2.5 bg-gradient-to-b from-red-400 to-red-600"></div>
+                <div class="p-4 flex items-center w-full">
+                    <div class="flex-shrink-0 bg-red-50 rounded-full p-2.5 flex items-center justify-center border border-red-100">
+                        <i class="fas fa-exclamation-circle text-red-500 text-lg sm:text-xl"></i>
+                    </div>
+                    <div class="ml-4 flex-1">
+                        <h3 class="text-sm sm:text-base font-bold text-gray-800 tracking-tight">Terjadi Kesalahan!</h3>
+                        <p class="text-xs sm:text-sm text-gray-500 mt-0.5">{{ session('error') }}</p>
                     </div>
                 </div>
             </div>
@@ -394,6 +400,10 @@
     .select2-container--default .select2-results__option--highlighted.select2-results__option--selectable {
         background-color: #eff6ff !important;
         color: #1d4ed8 !important;
+    }
+    @keyframes slideDown {
+        0% { opacity: 0; transform: translateY(-20px); }
+        100% { opacity: 1; transform: translateY(0); }
     }
 </style>
 
