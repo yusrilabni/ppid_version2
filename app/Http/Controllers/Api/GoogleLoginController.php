@@ -82,16 +82,6 @@ class GoogleLoginController extends Controller
                 'email' => $googleUser->getEmail()
             ], now()->addMinutes(10));
 
-            // Force override mail config to bypass SSL verification
-            \Illuminate\Support\Facades\Config::set('mail.mailers.smtp.stream', [
-                'ssl' => [
-                    'allow_self_signed' => true,
-                    'verify_peer' => false,
-                    'verify_peer_name' => false,
-                ],
-            ]);
-            \Illuminate\Support\Facades\Mail::purge();
-
             // Kirim OTP ke email Google yang dipilih
             try {
                 $htmlBody = "
@@ -161,16 +151,6 @@ class GoogleLoginController extends Controller
                 'email' => $googleUser->getEmail(),
                 'google_id' => $googleUser->getId()
             ], now()->addMinutes(10));
-
-            // Force override mail config to bypass SSL verification (menghindari config cache)
-            \Illuminate\Support\Facades\Config::set('mail.mailers.smtp.stream', [
-                'ssl' => [
-                    'allow_self_signed' => true,
-                    'verify_peer' => false,
-                    'verify_peer_name' => false,
-                ],
-            ]);
-            \Illuminate\Support\Facades\Mail::purge();
 
             // Kirim OTP ke email Google
             try {
@@ -328,16 +308,6 @@ class GoogleLoginController extends Controller
         // Save to cache for 10 minutes
         $cacheKey = 'unlink_otp_' . $user->id;
         \Illuminate\Support\Facades\Cache::put($cacheKey, $otp, now()->addMinutes(10));
-
-        // Force override mail config to bypass SSL verification
-        \Illuminate\Support\Facades\Config::set('mail.mailers.smtp.stream', [
-            'ssl' => [
-                'allow_self_signed' => true,
-                'verify_peer' => false,
-                'verify_peer_name' => false,
-            ],
-        ]);
-        \Illuminate\Support\Facades\Mail::purge();
 
         // Send Email
         try {
