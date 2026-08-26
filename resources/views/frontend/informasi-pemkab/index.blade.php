@@ -38,6 +38,31 @@
 
 <div class="bg-gray-50 pb-16">
     <div class="container max-w-6xl mx-auto px-4 -mt-8 relative z-20">
+        <!-- Notifikasi -->
+        @if(session('success'))
+            <div class="bg-green-100 border-l-4 border-green-500 text-green-700 p-4 mb-6 rounded-r-lg shadow-md animate-fade-in-down" role="alert">
+                <div class="flex items-center">
+                    <i class="fas fa-check-circle text-2xl mr-3"></i>
+                    <div>
+                        <p class="font-bold">Berhasil!</p>
+                        <p class="text-sm">{{ session('success') }}</p>
+                    </div>
+                </div>
+            </div>
+        @endif
+
+        @if(session('error'))
+            <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4 mb-6 rounded-r-lg shadow-md animate-fade-in-down" role="alert">
+                <div class="flex items-center">
+                    <i class="fas fa-exclamation-circle text-2xl mr-3"></i>
+                    <div>
+                        <p class="font-bold">Gagal!</p>
+                        <p class="text-sm">{{ session('error') }}</p>
+                    </div>
+                </div>
+            </div>
+        @endif
+
         <!-- Kotak Filter Glassmorphism -->
         <div class="bg-white/90 backdrop-blur-md p-6 md:p-8 rounded-2xl shadow-xl border border-gray-100 mb-10 transition-all duration-300 hover:shadow-2xl">
             <form action="{{ route('frontend.informasi-pemkab.index') }}" method="GET" id="filterForm">
@@ -424,6 +449,11 @@
             let selected = (oldJenis === item) ? 'selected' : '';
             $jenis.append(`<option value="${item}" ${selected}>${item}</option>`);
         });
+
+        // Hilangkan notifikasi sukses/gagal secara otomatis setelah 4 detik
+        setTimeout(function() {
+            $('div[role="alert"]').fadeOut('slow');
+        }, 4000);
     });
 </script>
 @endsection
