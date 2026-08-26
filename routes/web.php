@@ -37,6 +37,36 @@ Route::get('/rss/generate', [ExtraToolsController::class, 'rssGenerate'])->name(
 Route::get('/widget', [ExtraToolsController::class, 'widgetIndex'])->name('extra.widget');
 Route::get('/widgets/embed', [ExtraToolsController::class, 'widgetLatest'])->name('extra.widgets.embed');
 
+// Proxy Share Route untuk WhatsApp Bot (mengarahkan ke Vue SPA)
+Route::get('/share/informasi-pemkab/{slug}', function ($slug) {
+    $dokumen = \App\Models\InformasiPemkab::where('slug', $slug)->orWhere('id', $slug)->firstOrFail();
+    $title = $dokumen->judul . ' - PPID Kabupaten Sinjai';
+    $desc = $dokumen->deskripsi ?? 'Transparansi Informasi Publik Pemerintah Kabupaten Sinjai';
+    $kategori = urlencode($dokumen->kategori ?? 'Informasi Pemkab');
+    $imageUrl = "https://placehold.co/1200x630/2563eb/ffffff.png?text={$kategori}";
+    $redirectUrl = "https://ppid.sinjaikab.go.id/transparansi/informasi-pemkab/" . ($dokumen->slug ?? $dokumen->id);
+
+    return <<<HTML
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <title>{$title}</title>
+    <meta property="og:title" content="{$title}">
+    <meta property="og:description" content="{$desc}">
+    <meta property="og:image" content="{$imageUrl}">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="{$redirectUrl}">
+    <meta name="twitter:card" content="summary_large_image">
+    <script>window.location.replace("{$redirectUrl}");</script>
+</head>
+<body style="font-family: sans-serif; text-align: center; padding-top: 50px;">
+    <p>Sedang mengarahkan ke dokumen... <br><br><a href="{$redirectUrl}" style="color: #2563eb; text-decoration: none; font-weight: bold;">Klik di sini jika tidak diarahkan secara otomatis</a></p>
+</body>
+</html>
+HTML;
+})->name('share.proxy.informasi-pemkab');
+
 // Public routes
 Route::get('/', [FrontendController::class, 'home'])->name('home');
 Route::get('/search', [FrontendController::class, 'search'])->name('frontend.informasi.search');
