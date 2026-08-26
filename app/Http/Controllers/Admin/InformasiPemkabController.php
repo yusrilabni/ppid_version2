@@ -35,10 +35,16 @@ class InformasiPemkabController extends Controller
             'Surat Edaran'
         ];
 
-        if (in_array($jenis_dokumen, $berkala_jenis)) {
-            return 'Informasi Berkala';
-        } elseif (in_array($jenis_dokumen, $serta_merta_jenis)) {
+        $jenis_array = array_map('trim', explode(',', $jenis_dokumen));
+
+        // Prioritize Serta Merta
+        if (count(array_intersect($jenis_array, $serta_merta_jenis)) > 0) {
             return 'Informasi Serta Merta';
+        }
+
+        // Then Berkala
+        if (count(array_intersect($jenis_array, $berkala_jenis)) > 0) {
+            return 'Informasi Berkala';
         }
         
         // Sisanya (seperti Peraturan, Aset, Kepegawaian, SOP, MoU, Audit, dll) 
@@ -57,15 +63,15 @@ class InformasiPemkabController extends Controller
         $request->validate([
             'judul' => 'required|string|max:255',
             'kategori' => 'required|string',
-            'jenis_dokumen' => 'required|string',
-            'tahun' => 'required|integer',
+            'jenis_dokumen' => 'required|array',
+            'jenis_dokumen.*' => 'string',
+            'tanggal_dokumen' => 'required|date',
             'deskripsi' => 'nullable|string',
             'upload_method' => 'required|in:file,link',
             'file' => 'nullable|required_if:upload_method,file|file|mimes:pdf,doc,docx,xls,xlsx,zip,rar,png,jpg,jpeg,webp,svg|max:10240',
             'link' => 'nullable|required_if:upload_method,link|url|max:2048',
             'status' => 'required|in:draft,published,scheduled',
             'visibility' => 'required|in:public,private',
-            'published_at' => 'nullable|required_if:status,scheduled|date',
         ]);
 
         try {
@@ -84,6 +90,8 @@ class InformasiPemkabController extends Controller
             }
 
             $data = $request->except(['file', 'link', 'upload_method']);
+            // Implode array into comma-separated string
+            $data['jenis_dokumen'] = implode(', ', $request->input('jenis_dokumen', []));
             
             if ($request->upload_method === 'file' && $request->hasFile('file')) {
                 $file = $request->file('file');
@@ -186,8 +194,9 @@ class InformasiPemkabController extends Controller
         $request->validate([
             'judul' => 'required|string|max:255',
             'kategori' => 'required|string',
-            'jenis_dokumen' => 'required|string',
-            'tahun' => 'required|integer',
+            'jenis_dokumen' => 'required|array',
+            'jenis_dokumen.*' => 'string',
+            'tanggal_dokumen' => 'required|date',
             'deskripsi' => 'nullable|string',
             'upload_method' => 'required|in:file,link',
             'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,zip,rar,png,jpg,jpeg,webp,svg|max:10240',
@@ -199,6 +208,8 @@ class InformasiPemkabController extends Controller
 
         try {
             $data = $request->except(['file', 'link', 'upload_method']);
+            // Implode array into comma-separated string
+            $data['jenis_dokumen'] = implode(', ', $request->input('jenis_dokumen', []));
             
             $oldFilePath = null; // Simpan file lama untuk dihapus NANTI
 

@@ -120,14 +120,40 @@
                         <!-- Jenis Dokumen -->
                         <div class="relative z-40">
                             <label for="jenis_dokumen" class="block text-gray-700 text-sm font-bold mb-3">Jenis Dokumen <span class="text-red-500">*</span></label>
-                            <x-custom-select 
-                                name="jenis_dokumen" 
-                                :options="[]" 
-                                :value="old('jenis_dokumen', $informasi_pemkab->jenis_dokumen)"
-                                placeholder="Pilih Jenis Dokumen"
-                                :searchable="false"
-                                class="shadow-sm"
-                            />
+                            <div x-data="{
+                                open: false,
+                                options: [],
+                                selected: {{ json_encode(old('jenis_dokumen', array_map('trim', explode(',', $informasi_pemkab->jenis_dokumen ?? '')))) }},
+                                init() {
+                                    window.addEventListener('update-options', (e) => {
+                                        if (e.detail.target === 'jenis_dokumen') {
+                                            this.options = e.detail.data;
+                                        }
+                                    });
+                                },
+                                get selectedLabels() {
+                                    if(this.selected.length === 0) return 'Pilih Jenis Dokumen';
+                                    return this.selected.join(', ');
+                                }
+                            }" class="relative w-full">
+                                <button type="button" @click="open = !open" @click.outside="open = false"
+                                    class="relative w-full bg-white border-2 border-gray-100 rounded-2xl shadow-sm pl-5 pr-12 py-4 text-left cursor-pointer focus:outline-none focus:border-amber-500 focus:ring-4 focus:ring-amber-500/10 transition-all duration-300 group">
+                                    <span class="flex items-center block truncate font-bold text-gray-900" x-text="selectedLabels"></span>
+                                    <span class="absolute inset-y-0 right-0 flex items-center pr-4 pointer-events-none">
+                                        <div class="p-1 rounded-lg bg-gray-50 group-hover:bg-amber-50 transition-colors duration-300">
+                                            <i class="fas fa-chevron-down h-4 w-4 text-gray-400 group-hover:text-amber-500 transition-transform duration-300" :class="open ? 'rotate-180' : ''"></i>
+                                        </div>
+                                    </span>
+                                </button>
+                                <div x-show="open" style="display: none;" class="absolute mt-1 w-full rounded-2xl bg-white shadow-[0_25px_60px_-15px_rgba(0,0,0,0.3)] z-[9999] border border-gray-100 max-h-72 overflow-y-auto">
+                                    <template x-for="(opt, idx) in options" :key="idx">
+                                        <label class="flex items-center mx-2 my-1 px-4 py-3 hover:bg-amber-50 cursor-pointer rounded-xl transition-colors">
+                                            <input type="checkbox" name="jenis_dokumen[]" :value="opt.value" x-model="selected" class="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500">
+                                            <span class="ml-3 text-sm font-medium text-gray-700" x-text="opt.label"></span>
+                                        </label>
+                                    </template>
+                                </div>
+                            </div>
                             @error('jenis_dokumen')
                                 <p class="text-red-500 text-xs mt-2 font-medium"><i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}</p>
                             @enderror

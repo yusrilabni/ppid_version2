@@ -17,7 +17,7 @@ class InformasiPemkabController extends Controller
         }
 
         if ($request->filled('jenis_dokumen')) {
-            $query->where('jenis_dokumen', $request->jenis_dokumen);
+            $query->where('jenis_dokumen', 'LIKE', '%' . $request->jenis_dokumen . '%');
         }
 
         if ($request->filled('tahun')) {
