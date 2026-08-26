@@ -233,7 +233,7 @@ Tanpa teks tambahan atau markdown block di luar JSON.";
             }
 
             try {
-                $response = Http::withHeaders([
+                $response = Http::timeout(120)->withHeaders([
                     'Content-Type' => 'application/json'
                 ])->post("https://generativelanguage.googleapis.com/v1beta/models/{$modelName}:generateContent?key={$apiKey}", [
                     'contents' => [
