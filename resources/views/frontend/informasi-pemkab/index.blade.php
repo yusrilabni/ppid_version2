@@ -204,6 +204,7 @@
                             <th class="py-4 px-4 font-bold text-gray-700 text-sm tracking-wide uppercase w-16 text-center">No</th>
                             <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase">Detail Dokumen</th>
                             <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-48">Kategori</th>
+                            <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-48">Sumber</th>
                             <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-32 text-center">Tanggal</th>
                             <th class="py-4 px-6 font-bold text-gray-700 text-sm tracking-wide uppercase w-48 text-center">Aksi</th>
                         </tr>
@@ -246,6 +247,15 @@
                                     <span class="inline-block px-3 py-1 bg-blue-50/80 text-blue-700 text-xs font-semibold rounded-lg border border-blue-100 mt-1 shadow-sm">
                                         {{ $dokumen->jenis_dokumen }}
                                     </span>
+                                </td>
+                                <td class="py-4 px-6 whitespace-normal align-middle">
+                                    @if($dokumen->organization)
+                                        <span class="inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
+                                            <i class="fas fa-building mr-1.5"></i> {{ $dokumen->organization->name ?? 'Tidak Diketahui' }}
+                                        </span>
+                                    @else
+                                        <span class="text-xs text-gray-400 italic">Pemerintah Kabupaten</span>
+                                    @endif
                                 </td>
                                 <td class="py-4 px-6 text-center align-middle">
                                     <span class="inline-block bg-white/80 px-3 py-1.5 rounded-lg text-sm font-bold text-gray-600 border border-gray-200 shadow-sm">
@@ -329,6 +339,11 @@
                             <span class="px-2 py-1 bg-blue-50 text-blue-700 text-[10px] sm:text-xs font-semibold rounded-md border border-blue-100">
                                 {{ $dokumen->jenis_dokumen }}
                             </span>
+                            @if($dokumen->organization)
+                            <span class="px-2 py-1 bg-emerald-50 text-emerald-700 text-[10px] sm:text-xs font-semibold rounded-md border border-emerald-200">
+                                <i class="fas fa-building mr-1"></i> {{ $dokumen->organization->name ?? 'Tidak Diketahui' }}
+                            </span>
+                            @endif
                             <span class="px-2 py-1 bg-gray-50 text-gray-600 text-[10px] sm:text-xs font-semibold rounded-md border border-gray-200">
                                 <i class="fas fa-calendar mr-1 text-gray-400"></i> {{ \Carbon\Carbon::parse($dokumen->published_at ?? ($dokumen->tahun . '-01-01'))->isoFormat('D MMM Y') }}
                             </span>
