@@ -133,6 +133,10 @@ class InformasiController extends Controller
 
             $item->increment('views_count');
 
+            if ($item->informasi_pemkab_id) {
+                \DB::table('informasi_pemkabs')->where('id', $item->informasi_pemkab_id)->update(['views_count' => $item->views_count]);
+            }
+
             $unitData = GeneralHelper::getUnitData();
             $unit = $unitData->get((string)$item->unit_id);
             $item->organization_name = $unit['unit_nama'] ?? 'Unit Tidak Terdaftar';

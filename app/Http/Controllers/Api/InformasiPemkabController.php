@@ -65,6 +65,10 @@ class InformasiPemkabController extends Controller
 
         $informasi_pemkab->increment('views_count');
 
+        if ($informasi_pemkab->informasi) {
+            \DB::table('informasis')->where('id', $informasi_pemkab->informasi->id)->update(['views_count' => $informasi_pemkab->views_count]);
+        }
+
         return response()->json($informasi_pemkab);
     }
 }
