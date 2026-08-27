@@ -12,3 +12,7 @@
 ## Konvensi Kode
 - Ikuti standar Laravel yang sudah ada dalam proyek ini.
 - Selalu lakukan riset sebelum melakukan perubahan besar.
+
+## Informasi Migrasi & Deployment
+- Proyek `ppid_version2` ini sekarang berperan sebagai backend (API) sekaligus menyimpan file-file `blade` frontend lama. Saat ini sedang dalam proses pemisahan tampilan ke frontend **Nuxt** secara bertahap (per proses tampilan).
+- **SETELAH SELESAI MERUBAH KODE APAPUN** di dalam versi 2 ini, **WAJIB** di-*push* ke git dan **WAJIB** beritahukan User dengan kalimat untuk melakukan **"pull di production"**.
