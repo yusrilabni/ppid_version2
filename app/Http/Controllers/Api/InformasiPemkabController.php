@@ -50,7 +50,7 @@ class InformasiPemkabController extends Controller
 
     public function show($slug)
     {
-        $informasi_pemkab = InformasiPemkab::with(['organization', 'informasi'])
+        $informasi_pemkab = InformasiPemkab::with(['user', 'organization', 'informasi'])
             ->where('slug', $slug)
             ->orWhere('id', $slug)
             ->firstOrFail();
