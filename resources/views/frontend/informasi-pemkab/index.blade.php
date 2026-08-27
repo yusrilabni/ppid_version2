@@ -249,6 +249,16 @@
                                     </span>
                                 </td>
                                 <td class="py-4 px-6 whitespace-normal align-middle">
+                                    @if($dokumen->user)
+                                        <div class="mb-1.5 text-xs text-gray-600 font-medium whitespace-nowrap">
+                                            <i class="fas fa-user-circle mr-1 text-gray-400"></i>
+                                            @if($dokumen->user->isSuperAdmin())
+                                                Admin Kabupaten ({{ $dokumen->user->name }})
+                                            @else
+                                                {{ $dokumen->user->name }}
+                                            @endif
+                                        </div>
+                                    @endif
                                     @if($dokumen->organization)
                                         <span class="inline-flex items-center px-2.5 py-1.5 rounded-lg text-xs font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200">
                                             <i class="fas fa-building mr-1.5"></i> {{ $dokumen->organization->name ?? 'Tidak Diketahui' }}
@@ -339,6 +349,11 @@
                             <span class="px-2 py-1 bg-blue-50 text-blue-700 text-[10px] sm:text-xs font-semibold rounded-md border border-blue-100">
                                 {{ $dokumen->jenis_dokumen }}
                             </span>
+                            @if($dokumen->user)
+                            <span class="px-2 py-1 bg-purple-50 text-purple-700 text-[10px] sm:text-xs font-semibold rounded-md border border-purple-200">
+                                <i class="fas fa-user-circle mr-1"></i> {{ $dokumen->user->isSuperAdmin() ? 'Admin Kabupaten (' . $dokumen->user->name . ')' : $dokumen->user->name }}
+                            </span>
+                            @endif
                             @if($dokumen->organization)
                             <span class="px-2 py-1 bg-emerald-50 text-emerald-700 text-[10px] sm:text-xs font-semibold rounded-md border border-emerald-200">
                                 <i class="fas fa-building mr-1"></i> {{ $dokumen->organization->name ?? 'Tidak Diketahui' }}

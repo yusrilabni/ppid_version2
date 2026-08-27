@@ -202,9 +202,19 @@
                     <div class="p-6">
                         <ul class="space-y-4">
                             <li class="flex flex-col">
-                                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-1">Di-upload oleh</span>
+                                <span class="text-xs font-semibold text-gray-500 uppercase tracking-wider mb-2">Di-upload oleh</span>
+                                @if($informasi_pemkab->user)
+                                <span class="text-sm font-bold text-gray-800 flex items-center mb-2">
+                                    <i class="fas fa-user-circle mr-2 text-purple-500 opacity-80"></i> 
+                                    @if($informasi_pemkab->user->isSuperAdmin())
+                                        Admin Kabupaten ({{ $informasi_pemkab->user->name }})
+                                    @else
+                                        {{ $informasi_pemkab->user->name }}
+                                    @endif
+                                </span>
+                                @endif
                                 <span class="text-sm font-bold text-gray-800 flex items-start">
-                                    <i class="fas fa-building mt-1 mr-2 text-blue-500 opacity-80"></i> 
+                                    <i class="fas fa-building mt-1 mr-2 text-emerald-500 opacity-80"></i> 
                                     {{ $informasi_pemkab->organization ? $informasi_pemkab->organization->name : 'Pemerintah Kabupaten' }}
                                 </span>
                             </li>
