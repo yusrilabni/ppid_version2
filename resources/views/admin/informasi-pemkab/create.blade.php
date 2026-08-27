@@ -91,6 +91,24 @@
                             @enderror
                         </div>
 
+                        <!-- OPD Source (Only for Superadmin) -->
+                        @if(isset($isSuperAdmin) && $isSuperAdmin)
+                        <div class="md:col-span-2 relative z-50">
+                            <label for="target_unit" class="block text-gray-700 text-sm font-bold mb-3">Sumber OPD (Dinas) <span class="text-red-500">*</span></label>
+                            <x-custom-select 
+                                name="target_unit" 
+                                :options="$units" 
+                                :value="old('target_unit')"
+                                placeholder="Pilih Sumber OPD"
+                                :searchable="true"
+                                class="shadow-sm"
+                            />
+                            @error('target_unit')
+                                <p class="text-red-500 text-xs mt-2 font-medium"><i class="fas fa-exclamation-circle mr-1"></i>{{ $message }}</p>
+                            @enderror
+                        </div>
+                        @endif
+
                         <!-- Deskripsi -->
                         <div class="md:col-span-2">
                             <label for="deskripsi" class="block text-gray-700 text-sm font-bold mb-3">Deskripsi (Opsional)</label>

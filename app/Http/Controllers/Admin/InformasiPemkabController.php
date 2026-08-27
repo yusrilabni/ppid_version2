@@ -57,12 +57,25 @@ class InformasiPemkabController extends Controller
     public function create()
     {
         $kategori_jenis = InformasiPemkab::KATEGORI_JENIS_DOKUMEN;
-        return view('admin.informasi-pemkab.create', compact('kategori_jenis'));
+        $user = auth()->user();
+        $isSuperAdmin = $user->isSuperAdmin();
+        
+        $units = [];
+        if ($isSuperAdmin) {
+            $units = \App\Helpers\GeneralHelper::getUnitData()->map(function($unit) {
+                return [
+                    'value' => (string)$unit['unit_id'],
+                    'label' => $unit['unit_nama'],
+                ];
+            })->values()->toArray();
+        }
+
+        return view('admin.informasi-pemkab.create', compact('kategori_jenis', 'isSuperAdmin', 'units'));
     }
 
     public function store(Request $request)
     {
-        $request->validate([
+        $rules = [
             'judul' => 'required|string|max:255',
             'kategori' => 'required|string',
             'jenis_dokumen' => 'required|array',
@@ -74,11 +87,23 @@ class InformasiPemkabController extends Controller
             'link' => 'nullable|required_if:upload_method,link|url|max:2048',
             'status' => 'required|in:draft,published,scheduled',
             'visibility' => 'required|in:public,private',
-        ]);
+        ];
+
+        if (Auth::user()->isSuperAdmin()) {
+            $rules['target_unit'] = 'required|string';
+        }
+
+        $request->validate($rules);
 
         try {
-            $user_id = Auth::id();
-            $unit_id = Auth::user()->unit_id ?? null;
+            $user = Auth::user();
+            $user_id = $user->id;
+            
+            if ($user->isSuperAdmin() && $request->filled('target_unit')) {
+                $unit_id = $request->input('target_unit');
+            } else {
+                $unit_id = $user->unit_id ?? null;
+            }
 
             // Server-side Double Submit Protection (Title + Unit check within 10 seconds)
             $existing = InformasiPemkab::where('judul', $request->judul)
@@ -91,7 +116,7 @@ class InformasiPemkabController extends Controller
                     ->with('success', 'Dokumen sudah berhasil ditambahkan sebelumnya.');
             }
 
-            $data = $request->except(['file', 'link', 'upload_method']);
+            $data = $request->except(['file', 'link', 'upload_method', 'target_unit']);
             // Implode array into comma-separated string
             $data['jenis_dokumen'] = implode(', ', $request->input('jenis_dokumen', []));
             
@@ -183,7 +208,19 @@ class InformasiPemkabController extends Controller
         }
 
         $kategori_jenis = InformasiPemkab::KATEGORI_JENIS_DOKUMEN;
-        return view('admin.informasi-pemkab.edit', compact('informasi_pemkab', 'kategori_jenis'));
+        $isSuperAdmin = $user->isSuperAdmin();
+        
+        $units = [];
+        if ($isSuperAdmin) {
+            $units = \App\Helpers\GeneralHelper::getUnitData()->map(function($unit) {
+                return [
+                    'value' => (string)$unit['unit_id'],
+                    'label' => $unit['unit_nama'],
+                ];
+            })->values()->toArray();
+        }
+
+        return view('admin.informasi-pemkab.edit', compact('informasi_pemkab', 'kategori_jenis', 'isSuperAdmin', 'units'));
     }
 
     public function update(Request $request, InformasiPemkab $informasi_pemkab)
@@ -193,7 +230,7 @@ class InformasiPemkabController extends Controller
             abort(403, 'Akses ditolak. Anda tidak berhak memperbarui dokumen dinas lain.');
         }
 
-        $request->validate([
+        $rules = [
             'judul' => 'required|string|max:255',
             'kategori' => 'required|string',
             'jenis_dokumen' => 'required|array',
@@ -206,10 +243,20 @@ class InformasiPemkabController extends Controller
             'status' => 'required|in:draft,published,scheduled',
             'visibility' => 'required|in:public,private',
             'published_at' => 'nullable|required_if:status,scheduled|date',
-        ]);
+        ];
+
+        if ($user->isSuperAdmin()) {
+            $rules['target_unit'] = 'required|string';
+        }
+
+        $request->validate($rules);
 
         try {
-            $data = $request->except(['file', 'link', 'upload_method']);
+            $data = $request->except(['file', 'link', 'upload_method', 'target_unit']);
+            
+            if ($user->isSuperAdmin() && $request->filled('target_unit')) {
+                $data['unit_id'] = $request->input('target_unit');
+            }
             // Implode array into comma-separated string
             $data['jenis_dokumen'] = implode(', ', $request->input('jenis_dokumen', []));
             
