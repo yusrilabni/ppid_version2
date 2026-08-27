@@ -102,7 +102,7 @@
                                 return ['value' => $kat, 'label' => $kat];
                             })->toArray();
                         @endphp
-                        <div class="relative z-50">
+                        <div class="relative z-[80]">
                             <label for="kategori" class="block text-gray-700 text-sm font-bold mb-3">Kategori <span class="text-red-500">*</span></label>
                             <x-custom-select 
                                 name="kategori" 
@@ -119,7 +119,7 @@
                         </div>
 
                         <!-- Jenis Dokumen -->
-                        <div class="relative z-40">
+                        <div class="relative z-[80]">
                             <label for="jenis_dokumen" class="block text-gray-700 text-sm font-bold mb-3">Jenis Dokumen <span class="text-red-500">*</span></label>
                             <div x-data="{
                                 open: false,
@@ -162,7 +162,7 @@
 
                         <!-- OPD Source (Only for Superadmin) -->
                         @if(isset($isSuperAdmin) && $isSuperAdmin)
-                        <div class="relative z-[60]">
+                        <div class="relative z-[70]">
                             <label for="target_unit" class="block text-gray-700 text-sm font-bold mb-3">Sumber OPD (Dinas) <span class="text-red-500">*</span></label>
                             <x-custom-select 
                                 name="target_unit" 
@@ -179,7 +179,7 @@
                         @endif
 
                         <!-- Tanggal Dokumen -->
-                        <div>
+                        <div class="relative z-[70]">
                             <label for="tanggal_dokumen" class="block text-gray-700 text-sm font-bold mb-3">Tanggal Dokumen <span class="text-red-500">*</span></label>
                             <div class="relative">
                                 <div class="absolute inset-y-0 left-0 pl-5 flex items-center pointer-events-none">
@@ -205,7 +205,7 @@
                                         ['value' => 'scheduled', 'label' => 'Jadwalkan Penerbitan'],
                                     ];
                                 @endphp
-                                <div class="relative z-30">
+                                <div class="relative z-[60]">
                                     <label class="block text-gray-700 text-sm font-bold mb-3">Status Dokumen</label>
                                     <x-custom-select 
                                         name="status" 
