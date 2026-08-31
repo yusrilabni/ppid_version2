@@ -54,7 +54,7 @@ class ProfileController extends Controller
         if (!empty($apiData['foto'])) {
             $photoUrl = $apiData['foto'];
         } elseif ($user->profile_photo_path) {
-            $photoUrl = asset('storage/' . $user->profile_photo_path);
+            $photoUrl = str_starts_with($user->profile_photo_path, 'http') ? $user->profile_photo_path : asset('storage/' . $user->profile_photo_path);
         }
 
         return response()->json([
@@ -112,7 +112,7 @@ class ProfileController extends Controller
 
         // Handle Photo
         if ($request->hasFile('photo')) {
-            if ($user->profile_photo_path) {
+            if ($user->profile_photo_path && !str_starts_with($user->profile_photo_path, 'http')) {
                 Storage::disk('public')->delete($user->profile_photo_path);
             }
 
@@ -132,7 +132,7 @@ class ProfileController extends Controller
             'message' => 'Profil berhasil diperbarui',
             'data' => [
                 'user' => $user,
-                'profile_photo_url' => $user->profile_photo_path ? asset('storage/' . $user->profile_photo_path) : null
+                'profile_photo_url' => $user->profile_photo_path ? (str_starts_with($user->profile_photo_path, 'http') ? $user->profile_photo_path : asset('storage/' . $user->profile_photo_path)) : null
             ]
         ]);
     }

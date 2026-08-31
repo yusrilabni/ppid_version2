@@ -80,6 +80,7 @@ class GoogleLoginController extends Controller
                 'otp' => $otp,
                 'google_id' => $googleUser->getId(),
                 'email' => $googleUser->getEmail(),
+                'avatar' => $googleUser->getAvatar(),
                 'expires_at' => now()->addMinutes(1)->timestamp,
                 'cooldown_until' => now()->addMinutes(1)->timestamp
             ], now()->addMinutes(15)); // Simpan 15 menit agar bisa resend tanpa Google auth lagi
@@ -108,9 +109,16 @@ class GoogleLoginController extends Controller
                 ], 403);
             }
             
-            // update google_id if missing
+            $needsSave = false;
             if (!$user->google_id) {
                 $user->google_id = $googleUser->getId();
+                $needsSave = true;
+            }
+            if (empty($user->profile_photo_path) && $googleUser->getAvatar()) {
+                $user->profile_photo_path = $googleUser->getAvatar();
+                $needsSave = true;
+            }
+            if ($needsSave) {
                 $user->save();
             }
         } else if ($action === 'register') {
@@ -132,6 +140,7 @@ class GoogleLoginController extends Controller
                 'name' => $googleUser->getName(),
                 'email' => $googleUser->getEmail(),
                 'google_id' => $googleUser->getId(),
+                'avatar' => $googleUser->getAvatar(),
                 'expires_at' => now()->addMinutes(1)->timestamp,
                 'cooldown_until' => now()->addMinutes(1)->timestamp
             ], now()->addMinutes(15));
@@ -319,6 +328,14 @@ class GoogleLoginController extends Controller
         $googleEmail = $cachedData['email'];
         $user = User::where('email', $googleEmail)->first();
 
+        $updateData = [
+            'google_id' => $googleId,
+            'email' => $googleEmail
+        ];
+        if (!empty($cachedData['avatar'])) {
+            $updateData['profile_photo_path'] = $cachedData['avatar'];
+        }
+
         if ($user && $user->id !== $currentUser->id) {
             // Merge logic
             $roles = [$currentUser->role, $user->role];
@@ -331,11 +348,8 @@ class GoogleLoginController extends Controller
                     $deletedUser = clone $user;
                 }
                 
-                User::where('id', $keptUser->id)->update([
-                    'google_id' => $googleId,
-                    'nip' => $keptUser->nip ?: $deletedUser->nip,
-                    'email' => $googleEmail
-                ]);
+                $updateData['nip'] = $keptUser->nip ?: $deletedUser->nip;
+                User::where('id', $keptUser->id)->update($updateData);
                 \App\Models\PermohonanInformasi::where('user_id', $deletedUser->id)->update(['user_id' => $keptUser->id]);
                 User::where('id', $deletedUser->id)->delete();
                 $user = User::find($keptUser->id);
@@ -347,10 +361,7 @@ class GoogleLoginController extends Controller
             }
         } else {
             // Normal Link
-            User::where('id', $currentUser->id)->update([
-                'google_id' => $googleId,
-                'email' => $googleEmail
-            ]);
+            User::where('id', $currentUser->id)->update($updateData);
             $user = User::find($currentUser->id);
         }
 
@@ -480,7 +491,7 @@ class GoogleLoginController extends Controller
         }
 
         // OTP Valid! Create user
-        $user = User::create([
+        $createData = [
             'name' => $cachedData['name'],
             'email' => $cachedData['email'],
             'google_id' => $cachedData['google_id'],
@@ -488,7 +499,13 @@ class GoogleLoginController extends Controller
             'role' => 'user',
             'login_type' => 'google',
             'email_verified_at' => now(),
-        ]);
+        ];
+        
+        if (!empty($cachedData['avatar'])) {
+            $createData['profile_photo_path'] = $cachedData['avatar'];
+        }
+        
+        $user = User::create($createData);
 
         \Illuminate\Support\Facades\Cache::forget($cacheKey);
 
