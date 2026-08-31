@@ -295,7 +295,7 @@ class ProfilController extends Controller
             return response()->json(['message' => 'Anda harus login untuk mengakses ini.'], 403);
         }
 
-        $official = Official::with('organization', 'position')->find($id);
+        $official = Official::with(['organization', 'position', 'careerHistories', 'educations', 'awards', 'children', 'trainingHistories', 'organizationalHistories'])->find($id);
         if (!$official) {
             return response()->json(['message' => 'Pejabat tidak ditemukan.'], 404);
         }
@@ -394,6 +394,90 @@ class ProfilController extends Controller
         $data['updated_by'] = $user->id;
 
         $official->update($data);
+
+        // Sync Relationships
+        $official->careerHistories()->delete();
+        if ($request->has('career_histories') && is_array($request->career_histories)) {
+            foreach ($request->career_histories as $careerData) {
+                if (!empty($careerData['title'])) {
+                    $official->careerHistories()->create([
+                        'title' => $careerData['title'],
+                        'organization_name' => $careerData['organization_name'] ?? '',
+                        'start_year' => $careerData['start_year'] ?? null,
+                        'end_year' => $careerData['end_year'] ?? null,
+                        'description' => $careerData['description'] ?? null,
+                    ]);
+                }
+            }
+        }
+
+        $official->educations()->delete();
+        if ($request->has('educations') && is_array($request->educations)) {
+            foreach ($request->educations as $educationData) {
+                if (!empty($educationData['degree'])) {
+                    $official->educations()->create([
+                        'degree' => $educationData['degree'],
+                        'institution' => $educationData['institution'] ?? '',
+                        'start_year' => $educationData['start_year'] ?? null,
+                        'end_year' => $educationData['end_year'] ?? null,
+                    ]);
+                }
+            }
+        }
+
+        $official->awards()->delete();
+        if ($request->has('awards') && is_array($request->awards)) {
+            foreach ($request->awards as $awardData) {
+                if (!empty($awardData['title'])) {
+                    $official->awards()->create([
+                        'title' => $awardData['title'],
+                        'issuer' => $awardData['issuer'] ?? '',
+                        'year' => $awardData['year'] ?? null,
+                        'description' => $awardData['description'] ?? null,
+                    ]);
+                }
+            }
+        }
+        
+        $official->children()->delete();
+        if ($request->has('children') && is_array($request->children)) {
+            foreach ($request->children as $childData) {
+                if (!empty($childData['name'])) {
+                    $official->children()->create([
+                        'name' => $childData['name'],
+                        'birth_place' => $childData['birth_place'] ?? null,
+                        'birth_date' => $childData['birth_date'] ?? null,
+                    ]);
+                }
+            }
+        }
+
+        $official->trainingHistories()->delete();
+        if ($request->has('training_histories') && is_array($request->training_histories)) {
+            foreach ($request->training_histories as $trainingData) {
+                if (!empty($trainingData['name'])) {
+                    $official->trainingHistories()->create([
+                        'name' => $trainingData['name'],
+                        'year' => $trainingData['year'] ?? null,
+                        'organizer' => $trainingData['organizer'] ?? null,
+                    ]);
+                }
+            }
+        }
+
+        $official->organizationalHistories()->delete();
+        if ($request->has('organizational_histories') && is_array($request->organizational_histories)) {
+            foreach ($request->organizational_histories as $orgData) {
+                if (!empty($orgData['organization_name'])) {
+                    $official->organizationalHistories()->create([
+                        'organization_name' => $orgData['organization_name'],
+                        'position' => $orgData['position'] ?? '',
+                        'start_year' => $orgData['start_year'] ?? null,
+                        'end_year' => $orgData['end_year'] ?? null,
+                    ]);
+                }
+            }
+        }
 
         return response()->json([
             'success' => true,
