@@ -321,6 +321,9 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
         
         Route::get('/profil/pimpinan/{official}/edit', [ProfilController::class, 'editOfficial']);
         Route::post('/profil/pimpinan/{official}', [ProfilController::class, 'updateOfficial']);
+        
+        Route::get('/profil/kelola-opd/{organization}/edit', [ProfilController::class, 'editOpdManage']);
+        Route::post('/profil/kelola-opd/{organization}', [ProfilController::class, 'updateOpdManage']);
 
         Route::get('/user', function (Request $request) {
             return $request->user();

@@ -487,5 +487,125 @@ class ProfilController extends Controller
             'official' => $official
         ]);
     }
+
+    public function editOpdManage(Request $request, $slug)
+    {
+        $organization = \App\Models\Organization::where('slug', $slug)->orWhere('id', $slug)->first();
+        if (!$organization) {
+            return response()->json(['message' => 'OPD tidak ditemukan.'], 404);
+        }
+
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['message' => 'Anda harus login.'], 401);
+        }
+
+        $hasAccess = false;
+        if ($user->unit_id && (string)$user->unit_id === (string)$organization->remote_id) {
+            $hasAccess = true;
+        }
+
+        if (!$hasAccess && $user->nip) {
+            $apiData = \App\Models\User::getDataFromApi($user->nip);
+            $api_unit_id = $apiData['unit_id'] ?? null;
+            if (!is_null($api_unit_id) && (string)$api_unit_id === (string)$organization->remote_id) {
+                $hasAccess = true;
+            }
+        }
+
+        if (!$hasAccess) {
+            return response()->json(['message' => 'Anda tidak memiliki akses. Hanya dinas yang bersangkutan yang dapat mengubah ini.'], 403);
+        }
+
+        $struktur = \App\Models\StrukturOrganisasi::firstOrCreate(
+            ['organization_id' => $organization->id],
+            ['title' => 'Struktur ' . $organization->name]
+        );
+
+        return response()->json([
+            'success' => true,
+            'organization' => $organization,
+            'struktur' => $struktur
+        ]);
+    }
+
+    public function updateOpdManage(Request $request, $slug)
+    {
+        $organization = \App\Models\Organization::where('slug', $slug)->orWhere('id', $slug)->first();
+        if (!$organization) {
+            return response()->json(['message' => 'OPD tidak ditemukan.'], 404);
+        }
+
+        $user = $request->user();
+        
+        $hasAccess = false;
+        if ($user->unit_id && (string)$user->unit_id === (string)$organization->remote_id) {
+            $hasAccess = true;
+        }
+
+        if (!$hasAccess && $user->nip) {
+            $apiData = \App\Models\User::getDataFromApi($user->nip);
+            $api_unit_id = $apiData['unit_id'] ?? null;
+            if (!is_null($api_unit_id) && (string)$api_unit_id === (string)$organization->remote_id) {
+                $hasAccess = true;
+            }
+        }
+
+        if (!$hasAccess) {
+            return response()->json(['message' => 'Anda tidak memiliki akses. Hanya dinas yang bersangkutan yang dapat mengubah ini.'], 403);
+        }
+
+        $request->validate([
+            'structure_image' => 'nullable|image|mimes:jpeg,png,jpg,gif,svg|max:10240',
+            'website_url' => 'nullable|url',
+        ]);
+
+        $struktur = \App\Models\StrukturOrganisasi::firstOrCreate(
+            ['organization_id' => $organization->id]
+        );
+
+        if ($request->hasFile('structure_image')) {
+            $path = $request->file('structure_image')->store('struktur_organisasi', 'public');
+            if ($struktur->image_path) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($struktur->image_path);
+            }
+            $struktur->image_path = $path;
+        }
+        
+        $struktur->title = 'Struktur ' . $organization->name;
+        $struktur->save();
+
+        if ($request->has('website_url')) {
+            $organization->website_url = $request->website_url;
+            $organization->save();
+        }
+
+        $informasi = \App\Models\Informasi::firstOrNew(
+            ['content' => 'struktur_organisasi_' . $organization->id]
+        );
+
+        $informasi->title = 'Profil ' . $organization->name;
+        $informasi->deskripsi = 'Informasi mengenai profil ' . $organization->name . ', termasuk struktur organisasi dan tautan situs web.';
+        $informasi->status = 'aktif';
+        $informasi->category = 'Informasi Berkala';
+        $informasi->jenis_dokumen = 'Profil Badan Publik';
+        $informasi->user_id = $user->id;
+        $informasi->unit_id = clone $organization->unit_id;
+        $informasi->tahun = $informasi->tahun ?? now()->year;
+        $informasi->tanggal_upload = $informasi->tanggal_upload ?? now()->toDateString();
+        $informasi->url = $request->website_url;
+        
+        if ($struktur->image_path) {
+            $informasi->file = $struktur->image_path;
+        }
+        $informasi->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Profil OPD berhasil diperbarui.',
+            'struktur' => $struktur,
+            'organization' => $organization
+        ]);
+    }
 }
 
