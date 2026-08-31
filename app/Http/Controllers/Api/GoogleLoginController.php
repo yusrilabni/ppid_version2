@@ -84,7 +84,14 @@ class GoogleLoginController extends Controller
                 'cooldown_until' => now()->addMinutes(1)->timestamp
             ], now()->addMinutes(15)); // Simpan 15 menit agar bisa resend tanpa Google auth lagi
 
-            $this->sendOtpEmail($googleUser->getEmail(), $otp, 'Tautkan Akun Google', 'menautkan', 'Google ini');
+            try {
+                $this->sendOtpEmail($googleUser->getEmail(), $otp, 'Tautkan Akun Google', 'menautkan', 'Google ini');
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ], 400);
+            }
 
             return response()->json([
                 'success' => true,
@@ -129,7 +136,14 @@ class GoogleLoginController extends Controller
                 'cooldown_until' => now()->addMinutes(1)->timestamp
             ], now()->addMinutes(15));
 
-            $this->sendOtpEmail($googleUser->getEmail(), $otp, 'Pendaftaran Akun', 'mendaftar di', 'akun Google ini', $googleUser->getName());
+            try {
+                $this->sendOtpEmail($googleUser->getEmail(), $otp, 'Pendaftaran Akun', 'mendaftar di', 'akun Google ini', $googleUser->getName());
+            } catch (\Exception $e) {
+                return response()->json([
+                    'success' => false,
+                    'message' => $e->getMessage()
+                ], 400);
+            }
 
             return response()->json([
                 'success' => true,
