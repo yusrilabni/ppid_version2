@@ -116,8 +116,8 @@ class ProfilController extends Controller
         $kepalaOpdsRaw = $query->orderBy('full_name')->get();
         
         $filteredOpds = $kepalaOpdsRaw->filter(function($official) {
-            $orgNameLower = strtolower($official->organization->name ?? '');
-            if (str_contains($orgNameLower, 'desa') || str_contains($orgNameLower, 'kelurahan')) {
+            $orgNameLower = strtolower(trim($official->organization->name ?? ''));
+            if (str_starts_with($orgNameLower, 'desa ') || str_starts_with($orgNameLower, 'kelurahan ')) {
                 return false; // Abaikan Desa dan Kelurahan dari Pejabat Daerah
             }
             return true;
@@ -219,8 +219,8 @@ class ProfilController extends Controller
 
         // Fetch all officials belonging to Village/Kelurahan organizations
         $allOfficials = $query->get()->filter(function($official) {
-            $orgName = $official->organization->name ?? '';
-            return stripos($orgName, 'Desa') !== false || stripos($orgName, 'Kelurahan') !== false;
+            $orgName = strtolower(trim($official->organization->name ?? ''));
+            return str_starts_with($orgName, 'desa ') || str_starts_with($orgName, 'kelurahan ');
         });
 
         // Grouping logic
