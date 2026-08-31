@@ -181,8 +181,10 @@ class GoogleLoginController extends Controller
                 $msg->to($toEmail)
                     ->subject("Kode OTP $title: $otp (" . date('H:i:s') . ")");
             });
+            return true;
         } catch (\Exception $e) {
             \Log::error('Failed to send OTP email: ' . $e->getMessage());
+            throw new \Exception('Gagal mengirim email OTP: ' . $e->getMessage());
         }
     }
 
