@@ -288,4 +288,118 @@ class ProfilController extends Controller
             'groupedData' => $groupedData
         ]);
     }
+    public function editOfficial(Request $request, $id)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['message' => 'Anda harus login untuk mengakses ini.'], 403);
+        }
+
+        $official = Official::with('organization', 'position')->find($id);
+        if (!$official) {
+            return response()->json(['message' => 'Pejabat tidak ditemukan.'], 404);
+        }
+
+        $hasAccess = false;
+        if ($user->isSuperAdmin()) {
+            $hasAccess = true;
+        }
+        if (!$hasAccess && $user->unit_id && isset($official->organization) && (string)$user->unit_id === (string)$official->organization->remote_id) {
+            $hasAccess = true;
+        }
+        if (!$hasAccess && $user->nip) {
+            $apiData = \App\Models\User::getDataFromApi($user->nip);
+            $api_unit_id = $apiData['unit_id'] ?? null;
+            if (!is_null($api_unit_id) && isset($official->organization) && (string)$api_unit_id === (string)$official->organization->remote_id) {
+                $hasAccess = true;
+            }
+        }
+        
+        if (!$hasAccess) {
+            return response()->json(['message' => 'Anda tidak memiliki akses untuk mengelola pimpinan ini.'], 403);
+        }
+
+        return response()->json([
+            'success' => true,
+            'official' => $official
+        ]);
+    }
+
+    public function updateOfficial(Request $request, $id)
+    {
+        $user = $request->user();
+        if (!$user) {
+            return response()->json(['message' => 'Anda harus login untuk mengakses ini.'], 403);
+        }
+
+        $official = Official::with('organization')->find($id);
+        if (!$official) {
+            return response()->json(['message' => 'Pejabat tidak ditemukan.'], 404);
+        }
+
+        $hasAccess = false;
+
+        // 1. Superadmin
+        if ($user->isSuperAdmin()) {
+            $hasAccess = true;
+        }
+
+        // 2. Cek Unit ID Lokal
+        if (!$hasAccess && $user->unit_id && isset($official->organization) && (string)$user->unit_id === (string)$official->organization->remote_id) {
+            $hasAccess = true;
+        }
+
+        // 3. Cek Unit ID dari API
+        if (!$hasAccess && $user->nip) {
+            $apiData = \App\Models\User::getDataFromApi($user->nip);
+            $api_unit_id = $apiData['unit_id'] ?? null;
+            if (!is_null($api_unit_id) && isset($official->organization) && (string)$api_unit_id === (string)$official->organization->remote_id) {
+                $hasAccess = true;
+            }
+        }
+        
+        if (!$hasAccess) {
+            return response()->json(['message' => 'Anda tidak memiliki akses untuk mengelola pimpinan ini.'], 403);
+        }
+
+        $request->validate([
+            'full_name' => 'required|string|max:255',
+            'jenis_kelamin' => 'nullable|string|in:Laki-laki,Perempuan',
+            'birth_place' => 'nullable|string|max:255',
+            'birth_date' => 'nullable|date',
+            'religion' => 'nullable|string|max:255',
+            'nip' => 'nullable|string|max:255',
+            'biography' => 'nullable|string',
+            'photo' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
+            'start_term' => 'nullable|date',
+            'end_term' => 'nullable|date|after_or_equal:start_term',
+            'status' => 'required|in:active,inactive,draft',
+            'marital_status' => 'nullable|string|max:255',
+            'occupation' => 'nullable|string|max:255',
+            'email' => 'nullable|email|max:255',
+            'home_address' => 'nullable|string',
+            'spouse_name' => 'nullable|string|max:255',
+            'status_jabatan' => 'nullable|string|max:255',
+        ]);
+
+        $data = $request->except(['photo', '_method']);
+
+        if ($request->hasFile('photo')) {
+            if ($official->photo) {
+                \Illuminate\Support\Facades\Storage::disk('public')->delete($official->photo);
+            }
+            $data['photo'] = $request->file('photo')->store('officials', 'public');
+        }
+
+        $data['updated_by'] = $user->id;
+
+        $official->update($data);
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Data Pimpinan berhasil diperbarui.',
+            'official' => $official
+        ]);
+    }
 }
+
