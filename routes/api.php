@@ -83,7 +83,6 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
 
     // Profil Routes (for frontend client matching blade UI)
     Route::get('/profil/pejabat-daerah', [ProfilController::class, 'listKepalaOpd']);
-    Route::get('/profil/organisasi-belum-isi', [ProfilController::class, 'unassignedOrganizations']);
     Route::get('/profil/tentang-opd', [ProfilController::class, 'opdList']);
     Route::get('/profil/tentang-opd/{slug}', [ProfilController::class, 'opdDetail']);
     Route::get('/profil/unit-lokal', [ProfilController::class, 'unitLokalList']);
