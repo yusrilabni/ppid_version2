@@ -95,6 +95,46 @@ class ProfilController extends Controller
         ]);
     }
 
+    public function unassignedOrganizations(Request $request)
+    {
+        $position = Position::where('slug', 'kepala-opd')->first();
+        if (!$position) {
+            return response()->json(['success' => false, 'message' => 'Posisi Kepala OPD tidak ditemukan.']);
+        }
+
+        $assignedOrgIds = Official::where('position_id', $position->id)->pluck('organization_id')->toArray();
+
+        $unassignedOrgsRaw = Organization::whereNotIn('id', $assignedOrgIds)
+            ->orderBy('name')
+            ->get();
+
+        // Categorize them
+        $opds = [];
+        $kecamatans = [];
+        $desas = [];
+
+        foreach ($unassignedOrgsRaw as $org) {
+            $nameLower = strtolower($org->name);
+            if (str_contains($nameLower, 'desa') || str_contains($nameLower, 'kelurahan')) {
+                $desas[] = $org;
+            } elseif (str_contains($nameLower, 'kecamatan')) {
+                $kecamatans[] = $org;
+            } else {
+                $opds[] = $org;
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'opds' => $opds,
+                'kecamatans' => $kecamatans,
+                'desas' => $desas,
+                'total' => count($unassignedOrgsRaw)
+            ]
+        ]);
+    }
+
     public function listKepalaOpd(Request $request)
     {
         $position = Position::where('slug', 'kepala-opd')->first();
