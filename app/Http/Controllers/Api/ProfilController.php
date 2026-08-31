@@ -288,14 +288,15 @@ class ProfilController extends Controller
             'groupedData' => $groupedData
         ]);
     }
-    public function editOfficial(Request $request, $id)
+    public function editOfficial(Request $request, $slug)
     {
         $user = $request->user();
         if (!$user) {
             return response()->json(['message' => 'Anda harus login untuk mengakses ini.'], 403);
         }
 
-        $official = Official::with(['organization', 'position', 'careerHistories', 'educations', 'awards', 'children', 'trainingHistories', 'organizationalHistories'])->find($id);
+        $official = Official::with(['organization', 'position', 'careerHistories', 'educations', 'awards', 'children', 'trainingHistories', 'organizationalHistories'])
+            ->where('slug', $slug)->first();
         if (!$official) {
             return response()->json(['message' => 'Pejabat tidak ditemukan.'], 404);
         }
@@ -325,14 +326,14 @@ class ProfilController extends Controller
         ]);
     }
 
-    public function updateOfficial(Request $request, $id)
+    public function updateOfficial(Request $request, $slug)
     {
         $user = $request->user();
         if (!$user) {
             return response()->json(['message' => 'Anda harus login untuk mengakses ini.'], 403);
         }
 
-        $official = Official::with('organization')->find($id);
+        $official = Official::with('organization')->where('slug', $slug)->first();
         if (!$official) {
             return response()->json(['message' => 'Pejabat tidak ditemukan.'], 404);
         }
