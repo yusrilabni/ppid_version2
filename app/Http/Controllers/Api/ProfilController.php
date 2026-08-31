@@ -130,16 +130,22 @@ class ProfilController extends Controller
             }
         }
 
-        if (!empty($cached['villages'])) {
-            foreach ($cached['villages'] as $village) {
-                if (!in_array($village['desa_id'], $assignedRemoteIds)) {
-                    $desas[] = [
-                        'id' => 'ext_v_' . $village['desa_id'],
-                        'name' => 'Desa ' . $village['desa_nama']
-                    ];
+        if (!empty($cached['villages_grouped'])) {
+            foreach ($cached['villages_grouped'] as $kecamatan => $items) {
+                foreach ($items as $village) {
+                    if (!in_array($village['desa_id'], $assignedRemoteIds)) {
+                        $prefix = $village['desa_tipe'] ?? 'Desa';
+                        $desas[] = [
+                            'id' => 'ext_v_' . $village['desa_id'],
+                            'name' => $prefix . ' ' . $village['desa_nama']
+                        ];
+                    }
                 }
             }
         }
+        
+        // Remove duplicates by name
+        $desas = collect($desas)->unique('name')->values()->toArray();
 
         // Sort data by name
         usort($opds, fn($a, $b) => strcmp($a['name'], $b['name']));
