@@ -590,7 +590,7 @@ class ProfilController extends Controller
         $informasi->category = 'Informasi Berkala';
         $informasi->jenis_dokumen = 'Profil Badan Publik';
         $informasi->user_id = $user->id;
-        $informasi->unit_id = clone $organization->unit_id;
+        $informasi->unit_id = $organization->unit_id ?? null;
         $informasi->tahun = $informasi->tahun ?? now()->year;
         $informasi->tanggal_upload = $informasi->tanggal_upload ?? now()->toDateString();
         $informasi->url = $request->website_url;
