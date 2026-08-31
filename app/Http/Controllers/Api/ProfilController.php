@@ -102,49 +102,79 @@ class ProfilController extends Controller
             return response()->json(['success' => false, 'message' => 'Posisi Kepala OPD tidak ditemukan.']);
         }
 
-        $assignedOrgIds = Official::where('position_id', $position->id)->pluck('organization_id')->toArray();
-        $assignedRemoteIds = Organization::whereIn('id', $assignedOrgIds)->pluck('remote_id')->toArray();
+        // Ambil semua official yang menjabat kepala opd, key by organization's remote_id
+        $officials = Official::where('position_id', $position->id)
+            ->where('status', 'active')
+            ->with('organization')
+            ->get();
+            
+        $officialMap = [];
+        foreach ($officials as $off) {
+            if ($off->organization && $off->organization->remote_id) {
+                $officialMap[$off->organization->remote_id] = $off;
+            }
+        }
 
         $cached = \App\Helpers\GeneralHelper::syncExternalUnitsIfNeeded();
         $opds = [];
         $kecamatans = [];
         $desas = [];
 
+        $processUnit = function($unit, $isVillage = false, $kecamatanNama = '') use ($officialMap, &$opds, &$kecamatans, &$desas) {
+            $remoteId = $isVillage ? $unit['desa_id'] : $unit['unit_id'];
+            $unitName = $isVillage ? ($unit['desa_tipe'] . ' ' . $unit['desa_nama']) : $unit['unit_nama'];
+            
+            $officialName = 'Belum Ada Data';
+            $isUpdated = false;
+            
+            if (isset($officialMap[$remoteId])) {
+                $off = $officialMap[$remoteId];
+                $officialName = $off->full_name;
+                
+                // Cek apakah nama mengandung placeholder "Pejabat "
+                if (stripos($officialName, 'Pejabat') === 0 || stripos($officialName, 'Pejabat ') !== false) {
+                    $isUpdated = false;
+                } else {
+                    $isUpdated = true;
+                }
+            }
+            
+            $nameLower = strtolower($unitName);
+            $unitData = [
+                'id' => 'ext_' . $remoteId,
+                'name' => $unitName,
+                'official_name' => $officialName,
+                'is_updated' => $isUpdated
+            ];
+            
+            if ($isVillage) {
+                $desas[] = $unitData;
+            } elseif (str_contains($nameLower, 'kecamatan ')) {
+                $kecamatans[] = $unitData;
+            } else {
+                $opds[] = $unitData;
+            }
+        };
+
         if (!empty($cached['units'])) {
             foreach ($cached['units'] as $unit) {
-                if (!in_array($unit['unit_id'], $assignedRemoteIds)) {
-                    $nameLower = strtolower($unit['unit_nama']);
-                    $unitData = [
-                        'id' => 'ext_' . $unit['unit_id'],
-                        'name' => $unit['unit_nama']
-                    ];
-                    
-                    if (str_contains($nameLower, 'desa ') || str_contains($nameLower, 'kelurahan ')) {
-                        $desas[] = $unitData;
-                    } elseif (str_contains($nameLower, 'kecamatan ')) {
-                        $kecamatans[] = $unitData;
-                    } else {
-                        $opds[] = $unitData;
-                    }
+                $processUnit($unit, false);
+            }
+        }
+        
+        if (!empty($cached['villages_grouped'])) {
+            foreach ($cached['villages_grouped'] as $kecamatan => $items) {
+                foreach ($items as $village) {
+                    $processUnit($village, true, $kecamatan);
                 }
             }
         }
 
-        if (!empty($cached['villages'])) {
-            foreach ($cached['villages'] as $village) {
-                if (!in_array($village['desa_id'], $assignedRemoteIds)) {
-                    $desas[] = [
-                        'id' => 'ext_v_' . $village['desa_id'],
-                        'name' => 'Desa ' . $village['desa_nama']
-                    ];
-                }
-            }
-        }
-
-        // Sort data by name
-        usort($opds, fn($a, $b) => strcmp($a['name'], $b['name']));
-        usort($kecamatans, fn($a, $b) => strcmp($a['name'], $b['name']));
-        usort($desas, fn($a, $b) => strcmp($a['name'], $b['name']));
+        // Sort by name
+        $sortByName = function($a, $b) { return strcmp($a['name'], $b['name']); };
+        usort($opds, $sortByName);
+        usort($kecamatans, $sortByName);
+        usort($desas, $sortByName);
 
         return response()->json([
             'success' => true,
