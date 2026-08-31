@@ -685,8 +685,13 @@ class FrontendController extends Controller
 
         $hasAccess = false;
 
+        // Cek akses Super Admin
+        if ($user->isSuperAdmin()) {
+            $hasAccess = true;
+        }
+
         // 1. Cek unit_id lokal user
-        if ($user->unit_id && (string)$user->unit_id === (string)$organization->remote_id) {
+        if (!$hasAccess && $user->unit_id && (string)$user->unit_id === (string)$organization->remote_id) {
             $hasAccess = true;
         }
 
@@ -729,8 +734,13 @@ class FrontendController extends Controller
 
         $hasAccess = false;
 
+        // Cek akses Super Admin
+        if ($user->isSuperAdmin()) {
+            $hasAccess = true;
+        }
+
         // 1. Cek unit_id lokal
-        if ($user->unit_id && (string)$user->unit_id === (string)$organization->remote_id) {
+        if (!$hasAccess && $user->unit_id && (string)$user->unit_id === (string)$organization->remote_id) {
             $hasAccess = true;
         }
 
