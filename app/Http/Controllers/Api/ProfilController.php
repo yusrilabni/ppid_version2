@@ -321,9 +321,29 @@ class ProfilController extends Controller
             return response()->json(['message' => 'Anda tidak memiliki akses untuk mengelola pimpinan ini.'], 403);
         }
 
+        $positions = \App\Models\Position::orderByRaw("
+            CASE
+                WHEN slug = 'bupati-sinjai' THEN 1
+                WHEN slug = 'wakil-bupati-sinjai' THEN 2
+                WHEN slug = 'sekretaris-daerah-sinjai' THEN 3
+                WHEN slug = 'asisten-i-pemerintahan-dan-kesra' THEN 4
+                WHEN slug = 'asisten-ii-perekonomian-dan-pembangunan' THEN 5
+                WHEN slug = 'asisten-iii-administrasi-umum' THEN 6
+                WHEN slug = 'staf-ahli-bidang-politik-hukum-dan-pemerintahan' THEN 7
+                WHEN slug = 'staf-ahli-bidang-ekonomi-keuangan-dan-pembangunan' THEN 8
+                WHEN slug = 'staf-ahli-bidang-sosial-dan-sumber-daya-manusia' THEN 9
+                WHEN slug = 'kepala-opd' THEN 10
+                ELSE 99
+            END
+        ")->get();
+
+        $organizations = \App\Models\Organization::all();
+
         return response()->json([
             'success' => true,
-            'official' => $official
+            'official' => $official,
+            'positions' => $positions,
+            'organizations' => $organizations
         ]);
     }
 
