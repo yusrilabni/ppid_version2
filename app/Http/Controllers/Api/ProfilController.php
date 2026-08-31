@@ -95,6 +95,8 @@ class ProfilController extends Controller
         ]);
     }
 
+
+    public function listKepalaOpd(Request $request)
     {
         $position = Position::where('slug', 'kepala-opd')->first();
 
