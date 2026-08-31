@@ -178,17 +178,27 @@ class AiSettingController extends Controller
         $context = $request->input('context', 'biasa');
 
         $kategoriDanJenis = "";
-        $jenisDokumenFormat = '\"...\"';
-        $jenisDokumenInstruction = 'Pilih SATU kategori dan SATU jenis dokumen yang sesuai.';
+        $jenisDokumenFormat = '"Jenis Dokumen"';
+        $jenisDokumenInstruction = 'Pilih SATU kategori dan SATU jenis dokumen yang sesuai dari daftar.';
 
         if ($context === 'pemkab') {
             $kategori_jenis = \App\Models\InformasiPemkab::KATEGORI_JENIS_DOKUMEN;
             $categories = array_keys($kategori_jenis);
+            
+            // Gabungkan semua jenis dokumen jadi satu daftar panjang tanpa dikelompokkan
+            $semuaJenisDokumen = [];
             foreach ($kategori_jenis as $kat => $jenis) {
-                $kategoriDanJenis .= "- Kategori '$kat' memiliki jenis dokumen: " . implode(', ', $jenis) . "\n";
+                foreach ($jenis as $j) {
+                    if (!in_array($j, $semuaJenisDokumen)) {
+                        $semuaJenisDokumen[] = $j;
+                    }
+                }
             }
-            $jenisDokumenFormat = '["Jenis 1", "Jenis 2"]';
-            $jenisDokumenInstruction = 'Pilih SATU Kategori. Untuk Jenis Dokumen, Anda BOLEH memilih LEBIH DARI SATU jenis yang relevan (berikan dalam bentuk array of string). KHUSUS: Jika dokumen berkaitan dengan penganggaran/keuangan daerah (seperti KUA, PPAS, RKA, DPA, APBD, Perda/Perbup APBD, LKPD), WAJIB centang juga "IPKD" terlepas dari kategori manapun yang Anda pilih.';
+            sort($semuaJenisDokumen);
+            
+            $kategoriDanJenis = "- Kategori yang tersedia: " . implode(', ', $categories) . "\n- Semua Jenis Dokumen (Tags) yang tersedia: " . implode(', ', $semuaJenisDokumen) . "\n";
+            $jenisDokumenFormat = '["Tag 1", "Tag 2", "Tag 3"]';
+            $jenisDokumenInstruction = 'Pilih SATU Kategori. Untuk Jenis Dokumen (sebagai Tag), Anda BEBAS memilih antara 1 hingga MAKSIMAL 3 jenis dokumen yang paling relevan dari SEMUA daftar yang ada, TANPA harus terikat pada Kategori yang Anda pilih (berikan dalam bentuk array of string). KHUSUS: Jika dokumen berkaitan dengan penganggaran/keuangan daerah, sangat disarankan memasukkan tag "IPKD" bila masih ada slot (maksimal 3).';
         } else {
             $categories = ['Informasi Berkala', 'Informasi Setiap Saat', 'Informasi Serta Merta', 'Informasi Dikecualikan'];
             $jenisList = [
@@ -205,12 +215,11 @@ class AiSettingController extends Controller
         $systemPrompt = "Anda adalah asisten AI yang membantu admin PPID membuat detail informasi publik yang profesional dan sesuai aturan KIP (Keterbukaan Informasi Publik). 
 
 Tugas Anda:
-1. Perbaiki judul dokumen agar lebih baku dan profesional.
+1. Perbaiki judul dokumen agar lebih baku dan profesional. PENTING: Jika judul/topik tersebut memiliki singkatan/akronim resmi atau umum (misal: Rencana Pembangunan Jangka Menengah Daerah disingkat RPJMD, Laporan Penyelenggaraan Pemerintahan Daerah disingkat LPPD), Anda WAJIB menyertakan singkatan tersebut dalam tanda kurung di dalam judul (contoh: 'Laporan Penyelenggaraan Pemerintahan Daerah (LPPD) Kabupaten Sinjai Tahun 2024'). Namun, jika dokumennya tidak memiliki singkatan yang wajar/umum, tidak perlu dipaksakan membuat singkatan buatan.
 2. Buat deskripsi singkat yang mendeskripsikan dokumen tersebut (1-2 paragraf).
 3. Buat konten/penjelasan (doc_content). PENTING: Gunakan bahasa yang umum dan obyektif. Jangan berlebihan (overclaim) atau mengarang data spesifik yang tidak ada di judul. Cukup berikan penjelasan generik standar mengenai apa isi dokumen tersebut pada umumnya.
 4. $jenisDokumenInstruction Pilih dari panduan berikut:
 $kategoriDanJenis
-PENTING: Jenis dokumen yang dipilih HARUS merupakan anak dari Kategori yang Anda pilih (sesuai daftar di atas).
 5. Tentukan tahun dokumen ('tahun') dalam format 'YYYY-MM-DD' berdasarkan konteks di judul (jika hanya tahu tahunnya, gunakan 'YYYY-01-01'). Jika tidak ada, gunakan tahun sekarang (" . $currentYear . "-01-01).
 6. Tentukan status ('status'). Jika dokumen tersebut merujuk pada " . ($currentYear - 2) . " atau lebih lama, isi dengan 'ARSIP'. Jika lebih baru atau tahun ini, isi dengan 'BERLAKU'.
 

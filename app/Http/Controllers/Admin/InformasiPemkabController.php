@@ -78,7 +78,7 @@ class InformasiPemkabController extends Controller
         $rules = [
             'judul' => 'required|string|max:255',
             'kategori' => 'required|string',
-            'jenis_dokumen' => 'required|array',
+            'jenis_dokumen' => 'required|array|min:1|max:3',
             'jenis_dokumen.*' => 'string',
             'tanggal_dokumen' => 'required|date',
             'deskripsi' => 'nullable|string',
@@ -233,7 +233,7 @@ class InformasiPemkabController extends Controller
         $rules = [
             'judul' => 'required|string|max:255',
             'kategori' => 'required|string',
-            'jenis_dokumen' => 'required|array',
+            'jenis_dokumen' => 'required|array|min:1|max:3',
             'jenis_dokumen.*' => 'string',
             'tanggal_dokumen' => 'required|date',
             'deskripsi' => 'nullable|string',

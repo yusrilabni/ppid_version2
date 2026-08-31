@@ -129,23 +129,32 @@
 
                         <!-- Jenis Dokumen -->
                         <div class="relative z-[80]">
-                            <label for="jenis_dokumen" class="block text-gray-700 text-sm font-bold mb-3">Jenis Dokumen <span class="text-red-500">*</span></label>
+                            <label for="jenis_dokumen" class="block text-gray-700 text-sm font-bold mb-3">Jenis Dokumen (Tags) <span class="text-gray-400 font-normal text-xs ml-1">(Pilih 1 - 3 tag)</span> <span class="text-red-500">*</span></label>
                             <div x-data="{
                                 open: false,
                                 options: [],
                                 selected: {{ json_encode(old('jenis_dokumen', array_map('trim', explode(',', $informasi_pemkab->jenis_dokumen ?? '')))) }},
+                                maxSelect: 3,
                                 init() {
-                                    window.addEventListener('update-options', (e) => {
-                                        if (e.detail.target === 'jenis_dokumen') {
-                                            this.options = e.detail.data;
-                                        }
+                                    // Kumpulkan semua jenis dokumen unik secara flat
+                                    let allOpts = [];
+                                    Object.values(this.mapping).forEach(arr => {
+                                        arr.forEach(item => {
+                                            if (!allOpts.find(o => o.value === item)) {
+                                                allOpts.push({value: item, label: item});
+                                            }
+                                        });
                                     });
+                                    allOpts.sort((a, b) => a.label.localeCompare(b.label));
+                                    this.options = allOpts;
+
                                     // Listen for AI mapping specific to multi-select
                                     window.addEventListener('set-jenis-dokumen', (e) => {
                                         if(e.detail.value) {
                                             let values = Array.isArray(e.detail.value) ? e.detail.value : [e.detail.value];
+                                            this.selected = []; // reset dulu
                                             values.forEach(v => {
-                                                if (!this.selected.includes(v)) {
+                                                if (this.selected.length < this.maxSelect && !this.selected.includes(v)) {
                                                     this.selected.push(v);
                                                 }
                                             });
@@ -153,8 +162,17 @@
                                     });
                                 },
                                 get selectedLabels() {
-                                    if(this.selected.length === 0) return 'Pilih Jenis Dokumen';
+                                    if(this.selected.length === 0) return 'Pilih Jenis Dokumen (Maks. 3)';
                                     return this.selected.join(', ');
+                                },
+                                toggleSelection(val) {
+                                    if (this.selected.includes(val)) {
+                                        this.selected = this.selected.filter(i => i !== val);
+                                    } else {
+                                        if (this.selected.length < this.maxSelect) {
+                                            this.selected.push(val);
+                                        }
+                                    }
                                 }
                             }" class="relative w-full">
                                 <button type="button" @click="open = !open" @click.outside="open = false"
@@ -168,8 +186,13 @@
                                 </button>
                                 <div x-show="open" style="display: none;" class="absolute mt-1 w-full rounded-2xl bg-white shadow-[0_25px_60px_-15px_rgba(0,0,0,0.3)] z-[9999] border border-gray-100 max-h-72 overflow-y-auto">
                                     <template x-for="(opt, idx) in options" :key="idx">
-                                        <label class="flex items-center mx-2 my-1 px-4 py-3 hover:bg-amber-50 cursor-pointer rounded-xl transition-colors">
-                                            <input type="checkbox" name="jenis_dokumen[]" :value="opt.value" x-model="selected" class="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500">
+                                        <label class="flex items-center mx-2 my-1 px-4 py-3 hover:bg-amber-50 cursor-pointer rounded-xl transition-colors"
+                                               :class="{'opacity-50 cursor-not-allowed hover:bg-transparent': selected.length >= maxSelect && !selected.includes(opt.value)}">
+                                            <input type="checkbox" name="jenis_dokumen[]" :value="opt.value" 
+                                                :checked="selected.includes(opt.value)"
+                                                @change="toggleSelection(opt.value)"
+                                                :disabled="selected.length >= maxSelect && !selected.includes(opt.value)"
+                                                class="w-4 h-4 text-amber-600 border-gray-300 rounded focus:ring-amber-500 disabled:opacity-50">
                                             <span class="ml-3 text-sm font-medium text-gray-700" x-text="opt.label"></span>
                                         </label>
                                     </template>
@@ -450,15 +473,7 @@
             },
             
             kategoriChanged(val) {
-                let opts = [];
-                if (val && this.mapping[val]) {
-                    opts = this.mapping[val].map(item => ({value: item, label: item}));
-                }
-                
-                // Dispatch event to update the jenis_dokumen custom-select component
-                window.dispatchEvent(new CustomEvent('update-options', {
-                    detail: { target: 'jenis_dokumen', data: opts }
-                }));
+                // Tidak lagi merestrict jenis_dokumen berdasarkan kategori
             }
         }));
 
