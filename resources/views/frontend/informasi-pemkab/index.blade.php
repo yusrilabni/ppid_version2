@@ -13,6 +13,17 @@
 
 @section('title', $pageTitle)
 
+@section('meta')
+    <meta property="og:title" content="{{ $pageTitle }} - PPID Kabupaten Sinjai">
+    <meta property="og:description" content="Daftar Dokumen Informasi Pemerintah Daerah Kabupaten Sinjai. Telusuri berbagai dokumen publik, perundang-undangan, kebijakan, laporan, dan informasi lainnya.">
+    <meta property="og:image" content="{{ asset('storage/logo/Lambang_Kabupaten_Sinjai_OG.jpg') }}">
+    <meta property="og:image:width" content="1200">
+    <meta property="og:image:height" content="630">
+    <meta name="twitter:title" content="{{ $pageTitle }} - PPID Kabupaten Sinjai">
+    <meta name="twitter:description" content="Daftar Dokumen Informasi Pemerintah Daerah Kabupaten Sinjai.">
+    <meta name="twitter:image" content="{{ asset('storage/logo/Lambang_Kabupaten_Sinjai_OG.jpg') }}">
+@endsection
+
 @section('content')
 <!-- Hero Section -->
 <div class="relative bg-gradient-to-br from-blue-900 via-blue-800 to-blue-600 pt-6 md:pt-10 pb-24 overflow-hidden">

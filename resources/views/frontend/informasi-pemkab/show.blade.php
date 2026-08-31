@@ -13,12 +13,6 @@
                 $isImage = true;
             }
         }
-        
-        // Generate placeholder based on document if no image
-        if (!$isImage) {
-            $kategoriShare = urlencode(strtoupper($informasi_pemkab->kategori ?? 'INFORMASI PEMKAB'));
-            $shareImage = "https://placehold.co/1200x630/2563eb/ffffff?text={$kategoriShare}\\nPPID+KABUPATEN+SINJAI";
-        }
     @endphp
     <meta property="og:title" content="{{ $informasi_pemkab->judul }} - PPID Kabupaten Sinjai">
     <meta property="og:description" content="{{ Str::limit(strip_tags($informasi_pemkab->deskripsi ?? 'Detail Dokumen Informasi Pemkab Kabupaten Sinjai'), 160) }}">
