@@ -103,26 +103,48 @@ class ProfilController extends Controller
         }
 
         $assignedOrgIds = Official::where('position_id', $position->id)->pluck('organization_id')->toArray();
+        $assignedRemoteIds = Organization::whereIn('id', $assignedOrgIds)->pluck('remote_id')->toArray();
 
-        $unassignedOrgsRaw = Organization::whereNotIn('id', $assignedOrgIds)
-            ->orderBy('name')
-            ->get();
-
-        // Categorize them
+        $cached = \App\Helpers\GeneralHelper::syncExternalUnitsIfNeeded();
         $opds = [];
         $kecamatans = [];
         $desas = [];
 
-        foreach ($unassignedOrgsRaw as $org) {
-            $nameLower = strtolower($org->name);
-            if (str_contains($nameLower, 'desa') || str_contains($nameLower, 'kelurahan')) {
-                $desas[] = $org;
-            } elseif (str_contains($nameLower, 'kecamatan')) {
-                $kecamatans[] = $org;
-            } else {
-                $opds[] = $org;
+        if (!empty($cached['units'])) {
+            foreach ($cached['units'] as $unit) {
+                if (!in_array($unit['unit_id'], $assignedRemoteIds)) {
+                    $nameLower = strtolower($unit['unit_nama']);
+                    $unitData = [
+                        'id' => 'ext_' . $unit['unit_id'],
+                        'name' => $unit['unit_nama']
+                    ];
+                    
+                    if (str_contains($nameLower, 'desa ') || str_contains($nameLower, 'kelurahan ')) {
+                        $desas[] = $unitData;
+                    } elseif (str_contains($nameLower, 'kecamatan ')) {
+                        $kecamatans[] = $unitData;
+                    } else {
+                        $opds[] = $unitData;
+                    }
+                }
             }
         }
+
+        if (!empty($cached['villages'])) {
+            foreach ($cached['villages'] as $village) {
+                if (!in_array($village['desa_id'], $assignedRemoteIds)) {
+                    $desas[] = [
+                        'id' => 'ext_v_' . $village['desa_id'],
+                        'name' => 'Desa ' . $village['desa_nama']
+                    ];
+                }
+            }
+        }
+
+        // Sort data by name
+        usort($opds, fn($a, $b) => strcmp($a['name'], $b['name']));
+        usort($kecamatans, fn($a, $b) => strcmp($a['name'], $b['name']));
+        usort($desas, fn($a, $b) => strcmp($a['name'], $b['name']));
 
         return response()->json([
             'success' => true,
@@ -130,7 +152,7 @@ class ProfilController extends Controller
                 'opds' => $opds,
                 'kecamatans' => $kecamatans,
                 'desas' => $desas,
-                'total' => count($unassignedOrgsRaw)
+                'total' => count($opds) + count($kecamatans) + count($desas)
             ]
         ]);
     }
