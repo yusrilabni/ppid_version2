@@ -320,6 +320,8 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
     Route::middleware('auth:sanctum')->group(function () {
         Route::post('/informasi-crud/check-similarity', [\App\Http\Controllers\Admin\InformasiController::class, 'checkSimilarity']);
         Route::post('/informasi-crud', [\App\Http\Controllers\Admin\InformasiController::class, 'store']);
+        Route::get('/informasi-crud/{informasi}/edit', [\App\Http\Controllers\Admin\InformasiController::class, 'editApi']);
+        Route::post('/informasi-crud/{informasi}', [\App\Http\Controllers\Admin\InformasiController::class, 'update']);
         Route::delete('/informasi-crud/{informasi}', [\App\Http\Controllers\Admin\InformasiController::class, 'destroy']);
         Route::post('/ai-settings/generate', [\App\Http\Controllers\Admin\AiSettingController::class, 'generateInformasi']);
         

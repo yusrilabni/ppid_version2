@@ -123,6 +123,30 @@ class InformasiController extends Controller
         return view('informasi-crud.create', $viewData);
     }
 
+    public function editApi(Informasi $informasi)
+    {
+        $storageBaseUrl = asset('storage');
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'id' => $informasi->id,
+                'title' => $informasi->title,
+                'doc_desc' => $informasi->deskripsi,
+                'doc_content' => $informasi->content,
+                'category' => $informasi->category,
+                'jenis_dokumen' => $informasi->jenis_dokumen,
+                'tahun' => $informasi->tanggal_upload,
+                'status' => $informasi->status,
+                'file_type' => $informasi->file_type ?: ($informasi->url ? 'url' : 'upload'),
+                'file_url' => $informasi->url,
+                'file' => $informasi->file,
+                'file_full_url' => $informasi->file ? $storageBaseUrl . '/' . $informasi->file : null,
+                'unit_id' => $informasi->unit_id,
+            ]
+        ]);
+    }
+
     public function edit(Informasi $informasi)
     {
         $categoryName = $informasi->category;
@@ -495,6 +519,10 @@ class InformasiController extends Controller
 
 
         Cache::forget('dip_years');
+
+        if (request()->wantsJson() || request()->is('api/*')) {
+            return response()->json(['success' => true, 'message' => '"' . $validatedData['title'] . '" berhasil diperbarui.']);
+        }
 
         $slug = \Illuminate\Support\Str::slug(str_replace('Informasi ', '', $validatedData['category']));
         return redirect()->route('frontend.informasi.category', ['category' => $slug])->with('success', '"' . $validatedData['title'] . '" berhasil diperbarui.');
