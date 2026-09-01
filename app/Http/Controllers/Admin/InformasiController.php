@@ -253,6 +253,8 @@ class InformasiController extends Controller
 
     public function store(Request $request)
     {
+        \Log::info('STORE_START_PAYLOAD', $request->all());
+        \Log::info('TARGET_UNIT_VALUE', ['target_unit' => $request->target_unit]);
         \Log::info('STORE_START: ' . auth()->user()->nip . ' attempting upload.');
         
         try {
@@ -617,6 +619,10 @@ class InformasiController extends Controller
         });
 
         Cache::forget('dip_years');
+
+        if (request()->wantsJson() || request()->is('api/*')) {
+            return response()->json(['success' => true, 'message' => '"' . $title . '" berhasil dihapus.']);
+        }
 
         return redirect()->route('frontend.informasi.category', ['category' => $categorySlug])->with('deleted', '"' . $title . '" berhasil dihapus.');
     }
