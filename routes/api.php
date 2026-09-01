@@ -325,6 +325,12 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
         Route::delete('/informasi-crud/{informasi}', [\App\Http\Controllers\Admin\InformasiController::class, 'destroy']);
         Route::post('/ai-settings/generate', [\App\Http\Controllers\Admin\AiSettingController::class, 'generateInformasi']);
         
+        // Informasi Pemkab CRUD
+        Route::post('/informasi-pemkab-crud', [\App\Http\Controllers\Admin\InformasiPemkabController::class, 'store']);
+        Route::get('/informasi-pemkab-crud/{informasi_pemkab}/edit', [\App\Http\Controllers\Admin\InformasiPemkabController::class, 'editApi']);
+        Route::post('/informasi-pemkab-crud/{informasi_pemkab}', [\App\Http\Controllers\Admin\InformasiPemkabController::class, 'update']);
+        Route::delete('/informasi-pemkab-crud/{informasi_pemkab}', [\App\Http\Controllers\Admin\InformasiPemkabController::class, 'destroy']);
+        
         Route::get('/profil/pimpinan/{official}/edit', [ProfilController::class, 'editOfficial']);
         Route::post('/profil/pimpinan/{official}', [ProfilController::class, 'updateOfficial']);
         

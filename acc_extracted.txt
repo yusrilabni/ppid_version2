@@ -1,0 +1,132 @@
+<div x-data="accessibilityWidget()" class="fixed z-[99999] acc-widget-container flex flex-col items-center" style="bottom: 24px; left: 24px;" x-cloak>
+        
+        <!-- MASTER SOUND TOGGLE -->
+        <button @click.stop="toggleMasterSound()" 
+                class="flex items-center justify-center transition-all duration-300 hover:scale-110 shadow-lg text-white mb-2" 
+                :class="isSoundEnabled ? 'bg-green-500' : 'bg-red-500'"
+                style="width: 32px; height: 32px; border-radius: 50%; border: none; cursor: pointer;">
+            <i x-show="isSoundEnabled" class="fas fa-volume-up" style="font-size: 14px;"></i>
+            <i x-show="!isSoundEnabled" class="fas fa-volume-mute" style="font-size: 14px;"></i>
+        </button>
+
+        <button @click="$store.accConfig.toggleMenu()" class="bg-[#0052FF] hover:bg-[#0041CC] text-white flex items-center justify-center transition-all duration-300 hover:scale-105 shadow-lg" style="width: 64px; height: 64px; border-radius: 50%; border: none; cursor: pointer;">
+            <i class="fas fa-universal-access" style="font-size: 30px;" x-show="!$store.accConfig.isOpen"></i>
+            <i class="fas fa-times" style="font-size: 28px;" x-show="$store.accConfig.isOpen"></i>
+        </button>
+
+        <div x-show="$store.accConfig.isOpen" @click.away="$store.accConfig.isOpen = false" x-transition x-cloak
+             class="absolute bg-white overflow-hidden acc-menu-panel" style="display: none; bottom: 110px; left: 0; width: 360px; border-radius: 20px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); border: 1px solid #E5E7EB;">
+            <div class="bg-[#0052FF] text-white shrink-0 relative" style="padding: 24px 20px;">
+                <h3 style="font-size: 18px; font-weight: 700;">Menu Aksesibilitas</h3>
+                <p style="font-size: 12px; opacity: 0.9;">Optimalkan tampilan sesuai kebutuhan Anda</p>
+            </div>
+
+            <div class="overflow-y-auto" style="padding: 20px; max-height: 540px; background: #F9FAFB;">
+                <div style="margin-bottom: 20px; background: #fff; padding: 16px; border-radius: 16px; border: 1px solid #E5E7EB;">
+                    <p style="font-size: 12px; font-weight: 700; color: #6B7280; margin-bottom: 12px; text-transform: uppercase;">Kontrol Suara (TTS)</p>
+                    <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 8px;">
+                        <button @click="toggleReader()" :class="(isReaderActive && isSoundEnabled) ? 'border-[#0052FF] border-2' : 'border-[#E5E7EB] border'" class="bg-white text-[#374151] flex items-center justify-center" style="padding: 12px; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 700; border-style: solid;">
+                            <i class="fas fa-volume-up" style="margin-right: 8px;"></i> Klik Baca
+                        </button>
+                        <button @click="toggleHoverReader()" :class="(isHoverActive && isSoundEnabled) ? 'border-[#0052FF] border-2' : 'border-[#E5E7EB] border'" class="bg-white text-[#374151] flex items-center justify-center" style="padding: 12px; border-radius: 12px; cursor: pointer; font-size: 12px; font-weight: 700; border-style: solid;">
+                            <i class="fas fa-mouse-pointer" style="margin-right: 8px;"></i> Sorot Baca
+                        </button>
+                    </div>
+                </div>
+
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 12px;">
+                    <!-- 1. Contrast -->
+                    <button @click="$store.accConfig.cycleContrast()" class="acc-grid-btn acc-ignore" :class="{'active': $store.accConfig.contrast !== 'default'}">
+                        <i x-show="$store.accConfig.contrast !== 'default'" class="fas fa-check-circle acc-check-icon"></i>
+                        <div class="acc-icon-wrapper"><i :class="{'fas fa-adjust': $store.accConfig.contrast === 'default', 'fas fa-sun': $store.accConfig.contrast === 'light', 'fas fa-eye-slash': $store.accConfig.contrast === 'invert', 'fas fa-moon': $store.accConfig.contrast === 'dark'}"></i></div>
+                        <div class="acc-text-wrapper"><span>Kontras Tinggi</span><small x-text="$store.accConfig.contrast" class="capitalize"></small></div>
+                        <div class="acc-dot-container"><template x-for="m in ['default', 'light', 'invert', 'dark']"><div :style="{ width: $store.accConfig.contrast === m ? '12px' : '6px', backgroundColor: $store.accConfig.contrast === m ? '#0052FF' : '#D1D5DB' }" class="acc-dot"></div></template></div>
+                    </button>
+                    <!-- 2. Text Size -->
+                    <button @click="cycleFont()" class="acc-grid-btn acc-ignore" :class="{'active': $store.accConfig.fontLevel !== 'normal'}">
+                        <i x-show="$store.accConfig.fontLevel !== 'normal'" class="fas fa-check-circle acc-check-icon"></i>
+                        <div class="acc-icon-wrapper" style="height: 50px !important;"><div style="display: flex; align-items: baseline; justify-content: center; gap: 4px;"><span :style="'font-size: ' + ($store.accConfig.fontLevel === 'kecil' ? '12' : ($store.accConfig.fontLevel === 'normal' ? '16' : ($store.accConfig.fontLevel === 'sedang' ? '20' : '24'))) + 'px !important'" style="font-weight: bold; color: #374151 !important; line-height: 1 !important; margin: 0 !important;">T</span><span :style="'font-size: ' + ($store.accConfig.fontLevel === 'kecil' ? '24' : ($store.accConfig.fontLevel === 'normal' ? '32' : ($store.accConfig.fontLevel === 'sedang' ? '40' : '48'))) + 'px !important'" style="font-weight: bold; color: #374151 !important; line-height: 1 !important; margin: 0 !important;">T</span></div></div>
+                        <div class="acc-text-wrapper"><span>Ukuran Teks</span><small x-text="$store.accConfig.fontLevel" class="capitalize"></small></div>
+                        <div class="acc-dot-container"><template x-for="l in ['kecil', 'normal', 'sedang', 'besar']"><div :style="{ width: $store.accConfig.fontLevel === l ? '12px' : '6px', backgroundColor: $store.accConfig.fontLevel === l ? '#0052FF' : '#D1D5DB' }" class="acc-dot"></div></template></div>
+                    </button>
+                    <!-- 3. Highlight Links -->
+                    <button @click="$store.accConfig.update('links', !$store.accConfig.links)" class="acc-grid-btn acc-ignore" :class="{'active': $store.accConfig.links}">
+                        <i x-show="$store.accConfig.links" class="fas fa-check-circle acc-check-icon"></i>
+                        <div class="acc-icon-wrapper"><i class="fas fa-link"></i></div>
+                        <div class="acc-text-wrapper"><span>Sorot Tautan</span><small x-text="$store.accConfig.links ? 'Aktif' : 'Default'"></small></div>
+                        <div class="acc-dot-container"><div :style="{ width: $store.accConfig.links ? '24px' : '12px', backgroundColor: $store.accConfig.links ? '#0052FF' : '#D1D5DB' }" class="acc-dot"></div></div>
+                    </button>
+                    <!-- 4. Text Spacing -->
+                    <button @click="$store.accConfig.update('textSpacing', !$store.accConfig.textSpacing)" class="acc-grid-btn acc-ignore" :class="{'active': $store.accConfig.textSpacing}">
+                        <i x-show="$store.accConfig.textSpacing" class="fas fa-check-circle acc-check-icon"></i>
+                        <div class="acc-icon-wrapper"><i class="fas fa-arrows-alt-h"></i></div>
+                        <div class="acc-text-wrapper"><span>Spasi Teks</span><small x-text="$store.accConfig.textSpacing ? 'Aktif' : 'Default'"></small></div>
+                        <div class="acc-dot-container"><div :style="{ width: $store.accConfig.textSpacing ? '24px' : '12px', backgroundColor: $store.accConfig.textSpacing ? '#0052FF' : '#D1D5DB' }" class="acc-dot"></div></div>
+                    </button>
+                    <!-- 5. Hide Images -->
+                    <button @click="$store.accConfig.update('hideImages', !$store.accConfig.hideImages)" class="acc-grid-btn acc-ignore" :class="{'active': $store.accConfig.hideImages}">
+                        <i x-show="$store.accConfig.hideImages" class="fas fa-check-circle acc-check-icon"></i>
+                        <div class="acc-icon-wrapper"><i class="fas fa-image"></i></div>
+                        <div class="acc-text-wrapper"><span>Sembunyi Gbr</span><small x-text="$store.accConfig.hideImages ? 'Aktif' : 'Default'"></small></div>
+                        <div class="acc-dot-container"><div :style="{ width: $store.accConfig.hideImages ? '24px' : '12px', backgroundColor: $store.accConfig.hideImages ? '#0052FF' : '#D1D5DB' }" class="acc-dot"></div></div>
+                    </button>
+                    <!-- 6. Dyslexia -->
+                    <button @click="$store.accConfig.cycleDyslexic()" class="acc-grid-btn acc-ignore" :class="{'active': $store.accConfig.dyslexic !== 'default'}">
+                        <i x-show="$store.accConfig.dyslexic !== 'default'" class="fas fa-check-circle acc-check-icon"></i>
+                        <div class="acc-icon-wrapper"><i :class="{'fas fa-font': $store.accConfig.dyslexic === 'default', 'fas fa-universal-access': $store.accConfig.dyslexic === 'open', 'fas fa-spell-check': $store.accConfig.dyslexic === 'lexend'}"></i></div>
+                        <div class="acc-text-wrapper"><span>Ramah Disleksia</span><small x-text="$store.accConfig.dyslexic" class="capitalize"></small></div>
+                        <div class="acc-dot-container"><template x-for="m in ['default', 'open', 'lexend']"><div :style="{ width: $store.accConfig.dyslexic === m ? '12px' : '6px', backgroundColor: $store.accConfig.dyslexic === m ? '#0052FF' : '#D1D5DB' }" class="acc-dot"></div></template></div>
+                    </button>
+                    <!-- 7. Focus -->
+                    <button @click="$store.accConfig.cycleFocus()" class="acc-grid-btn acc-ignore" :class="{'active': $store.accConfig.focus !== 'default'}">
+                        <i x-show="$store.accConfig.focus !== 'default'" class="fas fa-check-circle acc-check-icon"></i>
+                        <div class="acc-icon-wrapper"><i :class="{'fas fa-eye': $store.accConfig.focus === 'default', 'fas fa-mouse-pointer': $store.accConfig.focus === 'cursor', 'fas fa-low-vision': $store.accConfig.focus === 'mask', 'fas fa-grip-lines-vertical': $store.accConfig.focus === 'guide'}"></i></div>
+                        <div class="acc-text-wrapper"><span>Fokus Membaca</span><small x-text="$store.accConfig.focus" class="capitalize"></small></div>
+                        <div class="acc-dot-container"><template x-for="m in ['default', 'cursor', 'mask', 'guide']"><div :style="{ width: $store.accConfig.focus === m ? '12px' : '6px', backgroundColor: $store.accConfig.focus === m ? '#0052FF' : '#D1D5DB' }" class="acc-dot"></div></template></div>
+                    </button>
+                    <!-- 8. Keyboard Nav -->
+                    <button @click="$store.accConfig.update('keyboard', !$store.accConfig.keyboard)" class="acc-grid-btn acc-ignore" :class="{'active': $store.accConfig.keyboard}">
+                        <i x-show="$store.accConfig.keyboard" class="fas fa-check-circle acc-check-icon"></i>
+                        <div class="acc-icon-wrapper"><i class="fas fa-keyboard"></i></div>
+                        <div class="acc-text-wrapper"><span>Navigasi Key</span><small x-text="$store.accConfig.keyboard ? 'Aktif' : 'Default'"></small></div>
+                        <div class="acc-dot-container"><div :style="{ width: $store.accConfig.keyboard ? '24px' : '12px', backgroundColor: $store.accConfig.keyboard ? '#0052FF' : '#D1D5DB' }" class="acc-dot"></div></div>
+                    </button>
+                    <!-- 9. Alignment -->
+                    <button @click="$store.accConfig.cycleAlignment()" class="acc-grid-btn acc-ignore" :class="{'active': $store.accConfig.alignment !== 'default'}">
+                        <i x-show="$store.accConfig.alignment !== 'default'" class="fas fa-check-circle acc-check-icon"></i>
+                        <div class="acc-icon-wrapper"><i :class="{'fas fa-bars': $store.accConfig.alignment === 'default', 'fas fa-align-left': $store.accConfig.alignment === 'left', 'fas fa-align-center': $store.accConfig.alignment === 'center', 'fas fa-align-right': $store.accConfig.alignment === 'right'}"></i></div>
+                        <div class="acc-text-wrapper"><span>Perataan</span><small x-text="$store.accConfig.alignment" class="capitalize"></small></div>
+                        <div class="acc-dot-container"><template x-for="m in ['default', 'left', 'center', 'right']"><div :style="{ width: $store.accConfig.alignment === m ? '12px' : '6px', backgroundColor: $store.accConfig.alignment === m ? '#0052FF' : '#D1D5DB' }" class="acc-dot"></div></template></div>
+                    </button>
+                    <!-- 10. Saturation -->
+                    <button @click="$store.accConfig.cycleSaturation()" class="acc-grid-btn acc-ignore" :class="{'active': $store.accConfig.saturation !== 'default'}">
+                        <i x-show="$store.accConfig.saturation !== 'default'" class="fas fa-check-circle acc-check-icon"></i>
+                        <div class="acc-icon-wrapper"><i :class="{'fas fa-palette': $store.accConfig.saturation === 'default', 'fas fa-brush': $store.accConfig.saturation === 'low', 'fas fa-fill-drip': $store.accConfig.saturation === 'high', 'fas fa-tint-slash': $store.accConfig.saturation === 'mono'}"></i></div>
+                        <div class="acc-text-wrapper"><span>Warna</span><small x-text="$store.accConfig.saturation" class="capitalize"></small></div>
+                        <div class="acc-dot-container"><template x-for="s in ['default', 'low', 'high', 'mono']"><div :style="{ width: $store.accConfig.saturation === s ? '12px' : '6px', backgroundColor: $store.accConfig.saturation === s ? '#0052FF' : '#D1D5DB' }" class="acc-dot"></div></template></div>
+                    </button>
+                    <!-- 11. Headings -->
+                    <button @click="$store.accConfig.update('headings', !$store.accConfig.headings)" class="acc-grid-btn acc-ignore" :class="{'active': $store.accConfig.headings}">
+                        <i x-show="$store.accConfig.headings" class="fas fa-check-circle acc-check-icon"></i>
+                        <div class="acc-icon-wrapper"><i class="fas fa-heading"></i></div>
+                        <div class="acc-text-wrapper"><span>Sorot Judul</span><small x-text="$store.accConfig.headings ? 'Aktif' : 'Default'"></small></div>
+                        <div class="acc-dot-container"><div :style="{ width: $store.accConfig.headings ? '24px' : '12px', backgroundColor: $store.accConfig.headings ? '#0052FF' : '#D1D5DB' }" class="acc-dot"></div></div>
+                    </button>
+                    <!-- 12. Line Height -->
+                    <button @click="$store.accConfig.update('lineHeight', !$store.accConfig.lineHeight)" class="acc-grid-btn acc-ignore" :class="{'active': $store.accConfig.lineHeight}">
+                        <i x-show="$store.accConfig.lineHeight" class="fas fa-check-circle acc-check-icon"></i>
+                        <div class="acc-icon-wrapper"><i class="fas fa-arrows-alt-v"></i></div>
+                        <div class="acc-text-wrapper"><span>Tinggi Baris</span><small x-text="$store.accConfig.lineHeight ? 'Aktif' : 'Default'"></small></div>
+                        <div class="acc-dot-container"><div :style="{ width: $store.accConfig.lineHeight ? '24px' : '12px', backgroundColor: $store.accConfig.lineHeight ? '#0052FF' : '#D1D5DB' }" class="acc-dot"></div></div>
+                    </button>
+                </div>
+
+                <div style="margin-top: 24px; text-align: center; border-top: 1px solid #E5E7EB; padding-top: 20px;">
+                    <button @click="resetAcc()" class="bg-gray-800 text-white hover:bg-black w-full flex items-center justify-center acc-ignore" style="padding: 14px; border-radius: 12px; border: none; cursor: pointer; font-size: 13px !important; font-weight: 700; margin-bottom: 12px;"><i class="fas fa-undo" style="margin-right: 8px !important; font-size: 14px !important;"></i> Reset Semua</button>
+                    <p style="font-size: 11px !important; color: #9CA3AF !important; margin: 0 !important; font-weight: 600 !important;">&copy; 2026 PPID KABUPATEN SINJAI</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script src="https://unpkg.com/swiper@8/swiper-bundle.min.js"></script>

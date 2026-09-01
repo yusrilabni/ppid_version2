@@ -194,8 +194,14 @@ class InformasiPemkabController extends Controller
                 }
             });
 
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
+                return response()->json(['success' => true, 'message' => 'Dokumen berhasil ditambahkan']);
+            }
             return redirect()->route('frontend.informasi-pemkab.index')->with('success', 'Dokumen berhasil ditambahkan');
         } catch (\Throwable $e) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
+                return response()->json(['success' => false, 'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()], 500);
+            }
             return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
         }
     }
@@ -369,8 +375,14 @@ class InformasiPemkabController extends Controller
                 Storage::disk('public')->delete($oldFilePath);
             }
 
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
+                return response()->json(['success' => true, 'message' => 'Dokumen berhasil diperbarui']);
+            }
             return redirect()->route('frontend.informasi-pemkab.index')->with('success', 'Dokumen berhasil diperbarui');
         } catch (\Throwable $e) {
+            if ($request->expectsJson() || $request->wantsJson() || $request->is('api/*')) {
+                return response()->json(['success' => false, 'message' => 'Terjadi kesalahan sistem: ' . $e->getMessage()], 500);
+            }
             return redirect()->back()->withInput()->with('error', 'Terjadi kesalahan sistem: ' . $e->getMessage());
         }
     }
@@ -378,7 +390,10 @@ class InformasiPemkabController extends Controller
     public function destroy(InformasiPemkab $informasi_pemkab)
     {
         $user = auth()->user();
-        if (!$user->isAdmin() && $informasi_pemkab->organization_id != $user->unit_id) {
+        if (!$user->isAdmin() && $informasi_pemkab->unit_id != $user->unit_id && $informasi_pemkab->organization_id != $user->unit_id) {
+            if (request()->expectsJson() || request()->wantsJson() || request()->is('api/*')) {
+                return response()->json(['success' => false, 'message' => 'Akses ditolak.'], 403);
+            }
             abort(403, 'Akses ditolak. Anda tidak berhak menghapus dokumen dinas lain.');
         }
 
@@ -391,6 +406,17 @@ class InformasiPemkabController extends Controller
             $informasi_pemkab->delete();
         });
 
+        if (request()->expectsJson() || request()->wantsJson() || request()->is('api/*')) {
+            return response()->json(['success' => true, 'message' => 'Dokumen berhasil dihapus.']);
+        }
         return redirect()->back()->with('success', 'Dokumen berhasil dihapus.');
+    }
+
+    public function editApi(InformasiPemkab $informasi_pemkab)
+    {
+        return response()->json([
+            'success' => true,
+            'data' => $informasi_pemkab
+        ]);
     }
 }
