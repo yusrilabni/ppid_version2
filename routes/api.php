@@ -318,7 +318,7 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
     });
 
     Route::middleware('auth:sanctum')->group(function () {
-        
+        Route::post('/informasi-crud/check-similarity', [\App\Http\Controllers\Admin\InformasiController::class, 'checkSimilarity']);
         Route::post('/informasi-crud', [\App\Http\Controllers\Admin\InformasiController::class, 'store']);
         Route::post('/ai-settings/generate', [\App\Http\Controllers\Admin\AiSettingController::class, 'generateInformasi']);
         
