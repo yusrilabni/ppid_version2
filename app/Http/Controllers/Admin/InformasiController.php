@@ -275,7 +275,7 @@ class InformasiController extends Controller
             }
 
             // Server-side Double Submit Protection (Title + Unit + User check)
-            $unitId = $user->isSuperAdmin() ? $request->target_unit : $user->unit_id;
+            $unitId = ($user->isSuperAdmin() && !empty($request->target_unit)) ? $request->target_unit : $user->unit_id;
             $existing = Informasi::where('title', $request->title)
                                  ->where('unit_id', $unitId)
                                  ->where('created_at', '>=', now()->subSeconds(10))
@@ -307,7 +307,7 @@ class InformasiController extends Controller
             ];
 
             if ($user->isSuperAdmin()) {
-                $validationRules['target_unit'] = 'required';
+                $validationRules['target_unit'] = 'nullable';
             }
 
             if ($request->file_type === 'url') {
@@ -330,7 +330,7 @@ class InformasiController extends Controller
                 'tanggal_upload' => Carbon::parse($validatedData['tahun'])->toDateString(),
                 'status' => $validatedData['status'],
                 'user_id' => $user->id,
-                'unit_id' => $user->isSuperAdmin() ? $request->target_unit : $user->unit_id,
+                'unit_id' => ($user->isSuperAdmin() && !empty($request->target_unit)) ? $request->target_unit : $user->unit_id,
             ];
 
             if ($request->file_type === 'upload' && $request->hasFile('file')) {
@@ -396,7 +396,7 @@ class InformasiController extends Controller
         ];
 
         if ($isSuperAdmin) {
-            $validationRules['target_unit'] = 'required|string';
+            $validationRules['target_unit'] = 'nullable|string';
         }
 
         if ($request->input('file_type') === 'url') {
@@ -463,7 +463,7 @@ class InformasiController extends Controller
                 $dataToUpdate['tahun'] = $tanggal_dokumen->format('Y');
                 
                 if ($isSuperAdmin) {
-                    $dataToUpdate['unit_id'] = $request->target_unit;
+                    $dataToUpdate['unit_id'] = !empty($request->target_unit) ? $request->target_unit : $user->unit_id;
                     $dataToUpdate['user_id'] = $user->id;
                 } else {
                     // Ensure the user has a unit_id, fetch from API if not present
