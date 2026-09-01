@@ -319,6 +319,8 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
 
     Route::middleware('auth:sanctum')->group(function () {
         
+        Route::post('/informasi-crud', [\App\Http\Controllers\Admin\InformasiController::class, 'store']);
+        
         Route::get('/profil/pimpinan/{official}/edit', [ProfilController::class, 'editOfficial']);
         Route::post('/profil/pimpinan/{official}', [ProfilController::class, 'updateOfficial']);
         

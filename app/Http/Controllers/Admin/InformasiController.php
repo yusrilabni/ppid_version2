@@ -283,6 +283,14 @@ class InformasiController extends Controller
             
             if ($existing) {
                 \Log::warning('DOUBLE_SUBMIT_DETECTED: ' . $user->nip . ' for title: ' . $request->title);
+                
+                if ($request->expectsJson()) {
+                    return response()->json([
+                        'success' => true,
+                        'message' => 'Data sudah berhasil disimpan sebelumnya.'
+                    ]);
+                }
+
                 return redirect()->route('frontend.informasi.category', ['category' => Str::slug(str_replace('Informasi ', '', $request->category))])
                     ->with('success', 'Data sudah berhasil disimpan sebelumnya.');
             }
@@ -338,6 +346,14 @@ class InformasiController extends Controller
             Informasi::create($dataToSave);
             \Log::info('STORE_COMPLETE');
 
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Data berhasil disimpan.',
+                    'data' => $dataToSave
+                ]);
+            }
+
             return redirect()->route('frontend.informasi.category', ['category' => Str::slug(str_replace('Informasi ', '', $dataToSave['category']))])
                 ->with('success', 'Data berhasil disimpan.');
 
@@ -345,6 +361,14 @@ class InformasiController extends Controller
             throw $e;
         } catch (\Exception $e) {
             \Log::error('STORE_FAILED: ' . $e->getMessage());
+            
+            if ($request->expectsJson()) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Gagal menyimpan: ' . $e->getMessage()
+                ], 500);
+            }
+
             return redirect()->back()->withInput()->with('error', 'Gagal menyimpan: ' . $e->getMessage());
         }
     }
