@@ -11,9 +11,14 @@ class TwibbonController extends Controller
     public function index(Request $request)
     {
         $perPage = $request->get('per_page', 12);
-        $data = Twibbon::with('user')
-            ->orderBy('created_at', 'desc')
-            ->paginate($perPage);
+        
+        $query = Twibbon::with('user')->orderBy('created_at', 'desc');
+
+        if (!auth('sanctum')->check()) {
+            $query->where('status', 'public');
+        }
+
+        $data = $query->paginate($perPage);
 
         return response()->json([
             'success' => true,
@@ -26,6 +31,10 @@ class TwibbonController extends Controller
         $twibbon = Twibbon::where('slug', $slug)
             ->orWhere('id', $slug)
             ->firstOrFail();
+            
+        if ($twibbon->status === 'private' && !auth('sanctum')->check()) {
+            abort(403, 'Akses ditolak. Twibbon ini bersifat private.');
+        }
 
         return response()->json([
             'success' => true,

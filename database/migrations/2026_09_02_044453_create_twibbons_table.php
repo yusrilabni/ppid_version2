@@ -15,6 +15,7 @@ return new class extends Migration
             $table->id();
             $table->string('judul');
             $table->string('slug')->unique();
+            $table->enum('status', ['public', 'private'])->default('public');
             $table->string('file_path');
             $table->foreignId('user_id')->nullable()->constrained('users')->nullOnDelete();
             $table->timestamps();

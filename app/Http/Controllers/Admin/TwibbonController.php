@@ -14,6 +14,8 @@ class TwibbonController extends Controller
     {
         $request->validate([
             'judul' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:twibbons,slug',
+            'status' => 'required|in:public,private',
             'file' => 'required|image|mimes:png,jpg,jpeg,webp|max:10240', // Max 10MB
         ]);
 
@@ -34,6 +36,8 @@ class TwibbonController extends Controller
 
             $twibbon = Twibbon::create([
                 'judul' => $request->judul,
+                'slug' => \Illuminate\Support\Str::slug($request->slug),
+                'status' => $request->status,
                 'file_path' => $filePath,
                 'user_id' => $user->id,
             ]);
@@ -54,8 +58,12 @@ class TwibbonController extends Controller
 
     public function update(Request $request, $slug)
     {
+        $twibbon = Twibbon::where('slug', $slug)->firstOrFail();
+        
         $request->validate([
             'judul' => 'required|string|max:255',
+            'slug' => 'required|string|max:255|unique:twibbons,slug,' . $twibbon->id,
+            'status' => 'required|in:public,private',
             'file' => 'nullable|image|mimes:png,jpg,jpeg,webp|max:10240', // Max 10MB
         ]);
 
@@ -69,8 +77,9 @@ class TwibbonController extends Controller
                 ], 403);
             }
 
-            $twibbon = Twibbon::where('slug', $slug)->firstOrFail();
             $twibbon->judul = $request->judul;
+            $twibbon->slug = \Illuminate\Support\Str::slug($request->slug);
+            $twibbon->status = $request->status;
 
             if ($request->hasFile('file')) {
                 $file = $request->file('file');

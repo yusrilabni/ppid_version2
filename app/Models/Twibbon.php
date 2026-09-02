@@ -9,6 +9,7 @@ class Twibbon extends Model
     protected $fillable = [
         'judul',
         'slug',
+        'status',
         'file_path',
         'user_id',
     ];
@@ -19,7 +20,7 @@ class Twibbon extends Model
 
         static::creating(function ($model) {
             if (empty($model->slug)) {
-                $model->slug = \Illuminate\Support\Str::slug($model->judul) . '-' . time();
+                $model->slug = \Illuminate\Support\Str::slug($model->judul);
             }
         });
     }
