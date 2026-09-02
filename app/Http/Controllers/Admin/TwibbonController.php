@@ -29,20 +29,8 @@ class TwibbonController extends Controller
 
             $file = $request->file('file');
             
-            // Konversi ke WebP untuk performa tinggi
-            ini_set('memory_limit', '512M');
-            $imageManager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
-            $imageInstance = $imageManager->read($file->path());
-            $imageInstance = $imageInstance->toPng();
-            
-            $imagePath = tempnam(sys_get_temp_dir(), 'twibbon_') . '.png';
-            $imageInstance->save($imagePath);
-            
-            $fileName = \Illuminate\Support\Str::slug($request->judul) . '_' . time() . '.png';
-            $filePath = 'twibbon/' . $fileName;
-            
-            Storage::disk('public')->put($filePath, file_get_contents($imagePath));
-            unlink($imagePath);
+            $fileName = \Illuminate\Support\Str::slug($request->judul) . '_' . time() . '.' . $file->getClientOriginalExtension();
+            $filePath = $file->storeAs('twibbon', $fileName, 'public');
 
             $twibbon = Twibbon::create([
                 'judul' => $request->judul,
@@ -87,19 +75,8 @@ class TwibbonController extends Controller
             if ($request->hasFile('file')) {
                 $file = $request->file('file');
                 
-                ini_set('memory_limit', '512M');
-                $imageManager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
-                $imageInstance = $imageManager->read($file->path());
-                $imageInstance = $imageInstance->toPng();
-                
-                $imagePath = tempnam(sys_get_temp_dir(), 'twibbon_') . '.png';
-                $imageInstance->save($imagePath);
-                
-                $fileName = \Illuminate\Support\Str::slug($request->judul) . '_' . time() . '.png';
-                $filePath = 'twibbon/' . $fileName;
-                
-                Storage::disk('public')->put($filePath, file_get_contents($imagePath));
-                unlink($imagePath);
+                $fileName = \Illuminate\Support\Str::slug($request->judul) . '_' . time() . '.' . $file->getClientOriginalExtension();
+                $filePath = $file->storeAs('twibbon', $fileName, 'public');
 
                 if ($twibbon->file_path && Storage::disk('public')->exists($twibbon->file_path)) {
                     Storage::disk('public')->delete($twibbon->file_path);
