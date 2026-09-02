@@ -200,13 +200,37 @@ class GoogleLoginController extends Controller
             </div>
             ";
 
-            \Illuminate\Support\Facades\Mail::html($htmlBody, function($msg) use ($toEmail, $otp, $title) {
-                $msg->to($toEmail)
-                    ->subject("Kode OTP $title: $otp (" . date('H:i:s') . ")");
-            });
+            $apiKey = env('BREVO_API_KEY');
+            
+            if (!$apiKey) {
+                throw new \Exception('API Key Brevo tidak dikonfigurasi (BREVO_API_KEY).');
+            }
+            
+            $response = \Illuminate\Support\Facades\Http::withHeaders([
+                'api-key' => $apiKey,
+                'Content-Type' => 'application/json',
+            ])->post('https://api.brevo.com/v3/smtp/email', [
+                'sender' => [
+                    'name' => 'PPID Kabupaten Sinjai',
+                    'email' => 'noreply@ppidkab.sinjaikab.go.id'
+                ],
+                'to' => [
+                    [
+                        'email' => $toEmail,
+                        'name' => $name
+                    ]
+                ],
+                'subject' => "Kode OTP $title: $otp (" . date('H:i:s') . ")",
+                'htmlContent' => $htmlBody
+            ]);
+
+            if (!$response->successful()) {
+                throw new \Exception('Brevo API Error: ' . $response->body());
+            }
+
             return true;
         } catch (\Exception $e) {
-            \Log::error('Failed to send OTP email: ' . $e->getMessage());
+            \Log::error('Failed to send OTP email via Brevo API: ' . $e->getMessage());
             throw new \Exception('Gagal mengirim email OTP: ' . $e->getMessage());
         }
     }
