@@ -342,6 +342,7 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
         
         // Twibbon CRUD
         Route::post('/twibbon', [\App\Http\Controllers\Admin\TwibbonController::class, 'store']);
+        Route::post('/twibbon/{slug}', [\App\Http\Controllers\Admin\TwibbonController::class, 'update']);
         Route::delete('/twibbon/{id}', [\App\Http\Controllers\Admin\TwibbonController::class, 'destroy']);
         
         Route::get('/profil/pimpinan/{official}/edit', [ProfilController::class, 'editOfficial']);
