@@ -314,14 +314,7 @@ class GoogleLoginController extends Controller
             $cachedData['cooldown_until'] = now()->addMinutes(1)->timestamp;
             
             \Illuminate\Support\Facades\Cache::put($cacheKey, $cachedData, now()->addMinutes(15));
-            
-            $emailValid = $user->email && $user->email !== '-';
-            if ($emailValid) {
-                $this->sendOtpEmail($user->email, $otp, 'Putuskan Tautan Google', 'memutuskan tautan', 'sistem PPID', $user->name);
-            } else if (!empty($cachedData['wa_number'])) {
-                $waMessage = "*Verifikasi Putuskan Tautan Google*\n\nHalo {$user->name},\nKode Verifikasi (OTP) Keamanan Anda adalah:\n\n*{$otp}*\n\nKode ini berlaku selama 1 menit.";
-                \App\Helpers\GeneralHelper::sendWhatsApp($cachedData['wa_number'], $waMessage);
-            }
+            $this->sendOtpEmail($user->email, $otp, 'Putuskan Tautan Google', 'memutuskan tautan', 'sistem PPID', $user->name);
         }
 
         return response()->json([
@@ -417,17 +410,6 @@ class GoogleLoginController extends Controller
     /**
      * Request OTP to unlink Google account
      */
-    private function getWhatsAppNumber($user)
-    {
-        if (!$user->nip) return null;
-        $apiData = User::getDataFromApi($user->nip);
-        $phone = $apiData['nomor_hp'] ?? null;
-        if ($phone && $phone !== '-' && $phone !== '') {
-            return \App\Helpers\GeneralHelper::formatPhoneNumber($phone);
-        }
-        return null;
-    }
-
     public function requestUnlinkOtp(Request $request)
     {
         $user = $request->user();
@@ -439,13 +421,10 @@ class GoogleLoginController extends Controller
             ], 400);
         }
 
-        $emailValid = $user->email && $user->email !== '-';
-        $waNumber = $this->getWhatsAppNumber($user);
-
-        if (!$emailValid && !$waNumber) {
+        if (!$user->email || $user->email === '-') {
             return response()->json([
                 'success' => false,
-                'message' => 'Akun Anda tidak memiliki email atau nomor HP yang valid untuk menerima OTP.'
+                'message' => 'Akun Anda tidak memiliki email yang valid untuk menerima OTP.'
             ], 400);
         }
 
@@ -455,25 +434,15 @@ class GoogleLoginController extends Controller
         $cachedData = [
             'otp' => $otp,
             'expires_at' => now()->addMinutes(1)->timestamp,
-            'cooldown_until' => now()->addMinutes(1)->timestamp,
-            'email' => $user->email,
-            'wa_number' => $waNumber
+            'cooldown_until' => now()->addMinutes(1)->timestamp
         ];
         \Illuminate\Support\Facades\Cache::put($cacheKey, $cachedData, now()->addMinutes(15));
 
-        $messageTarget = '';
-        if ($emailValid) {
-            $this->sendOtpEmail($user->email, $otp, 'Putuskan Tautan Google', 'memutuskan tautan', 'sistem PPID', $user->name);
-            $messageTarget = 'email Anda';
-        } else {
-            $waMessage = "*Verifikasi Putuskan Tautan Google*\n\nHalo {$user->name},\nKode Verifikasi (OTP) Keamanan Anda adalah:\n\n*{$otp}*\n\nKode ini berlaku selama 1 menit.";
-            \App\Helpers\GeneralHelper::sendWhatsApp($waNumber, $waMessage);
-            $messageTarget = 'WhatsApp Anda (' . substr($waNumber, 0, 6) . 'xxx)';
-        }
+        $this->sendOtpEmail($user->email, $otp, 'Putuskan Tautan Google', 'memutuskan tautan', 'sistem PPID', $user->name);
 
         return response()->json([
             'success' => true,
-            'message' => "Kode OTP telah dikirim ke $messageTarget."
+            'message' => 'Kode OTP telah dikirim ke email Anda.'
         ]);
     }
 
