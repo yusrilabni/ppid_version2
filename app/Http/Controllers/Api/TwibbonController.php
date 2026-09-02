@@ -32,4 +32,29 @@ class TwibbonController extends Controller
             'data' => $twibbon
         ]);
     }
+
+    public function proxy(\Illuminate\Http\Request $request)
+    {
+        $path = $request->get('path');
+        if (!$path) {
+            return response()->json(['error' => 'Path required'], 400);
+        }
+        
+        // Validasi path agar hanya melayani twibbon
+        if (!\Illuminate\Support\Str::startsWith($path, 'twibbon/')) {
+            return response()->json(['error' => 'Invalid path'], 403);
+        }
+
+        if (!\Illuminate\Support\Facades\Storage::disk('public')->exists($path)) {
+            return response()->json(['error' => 'File not found'], 404);
+        }
+
+        $file = \Illuminate\Support\Facades\Storage::disk('public')->get($path);
+        $mime = \Illuminate\Support\Facades\Storage::disk('public')->mimeType($path);
+
+        return response($file, 200)
+            ->header('Content-Type', $mime)
+            ->header('Access-Control-Allow-Origin', '*')
+            ->header('Access-Control-Allow-Methods', 'GET, OPTIONS');
+    }
 }

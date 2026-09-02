@@ -57,6 +57,7 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
     
     // Twibbon
     Route::get('/twibbon', [\App\Http\Controllers\Api\TwibbonController::class, 'index']);
+    Route::get('/twibbon-proxy', [\App\Http\Controllers\Api\TwibbonController::class, 'proxy']);
     Route::get('/twibbon/{slug}', [\App\Http\Controllers\Api\TwibbonController::class, 'show']);
 
     // Visual & Identitas
