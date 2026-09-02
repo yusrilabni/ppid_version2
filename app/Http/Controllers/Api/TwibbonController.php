@@ -66,4 +66,39 @@ class TwibbonController extends Controller
             ->header('Access-Control-Allow-Origin', '*')
             ->header('Access-Control-Allow-Methods', 'GET, OPTIONS');
     }
+
+    public function saveSession(Request $request)
+    {
+        $request->validate([
+            'slug' => 'required|string',
+            'result_image' => 'required|file|image',
+            'raw_images' => 'nullable|array',
+            'raw_images.*' => 'file|image'
+        ]);
+
+        $twibbon = Twibbon::where('slug', $request->slug)->orWhere('id', $request->slug)->first();
+        $twibbonId = $twibbon ? $twibbon->id : null;
+
+        $resultPath = $request->file('result_image')->store('twibbon-sessions/results', 'public');
+
+        $session = \App\Models\TwibbonSession::create([
+            'twibbon_id' => $twibbonId,
+            'result_image_path' => $resultPath
+        ]);
+
+        if ($request->hasFile('raw_images')) {
+            foreach ($request->file('raw_images') as $file) {
+                $rawPath = $file->store('twibbon-sessions/raw', 'public');
+                \App\Models\TwibbonSessionPhoto::create([
+                    'twibbon_session_id' => $session->id,
+                    'raw_image_path' => $rawPath
+                ]);
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Session saved successfully.'
+        ]);
+    }
 }
