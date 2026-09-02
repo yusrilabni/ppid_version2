@@ -89,7 +89,7 @@ class ProfileController extends Controller
 
         $validator = Validator::make($request->all(), [
             'name' => 'sometimes|required|string|max:255',
-            'email' => 'sometimes|required|email|unique:users,email,' . $user->id,
+            'email' => 'sometimes|nullable|email|unique:users,email,' . $user->id,
             'nip' => 'sometimes|nullable|string',
             'bio' => 'sometimes|nullable|string',
             'facebook' => 'sometimes|nullable|string',
