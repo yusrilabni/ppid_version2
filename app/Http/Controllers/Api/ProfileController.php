@@ -49,17 +49,20 @@ class ProfileController extends Controller
             }
         }
 
-        // Final Profile Photo Logic (Same as Web)
+        // Final Profile Photo Logic (Priority: Google -> Manual DB -> NIP API)
         $photoUrl = null;
         $isManualPhoto = false;
         
-        if (!empty($apiData['foto'])) {
+        if ($user->profile_photo_path && str_starts_with($user->profile_photo_path, 'http')) {
+            // Priority 1: Google Photo
+            $photoUrl = $user->profile_photo_path;
+        } elseif ($user->profile_photo_path && !str_starts_with($user->profile_photo_path, 'http')) {
+            // Priority 2: Manual Uploaded Photo (Database)
+            $photoUrl = asset('storage/' . $user->profile_photo_path);
+            $isManualPhoto = true;
+        } elseif (!empty($apiData['foto'])) {
+            // Priority 3: Pegawai API Photo (NIP)
             $photoUrl = $apiData['foto'];
-        } elseif ($user->profile_photo_path) {
-            $photoUrl = str_starts_with($user->profile_photo_path, 'http') ? $user->profile_photo_path : asset('storage/' . $user->profile_photo_path);
-            if (!str_starts_with($user->profile_photo_path, 'http')) {
-                $isManualPhoto = true;
-            }
         }
 
         return response()->json([
