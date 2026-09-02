@@ -40,10 +40,13 @@ class AppServiceProvider extends ServiceProvider
         // causing Peer certificate CN mismatch. Disable peer verification.
         if (config('app.env') === 'production') {
             Mail::extend('smtp', function (array $config = []) {
+                $isSsl = ($config['encryption'] ?? $config['scheme'] ?? '') === 'ssl'
+                      || ($config['encryption'] ?? $config['scheme'] ?? '') === 'smtps';
+
                 $transport = new EsmtpTransport(
                     $config['host'] ?? 'smtp.gmail.com',
                     (int) ($config['port'] ?? 465),
-                    (bool) ($config['encryption'] === 'ssl' || $config['scheme'] === 'smtps'),
+                    $isSsl,
                 );
                 $transport->setUsername($config['username'] ?? '');
                 $transport->setPassword($config['password'] ?? '');
