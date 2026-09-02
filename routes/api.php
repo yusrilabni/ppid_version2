@@ -49,9 +49,18 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
     Route::post('/permohonan', [PermohonanInformasiController::class, 'store']);
     Route::get('/permohonan/status/{code}', [PermohonanInformasiController::class, 'checkStatus']);
 
+    // Berita, Galeri, Pejabat
+    Route::get('/berita', [BeritaController::class, 'index']);
+    Route::get('/berita/{slug}', [BeritaController::class, 'show']);
+    Route::get('/galeri', [GaleriController::class, 'index']);
+    Route::get('/pejabat', [PejabatController::class, 'index']);
+    
+    // Twibbon
+    Route::get('/twibbon', [\App\Http\Controllers\Api\TwibbonController::class, 'index']);
+    Route::get('/twibbon/{slug}', [\App\Http\Controllers\Api\TwibbonController::class, 'show']);
+
     // Visual & Identitas
     Route::get('/sliders', [SliderController::class, 'index']);
-    Route::get('/galeri', [GaleriController::class, 'index']);
     Route::get('/menu', [MenuController::class, 'index']);
     Route::get('/units', [App\Http\Controllers\Api\DinasController::class, 'list']);
 
@@ -330,6 +339,10 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
         Route::get('/informasi-pemkab-crud/{slug}/edit', [\App\Http\Controllers\Admin\InformasiPemkabController::class, 'editApi']);
         Route::post('/informasi-pemkab-crud/{informasi_pemkab}', [\App\Http\Controllers\Admin\InformasiPemkabController::class, 'update']);
         Route::delete('/informasi-pemkab-crud/{informasi_pemkab}', [\App\Http\Controllers\Admin\InformasiPemkabController::class, 'destroy']);
+        
+        // Twibbon CRUD
+        Route::post('/twibbon', [\App\Http\Controllers\Admin\TwibbonController::class, 'store']);
+        Route::delete('/twibbon/{id}', [\App\Http\Controllers\Admin\TwibbonController::class, 'destroy']);
         
         Route::get('/profil/pimpinan/{official}/edit', [ProfilController::class, 'editOfficial']);
         Route::post('/profil/pimpinan/{official}', [ProfilController::class, 'updateOfficial']);
