@@ -15,6 +15,9 @@ use Illuminate\Support\Facades\Gate;
 use App\Models\User;
 use App\Models\Organization;
 use Illuminate\Pagination\Paginator;
+use Illuminate\Support\Facades\Mail;
+use Symfony\Component\Mailer\Transport\Smtp\EsmtpTransport;
+use Symfony\Component\Mailer\Bridge\Google\Transport\GmailSmtpTransport;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -33,6 +36,32 @@ class AppServiceProvider extends ServiceProvider
      */
     public function boot(): void
     {
+        // Workaround: server hosting *.sinjaikab.go.id intercepts outbound SSL
+        // causing Peer certificate CN mismatch. Disable peer verification.
+        if (config('app.env') === 'production') {
+            Mail::extend('smtp', function (array $config = []) {
+                $transport = new EsmtpTransport(
+                    $config['host'] ?? 'smtp.gmail.com',
+                    (int) ($config['port'] ?? 465),
+                    (bool) ($config['encryption'] === 'ssl' || $config['scheme'] === 'smtps'),
+                );
+                $transport->setUsername($config['username'] ?? '');
+                $transport->setPassword($config['password'] ?? '');
+
+                // Disable SSL peer verification to bypass server proxy cert mismatch
+                $stream = $transport->getStream();
+                $stream->setStreamOptions([
+                    'ssl' => [
+                        'verify_peer'       => false,
+                        'verify_peer_name'  => false,
+                        'allow_self_signed' => true,
+                    ],
+                ]);
+
+                return $transport;
+            });
+        }
+
         // Event Listeners
         \Illuminate\Support\Facades\Event::listen(\Illuminate\Auth\Events\Login::class, \App\Listeners\UpdateLastLogin::class);
 
