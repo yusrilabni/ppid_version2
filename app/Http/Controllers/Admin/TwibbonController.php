@@ -33,12 +33,12 @@ class TwibbonController extends Controller
             ini_set('memory_limit', '512M');
             $imageManager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
             $imageInstance = $imageManager->read($file->path());
-            $imageInstance = $imageInstance->toWebp(90);
+            $imageInstance = $imageInstance->toPng();
             
-            $imagePath = tempnam(sys_get_temp_dir(), 'twibbon_') . '.webp';
+            $imagePath = tempnam(sys_get_temp_dir(), 'twibbon_') . '.png';
             $imageInstance->save($imagePath);
             
-            $fileName = \Illuminate\Support\Str::slug($request->judul) . '_' . time() . '.webp';
+            $fileName = \Illuminate\Support\Str::slug($request->judul) . '_' . time() . '.png';
             $filePath = 'twibbon/' . $fileName;
             
             Storage::disk('public')->put($filePath, file_get_contents($imagePath));
@@ -90,12 +90,12 @@ class TwibbonController extends Controller
                 ini_set('memory_limit', '512M');
                 $imageManager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
                 $imageInstance = $imageManager->read($file->path());
-                $imageInstance = $imageInstance->toWebp(90);
+                $imageInstance = $imageInstance->toPng();
                 
-                $imagePath = tempnam(sys_get_temp_dir(), 'twibbon_') . '.webp';
+                $imagePath = tempnam(sys_get_temp_dir(), 'twibbon_') . '.png';
                 $imageInstance->save($imagePath);
                 
-                $fileName = \Illuminate\Support\Str::slug($request->judul) . '_' . time() . '.webp';
+                $fileName = \Illuminate\Support\Str::slug($request->judul) . '_' . time() . '.png';
                 $filePath = 'twibbon/' . $fileName;
                 
                 Storage::disk('public')->put($filePath, file_get_contents($imagePath));
