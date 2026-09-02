@@ -412,8 +412,9 @@ class InformasiPemkabController extends Controller
         return redirect()->back()->with('success', 'Dokumen berhasil dihapus.');
     }
 
-    public function editApi(InformasiPemkab $informasi_pemkab)
+    public function editApi($slug)
     {
+        $informasi_pemkab = InformasiPemkab::where('slug', $slug)->orWhere('id', $slug)->firstOrFail();
         return response()->json([
             'success' => true,
             'data' => $informasi_pemkab

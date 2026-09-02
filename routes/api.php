@@ -327,7 +327,7 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
         
         // Informasi Pemkab CRUD
         Route::post('/informasi-pemkab-crud', [\App\Http\Controllers\Admin\InformasiPemkabController::class, 'store']);
-        Route::get('/informasi-pemkab-crud/{informasi_pemkab}/edit', [\App\Http\Controllers\Admin\InformasiPemkabController::class, 'editApi']);
+        Route::get('/informasi-pemkab-crud/{slug}/edit', [\App\Http\Controllers\Admin\InformasiPemkabController::class, 'editApi']);
         Route::post('/informasi-pemkab-crud/{informasi_pemkab}', [\App\Http\Controllers\Admin\InformasiPemkabController::class, 'update']);
         Route::delete('/informasi-pemkab-crud/{informasi_pemkab}', [\App\Http\Controllers\Admin\InformasiPemkabController::class, 'destroy']);
         
