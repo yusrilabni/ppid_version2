@@ -51,10 +51,15 @@ class ProfileController extends Controller
 
         // Final Profile Photo Logic (Same as Web)
         $photoUrl = null;
+        $isManualPhoto = false;
+        
         if (!empty($apiData['foto'])) {
             $photoUrl = $apiData['foto'];
         } elseif ($user->profile_photo_path) {
             $photoUrl = str_starts_with($user->profile_photo_path, 'http') ? $user->profile_photo_path : asset('storage/' . $user->profile_photo_path);
+            if (!str_starts_with($user->profile_photo_path, 'http')) {
+                $isManualPhoto = true;
+            }
         }
 
         return response()->json([
@@ -69,7 +74,8 @@ class ProfileController extends Controller
                     'unit_kerja' => $apiData['unit_nama'] ?? null,
                     'nomor_hp' => $apiData['nomor_hp'] ?? null,
                 ],
-                'profile_photo_url' => $photoUrl
+                'profile_photo_url' => $photoUrl,
+                'is_manual_photo' => $isManualPhoto
             ]
         ]);
     }
@@ -91,6 +97,7 @@ class ProfileController extends Controller
             'tiktok' => 'sometimes|nullable|string',
             'linkedin' => 'sometimes|nullable|string',
             'photo' => 'sometimes|nullable|image|max:2048',
+            'remove_photo' => 'sometimes|boolean',
         ]);
 
         if ($validator->fails()) {
@@ -111,7 +118,12 @@ class ProfileController extends Controller
         }
 
         // Handle Photo
-        if ($request->hasFile('photo')) {
+        if ($request->boolean('remove_photo')) {
+            if ($user->profile_photo_path && !str_starts_with($user->profile_photo_path, 'http')) {
+                Storage::disk('public')->delete($user->profile_photo_path);
+                $user->profile_photo_path = null;
+            }
+        } elseif ($request->hasFile('photo')) {
             if ($user->profile_photo_path && !str_starts_with($user->profile_photo_path, 'http')) {
                 Storage::disk('public')->delete($user->profile_photo_path);
             }
@@ -126,13 +138,16 @@ class ProfileController extends Controller
         }
 
         $user->save();
+        
+        $isManualPhoto = $user->profile_photo_path && !str_starts_with($user->profile_photo_path, 'http');
 
         return response()->json([
             'success' => true,
             'message' => 'Profil berhasil diperbarui',
             'data' => [
                 'user' => $user,
-                'profile_photo_url' => $user->profile_photo_path ? (str_starts_with($user->profile_photo_path, 'http') ? $user->profile_photo_path : asset('storage/' . $user->profile_photo_path)) : null
+                'profile_photo_url' => $user->profile_photo_path ? (str_starts_with($user->profile_photo_path, 'http') ? $user->profile_photo_path : asset('storage/' . $user->profile_photo_path)) : null,
+                'is_manual_photo' => $isManualPhoto
             ]
         ]);
     }
