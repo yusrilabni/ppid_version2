@@ -109,10 +109,20 @@ class User extends Authenticatable
                     'nip' => $nip,
                 ]);
                 
-                return $response->successful() ? $response->json() : null;
+                $data = $response->successful() ? $response->json() : [];
+                
+                if (!is_array($data)) {
+                    $data = [];
+                }
+                
+                // Pastikan nip selalu ada agar proses syncFromApi (login otomatis) tidak di-skip
+                $data['nip'] = $nip;
+
+                return $data;
             } catch (\Exception $e) {
                 Log::error('API Data Error for NIP ' . $nip . ': ' . $e->getMessage());
-                return null;
+                // Kembalikan array berisi nip agar user tetap bisa login meski API data_pegawai error
+                return ['nip' => $nip];
             }
         });
     }
@@ -130,8 +140,8 @@ class User extends Authenticatable
 
         $userData = [
             'nip' => $nip,
-            'name' => $apiData['nama'] ?? 'User ' . $nip,
-            'email' => $apiData['email'] ?? null,
+            'name' => !empty($apiData['nama']) ? $apiData['nama'] : 'User ' . $nip,
+            'email' => !empty($apiData['email']) ? $apiData['email'] : null,
             'role' => $role,
             'unit_id' => $apiData['unit_id'] ?? null,
             'jabatan_id' => $apiData['jabatan_id'] ?? null,
