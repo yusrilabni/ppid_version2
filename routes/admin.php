@@ -18,6 +18,13 @@ use App\Http\Controllers\Admin\OfficialController;
 use App\Http\Controllers\Admin\StatistikController;
 use App\Http\Controllers\Admin\LaporanController;
 use App\Http\Controllers\Admin\SubStandarLayananController;
+use App\Http\Controllers\Admin\SecurityBlockController;
+
+Route::middleware(['auth', 'superadmin'])->group(function () {
+    Route::get('/security-blocks', [SecurityBlockController::class, 'index'])->name('security.index');
+    Route::post('/security-blocks', [SecurityBlockController::class, 'store'])->name('security.store');
+    Route::delete('/security-blocks/{id}', [SecurityBlockController::class, 'destroy'])->name('security.destroy');
+});
 use App\Http\Controllers\Admin\StrukturOrganisasiController;
 use App\Http\Controllers\Admin\UserController;
 use App\Http\Controllers\Admin\SurveyQuestionController;

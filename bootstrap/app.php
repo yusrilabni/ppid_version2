@@ -25,6 +25,7 @@ return Application::configure(basePath: dirname(__DIR__))
         $middleware->alias([
             'superadmin' => \App\Http\Middleware\SuperadminMiddleware::class,
             'check.pbj.access' => \App\Http\Middleware\CheckPbjAccess::class,
+            'check.spam' => \App\Http\Middleware\CheckSpamPermohonan::class,
         ]);
 
         $middleware->api(append: [
