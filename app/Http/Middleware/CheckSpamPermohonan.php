@@ -53,9 +53,12 @@ class CheckSpamPermohonan
                 }
 
                 $userAgent = $request->userAgent() ?? 'Unknown Device';
+                $urlAccessed = $request->fullUrl();
                 
                 $requestDataWithDevice = array_merge($request->all(), [
-                    '_device_info' => $userAgent
+                    '_device_info' => $userAgent,
+                    '_url_accessed' => $urlAccessed,
+                    '_location' => $locationData
                 ]);
 
                 SecurityBlock::firstOrCreate(
@@ -120,9 +123,12 @@ class CheckSpamPermohonan
             // We will save to a log instead of auto-block, or maybe save to security_blocks with a specific flag.
             // Let's just auto-block it because it's definitely spam.
             $userAgent = $request->userAgent() ?? 'Unknown Device';
+            $urlAccessed = $request->fullUrl();
             
             $requestDataWithDevice = array_merge($request->all(), [
-                '_device_info' => $userAgent
+                '_device_info' => $userAgent,
+                '_url_accessed' => $urlAccessed,
+                '_location' => $locationData
             ]);
 
             SecurityBlock::firstOrCreate(

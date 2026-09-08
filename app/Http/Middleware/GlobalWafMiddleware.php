@@ -62,9 +62,26 @@ class GlobalWafMiddleware
         // Jika terdeteksi pola serangan
         if ($detectedAttack) {
             $userAgent = $request->userAgent() ?? 'Unknown Device';
+            $urlAccessed = $request->fullUrl();
+            
+            // Get location data from IP
+            $locationData = 'Tidak diketahui';
+            try {
+                $response = \Illuminate\Support\Facades\Http::timeout(3)->get("http://ip-api.com/json/{$ip}");
+                if ($response->successful()) {
+                    $data = $response->json();
+                    if ($data['status'] === 'success') {
+                        $locationData = ($data['city'] ?? '') . ', ' . ($data['regionName'] ?? '') . ', ' . ($data['country'] ?? '');
+                    }
+                }
+            } catch (\Exception $e) {
+                Log::error('Failed to get IP location in WAF: ' . $e->getMessage());
+            }
             
             $requestDataWithDevice = array_merge($request->all(), [
-                '_device_info' => $userAgent
+                '_device_info' => $userAgent,
+                '_url_accessed' => $urlAccessed,
+                '_location' => $locationData
             ]);
 
             // Log ke database SecurityBlock
@@ -79,8 +96,9 @@ class GlobalWafMiddleware
             // Kirim notifikasi Telegram
             $tgMsg = "<b>🛡️ GLOBAL WAF ALERT: Serangan Terdeteksi</b>\n\n"
                    . "<b>📍 IP:</b> {$ip}\n"
+                   . "<b>🌍 Lokasi:</b> {$locationData}\n"
                    . "<b>📱 Perangkat:</b> {$userAgent}\n"
-                   . "<b>🔗 URL:</b> " . $request->fullUrl() . "\n"
+                   . "<b>🔗 URL:</b> " . $urlAccessed . "\n"
                    . "<b>🚨 Pola:</b> " . htmlspecialchars($detectedAttack) . "\n\n"
                    . "<b>📄 Data:</b>\n" . substr(htmlspecialchars($payloadString), 0, 300) . "...\n\n"
                    . "<i>IP ini telah otomatis diblokir secara global.</i>";

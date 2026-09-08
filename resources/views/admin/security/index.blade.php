@@ -46,8 +46,8 @@
             <thead class="bg-gray-50">
                 <tr>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-16">No</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IP Address</th>
-                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Alasan & Jejak Perangkat</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Informasi Penyerang</th>
+                    <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Detail Serangan</th>
                     <th class="px-6 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider w-40">Waktu Kejadian</th>
                     <th class="px-6 py-3 text-right text-xs font-medium text-gray-500 uppercase tracking-wider w-32">Aksi</th>
                 </tr>
@@ -58,18 +58,36 @@
                         <td class="px-6 py-4 whitespace-nowrap text-sm text-gray-500">
                             {{ $loop->iteration + $blocks->firstItem() - 1 }}
                         </td>
-                        <td class="px-6 py-4 whitespace-nowrap">
-                            <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-red-100 text-red-800 font-mono">
-                                {{ $block->ip_address }}
-                            </span>
+                        <td class="px-6 py-4">
+                            <div class="mb-1">
+                                <span class="px-3 py-1 inline-flex text-sm leading-5 font-semibold rounded-full bg-red-100 text-red-800 font-mono">
+                                    {{ $block->ip_address }}
+                                </span>
+                            </div>
+                            @if($block->request_data && isset($block->request_data['_location']))
+                                <div class="text-xs text-gray-600 flex items-center mt-2">
+                                    <i class="fas fa-map-marker-alt w-4 text-gray-400"></i>
+                                    <span>{{ $block->request_data['_location'] }}</span>
+                                </div>
+                            @endif
+                            @if($block->request_data && isset($block->request_data['_device_info']))
+                                <div class="text-xs text-gray-600 flex items-center mt-1">
+                                    <i class="fas fa-mobile-alt w-4 text-gray-400"></i> 
+                                    <span class="truncate max-w-[200px]" title="{{ $block->request_data['_device_info'] }}">
+                                        {{ Str::limit($block->request_data['_device_info'], 40) }}
+                                    </span>
+                                </div>
+                            @endif
                         </td>
                         <td class="px-6 py-4">
-                            <div class="text-sm text-gray-900 font-medium mb-1">{{ $block->reason }}</div>
-                            @if($block->request_data && isset($block->request_data['_device_info']))
-                                <div class="text-xs text-gray-500 flex items-center mt-2">
-                                    <i class="fas fa-mobile-alt mr-1 text-gray-400"></i> 
-                                    <span class="truncate max-w-md" title="{{ $block->request_data['_device_info'] }}">
-                                        {{ Str::limit($block->request_data['_device_info'], 70) }}
+                            <div class="text-sm text-gray-900 font-medium mb-1">
+                                <span class="text-red-600"><i class="fas fa-exclamation-triangle mr-1"></i> Alasan:</span> {{ $block->reason }}
+                            </div>
+                            @if($block->request_data && isset($block->request_data['_url_accessed']))
+                                <div class="text-xs text-gray-500 flex items-center mt-2 bg-gray-100 p-1 rounded">
+                                    <i class="fas fa-link w-4 text-gray-400"></i>
+                                    <span class="truncate max-w-sm text-blue-600 font-mono" title="{{ $block->request_data['_url_accessed'] }}">
+                                        {{ $block->request_data['_url_accessed'] }}
                                     </span>
                                 </div>
                             @endif
