@@ -52,17 +52,24 @@ class CheckSpamPermohonan
                     Log::error('Failed to get IP location: ' . $e->getMessage());
                 }
 
+                $userAgent = $request->userAgent() ?? 'Unknown Device';
+                
+                $requestDataWithDevice = array_merge($request->all(), [
+                    '_device_info' => $userAgent
+                ]);
+
                 SecurityBlock::firstOrCreate(
                     ['ip_address' => $ip],
                     [
                         'reason' => 'Otomatis diblokir karena mengirim formulir yang sama lebih dari 2 kali',
-                        'request_data' => $request->all()
+                        'request_data' => $requestDataWithDevice
                     ]
                 );
 
                 $tgMsg = "<b>⚠️ PERINGATAN KEAMANAN: Indikasi Bot/Spam (Duplikat)</b>\n\n"
                     . "<b>📍 IP:</b> {$ip}\n"
                     . "<b>🌍 Lokasi:</b> {$locationData}\n"
+                    . "<b>📱 Perangkat:</b> {$userAgent}\n"
                     . "<b>🛑 Alasan:</b> Mengirim formulir yang identik lebih dari 2 kali.\n\n"
                     . "<i>IP ini telah otomatis dimasukkan ke daftar blokir.</i>";
 
@@ -112,11 +119,17 @@ class CheckSpamPermohonan
             // "datanya bisa dikirim tappi ga bisa masuk server jadi filter semua kata katanyan ... pesan tidak dapat diterima karena kami mendeteksi hal mencurigakan")
             // We will save to a log instead of auto-block, or maybe save to security_blocks with a specific flag.
             // Let's just auto-block it because it's definitely spam.
+            $userAgent = $request->userAgent() ?? 'Unknown Device';
+            
+            $requestDataWithDevice = array_merge($request->all(), [
+                '_device_info' => $userAgent
+            ]);
+
             SecurityBlock::firstOrCreate(
                 ['ip_address' => $ip],
                 [
                     'reason' => 'Otomatis diblokir karena mendeteksi kata-kata: ' . implode(', ', $detectedSpam),
-                    'request_data' => $request->all()
+                    'request_data' => $requestDataWithDevice
                 ]
             );
 
@@ -124,6 +137,7 @@ class CheckSpamPermohonan
             $tgMsg = "<b>⚠️ PERINGATAN KEAMANAN: Serangan Spam Dicegat</b>\n\n"
                    . "<b>📍 IP:</b> {$ip}\n"
                    . "<b>🌍 Lokasi:</b> {$locationData}\n"
+                   . "<b>📱 Perangkat:</b> {$userAgent}\n"
                    . "<b>🛑 Kata Terdeteksi:</b> " . implode(', ', $detectedSpam) . "\n\n"
                    . "<b>📄 Data Dikirim:</b>\n" . substr(htmlspecialchars($requestData), 0, 500) . "...\n\n"
                    . "<i>IP ini telah otomatis dimasukkan ke daftar blokir.</i>";

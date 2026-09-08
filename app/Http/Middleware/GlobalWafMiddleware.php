@@ -61,18 +61,25 @@ class GlobalWafMiddleware
 
         // Jika terdeteksi pola serangan
         if ($detectedAttack) {
+            $userAgent = $request->userAgent() ?? 'Unknown Device';
+            
+            $requestDataWithDevice = array_merge($request->all(), [
+                '_device_info' => $userAgent
+            ]);
+
             // Log ke database SecurityBlock
             SecurityBlock::firstOrCreate(
                 ['ip_address' => $ip],
                 [
                     'reason' => 'Otomatis diblokir oleh WAF. Pola terdeteksi: ' . $detectedAttack,
-                    'request_data' => $request->all()
+                    'request_data' => $requestDataWithDevice
                 ]
             );
 
             // Kirim notifikasi Telegram
             $tgMsg = "<b>🛡️ GLOBAL WAF ALERT: Serangan Terdeteksi</b>\n\n"
                    . "<b>📍 IP:</b> {$ip}\n"
+                   . "<b>📱 Perangkat:</b> {$userAgent}\n"
                    . "<b>🔗 URL:</b> " . $request->fullUrl() . "\n"
                    . "<b>🚨 Pola:</b> " . htmlspecialchars($detectedAttack) . "\n\n"
                    . "<b>📄 Data:</b>\n" . substr(htmlspecialchars($payloadString), 0, 300) . "...\n\n"
