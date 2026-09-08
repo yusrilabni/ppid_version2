@@ -133,8 +133,12 @@
                     <span class="menu-text">Pengaturan AI</span>
                 </a>
                 <a href="{{ route('admin.api-logs.index') }}" class="flex items-center px-4 py-2 text-blue-200 hover:bg-blue-700 hover:bg-opacity-50 hover:text-white rounded-lg transition-colors duration-200 my-1 menu-item @if(request()->routeIs('admin.api-logs.*')) bg-blue-700 bg-opacity-75 @endif" title="API Tracker">
-                    <i class="fas fa-shield-alt w-4 mr-3"></i>
+                    <i class="fas fa-network-wired w-4 mr-3"></i>
                     <span class="menu-text">API Tracker</span>
+                </a>
+                <a href="{{ route('admin.security.index') }}" class="flex items-center px-4 py-2 text-blue-200 hover:bg-blue-700 hover:bg-opacity-50 hover:text-white rounded-lg transition-colors duration-200 my-1 menu-item @if(request()->routeIs('admin.security.*')) bg-blue-700 bg-opacity-75 @endif" title="Security Blocks">
+                    <i class="fas fa-shield-alt w-4 mr-3"></i>
+                    <span class="menu-text">Security Blocks</span>
                 </a>
                 @endif            </div>
         </nav>
