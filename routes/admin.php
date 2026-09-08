@@ -22,6 +22,7 @@ use App\Http\Controllers\Admin\SecurityBlockController;
 
 Route::middleware(['auth', 'superadmin'])->group(function () {
     Route::get('/security-blocks', [SecurityBlockController::class, 'index'])->name('security.index');
+    Route::post('/security-blocks/scan', [SecurityBlockController::class, 'scan'])->name('security.scan');
     Route::post('/security-blocks', [SecurityBlockController::class, 'store'])->name('security.store');
     Route::delete('/security-blocks/{id}', [SecurityBlockController::class, 'destroy'])->name('security.destroy');
 });

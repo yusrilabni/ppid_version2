@@ -35,4 +35,38 @@ class SecurityBlockController extends Controller
 
         return redirect()->route('admin.security.index')->with('success', 'IP berhasil diblokir.');
     }
+
+    public function scan(Request $request)
+    {
+        $request->validate([
+            'ip_address' => 'required|ip'
+        ]);
+
+        $ip = $request->ip_address;
+        $locationData = 'Tidak diketahui';
+        $fullData = null;
+
+        try {
+            $response = \Illuminate\Support\Facades\Http::timeout(5)->get("http://ip-api.com/json/{$ip}");
+            if ($response->successful()) {
+                $data = $response->json();
+                if ($data['status'] === 'success') {
+                    $locationData = ($data['city'] ?? '') . ', ' . ($data['regionName'] ?? '') . ', ' . ($data['country'] ?? '');
+                    $fullData = $data;
+                } else {
+                    $locationData = 'Gagal Melacak: ' . ($data['message'] ?? 'Unknown Error');
+                }
+            }
+        } catch (\Exception $e) {
+            $locationData = 'Error Koneksi API Pencarian IP';
+        }
+
+        return redirect()->route('admin.security.index')->with('scanResult', [
+            'ip' => $ip,
+            'location' => $locationData,
+            'isp' => $fullData['isp'] ?? 'N/A',
+            'org' => $fullData['org'] ?? 'N/A',
+            'timezone' => $fullData['timezone'] ?? 'N/A'
+        ]);
+    }
 }

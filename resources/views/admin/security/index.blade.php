@@ -25,21 +25,71 @@
         </div>
     @endif
 
-    <div class="bg-gray-50 rounded-lg p-5 mb-8 border border-gray-200">
-        <h3 class="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wider">Tambah Blokir Manual</h3>
-        <form action="{{ route('admin.security.store') }}" method="POST" class="flex flex-col md:flex-row gap-4">
-            @csrf
-            <div class="flex-1">
-                <input type="text" name="ip_address" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Masukkan IP Address (Contoh: 192.168.1.1)" required>
-            </div>
-            <div class="flex-[2]">
-                <input type="text" name="reason" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Alasan Blokir (Opsional)">
-            </div>
-            <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded-lg transition flex items-center justify-center whitespace-nowrap">
-                <i class="fas fa-ban mr-2"></i> Blokir IP
-            </button>
-        </form>
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+        <!-- Form Blokir Manual -->
+        <div class="bg-gray-50 rounded-lg p-5 border border-gray-200">
+            <h3 class="text-sm font-semibold text-gray-700 mb-3 uppercase tracking-wider"><i class="fas fa-ban text-red-500 mr-2"></i>Tambah Blokir Manual</h3>
+            <form action="{{ route('admin.security.store') }}" method="POST" class="flex flex-col gap-3">
+                @csrf
+                <input type="text" name="ip_address" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 transition" placeholder="Masukkan IP Address (Contoh: 192.168.1.1)" required>
+                <input type="text" name="reason" class="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-red-500 focus:border-red-500 transition" placeholder="Alasan Blokir (Opsional)">
+                <button type="submit" class="bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-6 rounded-lg transition flex items-center justify-center">
+                    <i class="fas fa-plus mr-2"></i> Blokir Sekarang
+                </button>
+            </form>
+        </div>
+
+        <!-- Form Scan IP -->
+        <div class="bg-blue-50 rounded-lg p-5 border border-blue-200">
+            <h3 class="text-sm font-semibold text-blue-800 mb-3 uppercase tracking-wider"><i class="fas fa-search-location text-blue-500 mr-2"></i>Alat Pelacak Lokasi IP</h3>
+            <form action="{{ route('admin.security.scan') }}" method="POST" class="flex flex-col gap-3">
+                @csrf
+                <input type="text" name="ip_address" class="w-full px-4 py-2 border border-blue-300 rounded-lg focus:ring-blue-500 focus:border-blue-500 transition" placeholder="Masukkan IP untuk dilacak" required>
+                <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition flex items-center justify-center">
+                    <i class="fas fa-satellite-dish mr-2"></i> Lacak / Scan Lokasi
+                </button>
+            </form>
+        </div>
     </div>
+
+    @if(session('scanResult'))
+        <div class="bg-white border-2 border-blue-400 rounded-xl shadow-lg p-6 mb-8 relative overflow-hidden">
+            <div class="absolute top-0 right-0 bg-blue-100 text-blue-800 px-4 py-1 rounded-bl-lg font-bold text-xs uppercase">
+                Hasil Pemindaian
+            </div>
+            <h3 class="text-lg font-bold text-gray-800 mb-4 border-b pb-2"><i class="fas fa-crosshairs text-blue-600 mr-2"></i>Laporan Identitas IP: <span class="text-blue-600 font-mono">{{ session('scanResult')['ip'] }}</span></h3>
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <div class="flex items-start">
+                    <i class="fas fa-map-marked-alt text-gray-400 mt-1 mr-3 text-lg"></i>
+                    <div>
+                        <p class="text-xs text-gray-500 font-semibold uppercase">Lokasi Geografis</p>
+                        <p class="text-gray-800 font-medium">{{ session('scanResult')['location'] }}</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <i class="fas fa-broadcast-tower text-gray-400 mt-1 mr-3 text-lg"></i>
+                    <div>
+                        <p class="text-xs text-gray-500 font-semibold uppercase">Provider / ISP</p>
+                        <p class="text-gray-800 font-medium">{{ session('scanResult')['isp'] }}</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <i class="fas fa-building text-gray-400 mt-1 mr-3 text-lg"></i>
+                    <div>
+                        <p class="text-xs text-gray-500 font-semibold uppercase">Organisasi (AS)</p>
+                        <p class="text-gray-800 font-medium">{{ session('scanResult')['org'] }}</p>
+                    </div>
+                </div>
+                <div class="flex items-start">
+                    <i class="fas fa-clock text-gray-400 mt-1 mr-3 text-lg"></i>
+                    <div>
+                        <p class="text-xs text-gray-500 font-semibold uppercase">Zona Waktu</p>
+                        <p class="text-gray-800 font-medium">{{ session('scanResult')['timezone'] }}</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    @endif
 
     <div class="overflow-x-auto rounded-lg border border-gray-200">
         <table class="min-w-full divide-y divide-gray-200">
