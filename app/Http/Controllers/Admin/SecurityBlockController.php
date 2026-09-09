@@ -45,20 +45,46 @@ class SecurityBlockController extends Controller
         $ip = $request->ip_address;
         $locationData = 'Tidak diketahui';
         $fullData = null;
+        $errorMessage = '';
 
         try {
-            $response = \Illuminate\Support\Facades\Http::timeout(5)->get("http://ip-api.com/json/{$ip}");
+            // Coba pakai ip-api.com
+            $response = \Illuminate\Support\Facades\Http::timeout(10)->get("http://ip-api.com/json/{$ip}");
             if ($response->successful()) {
                 $data = $response->json();
-                if ($data['status'] === 'success') {
+                if (isset($data['status']) && $data['status'] === 'success') {
                     $locationData = ($data['city'] ?? '') . ', ' . ($data['regionName'] ?? '') . ', ' . ($data['country'] ?? '');
                     $fullData = $data;
                 } else {
-                    $locationData = 'Gagal Melacak: ' . ($data['message'] ?? 'Unknown Error');
+                    $errorMessage = 'ip-api error: ' . ($data['message'] ?? 'Unknown');
+                }
+            } else {
+                $errorMessage = 'ip-api HTTP status ' . $response->status();
+            }
+            
+            // Jika gagal, pakai ipwho.is sebagai fallback (HTTPS)
+            if (!$fullData) {
+                $responseFallback = \Illuminate\Support\Facades\Http::timeout(10)->get("https://ipwho.is/{$ip}");
+                if ($responseFallback->successful()) {
+                    $dataF = $responseFallback->json();
+                    if (isset($dataF['success']) && $dataF['success'] == true) {
+                        $locationData = ($dataF['city'] ?? '') . ', ' . ($dataF['region'] ?? '') . ', ' . ($dataF['country'] ?? '');
+                        $fullData = [
+                            'isp' => $dataF['connection']['isp'] ?? 'N/A',
+                            'org' => $dataF['connection']['org'] ?? 'N/A',
+                            'timezone' => $dataF['timezone']['id'] ?? 'N/A'
+                        ];
+                        $errorMessage = ''; // Sukses pakai fallback
+                    }
                 }
             }
+
         } catch (\Exception $e) {
-            $locationData = 'Error Koneksi API Pencarian IP';
+            $errorMessage = $e->getMessage();
+        }
+
+        if (!$fullData && $errorMessage) {
+            $locationData = 'Error: ' . substr($errorMessage, 0, 100);
         }
 
         return redirect()->route('admin.security.index')->with('scanResult', [
