@@ -98,6 +98,68 @@
                     @endforelse
                 </div>
                 <div x-show="tab === 'selesai'" style="display: none;" class="space-y-4">
+                    <!-- Broadcast Peringatan Button -->
+                    @if($permohonanSelesai->count() > 0)
+                    <div class="mb-4 flex justify-end" x-data="{ showBroadcastModal: false }">
+                        <button @click="showBroadcastModal = true" class="bg-green-600 hover:bg-green-700 text-white px-4 py-2 rounded-lg shadow font-medium flex items-center transition-all">
+                            <i class="fab fa-whatsapp text-lg mr-2"></i> Broadcast Peringatan Penipuan
+                        </button>
+
+                        <!-- Modal Broadcast WA -->
+                        <div x-show="showBroadcastModal" class="fixed inset-0 z-50 overflow-y-auto" style="display: none;" aria-labelledby="modal-title" role="dialog" aria-modal="true">
+                            <div class="flex items-end justify-center min-h-screen pt-4 px-4 pb-20 text-center sm:block sm:p-0">
+                                <div x-show="showBroadcastModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0" x-transition:enter-end="opacity-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100" x-transition:leave-end="opacity-0" class="fixed inset-0 bg-gray-500 bg-opacity-75 transition-opacity" @click="showBroadcastModal = false" aria-hidden="true"></div>
+                                <span class="hidden sm:inline-block sm:align-middle sm:h-screen" aria-hidden="true">&#8203;</span>
+                                <div x-show="showBroadcastModal" x-transition:enter="ease-out duration-300" x-transition:enter-start="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" x-transition:enter-end="opacity-100 translate-y-0 sm:scale-100" x-transition:leave="ease-in duration-200" x-transition:leave-start="opacity-100 translate-y-0 sm:scale-100" x-transition:leave-end="opacity-0 translate-y-4 sm:translate-y-0 sm:scale-95" class="inline-block align-bottom bg-white rounded-2xl text-left overflow-hidden shadow-xl transform transition-all sm:my-8 sm:align-middle sm:max-w-2xl sm:w-full">
+                                    <div class="bg-white px-4 pt-5 pb-4 sm:p-6 sm:pb-4">
+                                        <div class="sm:flex sm:items-start">
+                                            <div class="mx-auto flex-shrink-0 flex items-center justify-center h-12 w-12 rounded-full bg-green-100 sm:mx-0 sm:h-10 sm:w-10">
+                                                <i class="fab fa-whatsapp text-green-600 text-xl"></i>
+                                            </div>
+                                            <div class="mt-3 text-center sm:mt-0 sm:ml-4 sm:text-left w-full">
+                                                <h3 class="text-lg leading-6 font-bold text-gray-900" id="modal-title">
+                                                    Kirim Pesan Peringatan (WhatsApp Web)
+                                                </h3>
+                                                <div class="mt-2 text-sm text-gray-500 mb-4">
+                                                    Klik tombol <b>"Kirim"</b> pada setiap pemohon di bawah ini untuk membuka WhatsApp Web Anda. Sistem akan mengisi pesan peringatan penipuan secara otomatis.
+                                                </div>
+                                                
+                                                <div class="max-h-60 overflow-y-auto border border-gray-200 rounded-lg">
+                                                    <ul class="divide-y divide-gray-200">
+                                                        @foreach($permohonanSelesai as $pSelesai)
+                                                            @php
+                                                                $phone = preg_replace('/[^0-9]/', '', $pSelesai->nomor_telepon_pemohon);
+                                                                if(substr($phone, 0, 1) == '0') $phone = '62' . substr($phone, 1);
+                                                                
+                                                                $waText = "Halo Bapak/Ibu " . trim($pSelesai->nama_pemohon) . ",\n\nKami dari *PPID Kabupaten Sinjai*.\n\nSehubungan dengan Permohonan Informasi Anda yang telah Selesai, kami ingin mengimbau agar *TIDAK MENERIMA* telepon/pesan apapun yang mengatasnamakan PPID terkait tawaran Pinjaman Online (Pinjol), Judi Online, atau tindakan mencurigakan lainnya.\n\nPPID *TIDAK PERNAH* menghubungi pemohon untuk urusan di luar layanan informasi resmi.\nMohon abaikan & blokir nomor tersebut jika ada.\n\nTerima kasih,\n*PPID Kabupaten Sinjai*";
+                                                                $waLink = "https://web.whatsapp.com/send?phone={$phone}&text=" . urlencode($waText);
+                                                            @endphp
+                                                            <li class="p-3 flex justify-between items-center hover:bg-gray-50 transition" x-data="{ sent: false }">
+                                                                <div>
+                                                                    <p class="text-sm font-semibold text-gray-800">{{ $pSelesai->nama_pemohon }}</p>
+                                                                    <p class="text-xs text-gray-500 font-mono">{{ $pSelesai->nomor_telepon_pemohon }}</p>
+                                                                </div>
+                                                                <a href="{{ $waLink }}" target="_blank" @click="sent = true" :class="sent ? 'bg-gray-200 text-gray-600' : 'bg-green-500 text-white hover:bg-green-600'" class="px-4 py-1.5 rounded-full text-xs font-bold transition flex items-center">
+                                                                    <i class="fab fa-whatsapp mr-1"></i> <span x-text="sent ? 'Terkirim ✓' : 'Kirim'"></span>
+                                                                </a>
+                                                            </li>
+                                                        @endforeach
+                                                    </ul>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    <div class="bg-gray-50 px-4 py-3 sm:px-6 sm:flex sm:flex-row-reverse">
+                                        <button type="button" @click="showBroadcastModal = false" class="w-full inline-flex justify-center rounded-lg border border-gray-300 shadow-sm px-4 py-2 bg-white text-base font-medium text-gray-700 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 sm:ml-3 sm:w-auto sm:text-sm">
+                                            Tutup
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    @endif
+
                     @forelse($permohonanSelesai as $permohonan)
                         @include('admin.permohonan-informasi.partials.card', [
                             'permohonan' => $permohonan,
