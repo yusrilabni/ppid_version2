@@ -78,20 +78,22 @@ class LaporanPermohonanController extends Controller
 
         $permohonan = $permohonanInformasi->load('user', 'responses.user');
         $isOwner = auth()->id() == $permohonan->user_id;
+        $isAdmin = in_array(auth()->user()->role, ['admin', 'superadmin']);
+        $canViewSensitive = $isOwner || $isAdmin;
 
         // Public view conditions (untuk user lain jika status publik)
         $isPubliclyVisible = in_array($permohonan->privacy_status, ['Publik', 'Anonim']) &&
                              in_array($permohonan->status_permohonan, ['selesai', 'ditolak']);
 
         // 2. Cek Sinkronisasi Akun
-        if (!$isOwner && !$isPubliclyVisible) {
-            // Jika dia login tapi bukan pemilik dan data tidak publik
-            abort(403, 'Akses Dibatasi: Akun Anda tidak tersinkronisasi dengan data permohonan ini. Silakan masuk menggunakan akun yang digunakan saat mengajukan permohonan agar dapat mengakses detail informasi ini.');
+        if (!$isOwner && !$isPubliclyVisible && !$isAdmin) {
+            // Jika dia login tapi bukan pemilik, bukan admin, dan data tidak publik
+            abort(403, 'Akses Dibatasi: Akun Anda tidak tersinkronisasi dengan data permohonan ini.');
         }
         
         $units = $this->getUnitData();
 
-        return view('laporan.permohonan.show', compact('permohonan', 'units', 'isOwner'));
+        return view('laporan.permohonan.show', compact('permohonan', 'units', 'isOwner', 'canViewSensitive'));
     }
 
     public function edit(PermohonanInformasi $permohonanInformasi)

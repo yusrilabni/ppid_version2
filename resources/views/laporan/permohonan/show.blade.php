@@ -145,9 +145,9 @@
                                     Nomor Telepon
                                 </label>
                                 <div class="text-gray-900 font-medium">
-                                    @if ($permohonan->privacy_status == 'Anonim' && !$isOwner)
+                                    @if (!$canViewSensitive)
                                         <span class="text-gray-500">
-                                            {{ substr($permohonan->nomor_telepon_pemohon, 0, 3) . '*****' }}
+                                            {{ substr($permohonan->nomor_telepon_pemohon, 0, 3) . '********' }}
                                         </span>
                                     @else
                                         {{ $permohonan->nomor_telepon_pemohon ?? '-' }}
@@ -162,7 +162,13 @@
                                 <label class="block text-xs font-bold text-blue-600 uppercase tracking-wider mb-1">
                                     Alamat
                                 </label>
-                                <div class="text-gray-900 font-medium text-sm leading-relaxed">{{ $permohonan->alamat_pemohon }}</div>
+                                <div class="text-gray-900 font-medium text-sm leading-relaxed">
+                                    @if (!$canViewSensitive)
+                                        <span class="text-gray-500 italic">*** (Disembunyikan untuk privasi) ***</span>
+                                    @else
+                                        {{ $permohonan->alamat_pemohon }}
+                                    @endif
+                                </div>
                             </div>
                             
                             <div class="bg-gray-50/50 p-3 rounded-xl border border-gray-100 transition-all hover:bg-white hover:shadow-md">
@@ -170,9 +176,10 @@
                                     Email
                                 </label>
                                 <div class="text-gray-900 font-medium">
-                                    @if ($permohonan->privacy_status == 'Anonim' && !$isOwner)
+                                    @if (!$canViewSensitive)
                                         <span class="text-gray-500">
-                                            {{ substr($permohonan->email_pemohon, 0, 3) . '*****' }}
+                                            @php $parts = explode('@', $permohonan->email_pemohon); @endphp
+                                            {{ substr($parts[0], 0, 3) . '***@' . ($parts[1] ?? '') }}
                                         </span>
                                     @else
                                         <span class="break-all">{{ $permohonan->email_pemohon ?? '-' }}</span>

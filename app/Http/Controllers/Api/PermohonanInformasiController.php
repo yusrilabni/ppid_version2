@@ -231,6 +231,25 @@ class PermohonanInformasiController extends Controller
                 ->where('unique_code', $code)
                 ->firstOrFail();
 
+            $user = auth('sanctum')->user();
+            $isOwner = $user && $user->id == $permohonan->user_id;
+            $isAdmin = $user && in_array($user->role, ['admin', 'superadmin']);
+            $canViewSensitive = $isOwner || $isAdmin;
+
+            if (!$canViewSensitive) {
+                if ($permohonan->nomor_telepon_pemohon) {
+                    $permohonan->nomor_telepon_pemohon = substr($permohonan->nomor_telepon_pemohon, 0, 3) . '********';
+                }
+                if ($permohonan->email_pemohon) {
+                    $parts = explode('@', $permohonan->email_pemohon);
+                    $permohonan->email_pemohon = substr($parts[0], 0, 3) . '***@' . ($parts[1] ?? '');
+                }
+                if ($permohonan->alamat_pemohon) {
+                    $permohonan->alamat_pemohon = '*** (Disembunyikan untuk privasi) ***';
+                }
+                $permohonan->ktp_file_path = null;
+            }
+
             return response()->json([
                 'success' => true,
                 'message' => 'Status permohonan berhasil ditemukan',
