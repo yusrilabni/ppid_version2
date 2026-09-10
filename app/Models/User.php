@@ -151,12 +151,18 @@ class User extends Authenticatable
             'email_verified_at' => now(), // PAKSA VERIFIED SETIAP SYNC
         ];
 
-        // Hanya timpa email dari API jika memang ada nilainya, atau jika user baru.
-        // Jika API kosong tapi user sudah punya email (misal dari Google), pertahankan.
-        if (!empty($apiData['email'])) {
-            $userData['email'] = $apiData['email'];
-        } else if (!$user) {
-            $userData['email'] = null;
+        // LOGIKA EMAIL MENGIKUTI ATURAN TAUTAN GOOGLE:
+        // Jika user sudah menautkan Google (google_id ada), email MUTLAK menggunakan email yang ditautkan,
+        // tidak boleh ditimpa oleh data API.
+        if ($user && !empty($user->google_id)) {
+            // Jangan ubah email, biarkan yang sudah ada di database
+        } else {
+            // Jika belum ditautkan ke Google, ambil dari API jika ada
+            if (!empty($apiData['email'])) {
+                $userData['email'] = $apiData['email'];
+            } else if (!$user) {
+                $userData['email'] = null;
+            }
         }
 
         if (!$user) {
