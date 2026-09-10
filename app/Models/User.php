@@ -141,7 +141,6 @@ class User extends Authenticatable
         $userData = [
             'nip' => $nip,
             'name' => !empty($apiData['nama']) ? $apiData['nama'] : 'User ' . $nip,
-            'email' => !empty($apiData['email']) ? $apiData['email'] : null,
             'role' => $role,
             'unit_id' => $apiData['unit_id'] ?? null,
             'jabatan_id' => $apiData['jabatan_id'] ?? null,
@@ -151,6 +150,14 @@ class User extends Authenticatable
             'login_type' => 'nip',
             'email_verified_at' => now(), // PAKSA VERIFIED SETIAP SYNC
         ];
+
+        // Hanya timpa email dari API jika memang ada nilainya, atau jika user baru.
+        // Jika API kosong tapi user sudah punya email (misal dari Google), pertahankan.
+        if (!empty($apiData['email'])) {
+            $userData['email'] = $apiData['email'];
+        } else if (!$user) {
+            $userData['email'] = null;
+        }
 
         if (!$user) {
             $userData['password'] = Hash::make($password);

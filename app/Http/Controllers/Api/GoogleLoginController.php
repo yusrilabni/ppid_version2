@@ -51,7 +51,9 @@ class GoogleLoginController extends Controller
             ], 400);
         }
 
-        $user = User::where('email', $googleUser->getEmail())->first();
+        $user = User::where('google_id', $googleUser->getId())
+                    ->orWhere('email', $googleUser->getEmail())
+                    ->first();
 
         if ($action === 'link') {
             $currentUser = $request->user('sanctum');
@@ -112,6 +114,10 @@ class GoogleLoginController extends Controller
             $needsSave = false;
             if (!$user->google_id) {
                 $user->google_id = $googleUser->getId();
+                $needsSave = true;
+            }
+            if (empty($user->email) || $user->email === '-') {
+                $user->email = $googleUser->getEmail();
                 $needsSave = true;
             }
             if (empty($user->profile_photo_path) && $googleUser->getAvatar()) {
@@ -350,7 +356,9 @@ class GoogleLoginController extends Controller
 
         $googleId = $cachedData['google_id'];
         $googleEmail = $cachedData['email'];
-        $user = User::where('email', $googleEmail)->first();
+        $user = User::where('google_id', $googleId)
+                    ->orWhere('email', $googleEmail)
+                    ->first();
 
         $updateData = [
             'google_id' => $googleId,
