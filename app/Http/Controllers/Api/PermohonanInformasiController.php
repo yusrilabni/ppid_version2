@@ -224,6 +224,58 @@ class PermohonanInformasiController extends Controller
     /**
      * Check status of a request using unique code.
      */
+    public function getPekerjaanList(): JsonResponse
+    {
+        $defaultPekerjaan = [
+            'ASN / Pegawai Negeri',
+            'TNI / Polri',
+            'Pegawai BUMN / BUMD',
+            'Karyawan Swasta',
+            'Wiraswasta / Pengusaha',
+            'Pelajar / Mahasiswa',
+            'Guru / Dosen',
+            'Dokter / Tenaga Medis',
+            'Wartawan / Jurnalis',
+            'LSM / NGO',
+            'Petani / Nelayan',
+            'Pekerja Lepas / Freelancer',
+            'Ibu Rumah Tangga',
+            'Pensiunan',
+            'Tidak / Belum Bekerja'
+        ];
+
+        try {
+            $distinctPekerjaan = PermohonanInformasi::whereNotNull('pekerjaan')
+                ->where('pekerjaan', '!=', '')
+                ->distinct()
+                ->pluck('pekerjaan')
+                ->toArray();
+
+            $merged = collect(array_merge($defaultPekerjaan, $distinctPekerjaan))
+                ->map(function ($item) {
+                    return ucwords(strtolower(trim($item)));
+                })
+                ->filter(function ($item) {
+                    // Jangan masukkan jika hanya 'Lainnya' atau string kosong
+                    return !empty($item) && strtolower($item) !== 'lainnya';
+                })
+                ->unique()
+                ->sort()
+                ->values();
+
+            return response()->json([
+                'success' => true,
+                'data' => $merged
+            ]);
+        } catch (\Exception $e) {
+            // Fallback ke default jika database error
+            return response()->json([
+                'success' => true,
+                'data' => collect($defaultPekerjaan)->sort()->values()
+            ]);
+        }
+    }
+
     public function checkStatus($code): JsonResponse
     {
         try {

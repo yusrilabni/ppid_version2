@@ -45,6 +45,9 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
     Route::get('/informasi-pemkab', [App\Http\Controllers\Api\InformasiPemkabController::class, 'index']);
     Route::get('/informasi-pemkab/{slug}', [App\Http\Controllers\Api\InformasiPemkabController::class, 'show']);
 
+    // Daftar Pekerjaan (Auto-complete / Dropdown)
+    Route::get('/pekerjaan', [PermohonanInformasiController::class, 'getPekerjaanList']);
+    
     // Permohonan Informasi (Formulir via Android)
     Route::post('/permohonan', [PermohonanInformasiController::class, 'store'])->middleware('check.spam');
     Route::get('/permohonan/status/{code}', [PermohonanInformasiController::class, 'checkStatus']);
