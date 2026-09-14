@@ -48,6 +48,7 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
     // Permohonan Informasi (Formulir via Android)
     Route::post('/permohonan', [PermohonanInformasiController::class, 'store'])->middleware('check.spam');
     Route::get('/permohonan/status/{code}', [PermohonanInformasiController::class, 'checkStatus']);
+    Route::get('/permohonan/status/{code}/pdf', [PermohonanInformasiController::class, 'downloadPdf']);
 
     // Berita, Galeri, Pejabat
     Route::get('/berita', [BeritaController::class, 'index']);

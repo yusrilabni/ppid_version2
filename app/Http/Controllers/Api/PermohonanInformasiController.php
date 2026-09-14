@@ -263,4 +263,83 @@ class PermohonanInformasiController extends Controller
             ], 404);
         }
     }
+
+    public function downloadPdf(Request $request, $code)
+    {
+        ini_set('memory_limit', '256M');
+        ini_set('max_execution_time', '120');
+
+        try {
+            $permohonan = PermohonanInformasi::with('responses.user')
+                ->where('unique_code', $code)
+                ->firstOrFail();
+
+            $user = auth('sanctum')->user();
+            $isOwner = $user && $user->id == $permohonan->user_id;
+            $isAdmin = $user && in_array($user->role, ['admin', 'superadmin']);
+            $canViewSensitive = $isOwner || $isAdmin;
+
+            $isPubliclyVisible = in_array($permohonan->privacy_status, ['Publik', 'Anonim']) &&
+                                 in_array($permohonan->status_permohonan, ['selesai', 'ditolak']);
+
+            // Jika tidak memiliki akses sensitif dan bukan permohonan yang boleh dipublish
+            if (!$canViewSensitive && !$isPubliclyVisible) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Permohonan informasi tidak dapat diakses atau diunduh.'
+                ], 403);
+            }
+
+            // Jika tidak punya akses sensitif, MASK data sebelum di-render ke PDF
+            if (!$canViewSensitive) {
+                if ($permohonan->nomor_telepon_pemohon) {
+                    $permohonan->nomor_telepon_pemohon = substr($permohonan->nomor_telepon_pemohon, 0, 3) . '********';
+                }
+                if ($permohonan->email_pemohon) {
+                    $parts = explode('@', $permohonan->email_pemohon);
+                    $permohonan->email_pemohon = substr($parts[0], 0, 3) . '***@' . ($parts[1] ?? '');
+                }
+                if ($permohonan->alamat_pemohon) {
+                    $permohonan->alamat_pemohon = '*** (Disembunyikan) ***';
+                }
+                $permohonan->ktp_file_path = null;
+            }
+
+            $ppidLogoBase64 = '';
+            $logoPath = storage_path('app/public/logo/ppid.webp');
+            
+            if (file_exists($logoPath)) {
+                try {
+                    $logoContent = file_get_contents($logoPath);
+                    $ppidLogoBase64 = 'data:image/webp;base64,' . base64_encode($logoContent);
+                } catch (\Exception $e) {
+                    \Illuminate\Support\Facades\Log::error("Failed to encode PDF logo: " . $e->getMessage());
+                }
+            }
+
+            $pdf = \Barryvdh\DomPDF\Facade\Pdf::loadView('laporan.permohonan.pdf', [
+                'permohonan' => $permohonan,
+                'ppidLogoBase64' => $ppidLogoBase64
+            ])->setPaper('a4', 'portrait')
+              ->setWarnings(false)
+              ->setOption([
+                  'isRemoteEnabled' => false,
+                  'isHtml5ParserEnabled' => true,
+                  'defaultFont' => 'sans-serif'
+              ]);
+            
+            $fileName = 'laporan-permohonan-' . $permohonan->unique_code . '.pdf';
+
+            if ($request->query('action') === 'preview') {
+                return $pdf->stream($fileName);
+            }
+
+            return $pdf->download($fileName);
+        } catch (\Exception $e) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mengunduh PDF: ' . $e->getMessage()
+            ], 500);
+        }
+    }
 }
