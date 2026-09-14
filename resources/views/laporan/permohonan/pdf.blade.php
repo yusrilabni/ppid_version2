@@ -263,7 +263,7 @@
         <div class="section-title">I. Identitas Pemohon</div>
         <table class="data-table">
             <tr>
-                <th>Nama Lengkap</th>
+                <th width="30%">Nama Lengkap</th>
                 <td>
                     @if ($permohonan->privacy_status == 'Anonim')
                         <span style="color: #94a3b8;">[DATA DISAMARKAN SISTEM]</span>
@@ -277,12 +277,32 @@
                 <td>{{ $permohonan->alamat_pemohon }}</td>
             </tr>
             <tr>
-                <th>Kontak / Pekerjaan</th>
+                <th>Pekerjaan</th>
                 <td>
                     @if ($permohonan->privacy_status == 'Anonim')
                         DILINDUNGI KEBIJAKAN PRIVASI
                     @else
-                        {{ $permohonan->email_pemohon ?? '-' }} / {{ strtoupper($permohonan->pekerjaan ?? '-') }}
+                        {{ strtoupper($permohonan->pekerjaan ?? '-') }}
+                    @endif
+                </td>
+            </tr>
+            <tr>
+                <th>Nomor Telepon / HP</th>
+                <td>
+                    @if ($permohonan->privacy_status == 'Anonim')
+                        DILINDUNGI KEBIJAKAN PRIVASI
+                    @else
+                        {{ $permohonan->nomor_telepon_pemohon ?? '-' }}
+                    @endif
+                </td>
+            </tr>
+            <tr>
+                <th>Email</th>
+                <td>
+                    @if ($permohonan->privacy_status == 'Anonim')
+                        DILINDUNGI KEBIJAKAN PRIVASI
+                    @else
+                        {{ $permohonan->email_pemohon ?? '-' }}
                     @endif
                 </td>
             </tr>
