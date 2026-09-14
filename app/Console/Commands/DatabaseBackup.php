@@ -48,9 +48,9 @@ class DatabaseBackup extends Command
         $database = config('database.connections.mysql.database');
 
         // 3. Eksekusi MySQL Dump
-        // Membungkus password agar aman jika ada karakter khusus
-        $passwordOption = $password ? "-p\"{$password}\"" : "";
-        $command = "mysqldump -h {$host} -P {$port} -u {$username} {$passwordOption} {$database} | gzip > \"{$filePath}\"";
+        // Membungkus password dengan escapeshellarg agar karakter khusus (seperti $) aman di terminal Linux
+        $passwordOption = $password ? "-p" . escapeshellarg($password) : "";
+        $command = "mysqldump -h " . escapeshellarg($host) . " -P " . escapeshellarg($port) . " -u " . escapeshellarg($username) . " {$passwordOption} " . escapeshellarg($database) . " | gzip > " . escapeshellarg($filePath);
 
         $returnVar = NULL;
         $output = NULL;
