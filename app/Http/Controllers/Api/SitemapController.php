@@ -11,7 +11,7 @@ use App\Models\InformasiPemkab;
 
 class SitemapController extends Controller
 {
-    public function index(): JsonResponse
+    public function index()
     {
         $urls = [];
         $baseUrl = config('app.frontend_url', 'https://ppid.sinjaikab.go.id');
