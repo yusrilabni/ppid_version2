@@ -19,7 +19,6 @@ return Application::configure(basePath: dirname(__DIR__))
             'api/whatsapp/webhook'
         ]);
         $middleware->append(\App\Http\Middleware\LoginProtectionMiddleware::class);
-        $middleware->append(\App\Http\Middleware\EnforceNuxtRedirect::class);
         $middleware->append(\Illuminate\Http\Middleware\HandleCors::class);
         $middleware->append(\App\Http\Middleware\SecurityHeadersMiddleware::class);
         $middleware->append(\App\Http\Middleware\GlobalWafMiddleware::class);
