@@ -70,26 +70,10 @@ class LaporanPermohonanController extends Controller
 
     public function show(PermohonanInformasi $permohonanInformasi)
     {
-        // 1. Jika belum login, middleware 'auth' biasanya sudah menangani, 
-        // tapi kita pastikan URL tujuan disimpan (Intended URL)
-        if (!auth()->check()) {
-            return redirect()->guest(route('login'));
-        }
-
         $permohonan = $permohonanInformasi->load('user', 'responses.user');
-        $isOwner = auth()->id() == $permohonan->user_id;
-        $isAdmin = in_array(auth()->user()->role, ['admin', 'superadmin']);
+        $isOwner = auth()->check() && auth()->id() == $permohonan->user_id;
+        $isAdmin = auth()->check() && in_array(auth()->user()->role, ['admin', 'superadmin']);
         $canViewSensitive = $isOwner || $isAdmin;
-
-        // Public view conditions (untuk user lain jika status publik)
-        $isPubliclyVisible = in_array($permohonan->privacy_status, ['Publik', 'Anonim']) &&
-                             in_array($permohonan->status_permohonan, ['selesai', 'ditolak']);
-
-        // 2. Cek Sinkronisasi Akun
-        if (!$isOwner && !$isPubliclyVisible && !$isAdmin) {
-            // Jika dia login tapi bukan pemilik, bukan admin, dan data tidak publik
-            abort(403, 'Akses Dibatasi: Akun Anda tidak tersinkronisasi dengan data permohonan ini.');
-        }
         
         $units = $this->getUnitData();
 
