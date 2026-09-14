@@ -57,6 +57,7 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
     Route::get('/berita', [BeritaController::class, 'index']);
     Route::get('/berita/{slug}', [BeritaController::class, 'show']);
     Route::get('/galeri', [GaleriController::class, 'index']);
+    Route::get('/galeri/{id}/download', [GaleriController::class, 'download']);
     Route::get('/pejabat', [PejabatController::class, 'index']);
     
     // Twibbon

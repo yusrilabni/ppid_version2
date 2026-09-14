@@ -54,4 +54,38 @@ class GaleriController extends Controller
             return response()->json(['error' => 'Failed to create galeri', 'message' => $e->getMessage()], 500);
         }
     }
+
+    public function download($id)
+    {
+        try {
+            $galeri = Galeri::findOrFail($id);
+            if (!$galeri->image) {
+                return response()->json(['error' => 'No image found'], 404);
+            }
+
+            $path = storage_path('app/public/' . $galeri->image);
+            if (!file_exists($path)) {
+                return response()->json(['error' => 'File not found'], 404);
+            }
+
+            $extension = strtolower(pathinfo($path, PATHINFO_EXTENSION));
+            $filename = 'Galeri_PPID_' . \Illuminate\Support\Str::slug($galeri->title ?: 'Foto');
+
+            if ($extension === 'webp') {
+                $manager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+                $image = $manager->read($path);
+                
+                $encoded = $image->toJpeg(90);
+                
+                return response((string) $encoded)
+                    ->header('Content-Type', 'image/jpeg')
+                    ->header('Content-Disposition', 'attachment; filename="' . $filename . '.jpg"');
+            }
+
+            return response()->download($path, $filename . '.' . $extension);
+            
+        } catch (\Exception $e) {
+            return response()->json(['error' => 'Download failed', 'message' => $e->getMessage()], 500);
+        }
+    }
 }
