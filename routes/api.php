@@ -75,6 +75,7 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
     Route::get('/statistik', [StatistikController::class, 'index']);
     Route::get('/health', [HealthController::class, 'index']);
     Route::get('/profil', [App\Http\Controllers\Api\ProfilPpidController::class, 'index']);
+    Route::get('/sitemap', [App\Http\Controllers\Api\SitemapController::class, 'index']);
 
     // Auth & Kontak
     Route::post('/login', [App\Http\Controllers\Api\LoginController::class, 'login']);
