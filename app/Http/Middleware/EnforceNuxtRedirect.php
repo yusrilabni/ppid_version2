@@ -8,58 +8,64 @@ use Symfony\Component\HttpFoundation\Response;
 
 class EnforceNuxtRedirect
 {
-    /**
-     * Handle an incoming request.
-     *
-     * @param  Closure(Request): (Response)  $next
-     */
-    public function handle(Request $request, Closure $next): Response
+    public function handle(Request , Closure ): Response
     {
-        $path = $request->path();
+        \ = \->path();
 
-        // 1. Bypass untuk API, Storage, System, dan Webhook
-        if ($request->is('api/*') || $request->is('storage/*') || $request->is('sanctum/*') || $request->is('livewire/*') || $request->is('build/*') || $request->is('vendor/*') || $request->is('assets/*') || $request->is('wa-debug*') || $request->is('test-*') || $request->is('_debugbar/*')) {
-            return $next($request);
+        // 1. Bypass untuk API, Storage, System, dll
+        if (\->is('api/*') || \->is('storage/*') || \->is('sanctum/*') || \->is('livewire/*') || \->is('build/*') || \->is('vendor/*') || \->is('assets/*') || \->is('wa-debug*') || \->is('test-*') || \->is('_debugbar/*')) {
+            return \(\);
         }
 
-        // 2. Secret Door untuk masuk ke Backend
-        if ($request->is('web')) {
-            // Set session agar komputer ini dikenali sebagai admin/pengelola
+        // 2. Jika secara eksplisit diawali dengan /web atau /web/ (Akses Manual)
+        if (\->is('web') || \->is('web/*')) {
+            
+            // Beri akses session untuk backend
             session(['backend_access_granted' => true]);
-            return redirect()->route('login');
-        }
 
-        // Daftar awalan route backend yang diizinkan (jika punya akses)
-        $isBackendRoute = $request->is('login') 
-            || $request->is('login/*') 
-            || $request->is('logout') 
-            || $request->is('register') 
-            || $request->is('admin') 
-            || $request->is('admin/*') 
-            || $request->is('auth/*');
-
-        // 3. Jika mengakses halaman backend
-        if ($isBackendRoute) {
-            if (session('backend_access_granted')) {
-                return $next($request);
+            // Dapatkan URI asli (misal: /web/profil atau /v2/web/profil)
+            \ = \->server->get('REQUEST_URI');
+            
+            // Buang kata '/web' dari URI
+            // Karena di .htaccess ada rewrite ke /v2/, URI mungkin /v2/web/profil
+            \ = preg_replace('#/web(/|$)#', '/', \, 1);
+            if (\ === '' || str_starts_with(\, '?')) {
+                \ = '/' . \;
             }
-            // Jika tidak punya sesi rahasia, lempar ke beranda Nuxt
+            
+            // Duplicate request agar Laravel menganggap ini akses normal tanpa /web
+            \ = \->duplicate(null, null, null, null, null, ['REQUEST_URI' => \]);
+
+            return \(\);
+        }
+
+        // 3. Pengecekan Halaman Backend (/admin, /login)
+        \ = \->is('login') 
+            || \->is('login/*') 
+            || \->is('logout') 
+            || \->is('register') 
+            || \->is('admin') 
+            || \->is('admin/*') 
+            || \->is('auth/*');
+
+        if (\) {
+            if (session('backend_access_granted')) {
+                return \(\);
+            }
             return redirect()->to('https://ppid.sinjaikab.go.id', 301);
         }
 
-        // 4. Jika bukan halaman backend (alias halaman frontend lama seperti profil, v2, dll)
-        // Hilangkan prefix v2/ jika ada
-        if (str_starts_with($path, 'v2/')) {
-            $path = substr($path, 3);
-        } elseif ($path === 'v2') {
-            $path = '';
+        // 4. Jika tidak ada /web, REDIRECT KE NUXT!
+        if (str_starts_with(\, 'v2/')) {
+            \ = substr(\, 3);
+        } elseif (\ === 'v2') {
+            \ = '';
         }
 
-        // Redirect full ke Nuxt
-        if ($path === '/' || $path === '') {
+        if (\ === '/' || \ === '') {
             return redirect()->to('https://ppid.sinjaikab.go.id', 301);
         }
 
-        return redirect()->to('https://ppid.sinjaikab.go.id/' . $path, 301);
+        return redirect()->to('https://ppid.sinjaikab.go.id/' . \, 301);
     }
 }
