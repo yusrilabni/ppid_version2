@@ -227,7 +227,7 @@ class PermohonanInformasiController extends Controller
     public function checkStatus($code): JsonResponse
     {
         try {
-            $permohonan = PermohonanInformasi::with('responses')
+            $permohonan = PermohonanInformasi::with('responses.user')
                 ->where('unique_code', $code)
                 ->firstOrFail();
 
