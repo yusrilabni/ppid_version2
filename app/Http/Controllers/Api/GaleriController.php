@@ -9,13 +9,17 @@ use Illuminate\Http\JsonResponse;
 
 class GaleriController extends Controller
 {
-    public function index(): JsonResponse
+    public function index(Request $request): JsonResponse
     {
         try {
-            $galeri = Galeri::orderBy('created_at', 'desc')
-                            ->take(8)
-                            ->get();
+            $query = Galeri::orderBy('is_pinned', 'desc')->orderBy('created_at', 'desc');
+            
+            if ($request->has('limit')) {
+                $galeri = $query->take((int)$request->get('limit'))->get();
+                return response()->json($galeri);
+            }
 
+            $galeri = $query->paginate(12);
             return response()->json($galeri);
         } catch (\Exception $e) {
             return response()->json(['error' => 'Failed to fetch galeri', 'message' => $e->getMessage()], 500);
