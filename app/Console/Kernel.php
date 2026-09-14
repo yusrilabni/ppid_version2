@@ -25,6 +25,9 @@ class Kernel extends ConsoleKernel
     protected function schedule(Schedule $schedule)
     {
         $schedule->command('ppid:update-informasi-category')->daily();
+        
+        // Backup database setiap jam 12 malam (00:00)
+        $schedule->command('ppid:backup-db')->dailyAt('00:00');
     }
 
     /**
