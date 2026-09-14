@@ -36,5 +36,8 @@ class InformasiObserver
             $categorySlug = \Str::slug($informasi->category);
             Cache::forget('informasi_category_' . $categorySlug);
         }
+
+        // Karena sekarang menggunakan Redis, kita bisa membersihkan semua cache API (paginasi/filter)
+        Cache::tags(['informasi'])->flush();
     }
 }

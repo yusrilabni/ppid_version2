@@ -39,7 +39,7 @@ class BeritaObserver
     {
         Cache::forget('berita_home_latest');
         Cache::forget('berita_all_paginated');
-        // If using cache tags (requires Redis/Memcached)
-        // Cache::tags(['berita'])->flush();
+        // Karena sekarang menggunakan Redis, aktifkan fitur Tags
+        Cache::tags(['berita'])->flush();
     }
 }
