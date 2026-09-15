@@ -82,12 +82,17 @@ class DatabaseBackup extends Command
         $this->info('Mengumpulkan URL untuk sitemap...');
         $urls = [];
         $base = 'https://ppid.sinjaikab.go.id';
+        $today = Carbon::today();
+        $updatesToday = 0;
 
         // 1. Informasi Publik
         $informasi = \App\Models\Informasi::all();
         foreach ($informasi as $info) {
             if ($info->slug) {
                 $urls[] = "{$base}/informasi/detail/{$info->slug}";
+            }
+            if ($info->created_at >= $today || $info->updated_at >= $today) {
+                $updatesToday++;
             }
         }
 
@@ -97,6 +102,9 @@ class DatabaseBackup extends Command
             if ($off->slug) {
                 $urls[] = "{$base}/profil/{$off->slug}";
             }
+            if ($off->created_at >= $today || $off->updated_at >= $today) {
+                $updatesToday++;
+            }
         }
 
         // 3. Berita
@@ -105,10 +113,13 @@ class DatabaseBackup extends Command
             if ($b->slug) {
                 $urls[] = "{$base}/berita/{$b->slug}";
             }
+            if ($b->created_at >= $today || $b->updated_at >= $today) {
+                $updatesToday++;
+            }
         }
 
         $totalUrls = count($urls);
-        $this->info("Total {$totalUrls} URL terkumpul. Memulai push ke Vercel...");
+        $this->info("Total {$totalUrls} URL terkumpul ({$updatesToday} update hari ini). Memulai push ke Vercel...");
 
         $successCount = 0;
         $chunks = array_chunk($urls, 50);
@@ -137,7 +148,7 @@ class DatabaseBackup extends Command
         } catch (\Exception $e) {}
 
         if ($successCount > 0) {
-            return "✅ *Sitemap Diperbarui:* {$successCount} URL";
+            return "✅ *Sitemap Diperbarui:* {$successCount} Total URL\n🔄 *Perubahan Hari Ini:* {$updatesToday} dokumen";
         }
         return "❌ *Sitemap Gagal Diperbarui*";
     }
