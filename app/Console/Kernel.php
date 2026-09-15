@@ -26,8 +26,8 @@ class Kernel extends ConsoleKernel
     {
         $schedule->command('ppid:update-informasi-category')->daily();
         
-        // Backup database setiap jam 12 malam (00:00) - Uji coba 10:32
-        $schedule->command('ppid:backup-db')->dailyAt('10:32');
+        // Backup database setiap jam 12 malam (00:00) - Uji coba setiap menit
+        $schedule->command('ppid:backup-db')->everyMinute();
     }
 
     /**
