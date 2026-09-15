@@ -15,6 +15,3 @@ Schedule::job(new \App\Jobs\OptimizedCacheWarmup)->cron('0 */8 * * *');
 
 // Backup database & Update Sitemap (Setiap Jam 12 Malam)
 Schedule::command('ppid:backup-db')->dailyAt('00:00');
-
-// Update informasi category
-Schedule::command('ppid:update-informasi-category')->daily();
