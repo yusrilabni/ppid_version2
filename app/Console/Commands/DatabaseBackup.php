@@ -63,20 +63,89 @@ class DatabaseBackup extends Command
 
         $this->info("Backup berhasil dibuat di: {$filePath}");
 
-        // 4. Kirim ke Telegram
-        $this->sendToTelegram($filePath, $filename, $date);
+        // 4. Update Sitemap Vercel
+        $this->info('Memulai pembaruan sitemap...');
+        $sitemapStatus = $this->updateSitemap();
 
-        // 5. Hapus File Lokal yang Lebih Tua dari 5 Hari
+        // 5. Kirim ke Telegram
+        $this->sendToTelegram($filePath, $filename, $date, $sitemapStatus);
+
+        // 6. Hapus File Lokal yang Lebih Tua dari 5 Hari
         $this->cleanOldBackups($backupPath);
 
         $this->info('Proses backup selesai.');
         return Command::SUCCESS;
     }
 
+    protected function updateSitemap()
+    {
+        $this->info('Mengumpulkan URL untuk sitemap...');
+        $urls = [];
+        $base = 'https://ppid.sinjaikab.go.id';
+
+        // 1. Informasi Publik
+        $informasi = \App\Models\Informasi::all();
+        foreach ($informasi as $info) {
+            if ($info->slug) {
+                $urls[] = "{$base}/informasi/detail/{$info->slug}";
+            }
+        }
+
+        // 2. Profil Pejabat
+        $officials = \App\Models\Official::all();
+        foreach ($officials as $off) {
+            if ($off->slug) {
+                $urls[] = "{$base}/profil/{$off->slug}";
+            }
+        }
+
+        // 3. Berita
+        $berita = \App\Models\Berita::all();
+        foreach ($berita as $b) {
+            if ($b->slug) {
+                $urls[] = "{$base}/berita/{$b->slug}";
+            }
+        }
+
+        $totalUrls = count($urls);
+        $this->info("Total {$totalUrls} URL terkumpul. Memulai push ke Vercel...");
+
+        $successCount = 0;
+        $chunks = array_chunk($urls, 50);
+
+        foreach ($chunks as $index => $chunk) {
+            $isFirst = $index === 0;
+            try {
+                $response = Http::post("{$base}/internal/sitemap-push", [
+                    'urls' => $chunk,
+                    'reset' => $isFirst
+                ]);
+
+                if ($response->successful()) {
+                    $successCount += count($chunk);
+                } else {
+                    $this->error("Gagal push batch " . ($index + 1) . ": " . $response->body());
+                }
+            } catch (\Exception $e) {
+                $this->error("Error push batch " . ($index + 1) . ": " . $e->getMessage());
+            }
+        }
+
+        // Simpan cache (agar Vercel CDN merekamnya)
+        try {
+            Http::get("{$base}/sitemap.xml");
+        } catch (\Exception $e) {}
+
+        if ($successCount > 0) {
+            return "✅ *Sitemap Diperbarui:* {$successCount} URL";
+        }
+        return "❌ *Sitemap Gagal Diperbarui*";
+    }
+
     /**
      * Kirim file ke Telegram
      */
-    protected function sendToTelegram($filePath, $filename, $date)
+    protected function sendToTelegram($filePath, $filename, $date, $sitemapStatus = "")
     {
         $token = env('TELEGRAM_BOT_TOKEN');
         $chatId = env('TELEGRAM_CHAT_ID');
@@ -90,7 +159,8 @@ class DatabaseBackup extends Command
 
         $caption = "🟢 *AUTO BACKUP DATABASE*\n\n"
                  . "📅 Tanggal: " . Carbon::now()->translatedFormat('l, d F Y H:i:s') . "\n"
-                 . "📁 File: `{$filename}`\n\n"
+                 . "📁 File: `{$filename}`\n"
+                 . "{$sitemapStatus}\n\n"
                  . "_Pesan otomatis oleh Sistem PPID._";
 
         $response = Http::attach(
