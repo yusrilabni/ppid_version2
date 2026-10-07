@@ -134,7 +134,7 @@ class InformasiPemkabController extends Controller
                     $imagePath = tempnam(sys_get_temp_dir(), 'informasi_pemkab_') . '.webp';
                     $imageInstance->save($imagePath);
                     
-                    $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.webp';
+                    $fileName = pathinfo($filestr_replace(' ', '_', ->getClientOriginalName()), PATHINFO_FILENAME) . '_' . time() . '.webp';
                     $filePath = 'informasi_pemkab/' . $fileName;
                     \Illuminate\Support\Facades\Storage::disk('public')->put($filePath, file_get_contents($imagePath));
                     
@@ -286,7 +286,7 @@ class InformasiPemkabController extends Controller
                     $imagePath = tempnam(sys_get_temp_dir(), 'informasi_pemkab_') . '.webp';
                     $imageInstance->save($imagePath);
                     
-                    $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.webp';
+                    $fileName = pathinfo($filestr_replace(' ', '_', ->getClientOriginalName()), PATHINFO_FILENAME) . '_' . time() . '.webp';
                     $filePath = 'informasi_pemkab/' . $fileName;
                     \Illuminate\Support\Facades\Storage::disk('public')->put($filePath, file_get_contents($imagePath));
                     

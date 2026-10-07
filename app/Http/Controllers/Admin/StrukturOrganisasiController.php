@@ -181,7 +181,7 @@ class StrukturOrganisasiController extends Controller
         // Encode the image to WebP format with 80% quality
         $encodedImage = $image->toWebp(80);
 
-        $fileName = pathinfo($file->getClientOriginalName(), PATHINFO_FILENAME) . '_' . time() . '.webp';
+        $fileName = pathinfo($filestr_replace(' ', '_', ->getClientOriginalName()), PATHINFO_FILENAME) . '_' . time() . '.webp';
         $path = $directory . '/' . $fileName;
 
         Storage::disk('public')->put($path, (string) $encodedImage);

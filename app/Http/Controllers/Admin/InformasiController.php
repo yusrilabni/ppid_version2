@@ -554,7 +554,7 @@ class InformasiController extends Controller
                     if (filesize($tempPath) <= 2 * 1024 * 1024) { // <= 2MB
                         // Load file yang telah dikompresi sebelum disimpan
                         $compressedContent = file_get_contents($tempPath);
-                        $filePath = 'files/' . time() . '_' . $file->getClientOriginalName();
+                        $filePath = 'files/' . time() . '_' . $filestr_replace(' ', '_', ->getClientOriginalName());
                         \Storage::disk('public')->put($filePath, $compressedContent);
                         unlink($tempPath); // hapus file sementara
                         return $filePath;
@@ -583,7 +583,7 @@ class InformasiController extends Controller
                         if (filesize($tempPath) <= 2 * 1024 * 1024) { // <= 2MB
                             // Load file yang telah di-resize sebelum disimpan
                             $resizedContent = file_get_contents($tempPath);
-                            $filePath = 'files/' . time() . '_' . $file->getClientOriginalName();
+                            $filePath = 'files/' . time() . '_' . $filestr_replace(' ', '_', ->getClientOriginalName());
                             \Storage::disk('public')->put($filePath, $resizedContent);
                             unlink($tempPath); // hapus file sementara
                             return $filePath;
@@ -594,14 +594,14 @@ class InformasiController extends Controller
                     }
 
                     // Jika tetap tidak berhasil, simpan dengan ukuran terakhir
-                    $filePath = 'files/' . time() . '_' . $file->getClientOriginalName();
+                    $filePath = 'files/' . time() . '_' . $filestr_replace(' ', '_', ->getClientOriginalName());
                     \Storage::disk('public')->put($filePath, $resized->encode());
                     return $filePath;
                 }
             }
 
             // Jika file gambar < 2MB, tetap load dan simpan
-            $filePath = 'files/' . time() . '_' . $file->getClientOriginalName();
+            $filePath = 'files/' . time() . '_' . $filestr_replace(' ', '_', ->getClientOriginalName());
             $originalContent = file_get_contents($file->getRealPath());
             \Storage::disk('public')->put($filePath, $originalContent);
             return $filePath;

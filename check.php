@@ -1,0 +1,1 @@
+<?php require __DIR__.'/vendor/autoload.php'; require_once __DIR__.'/bootstrap/app.php'; \ = app(); \ = \->make(Illuminate\Contracts\Console\Kernel::class); \->bootstrap(); \ = App\Models\Informasi::where('slug', 'laporan-kemajuan-keuangan-dan-fisik-kegiatan-bulan-januari-tahun-2026')->first(); echo 'FILE: ' . (\ ? \->file : 'NOT FOUND');

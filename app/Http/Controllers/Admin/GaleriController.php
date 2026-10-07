@@ -117,7 +117,8 @@ class GaleriController extends Controller
             }
 
             // Store the processed image in the public/galeri directory
-            $fileName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME) . '.webp';
+            $baseName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
+            $fileName = str_replace(' ', '_', $baseName) . '_' . time() . '.webp';
             $imagePathFinal = 'galeri/' . $fileName;
             Storage::disk('public')->put($imagePathFinal, file_get_contents($imagePath));
 
@@ -257,7 +258,8 @@ class GaleriController extends Controller
             }
 
             // Store the processed image in the public/galeri directory
-            $fileName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME) . '.webp';
+            $baseName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
+            $fileName = str_replace(' ', '_', $baseName) . '_' . time() . '.webp';
             $imagePathFinal = 'galeri/' . $fileName;
             Storage::disk('public')->put($imagePathFinal, file_get_contents($imagePath));
 

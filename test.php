@@ -1,8 +1,7 @@
 <?php
-require "vendor/autoload.php";
-$app = require_once "bootstrap/app.php";
-$kernel = $app->make(Illuminate\Contracts\Http\Kernel::class);
-$request = Illuminate\Http\Request::create("/share/og-image/logo", "GET");
-$response = $kernel->handle($request);
-echo strlen($response->getContent());
-
+require __DIR__.'/vendor/autoload.php';
+\ = require_once __DIR__.'/bootstrap/app.php';
+\ = \->make(Illuminate\Contracts\Console\Kernel::class);
+\->bootstrap();
+\ = \App\Models\Informasi::where('slug', 'laporan-kemajuan-keuangan-dan-fisik-kegiatan-bulan-januari-tahun-2026')->value('file');
+echo 'THEFILEIS: ' . \;
