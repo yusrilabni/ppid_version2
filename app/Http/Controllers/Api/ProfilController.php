@@ -306,14 +306,22 @@ class ProfilController extends Controller
         if ($user->isSuperAdmin()) {
             $hasAccess = true;
         }
-        if (!$hasAccess && $user->unit_id && isset($official->organization) && (string)$user->unit_id === (string)$official->organization->remote_id) {
-            $hasAccess = true;
+        if (!$hasAccess && $user->unit_id && isset($official->organization)) {
+            if ((string)$user->unit_id === (string)$official->organization->remote_id ||
+                (string)$user->unit_id === (string)$official->organization->id ||
+                (string)$user->unit_id === (string)$official->organization_id) {
+                $hasAccess = true;
+            }
         }
         if (!$hasAccess && $user->nip) {
             $apiData = \App\Models\User::getDataFromApi($user->nip);
             $api_unit_id = $apiData['unit_id'] ?? null;
-            if (!is_null($api_unit_id) && isset($official->organization) && (string)$api_unit_id === (string)$official->organization->remote_id) {
-                $hasAccess = true;
+            if (!is_null($api_unit_id) && isset($official->organization)) {
+                if ((string)$api_unit_id === (string)$official->organization->remote_id ||
+                    (string)$api_unit_id === (string)$official->organization->id ||
+                    (string)$api_unit_id === (string)$official->organization_id) {
+                    $hasAccess = true;
+                }
             }
         }
         
@@ -367,16 +375,24 @@ class ProfilController extends Controller
         }
 
         // 2. Cek Unit ID Lokal
-        if (!$hasAccess && $user->unit_id && isset($official->organization) && (string)$user->unit_id === (string)$official->organization->remote_id) {
-            $hasAccess = true;
+        if (!$hasAccess && $user->unit_id && isset($official->organization)) {
+            if ((string)$user->unit_id === (string)$official->organization->remote_id ||
+                (string)$user->unit_id === (string)$official->organization->id ||
+                (string)$user->unit_id === (string)$official->organization_id) {
+                $hasAccess = true;
+            }
         }
 
         // 3. Cek Unit ID dari API
         if (!$hasAccess && $user->nip) {
             $apiData = \App\Models\User::getDataFromApi($user->nip);
             $api_unit_id = $apiData['unit_id'] ?? null;
-            if (!is_null($api_unit_id) && isset($official->organization) && (string)$api_unit_id === (string)$official->organization->remote_id) {
-                $hasAccess = true;
+            if (!is_null($api_unit_id) && isset($official->organization)) {
+                if ((string)$api_unit_id === (string)$official->organization->remote_id ||
+                    (string)$api_unit_id === (string)$official->organization->id ||
+                    (string)$api_unit_id === (string)$official->organization_id) {
+                    $hasAccess = true;
+                }
             }
         }
         

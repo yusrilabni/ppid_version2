@@ -353,8 +353,8 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
         Route::post('/twibbon/{slug}', [\App\Http\Controllers\Admin\TwibbonController::class, 'update']);
         Route::delete('/twibbon/{id}', [\App\Http\Controllers\Admin\TwibbonController::class, 'destroy']);
         
-        Route::get('/profil/pimpinan/{official}/edit', [ProfilController::class, 'editOfficial']);
-        Route::post('/profil/pimpinan/{official}', [ProfilController::class, 'updateOfficial']);
+        Route::get('/profil/pimpinan/{slug}/edit', [ProfilController::class, 'editOfficial']);
+        Route::post('/profil/pimpinan/{slug}', [ProfilController::class, 'updateOfficial']);
         
         Route::get('/profil/kelola-opd/{organization}/edit', [ProfilController::class, 'editOpdManage']);
         Route::post('/profil/kelola-opd/{organization}', [ProfilController::class, 'updateOpdManage']);
