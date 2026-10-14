@@ -85,6 +85,10 @@ class LoginController extends Controller
         $user->last_login_ip = request()->ip();
         $user->save();
 
+        // Hapus semua token lama sebelum buat token baru
+        // agar tidak ada token stale yang menyebabkan masalah autentikasi
+        $user->tokens()->delete();
+
         $token = $user->createToken('mobile_app_token')->plainTextToken;
 
         return response()->json([
