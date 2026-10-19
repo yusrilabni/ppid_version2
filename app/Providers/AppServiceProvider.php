@@ -45,16 +45,43 @@ class AppServiceProvider extends ServiceProvider
             \Illuminate\Support\Facades\URL::forceScheme('https');
         }
 
-        // Cache Invalidation untuk Endpoint Home
-        $homeModels = [\App\Models\ProfilPpid::class, \App\Models\Slider::class, \App\Models\Informasi::class, \App\Models\Galeri::class, \App\Models\PermohonanInformasi::class, \App\Models\SurveyResponse::class];
+        // Cache Invalidation untuk Endpoint Home, Profil, dan Pejabat
+        $homeModels = [
+            \App\Models\Official::class,
+            \App\Models\Organization::class,
+            \App\Models\ProfilPpid::class,
+            \App\Models\Slider::class,
+            \App\Models\Informasi::class,
+            \App\Models\Galeri::class,
+            \App\Models\PermohonanInformasi::class,
+            \App\Models\SurveyResponse::class
+        ];
         foreach ($homeModels as $model) {
-            $model::saved(function() {
+            $model::saved(function($instance) {
                 \Illuminate\Support\Facades\Cache::forget('all_home');
                 \Illuminate\Support\Facades\Cache::forget('profil_api_data');
+                \Illuminate\Support\Facades\Cache::forget('pejabat_daerah_data');
+                \Illuminate\Support\Facades\Cache::forget('unit_lokal_data');
+                if (isset($instance->slug)) {
+                    \Illuminate\Support\Facades\Cache::forget('official_profile_' . $instance->slug);
+                    \Illuminate\Support\Facades\Cache::forget('opd_profile_' . $instance->slug);
+                }
+                try {
+                    \Illuminate\Support\Facades\Cache::tags(['officials', 'pimpinan', 'pejabat', 'organizations', 'informasi'])->flush();
+                } catch (\Throwable $e) {}
             });
-            $model::deleted(function() {
+            $model::deleted(function($instance) {
                 \Illuminate\Support\Facades\Cache::forget('all_home');
                 \Illuminate\Support\Facades\Cache::forget('profil_api_data');
+                \Illuminate\Support\Facades\Cache::forget('pejabat_daerah_data');
+                \Illuminate\Support\Facades\Cache::forget('unit_lokal_data');
+                if (isset($instance->slug)) {
+                    \Illuminate\Support\Facades\Cache::forget('official_profile_' . $instance->slug);
+                    \Illuminate\Support\Facades\Cache::forget('opd_profile_' . $instance->slug);
+                }
+                try {
+                    \Illuminate\Support\Facades\Cache::tags(['officials', 'pimpinan', 'pejabat', 'organizations', 'informasi'])->flush();
+                } catch (\Throwable $e) {}
             });
         }
 

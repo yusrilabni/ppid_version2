@@ -517,6 +517,17 @@ class ProfilController extends Controller
             }
         }
 
+        // Invalidate backend caches so updates appear immediately realtime
+        \Illuminate\Support\Facades\Cache::forget('all_home');
+        \Illuminate\Support\Facades\Cache::forget('profil_api_data');
+        \Illuminate\Support\Facades\Cache::forget('pejabat_daerah_data');
+        \Illuminate\Support\Facades\Cache::forget('unit_lokal_data');
+        \Illuminate\Support\Facades\Cache::forget('official_profile_' . $official->slug);
+        \Illuminate\Support\Facades\Cache::forget('official_profile_id_' . $official->id);
+        try {
+            \Illuminate\Support\Facades\Cache::tags(['officials', 'pimpinan', 'pejabat'])->flush();
+        } catch (\Throwable $e) {}
+
         return response()->json([
             'success' => true,
             'message' => 'Data Pimpinan berhasil diperbarui.',
@@ -635,6 +646,17 @@ class ProfilController extends Controller
             $informasi->file = $struktur->image_path;
         }
         $informasi->save();
+
+        // Invalidate backend caches so OPD structure updates appear immediately realtime
+        \Illuminate\Support\Facades\Cache::forget('all_home');
+        \Illuminate\Support\Facades\Cache::forget('profil_api_data');
+        \Illuminate\Support\Facades\Cache::forget('pejabat_daerah_data');
+        \Illuminate\Support\Facades\Cache::forget('unit_lokal_data');
+        \Illuminate\Support\Facades\Cache::forget('opd_profile_' . $organization->slug);
+        \Illuminate\Support\Facades\Cache::forget('opd_profile_id_' . $organization->id);
+        try {
+            \Illuminate\Support\Facades\Cache::tags(['organizations', 'opd', 'struktur', 'informasi'])->flush();
+        } catch (\Throwable $e) {}
 
         return response()->json([
             'success' => true,
