@@ -26,7 +26,7 @@ class SecurityHeadersMiddleware
         $response->header('Strict-Transport-Security', 'max-age=31536000; includeSubDomains; preload');
         
         // Use Str::contains as a robust fallback for path checking
-        if (str_contains($request->url(), 'widgets/embed')) {
+        if (str_contains($request->url(), 'widgets/embed') || $request->is('api/*')) {
             $response->headers->remove('X-Frame-Options');
             $response->header('Cross-Origin-Opener-Policy', 'unsafe-none');
             $response->header('Cross-Origin-Resource-Policy', 'cross-origin');

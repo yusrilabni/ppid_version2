@@ -22,6 +22,9 @@ return [
     'allowed_origins' => [
         'https://ppid.sinjaikab.go.id',
         'https://ppidkab.sinjaikab.go.id',
+        'https://sinjaikab.go.id',
+        'https://www.sinjaikab.go.id',
+        'http://sinjaikab.go.id',
     ],
 
     'allowed_origins_patterns' => [],
