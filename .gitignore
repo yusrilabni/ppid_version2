@@ -24,6 +24,24 @@ Homestead.yaml
 Thumbs.db
 mobile_app/
 
+# Development, Testing, & Scratch (Jangan di-push ke Production)
+/tests/
+vite.config.mjs
+public/fix_storage.php
+public/test_*.php
+*.ps1
+*.py
+models.json
+output*.txt
+output*.json
+
+# Dokumentasi Development / Panduan Sementara (Kecuali GEMINI.md)
+blueprint_*.md
+CATATAN_*.md
+DNS_*.md
+REDIS_*.md
+TODO_*.md
+README.md
 
 # Kebutuhan Jurnal
 jurnal*
