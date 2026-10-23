@@ -266,9 +266,11 @@ class SaqController extends Controller
         }
 
         // Sinkronkan daftar link (ganti total)
-        // Catatan: dokumen lama yang dibuat dari SAQ tidak dihapus otomatis
-        // untuk menghindari hapus data manual yang tidak sengaja
         $answer->links()->delete();
+        // Timpa dokumen: hapus dokumen lama dari SAQ answer ini via saq_answer_id (aman, presisi)
+        // 1 pertanyaan = 1 dokumen, tidak duplikat
+        \App\Models\Informasi::where('saq_answer_id', $answer->id)->delete();
+        \App\Models\InformasiPemkab::where('saq_answer_id', $answer->id)->delete();
         $dokumenIds = [];
         if ($validated['jawaban'] === 'ya') {
             $org = Organization::find($validated['organization_id']);
@@ -286,6 +288,7 @@ class SaqController extends Controller
                 // Simpan sebagai dokumen: ke informasi_pemkab (web utama) atau informasis (PPID)
                 if ($indicator->target_upload === 'pemkab') {
                     $dok = InformasiPemkab::create([
+                        'saq_answer_id' => $answer->id,
                         'judul' => $l['judul'],
                         'kategori' => $klasifikasi,
                         'jenis_dokumen' => 'Dokumen SAQ',
@@ -298,6 +301,7 @@ class SaqController extends Controller
                     ]);
                 } else {
                     $dok = Informasi::create([
+                        'saq_answer_id' => $answer->id,
                         'title' => $l['judul'],
                         'content' => $l['deskripsi'] ?? $indicator->pertanyaan,
                         'category' => $klasifikasi,

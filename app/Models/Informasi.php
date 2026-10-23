@@ -24,6 +24,7 @@ class Informasi extends Model
         'status',
         'tanggal_upload',
         'user_id', // Add user_id to fillable
+        'saq_answer_id',
         'unit_id',
         'views_count', // Add views_count to fillable
         'download_count', // Add download_count to fillable

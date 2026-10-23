@@ -18,6 +18,7 @@ class InformasiPemkab extends Model
         'visibility',
         'published_at',
         'user_id',
+        'saq_answer_id',
         'unit_id',
         'ip_address',
         'views_count',
