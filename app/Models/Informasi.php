@@ -16,6 +16,7 @@ class Informasi extends Model
         'content',
         'category',
         'published',
+        'visibility',
         'deskripsi',
         'jenis_dokumen',
         'tahun',
