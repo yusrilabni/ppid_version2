@@ -202,7 +202,7 @@ class SaqController extends Controller
             'jawaban' => 'required|in:ya,tidak',
             'visibility' => 'nullable|in:public,private',
             'links' => 'nullable|array|max:20',
-            'links.*.judul' => 'required_with:links|string|max:255',
+            'links.*.judul' => 'nullable|string|max:255',
             'links.*.link' => 'required_with:links|string|max:2000',
             'links.*.deskripsi' => 'nullable|string',
         ]);
@@ -238,7 +238,7 @@ class SaqController extends Controller
 
         $links = array_values(array_filter(
             $validated['links'] ?? [],
-            fn($l) => !empty($l['judul']) && !empty($l['link'])
+            fn($l) => !empty($l['link'])
         ));
 
         if ($validated['jawaban'] === 'ya' && empty($links)) {
