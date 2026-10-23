@@ -157,11 +157,11 @@ class SaqController extends Controller
             'organization_id' => 'required|integer|exists:organizations,id',
             'indicator_id' => 'required|integer|exists:saq_indicators,id',
             'jawaban' => 'required|in:ya,tidak',
+            'visibility' => 'nullable|in:public,private',
             'links' => 'nullable|array|max:20',
             'links.*.judul' => 'required_with:links|string|max:255',
             'links.*.link' => 'required_with:links|string|max:2000',
             'links.*.deskripsi' => 'nullable|string',
-            'klasifikasi' => 'nullable|in:Informasi Berkala,Informasi Tersedia Setiap Saat,Informasi Serta Merta,Informasi Dikecualikan',
         ]);
 
         $indicator = SaqIndicator::findOrFail($validated['indicator_id']);
@@ -184,6 +184,8 @@ class SaqController extends Controller
             ], 422);
         }
 
+        $visibility = $validated['visibility'] ?? 'public';
+
         $answer = SaqAnswer::updateOrCreate(
             [
                 'organization_id' => $validated['organization_id'],
@@ -191,6 +193,7 @@ class SaqController extends Controller
             ],
             [
                 'jawaban' => $validated['jawaban'],
+                'visibility' => $visibility,
                 // Kolom lama dipertahankan untuk kompatibilitas (diisi link pertama)
                 'judul' => $links[0]['judul'] ?? null,
                 'link' => $links[0]['link'] ?? null,
@@ -200,9 +203,12 @@ class SaqController extends Controller
 
         // Sinkronkan daftar link (ganti total)
         $answer->links()->delete();
-        $informasiIds = [];
+        $dokumenIds = [];
         if ($validated['jawaban'] === 'ya') {
             $org = Organization::find($validated['organization_id']);
+            // Klasifikasi otomatis dari pertanyaan (tidak dipilih manual)
+            $klasifikasi = $indicator->klasifikasi_otomatis ?? 'Informasi Berkala';
+
             foreach ($links as $i => $l) {
                 $answer->links()->create([
                     'judul' => $l['judul'],
@@ -211,12 +217,23 @@ class SaqController extends Controller
                     'order' => $i,
                 ]);
 
-                // Opsional: catat juga sebagai Informasi (draft, tidak tampil publik)
-                if (!empty($validated['klasifikasi'])) {
-                    $info = Informasi::create([
+                // Simpan sebagai dokumen: ke informasi_pemkab (web utama) atau informasis (PPID)
+                if ($indicator->target_upload === 'pemkab') {
+                    $dok = InformasiPemkab::create([
+                        'judul' => $l['judul'],
+                        'kategori' => $klasifikasi,
+                        'deskripsi' => $l['deskripsi'] ?? $indicator->pertanyaan,
+                        'file_path' => $l['link'],
+                        'status' => 'draft',
+                        'visibility' => $visibility,
+                        'unit_id' => $org->id,
+                        'user_id' => $request->user()->id,
+                    ]);
+                } else {
+                    $dok = Informasi::create([
                         'title' => $l['judul'],
                         'content' => $l['deskripsi'] ?? $indicator->pertanyaan,
-                        'category' => $validated['klasifikasi'],
+                        'category' => $klasifikasi,
                         'deskripsi' => $l['deskripsi'] ?? null,
                         'published' => false,
                         'url' => $l['link'],
@@ -224,8 +241,8 @@ class SaqController extends Controller
                         'user_id' => $request->user()->id,
                         'tanggal_upload' => now(),
                     ]);
-                    $informasiIds[] = $info->id;
                 }
+                $dokumenIds[] = $dok->id;
             }
         }
 
@@ -233,7 +250,7 @@ class SaqController extends Controller
             'success' => true,
             'message' => 'Jawaban SAQ tersimpan.',
             'data' => $answer->load(['indicator:id,kode,pertanyaan', 'links']),
-            'informasi_ids' => $informasiIds,
+            'dokumen_ids' => $dokumenIds,
         ]);
     }
 

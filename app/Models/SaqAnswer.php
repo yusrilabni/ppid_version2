@@ -10,6 +10,7 @@ class SaqAnswer extends Model
         'organization_id',
         'indicator_id',
         'jawaban',
+        'visibility',
         'judul',
         'link',
         'created_by',
