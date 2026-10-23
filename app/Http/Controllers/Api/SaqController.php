@@ -24,6 +24,7 @@ class SaqController extends Controller
             ->where('name', 'not like', 'Kantor Kecamatan%')
             ->where('name', 'not like', 'Desa %')
             ->where('name', 'not like', 'Kelurahan %')
+            ->where('slug', 'not like', 'bagian-%')
             ->with(['officials' => function ($q) {
                 $q->where('status', 'active')->with('position')->limit(3);
             }])
@@ -95,9 +96,24 @@ class SaqController extends Controller
             $rows = $rowsQuery->get(['indicator_id', 'jawaban']);
             $answeredIds = $rows->pluck('indicator_id')->toArray();
             $jawabanMap = $rows->pluck('jawaban', 'indicator_id')->toArray();
+            $orgIds = [$orgId];
+            // Jika Setda, sertakan juga Bagian-bagiannya
+            if ($orgId == 42) {
+                $bagianIds = Organization::where('slug', 'like', 'bagian-%')->pluck('id')->toArray();
+                $orgIds = array_merge($orgIds, $bagianIds);
+            }
             $mappedIds = DB::table('indicator_opd')
-                ->where('organization_id', $orgId)
+                ->whereIn('organization_id', $orgIds)
                 ->pluck('indicator_id')->toArray();
+            // Petakan indicator -> nama Bagian (untuk label di frontend)
+            $bagianMap = [];
+            if ($orgId == 42) {
+                $bagianNames = Organization::where('slug', 'like', 'bagian-%')->pluck('name', 'id')->toArray();
+                $rows2 = DB::table('indicator_opd')->whereIn('organization_id', $bagianIds ?? [])->get(['indicator_id', 'organization_id']);
+                foreach ($rows2 as $r) {
+                    $bagianMap[$r->indicator_id] = str_replace(' Sekretariat Daerah', '', $bagianNames[$r->organization_id] ?? '');
+                }
+            }
         }
 
         // Semua tab, tanpa filter scope (scope hanya di level pertanyaan)
@@ -121,6 +137,7 @@ class SaqController extends Controller
                         'id' => $qu->id,
                         'kode' => $qu->kode,
                         'pertanyaan' => $qu->pertanyaan,
+                        'bagian' => $bagianMap[$qu->id] ?? null,
                         'dokumen_upload' => $qu->dokumen_upload,
                         'input_type' => $qu->input_type ?? 'dokumen',
                         'klasifikasi_otomatis' => $qu->klasifikasi_otomatis,
