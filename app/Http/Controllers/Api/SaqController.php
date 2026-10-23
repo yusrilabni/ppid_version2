@@ -97,6 +97,7 @@ class SaqController extends Controller
             $answeredIds = $rows->pluck('indicator_id')->toArray();
             $jawabanMap = $rows->pluck('jawaban', 'indicator_id')->toArray();
             $orgIds = [$orgId];
+            $bagianIds = [];
             // Jika Setda, sertakan juga Bagian-bagiannya
             if ($orgId == 42) {
                 $bagianIds = Organization::where('slug', 'like', 'bagian-%')->pluck('id')->toArray();
@@ -109,7 +110,7 @@ class SaqController extends Controller
             $bagianMap = [];
             if ($orgId == 42) {
                 $bagianNames = Organization::where('slug', 'like', 'bagian-%')->pluck('name', 'id')->toArray();
-                $rows2 = DB::table('indicator_opd')->whereIn('organization_id', $bagianIds ?? [])->get(['indicator_id', 'organization_id']);
+                $rows2 = DB::table('indicator_opd')->whereIn('organization_id', $bagianIds)->get(['indicator_id', 'organization_id']);
                 foreach ($rows2 as $r) {
                     $bagianMap[$r->indicator_id] = str_replace(' Sekretariat Daerah', '', $bagianNames[$r->organization_id] ?? '');
                 }
@@ -351,9 +352,27 @@ class SaqController extends Controller
      * Hapus jawaban SAQ (admin login).
      * DELETE /api/v1/saq/answers/{id} (auth:sanctum)
      */
-    public function destroy($id)
+    public function destroy(Request $request, $id)
     {
         $answer = SaqAnswer::findOrFail($id);
+
+        // Otorisasi: hanya superadmin atau admin OPD pemilik yang boleh hapus
+        $user = $request->user();
+        $isSuperadmin = ($user->role === 'superadmin');
+        if (!$isSuperadmin) {
+            $userOrg = \App\Models\Organization::where('remote_id', (string)$user->unit_id)->first();
+            if (!$userOrg || (int)$userOrg->id !== (int)$answer->organization_id) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda hanya dapat menghapus jawaban OPD Anda sendiri.',
+                ], 403);
+            }
+        }
+
+        // Hapus juga dokumen terkait via saq_answer_id
+        \App\Models\Informasi::where('saq_answer_id', $answer->id)->delete();
+        \App\Models\InformasiPemkab::where('saq_answer_id', $answer->id)->delete();
+        $answer->links()->delete();
         $answer->delete();
 
         return response()->json(['success' => true, 'message' => 'Jawaban dihapus.']);
