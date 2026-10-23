@@ -266,7 +266,19 @@ class SaqController extends Controller
         }
 
         // Sinkronkan daftar link (ganti total)
+        // Hapus dokumen lama yang dibuat dari SAQ ini (berdasarkan judul link lama)
+        $oldLinks = $answer->links()->pluck('judul')->toArray();
         $answer->links()->delete();
+        if (!empty($oldLinks)) {
+            \App\Models\Informasi::whereIn('title', $oldLinks)
+                ->where('user_id', $request->user()->id)
+                ->where('unit_id', $org->remote_id ?? null)
+                ->delete();
+            \App\Models\InformasiPemkab::whereIn('judul', $oldLinks)
+                ->where('user_id', $request->user()->id)
+                ->where('unit_id', $org->id)
+                ->delete();
+        }
         $dokumenIds = [];
         if ($validated['jawaban'] === 'ya') {
             $org = Organization::find($validated['organization_id']);
