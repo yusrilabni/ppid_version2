@@ -17,6 +17,7 @@ class SaqIndicator extends Model
         'unit_terkait',
         'is_category',
         'order',
+        'scope',
     ];
 
     protected $casts = [

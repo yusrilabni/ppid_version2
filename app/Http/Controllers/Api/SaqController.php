@@ -9,6 +9,7 @@ use App\Models\Organization;
 use App\Models\SaqAnswer;
 use App\Models\SaqIndicator;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
 
 class SaqController extends Controller
 {
@@ -29,9 +30,11 @@ class SaqController extends Controller
             ->orderBy('name')
             ->get(['id', 'name', 'slug', 'remote_id']);
 
-        $totalQuestions = SaqIndicator::where('is_category', false)->count();
-
-        $data = $opds->map(function ($opd) use ($totalQuestions) {
+        $data = $opds->map(function ($opd) {
+            // Total pertanyaan sesuai scope OPD ini (dari mapping indicator_opd):
+            // Diskominfo dapat semua termasuk Tab PPID Utama, OPD lain tidak.
+            $totalQuestions = DB::table('indicator_opd')
+                ->where('organization_id', $opd->id)->count();
             $answered = SaqAnswer::where('organization_id', $opd->id)->count();
             return [
                 'id' => $opd->id,
@@ -62,14 +65,24 @@ class SaqController extends Controller
     {
         $orgId = $request->get('organization_id');
 
+        // Tab PPID Utama (Sarana dan Prasarana) hanya untuk Diskominfo
+        $isDiskominfo = false;
+        if ($orgId) {
+            $isDiskominfo = Organization::where('id', $orgId)
+                ->where('name', 'like', '%Komunikasi Informatika%')->exists();
+        }
+
         $answeredIds = [];
         if ($orgId) {
             $answeredIds = SaqAnswer::where('organization_id', $orgId)
                 ->pluck('indicator_id')->toArray();
         }
 
-        $tabs = SaqIndicator::whereNull('parent_id')
-            ->orderBy('order')
+        $tabsQuery = SaqIndicator::whereNull('parent_id')->orderBy('order');
+        if (!$isDiskominfo) {
+            $tabsQuery->where('scope', '!=', 'ppid_utama');
+        }
+        $tabs = $tabsQuery
             ->with(['children' => function ($q) {
                 $q->orderBy('order')->with(['children' => function ($qq) {
                     $qq->orderBy('order');
@@ -81,6 +94,7 @@ class SaqController extends Controller
             return [
                 'kode' => $tab->kode,
                 'tab' => $tab->tab,
+                'scope' => $tab->scope ?? 'semua_opd',
                 'sections' => $tab->children->map(function ($sec) use ($answeredIds) {
                     $questions = $sec->children->map(function ($qu) use ($answeredIds) {
                         return [

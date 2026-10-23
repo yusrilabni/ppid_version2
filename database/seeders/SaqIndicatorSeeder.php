@@ -64,6 +64,8 @@ class SaqIndicatorSeeder extends Seeder
                         'unit_terkait' => $item['unit_terkait'],
                         'is_category' => $item['is_category'],
                         'order' => $item['order'],
+                        // Tab Sarana dan Prasarana hanya diisi PPID Utama (Diskominfo)
+                        'scope' => $item['tab'] === 'Sarana dan Prasarana' ? 'ppid_utama' : 'semua_opd',
                     ]
                 );
                 $idMap[$item['kode']] = $ind->id;
@@ -82,11 +84,21 @@ class SaqIndicatorSeeder extends Seeder
 
         $this->command->info('OPD ditemukan: ' . count($opdIds));
 
-        // 3. Petakan SEMUA pertanyaan ke SEMUA OPD
-        $questionIds = SaqIndicator::where('is_category', false)->pluck('id')->toArray();
+        // 3. Petakan pertanyaan ke OPD:
+        //    - scope ppid_utama (Sarana dan Prasarana) -> hanya Diskominfo
+        //    - scope semua_opd -> semua OPD
+        $diskominfoId = Organization::where('type', 'unit')
+            ->where('name', 'like', '%Komunikasi Informatika%')
+            ->value('id');
+
+        $ppidUtamaQids = SaqIndicator::where('is_category', false)
+            ->where('scope', 'ppid_utama')->pluck('id')->toArray();
+        $semuaOpdQids = SaqIndicator::where('is_category', false)
+            ->where('scope', 'semua_opd')->pluck('id')->toArray();
+
         $now = now();
         $rows = [];
-        foreach ($questionIds as $qid) {
+        foreach ($semuaOpdQids as $qid) {
             foreach ($opdIds as $oid) {
                 $rows[] = [
                     'indicator_id' => $qid,
@@ -95,6 +107,25 @@ class SaqIndicatorSeeder extends Seeder
                     'updated_at' => $now,
                 ];
             }
+        }
+        if ($diskominfoId) {
+            // Bersihkan mapping lama: pertanyaan ppid_utama yang terlanjur ke OPD selain Diskominfo
+            $deleted = DB::table('indicator_opd')
+                ->whereIn('indicator_id', $ppidUtamaQids)
+                ->where('organization_id', '!=', $diskominfoId)
+                ->delete();
+            if ($deleted) $this->command->info("Mapping lama dibersihkan: {$deleted} baris.");
+
+            foreach ($ppidUtamaQids as $qid) {
+                $rows[] = [
+                    'indicator_id' => $qid,
+                    'organization_id' => $diskominfoId,
+                    'created_at' => $now,
+                    'updated_at' => $now,
+                ];
+            }
+        } else {
+            $this->command->warn('Diskominfo tidak ditemukan — mapping ppid_utama dilewati.');
         }
 
         // insertOrIgnore agar idempotent
