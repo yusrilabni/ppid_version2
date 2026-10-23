@@ -305,8 +305,10 @@ class SaqController extends Controller
                     'order' => $i,
                 ]);
 
-                // Simpan sebagai dokumen: ke informasi_pemkab (web utama) atau informasis (PPID)
-                if ($indicator->target_upload === 'pemkab') {
+                // Simpan sebagai dokumen HANYA untuk tipe 'dokumen'
+                // Tipe 'situs'/'foto' hanya bukti URL, tidak jadi dokumen terkategori
+                $isDokumen = ($indicator->input_type ?? 'dokumen') === 'dokumen';
+                if ($isDokumen && $indicator->target_upload === 'pemkab') {
                     $dok = InformasiPemkab::create([
                         'saq_answer_id' => $answer->id,
                         'judul' => $l['judul'],
@@ -319,7 +321,7 @@ class SaqController extends Controller
                         'unit_id' => $org->id,
                         'user_id' => $request->user()->id,
                     ]);
-                } else {
+                } elseif ($isDokumen) {
                     $dok = Informasi::create([
                         'saq_answer_id' => $answer->id,
                         'title' => $l['judul'],
@@ -333,7 +335,7 @@ class SaqController extends Controller
                         'tanggal_upload' => now(),
                     ]);
                 }
-                $dokumenIds[] = $dok->id;
+                if ($isDokumen) $dokumenIds[] = $dok->id ?? null;
             }
         }
 
