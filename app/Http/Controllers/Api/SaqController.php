@@ -230,6 +230,7 @@ class SaqController extends Controller
                     $dok = InformasiPemkab::create([
                         'judul' => $l['judul'],
                         'kategori' => $klasifikasi,
+                        'jenis_dokumen' => 'Dokumen SAQ',
                         'deskripsi' => $l['deskripsi'] ?? $indicator->pertanyaan,
                         'file_path' => $l['link'],
                         'status' => 'draft',
