@@ -68,7 +68,7 @@ class SaqIndicatorSeeder extends Seeder
                     $parentId = $idMap[$parentKode] ?? null;
                 }
 
-                // Tentukan scope: dari mapping, atau fallback ke tab
+                // Tentukan scope: dari mapping, atau fallback ke tab (hanya untuk pertanyaan)
                 $scope = null;
                 if ($level === 'question') {
                     $scope = $scopeOf($item['kode']);
@@ -78,20 +78,25 @@ class SaqIndicatorSeeder extends Seeder
                     $scopeMap[$item['kode']] = $scope;
                 }
 
+                $data = [
+                    'parent_id' => $parentId,
+                    'tab' => $item['tab'],
+                    'pertanyaan' => $item['pertanyaan'],
+                    'section' => $item['section'],
+                    'petunjuk' => null,
+                    'dokumen_upload' => $item['dokumen_upload'],
+                    'unit_terkait' => $item['unit_terkait'],
+                    'is_category' => $item['is_category'],
+                    'order' => $item['order'],
+                ];
+                // Scope hanya untuk pertanyaan (kolom NOT NULL)
+                if ($scope !== null) {
+                    $data['scope'] = $scope;
+                }
+
                 $ind = SaqIndicator::updateOrCreate(
                     ['kode' => $item['kode']],
-                    [
-                        'parent_id' => $parentId,
-                        'tab' => $item['tab'],
-                        'pertanyaan' => $item['pertanyaan'],
-                        'section' => $item['section'],
-                        'petunjuk' => null,
-                        'dokumen_upload' => $item['dokumen_upload'],
-                        'unit_terkait' => $item['unit_terkait'],
-                        'is_category' => $item['is_category'],
-                        'order' => $item['order'],
-                        'scope' => $scope,
-                    ]
+                    $data
                 );
                 $idMap[$item['kode']] = $ind->id;
             }
