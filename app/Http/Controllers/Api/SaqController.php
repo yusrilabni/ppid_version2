@@ -221,7 +221,7 @@ class SaqController extends Controller
                 $answer->links()->create([
                     'judul' => $l['judul'],
                     'link' => $l['link'],
-                    'deskripsi' => $l['deskripsi'] ?? null,
+                    'deskripsi' => $l['deskripsi'] ?? '',
                     'order' => $i,
                 ]);
 
@@ -242,7 +242,7 @@ class SaqController extends Controller
                         'title' => $l['judul'],
                         'content' => $l['deskripsi'] ?? $indicator->pertanyaan,
                         'category' => $klasifikasi,
-                        'deskripsi' => $l['deskripsi'] ?? null,
+                        'deskripsi' => $l['deskripsi'] ?? '',
                         'published' => false,
                         'url' => $l['link'],
                         'unit_id' => $org->remote_id ?? null,
