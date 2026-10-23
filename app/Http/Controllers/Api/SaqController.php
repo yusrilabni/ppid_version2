@@ -122,6 +122,9 @@ class SaqController extends Controller
                         'kode' => $qu->kode,
                         'pertanyaan' => $qu->pertanyaan,
                         'dokumen_upload' => $qu->dokumen_upload,
+                        'input_type' => $qu->input_type ?? 'dokumen',
+                        'klasifikasi_otomatis' => $qu->klasifikasi_otomatis,
+                        'target_upload' => $qu->target_upload ?? 'ppid',
                         'terisi' => in_array($qu->id, $answeredIds),
                         'jawaban' => $jawabanMap[$qu->id] ?? null,
                     ];
