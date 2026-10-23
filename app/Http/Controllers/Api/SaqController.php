@@ -198,13 +198,16 @@ class SaqController extends Controller
             ],
             [
                 'jawaban' => $validated['jawaban'],
-                'visibility' => $visibility,
                 // Kolom lama dipertahankan untuk kompatibilitas (diisi link pertama)
                 'judul' => $links[0]['judul'] ?? null,
                 'link' => $links[0]['link'] ?? null,
                 'created_by' => $request->user()->id,
             ]
         );
+        if (\Schema::hasColumn('saq_answers', 'visibility')) {
+            $answer->visibility = $visibility;
+            $answer->save();
+        }
 
         // Sinkronkan daftar link (ganti total)
         $answer->links()->delete();
