@@ -199,8 +199,8 @@ class SaqController extends Controller
             [
                 'jawaban' => $validated['jawaban'],
                 // Kolom lama dipertahankan untuk kompatibilitas (diisi link pertama)
-                'judul' => $links[0]['judul'] ?? null,
-                'link' => $links[0]['link'] ?? null,
+                'judul' => $links[0]['judul'] ?? '',
+                'link' => $links[0]['link'] ?? '',
                 'created_by' => $request->user()->id,
             ]
         );
