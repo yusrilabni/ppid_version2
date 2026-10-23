@@ -124,4 +124,25 @@ class LoginController extends Controller
             'message' => 'Logout berhasil'
         ]);
     }
+
+    /**
+     * Ganti password paksa (setelah login via ituji)
+     */
+    public function forceChangePassword(Request $request)
+    {
+        $request->validate([
+            'password' => 'required|string|min:6|confirmed',
+        ]);
+
+        $user = $request->user();
+        $user->password = Hash::make($request->password);
+        $user->must_change_password = false;
+        $user->save();
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Password berhasil diubah. Silakan login kembali dengan password baru.',
+            'data' => ['user' => $user->fresh()]
+        ]);
+    }
 }

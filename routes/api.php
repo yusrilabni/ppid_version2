@@ -384,6 +384,7 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
         Route::post('/my-requests/{id}', [PermohonanInformasiController::class, 'update']); // Use POST as proxy for update due to common mobile fetch limitations
 
         Route::post('/logout', [App\Http\Controllers\Api\LoginController::class, 'logout']);
+        Route::post('/force-change-password', [App\Http\Controllers\Api\LoginController::class, 'forceChangePassword']);
     });
 
 });
