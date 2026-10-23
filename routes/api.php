@@ -45,6 +45,11 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
     Route::get('/informasi-pemkab', [App\Http\Controllers\Api\InformasiPemkabController::class, 'index']);
     Route::get('/informasi-pemkab/{slug}', [App\Http\Controllers\Api\InformasiPemkabController::class, 'show']);
 
+    // SAQ E-Monev (navigasi tersembunyi /saq)
+    Route::get('/saq/opds', [App\Http\Controllers\Api\SaqController::class, 'opds']);
+    Route::get('/saq/structure', [App\Http\Controllers\Api\SaqController::class, 'structure']);
+    Route::get('/saq/answers', [App\Http\Controllers\Api\SaqController::class, 'answers']);
+
     // Daftar Pekerjaan (Auto-complete / Dropdown)
     Route::get('/pekerjaan', [PermohonanInformasiController::class, 'getPekerjaanList']);
     
@@ -347,6 +352,11 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
         Route::get('/informasi-pemkab-crud/{slug}/edit', [\App\Http\Controllers\Admin\InformasiPemkabController::class, 'editApi']);
         Route::post('/informasi-pemkab-crud/{informasi_pemkab}', [\App\Http\Controllers\Admin\InformasiPemkabController::class, 'update']);
         Route::delete('/informasi-pemkab-crud/{informasi_pemkab}', [\App\Http\Controllers\Admin\InformasiPemkabController::class, 'destroy']);
+        
+        // SAQ E-Monev (admin login)
+        Route::post('/saq/answers', [App\Http\Controllers\Api\SaqController::class, 'store']);
+        Route::delete('/saq/answers/{id}', [App\Http\Controllers\Api\SaqController::class, 'destroy']);
+        Route::get('/saq/sync', [App\Http\Controllers\Api\SaqController::class, 'sync']);
         
         // Twibbon CRUD
         Route::post('/twibbon', [\App\Http\Controllers\Admin\TwibbonController::class, 'store']);
