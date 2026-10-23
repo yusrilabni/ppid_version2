@@ -20,6 +20,7 @@ class SaqIndicator extends Model
         'scope',
         'klasifikasi_otomatis',
         'target_upload',
+        'input_type',
     ];
 
     protected $casts = [
