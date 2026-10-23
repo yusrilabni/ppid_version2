@@ -169,6 +169,27 @@ class SaqController extends Controller
             'links.*.deskripsi' => 'nullable|string',
         ]);
 
+        // Otorisasi: hanya superadmin atau admin OPD pemilik yang boleh isi
+        $user = $request->user();
+        $isSuperadmin = ($user->role === 'superadmin');
+        // Kabupaten Sinjai (PPID Utama, id 127) hanya boleh diisi superadmin
+        if ((int)$validated['organization_id'] === 127 && !$isSuperadmin) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Hanya superadmin yang dapat mengisi SAQ PPID Utama (Kabupaten Sinjai).',
+            ], 403);
+        }
+        // Admin OPD hanya boleh isi OPD-nya sendiri
+        if (!$isSuperadmin) {
+            $userOrg = \App\Models\Organization::where('remote_id', (string)$user->unit_id)->first();
+            if (!$userOrg || (int)$userOrg->id !== (int)$validated['organization_id']) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Anda hanya dapat mengisi SAQ untuk OPD Anda sendiri.',
+                ], 403);
+            }
+        }
+
         $indicator = SaqIndicator::findOrFail($validated['indicator_id']);
         if ($indicator->is_category) {
             return response()->json([
