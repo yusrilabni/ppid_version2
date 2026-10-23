@@ -75,7 +75,9 @@ class SaqIndicatorSeeder extends Seeder
         $this->command->info('SaqIndicator: ' . SaqIndicator::count() . ' records.');
 
         // 2. Ambil semua OPD (unit, tanpa kecamatan/desa/kelurahan)
+        //    Kecualikan entitas Kabupaten Sinjai (khusus PPID Utama, hanya dapat tab Sarana-Prasarana)
         $opdIds = Organization::where('type', 'unit')
+            ->where('slug', '!=', 'kabupaten-sinjai')
             ->where('name', 'not like', 'Kantor Kecamatan%')
             ->where('name', 'not like', 'Desa %')
             ->where('name', 'not like', 'Kelurahan %')
@@ -85,11 +87,12 @@ class SaqIndicatorSeeder extends Seeder
         $this->command->info('OPD ditemukan: ' . count($opdIds));
 
         // 3. Petakan pertanyaan ke OPD:
-        //    - scope ppid_utama (Sarana dan Prasarana) -> hanya Diskominfo
-        //    - scope semua_opd -> semua OPD
-        $diskominfoId = Organization::where('type', 'unit')
-            ->where('name', 'like', '%Komunikasi Informatika%')
-            ->value('id');
+        //    - scope ppid_utama (Sarana dan Prasarana) -> hanya entitas "Kabupaten Sinjai"
+        //    - scope semua_opd -> semua OPD (termasuk Diskominfo sebagai OPD biasa)
+        $kabSinjai = Organization::updateOrCreate(
+            ['slug' => 'kabupaten-sinjai'],
+            ['name' => 'Kabupaten Sinjai', 'type' => 'unit']
+        );
 
         $ppidUtamaQids = SaqIndicator::where('is_category', false)
             ->where('scope', 'ppid_utama')->pluck('id')->toArray();
@@ -108,24 +111,20 @@ class SaqIndicatorSeeder extends Seeder
                 ];
             }
         }
-        if ($diskominfoId) {
-            // Bersihkan mapping lama: pertanyaan ppid_utama yang terlanjur ke OPD selain Diskominfo
-            $deleted = DB::table('indicator_opd')
-                ->whereIn('indicator_id', $ppidUtamaQids)
-                ->where('organization_id', '!=', $diskominfoId)
-                ->delete();
-            if ($deleted) $this->command->info("Mapping lama dibersihkan: {$deleted} baris.");
+        // Bersihkan mapping lama ppid_utama yang bukan ke Kabupaten Sinjai (mis. ke Diskominfo)
+        $deleted = DB::table('indicator_opd')
+            ->whereIn('indicator_id', $ppidUtamaQids)
+            ->where('organization_id', '!=', $kabSinjai->id)
+            ->delete();
+        if ($deleted) $this->command->info("Mapping lama dibersihkan: {$deleted} baris.");
 
-            foreach ($ppidUtamaQids as $qid) {
-                $rows[] = [
-                    'indicator_id' => $qid,
-                    'organization_id' => $diskominfoId,
-                    'created_at' => $now,
-                    'updated_at' => $now,
-                ];
-            }
-        } else {
-            $this->command->warn('Diskominfo tidak ditemukan — mapping ppid_utama dilewati.');
+        foreach ($ppidUtamaQids as $qid) {
+            $rows[] = [
+                'indicator_id' => $qid,
+                'organization_id' => $kabSinjai->id,
+                'created_at' => $now,
+                'updated_at' => $now,
+            ];
         }
 
         // insertOrIgnore agar idempotent

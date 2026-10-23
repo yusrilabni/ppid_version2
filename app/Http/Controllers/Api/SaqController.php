@@ -27,19 +27,22 @@ class SaqController extends Controller
             ->with(['officials' => function ($q) {
                 $q->where('status', 'active')->with('position')->limit(3);
             }])
+            ->orderByRaw("CASE WHEN slug = 'kabupaten-sinjai' THEN 0 ELSE 1 END")
             ->orderBy('name')
             ->get(['id', 'name', 'slug', 'remote_id']);
 
         $data = $opds->map(function ($opd) {
-            // Total pertanyaan sesuai scope OPD ini (dari mapping indicator_opd):
-            // Diskominfo dapat semua termasuk Tab PPID Utama, OPD lain tidak.
+            // Total pertanyaan sesuai scope OPD ini (dari mapping indicator_opd)
             $totalQuestions = DB::table('indicator_opd')
                 ->where('organization_id', $opd->id)->count();
-            $answered = SaqAnswer::where('organization_id', $opd->id)->count();
+            // Terisi = sudah ada jawaban Ya/Tidak
+            $answered = SaqAnswer::where('organization_id', $opd->id)
+                ->whereNotNull('jawaban')->count();
             return [
                 'id' => $opd->id,
                 'name' => $opd->name,
                 'slug' => $opd->slug,
+                'is_ppid_utama' => $opd->slug === 'kabupaten-sinjai',
                 'pimpinan' => $opd->officials->map(fn($o) => [
                     'nama' => $o->full_name,
                     'jabatan' => $o->position->name ?? null,
@@ -65,21 +68,28 @@ class SaqController extends Controller
     {
         $orgId = $request->get('organization_id');
 
-        // Tab PPID Utama (Sarana dan Prasarana) hanya untuk Diskominfo
-        $isDiskominfo = false;
+        // Entitas Kabupaten Sinjai = PPID Utama: hanya tampilkan tab PPID Utama.
+        // OPD biasa: tab PPID Utama disembunyikan.
+        $isPpidUtamaOrg = false;
         if ($orgId) {
-            $isDiskominfo = Organization::where('id', $orgId)
-                ->where('name', 'like', '%Komunikasi Informatika%')->exists();
+            $isPpidUtamaOrg = Organization::where('id', $orgId)
+                ->where('slug', 'kabupaten-sinjai')->exists();
         }
 
         $answeredIds = [];
+        $jawabanMap = [];
         if ($orgId) {
-            $answeredIds = SaqAnswer::where('organization_id', $orgId)
-                ->pluck('indicator_id')->toArray();
+            $rows = SaqAnswer::where('organization_id', $orgId)
+                ->whereNotNull('jawaban')
+                ->get(['indicator_id', 'jawaban']);
+            $answeredIds = $rows->pluck('indicator_id')->toArray();
+            $jawabanMap = $rows->pluck('jawaban', 'indicator_id')->toArray();
         }
 
         $tabsQuery = SaqIndicator::whereNull('parent_id')->orderBy('order');
-        if (!$isDiskominfo) {
+        if ($isPpidUtamaOrg) {
+            $tabsQuery->where('scope', 'ppid_utama');
+        } else {
             $tabsQuery->where('scope', '!=', 'ppid_utama');
         }
         $tabs = $tabsQuery
@@ -90,19 +100,20 @@ class SaqController extends Controller
             }])
             ->get();
 
-        $data = $tabs->map(function ($tab) use ($answeredIds) {
+        $data = $tabs->map(function ($tab) use ($answeredIds, $jawabanMap) {
             return [
                 'kode' => $tab->kode,
                 'tab' => $tab->tab,
                 'scope' => $tab->scope ?? 'semua_opd',
-                'sections' => $tab->children->map(function ($sec) use ($answeredIds) {
-                    $questions = $sec->children->map(function ($qu) use ($answeredIds) {
+                'sections' => $tab->children->map(function ($sec) use ($answeredIds, $jawabanMap) {
+                    $questions = $sec->children->map(function ($qu) use ($answeredIds, $jawabanMap) {
                         return [
                             'id' => $qu->id,
                             'kode' => $qu->kode,
                             'pertanyaan' => $qu->pertanyaan,
                             'dokumen_upload' => $qu->dokumen_upload,
                             'terisi' => in_array($qu->id, $answeredIds),
+                            'jawaban' => $jawabanMap[$qu->id] ?? null,
                         ];
                     });
                     return [
@@ -128,7 +139,7 @@ class SaqController extends Controller
         $request->validate(['organization_id' => 'required|integer']);
 
         $answers = SaqAnswer::where('organization_id', $request->organization_id)
-            ->with('indicator:id,kode,pertanyaan,tab')
+            ->with(['indicator:id,kode,pertanyaan,tab', 'links'])
             ->orderBy('id')
             ->get();
 
@@ -145,10 +156,12 @@ class SaqController extends Controller
         $validated = $request->validate([
             'organization_id' => 'required|integer|exists:organizations,id',
             'indicator_id' => 'required|integer|exists:saq_indicators,id',
-            'judul' => 'required|string|max:255',
-            'link' => 'nullable|string|max:2000',
+            'jawaban' => 'required|in:ya,tidak',
+            'links' => 'nullable|array|max:20',
+            'links.*.judul' => 'required_with:links|string|max:255',
+            'links.*.link' => 'required_with:links|string|max:2000',
+            'links.*.deskripsi' => 'nullable|string',
             'klasifikasi' => 'nullable|in:Informasi Berkala,Informasi Tersedia Setiap Saat,Informasi Serta Merta,Informasi Dikecualikan',
-            'deskripsi' => 'nullable|string',
         ]);
 
         $indicator = SaqIndicator::findOrFail($validated['indicator_id']);
@@ -159,40 +172,68 @@ class SaqController extends Controller
             ], 422);
         }
 
+        $links = array_values(array_filter(
+            $validated['links'] ?? [],
+            fn($l) => !empty($l['judul']) && !empty($l['link'])
+        ));
+
+        if ($validated['jawaban'] === 'ya' && empty($links)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Jawaban "Ya" wajib disertai minimal satu link dokumen.',
+            ], 422);
+        }
+
         $answer = SaqAnswer::updateOrCreate(
             [
                 'organization_id' => $validated['organization_id'],
                 'indicator_id' => $validated['indicator_id'],
             ],
             [
-                'judul' => $validated['judul'],
-                'link' => $validated['link'] ?? null,
+                'jawaban' => $validated['jawaban'],
+                // Kolom lama dipertahankan untuk kompatibilitas (diisi link pertama)
+                'judul' => $links[0]['judul'] ?? null,
+                'link' => $links[0]['link'] ?? null,
                 'created_by' => $request->user()->id,
             ]
         );
 
-        // Opsional: catat juga sebagai Informasi (draft, tidak tampil publik)
-        $informasi = null;
-        if (!empty($validated['klasifikasi'])) {
+        // Sinkronkan daftar link (ganti total)
+        $answer->links()->delete();
+        $informasiIds = [];
+        if ($validated['jawaban'] === 'ya') {
             $org = Organization::find($validated['organization_id']);
-            $informasi = Informasi::create([
-                'title' => $validated['judul'],
-                'content' => $validated['deskripsi'] ?? $indicator->pertanyaan,
-                'category' => $validated['klasifikasi'],
-                'deskripsi' => $validated['deskripsi'] ?? null,
-                'published' => false,
-                'url' => $validated['link'] ?? null,
-                'unit_id' => $org->remote_id ?? null,
-                'user_id' => $request->user()->id,
-                'tanggal_upload' => now(),
-            ]);
+            foreach ($links as $i => $l) {
+                $answer->links()->create([
+                    'judul' => $l['judul'],
+                    'link' => $l['link'],
+                    'deskripsi' => $l['deskripsi'] ?? null,
+                    'order' => $i,
+                ]);
+
+                // Opsional: catat juga sebagai Informasi (draft, tidak tampil publik)
+                if (!empty($validated['klasifikasi'])) {
+                    $info = Informasi::create([
+                        'title' => $l['judul'],
+                        'content' => $l['deskripsi'] ?? $indicator->pertanyaan,
+                        'category' => $validated['klasifikasi'],
+                        'deskripsi' => $l['deskripsi'] ?? null,
+                        'published' => false,
+                        'url' => $l['link'],
+                        'unit_id' => $org->remote_id ?? null,
+                        'user_id' => $request->user()->id,
+                        'tanggal_upload' => now(),
+                    ]);
+                    $informasiIds[] = $info->id;
+                }
+            }
         }
 
         return response()->json([
             'success' => true,
             'message' => 'Jawaban SAQ tersimpan.',
-            'data' => $answer->load('indicator:id,kode,pertanyaan'),
-            'informasi_id' => $informasi?->id,
+            'data' => $answer->load(['indicator:id,kode,pertanyaan', 'links']),
+            'informasi_ids' => $informasiIds,
         ]);
     }
 
