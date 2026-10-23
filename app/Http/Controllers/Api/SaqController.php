@@ -68,31 +68,23 @@ class SaqController extends Controller
     {
         $orgId = $request->get('organization_id');
 
-        // Entitas Kabupaten Sinjai = PPID Utama: hanya tampilkan tab PPID Utama.
-        // OPD biasa: tab PPID Utama disembunyikan.
-        $isPpidUtamaOrg = false;
-        if ($orgId) {
-            $isPpidUtamaOrg = Organization::where('id', $orgId)
-                ->where('slug', 'kabupaten-sinjai')->exists();
-        }
-
         $answeredIds = [];
         $jawabanMap = [];
+        // Daftar indicator yang dipetakan ke org ini
+        $mappedIds = [];
         if ($orgId) {
             $rows = SaqAnswer::where('organization_id', $orgId)
                 ->whereNotNull('jawaban')
                 ->get(['indicator_id', 'jawaban']);
             $answeredIds = $rows->pluck('indicator_id')->toArray();
             $jawabanMap = $rows->pluck('jawaban', 'indicator_id')->toArray();
+            $mappedIds = DB::table('indicator_opd')
+                ->where('organization_id', $orgId)
+                ->pluck('indicator_id')->toArray();
         }
 
-        $tabsQuery = SaqIndicator::whereNull('parent_id')->orderBy('order');
-        if ($isPpidUtamaOrg) {
-            $tabsQuery->where('scope', 'ppid_utama');
-        } else {
-            $tabsQuery->where('scope', '!=', 'ppid_utama');
-        }
-        $tabs = $tabsQuery
+        // Semua tab, tanpa filter scope (scope hanya di level pertanyaan)
+        $tabs = SaqIndicator::whereNull('parent_id')->orderBy('order')
             ->with(['children' => function ($q) {
                 $q->orderBy('order')->with(['children' => function ($qq) {
                     $qq->orderBy('order');
@@ -100,32 +92,45 @@ class SaqController extends Controller
             }])
             ->get();
 
-        $data = $tabs->map(function ($tab) use ($answeredIds, $jawabanMap) {
-            return [
+        $data = [];
+        foreach ($tabs as $tab) {
+            $sections = [];
+            foreach ($tab->children as $sec) {
+                $questions = [];
+                foreach ($sec->children as $qu) {
+                    // Hanya tampilkan pertanyaan yang dipetakan ke org ini
+                    if ($orgId && !in_array($qu->id, $mappedIds)) continue;
+                    $questions[] = [
+                        'id' => $qu->id,
+                        'kode' => $qu->kode,
+                        'pertanyaan' => $qu->pertanyaan,
+                        'dokumen_upload' => $qu->dokumen_upload,
+                        'terisi' => in_array($qu->id, $answeredIds),
+                        'jawaban' => $jawabanMap[$qu->id] ?? null,
+                    ];
+                }
+                if (empty($questions)) continue; // seksi kosong -> sembunyikan
+                $terisi = count(array_filter($questions, fn($x) => $x['terisi']));
+                $sections[] = [
+                    'kode' => $sec->kode,
+                    'section' => $sec->section,
+                    'questions' => $questions,
+                    'terisi' => $terisi,
+                    'total' => count($questions),
+                ];
+            }
+            if (empty($sections)) continue; // tab kosong -> sembunyikan
+            // Tandai tab PPID Utama bila semua pertanyaannya scope ppid_utama
+            $isPpidUtamaTab = $tab->children->flatMap(fn($s) => $s->children)
+                ->filter(fn($q) => !$orgId || in_array($q->id, $mappedIds))
+                ->every(fn($q) => $q->scope === 'ppid_utama');
+            $data[] = [
                 'kode' => $tab->kode,
                 'tab' => $tab->tab,
-                'scope' => $tab->scope ?? 'semua_opd',
-                'sections' => $tab->children->map(function ($sec) use ($answeredIds, $jawabanMap) {
-                    $questions = $sec->children->map(function ($qu) use ($answeredIds, $jawabanMap) {
-                        return [
-                            'id' => $qu->id,
-                            'kode' => $qu->kode,
-                            'pertanyaan' => $qu->pertanyaan,
-                            'dokumen_upload' => $qu->dokumen_upload,
-                            'terisi' => in_array($qu->id, $answeredIds),
-                            'jawaban' => $jawabanMap[$qu->id] ?? null,
-                        ];
-                    });
-                    return [
-                        'kode' => $sec->kode,
-                        'section' => $sec->section,
-                        'questions' => $questions,
-                        'terisi' => $questions->where('terisi', true)->count(),
-                        'total' => $questions->count(),
-                    ];
-                })->values(),
+                'scope' => $isPpidUtamaTab ? 'ppid_utama' : 'semua_opd',
+                'sections' => $sections,
             ];
-        });
+        }
 
         return response()->json(['success' => true, 'data' => $data]);
     }
