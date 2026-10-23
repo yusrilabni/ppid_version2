@@ -91,7 +91,7 @@ class SaqIndicatorSeeder extends Seeder
         //    - scope semua_opd -> semua OPD (termasuk Diskominfo sebagai OPD biasa)
         $kabSinjai = Organization::updateOrCreate(
             ['slug' => 'kabupaten-sinjai'],
-            ['name' => 'Kabupaten Sinjai', 'type' => 'unit']
+            ['name' => 'Kabupaten Sinjai', 'type' => 'unit', 'remote_id' => 0]
         );
 
         $ppidUtamaQids = SaqIndicator::where('is_category', false)
