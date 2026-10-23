@@ -73,9 +73,26 @@ class SaqController extends Controller
         // Daftar indicator yang dipetakan ke org ini
         $mappedIds = [];
         if ($orgId) {
-            $rows = SaqAnswer::where('organization_id', $orgId)
-                ->whereNotNull('jawaban')
-                ->get(['indicator_id', 'jawaban']);
+            $rowsQuery = SaqAnswer::where('organization_id', $orgId)
+                ->whereNotNull('jawaban');
+            // Filter privasi untuk status terisi
+            $user = $request->user();
+            $isSuperadmin = $user && $user->role === 'superadmin';
+            if (!$isSuperadmin) {
+                $userOrgId = null;
+                if ($user) {
+                    $userOrg = \App\Models\Organization::where('remote_id', (string)$user->unit_id)->first();
+                    $userOrgId = $userOrg ? $userOrg->id : null;
+                }
+                $rowsQuery->where(function($q) use ($userOrgId, $orgId) {
+                    $q->where('visibility', 'public')
+                      ->orWhere(function($qq) use ($userOrgId) {
+                          $qq->where('visibility', 'private')
+                             ->where('organization_id', $userOrgId ?: -1);
+                      });
+                });
+            }
+            $rows = $rowsQuery->get(['indicator_id', 'jawaban']);
             $answeredIds = $rows->pluck('indicator_id')->toArray();
             $jawabanMap = $rows->pluck('jawaban', 'indicator_id')->toArray();
             $mappedIds = DB::table('indicator_opd')
@@ -143,10 +160,28 @@ class SaqController extends Controller
     {
         $request->validate(['organization_id' => 'required|integer']);
 
-        $answers = SaqAnswer::where('organization_id', $request->organization_id)
-            ->with(['indicator:id,kode,pertanyaan,tab', 'links'])
-            ->orderBy('id')
-            ->get();
+        $query = SaqAnswer::where('organization_id', $request->organization_id)
+            ->with(['indicator:id,kode,pertanyaan,tab', 'links']);
+
+        // Filter privasi: private hanya untuk superadmin & admin OPD pemilik
+        $user = $request->user();
+        $isSuperadmin = $user && $user->role === 'superadmin';
+        if (!$isSuperadmin) {
+            $userOrgId = null;
+            if ($user) {
+                $userOrg = \App\Models\Organization::where('remote_id', (string)$user->unit_id)->first();
+                $userOrgId = $userOrg ? $userOrg->id : null;
+            }
+            $query->where(function($q) use ($userOrgId, $request) {
+                $q->where('visibility', 'public')
+                  ->orWhere(function($qq) use ($userOrgId, $request) {
+                      $qq->where('visibility', 'private')
+                         ->where('organization_id', $userOrgId ?: -1);
+                  });
+            });
+        }
+
+        $answers = $query->orderBy('id')->get();
 
         return response()->json(['success' => true, 'data' => $answers]);
     }
