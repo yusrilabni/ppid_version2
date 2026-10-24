@@ -5,11 +5,13 @@ namespace App\Http\Controllers\Api;
 use App\Http\Controllers\Controller;
 use App\Models\Informasi;
 use App\Models\InformasiPemkab;
+use App\Models\Galeri;
 use App\Models\Organization;
 use App\Models\SaqAnswer;
 use App\Models\SaqIndicator;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
 
 class SaqController extends Controller
 {
@@ -270,6 +272,10 @@ class SaqController extends Controller
             'links.*.judul' => 'nullable|string|max:255',
             'links.*.link' => 'required_with:links|string|max:2000',
             'links.*.deskripsi' => 'nullable|string',
+            // Jalur upload foto SAQ (hanya untuk pertanyaan tipe foto)
+            'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
+            'judul_foto' => 'nullable|string|max:255',
+            'tanggal_upload' => 'nullable|date',
         ]);
 
         // Validasi: parent-group (is_category=1) tidak bisa diisi jawaban
@@ -310,12 +316,28 @@ class SaqController extends Controller
             ], 422);
         }
 
+        // Upload foto hanya berlaku untuk pertanyaan tipe foto, dan
+        // wajib disertai judul (judul dipakai sebagai title Galeri).
+        $hasFotoFile = $request->hasFile('foto');
+        if ($hasFotoFile && ($indicator->input_type ?? 'dokumen') !== 'foto') {
+            return response()->json([
+                'success' => false,
+                'message' => 'Upload foto hanya untuk pertanyaan bertipe foto.',
+            ], 422);
+        }
+        if ($hasFotoFile && empty(trim($validated['judul_foto'] ?? ''))) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Judul foto wajib diisi bila mengunggah foto.',
+            ], 422);
+        }
+
         $links = array_values(array_filter(
             $validated['links'] ?? [],
             fn($l) => !empty($l['link'])
         ));
 
-        if ($validated['jawaban'] === 'ya' && empty($links)) {
+        if ($validated['jawaban'] === 'ya' && empty($links) && !$hasFotoFile) {
             return response()->json([
                 'success' => false,
                 'message' => 'Jawaban "Ya" wajib disertai minimal satu link dokumen.',
@@ -331,8 +353,9 @@ class SaqController extends Controller
             ],
             [
                 'jawaban' => $validated['jawaban'],
-                // Kolom lama dipertahankan untuk kompatibilitas (diisi link pertama)
-                'judul' => $links[0]['judul'] ?? '',
+                // Kolom lama dipertahankan untuk kompatibilitas (diisi link pertama,
+                // atau judul foto bila hanya mengunggah foto tanpa link)
+                'judul' => $links[0]['judul'] ?? ($hasFotoFile ? trim($validated['judul_foto'] ?? '') : ''),
                 'link' => $links[0]['link'] ?? '',
                 'created_by' => $request->user()->id,
             ]
@@ -395,6 +418,60 @@ class SaqController extends Controller
                 }
                 if ($isDokumen) $dokumenIds[] = $dok->id ?? null;
             }
+
+            // Jalur upload foto: olah seperti Admin GaleriController
+            // (Intervention Image -> WebP, turunkan kualitas sampai <2MB),
+            // simpan ke storage public/galeri/, buat record Galeri yang
+            // TAMPIL di galeri publik, dan satu SaqAnswerLink ke file itu.
+            // category sengaja NULL supaya TIDAK ikut membuat Informasi
+            // (logika auto-Informasi hanya ada di Admin GaleriController
+            // dan hanya bila category + jenis_dokumen terisi).
+            // Catatan: menyimpan ulang jawaban TIDAK menghapus record
+            // Galeri lama (galeri bersifat publik, bukan dokumen per jawaban);
+            // yang diganti total hanya daftar SaqAnswerLink-nya.
+            $galeriId = null;
+            if ($hasFotoFile) {
+                ini_set('memory_limit', '512M');
+                $image = $request->file('foto');
+                $imageManager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+                $quality = 80;
+                $imageInstance = $imageManager->read($image->path())->toWebp($quality);
+                $tmpPath = tempnam(sys_get_temp_dir(), 'saq_foto_') . '.webp';
+                $imageInstance->save($tmpPath);
+                while (filesize($tmpPath) > 2 * 1024 * 1024 && $quality > 20) {
+                    $quality -= 10;
+                    $imageInstance = $imageManager->read($image->path())->toWebp($quality);
+                    $imageInstance->save($tmpPath);
+                }
+                $baseName = pathinfo($image->getClientOriginalName(), PATHINFO_FILENAME);
+                $fileName = str_replace(' ', '_', $baseName) . '_' . time() . '.webp';
+                $imagePathFinal = 'galeri/' . $fileName;
+                Storage::disk('public')->put($imagePathFinal, file_get_contents($tmpPath));
+                unlink($tmpPath);
+
+                $galeri = Galeri::create([
+                    'title' => trim($validated['judul_foto']),
+                    'description' => $indicator->pertanyaan,
+                    'image' => $imagePathFinal,
+                    'type' => 'foto',
+                    'category' => null,
+                    'tanggal_upload' => $validated['tanggal_upload'] ?? now()->toDateString(),
+                    'saq_answer_id' => $answer->id,
+                    'user_id' => $request->user()->id,
+                ]);
+                $galeriId = $galeri->id;
+                $photoUrl = $request->getSchemeAndHttpHost() . '/storage/' . $imagePathFinal;
+                $answer->links()->create([
+                    'judul' => trim($validated['judul_foto']),
+                    'link' => $photoUrl,
+                    'deskripsi' => '',
+                    'order' => count($links),
+                ]);
+                if (empty($links)) {
+                    $answer->link = $photoUrl;
+                    $answer->save();
+                }
+            }
         }
 
         return response()->json([
@@ -402,6 +479,7 @@ class SaqController extends Controller
             'message' => 'Jawaban SAQ tersimpan.',
             'data' => $answer->load(['indicator:id,kode,pertanyaan', 'links']),
             'dokumen_ids' => $dokumenIds,
+            'galeri_id' => $galeriId ?? null,
         ]);
     }
 

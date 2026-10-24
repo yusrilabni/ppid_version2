@@ -16,6 +16,8 @@ class Galeri extends Model
         'category',
         'jenis_dokumen',
         'user_id',
+        'tanggal_upload',
+        'saq_answer_id',
     ];
 
     public function user()
