@@ -356,7 +356,18 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
         // SAQ E-Monev (admin login)
         Route::post('/saq/answers', [App\Http\Controllers\Api\SaqController::class, 'store']);
         Route::delete('/saq/answers/{id}', [App\Http\Controllers\Api\SaqController::class, 'destroy']);
+
+        // SAQ Admin Management (superadmin only)
+        Route::get('/saq-admin/indicators', [\App\Http\Controllers\Admin\SaqAdminController::class, 'index']);
+        Route::post('/saq-admin/indicators', [\App\Http\Controllers\Admin\SaqAdminController::class, 'store']);
+        Route::get('/saq-admin/indicators/{id}', [\App\Http\Controllers\Admin\SaqAdminController::class, 'show']);
+        Route::put('/saq-admin/indicators/{id}', [\App\Http\Controllers\Admin\SaqAdminController::class, 'update']);
+        Route::delete('/saq-admin/indicators/{id}', [\App\Http\Controllers\Admin\SaqAdminController::class, 'destroy']);
+        Route::put('/saq-admin/indicators/{id}/mapping', [\App\Http\Controllers\Admin\SaqAdminController::class, 'updateMapping']);
+        Route::get('/saq-admin/opds', [\App\Http\Controllers\Admin\SaqAdminController::class, 'opds']);
+        Route::get('/saq-admin/tabs', [\App\Http\Controllers\Admin\SaqAdminController::class, 'tabs']);
         Route::get('/saq/sync', [App\Http\Controllers\Api\SaqController::class, 'sync']);
+        Route::get('/saq/all-answers', [App\Http\Controllers\Api\SaqController::class, 'allAnswers']);
         
         // Twibbon CRUD
         Route::post('/twibbon', [\App\Http\Controllers\Admin\TwibbonController::class, 'store']);

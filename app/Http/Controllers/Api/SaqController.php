@@ -68,6 +68,11 @@ class SaqController extends Controller
     public function structure(Request $request)
     {
         $orgId = $request->get('organization_id');
+        // Mode full: tampilkan SEMUA pertanyaan tanpa filter OPD
+        // (untuk halaman kabupaten-sinjai full, khusus superadmin)
+        if ($request->boolean('full')) {
+            $orgId = null;
+        }
 
         $answeredIds = [];
         $jawabanMap = [];
