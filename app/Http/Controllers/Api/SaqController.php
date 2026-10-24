@@ -78,6 +78,7 @@ class SaqController extends Controller
         $jawabanMap = [];
         // Daftar indicator yang dipetakan ke org ini
         $mappedIds = [];
+        $bagianMap = [];
         if ($orgId) {
             $rowsQuery = SaqAnswer::where('organization_id', $orgId)
                 ->whereNotNull('jawaban');
