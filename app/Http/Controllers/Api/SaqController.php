@@ -362,6 +362,12 @@ class SaqController extends Controller
             }
         }
 
+        // Transaksi: simpan jawaban, link, dokumen, dan Galeri harus
+        // berhasil semua atau tidak sama sekali, supaya 500 di tengah jalan
+        // tidak meninggalkan jawaban kosong (bug foto 2026-10-24).
+        DB::beginTransaction();
+        $storedFotoPath = null;
+        try {
         $answer = SaqAnswer::updateOrCreate(
             [
                 'organization_id' => $validated['organization_id'],
@@ -406,6 +412,7 @@ class SaqController extends Controller
                     $detailUrl = trim($l['sync_url'] ?? $l['link']);
                     $synced = $this->lookupPpidDocument($detailUrl);
                     if (!$synced) {
+                        DB::rollBack();
                         return response()->json([
                             'success' => false,
                             'message' => 'Link detail PPID tidak ditemukan di data PPID. Pastikan link berupa https://ppid.sinjaikab.go.id/informasi/{slug} dari dokumen yang sudah ada di web PPID.',
@@ -499,6 +506,7 @@ class SaqController extends Controller
                 $fileName = str_replace(' ', '_', $baseName) . '_' . time() . '.webp';
                 $imagePathFinal = 'galeri/' . $fileName;
                 Storage::disk('public')->put($imagePathFinal, file_get_contents($tmpPath));
+                $storedFotoPath = $imagePathFinal;
                 unlink($tmpPath);
 
                 $galeri = Galeri::create([
@@ -524,6 +532,15 @@ class SaqController extends Controller
                     $answer->save();
                 }
             }
+        }
+        DB::commit();
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            if (!empty($storedFotoPath)) {
+                Storage::disk('public')->delete($storedFotoPath);
+            }
+            \Log::error('SAQ store gagal, transaksi dibatalkan', ['error' => $e->getMessage(), 'organization_id' => $validated['organization_id'], 'indicator_id' => $validated['indicator_id']]);
+            return response()->json(['success' => false, 'message' => 'Gagal menyimpan jawaban SAQ.'], 500);
         }
 
         return response()->json([

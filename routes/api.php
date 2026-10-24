@@ -47,8 +47,8 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
 
     // SAQ E-Monev (navigasi tersembunyi /saq)
     Route::get('/saq/opds', [App\Http\Controllers\Api\SaqController::class, 'opds']);
-    Route::get('/saq/structure', [App\Http\Controllers\Api\SaqController::class, 'structure']);
-    Route::get('/saq/answers', [App\Http\Controllers\Api\SaqController::class, 'answers']);
+    Route::get('/saq/structure', [App\Http\Controllers\Api\SaqController::class, 'structure'])->middleware('optional.sanctum');
+    Route::get('/saq/answers', [App\Http\Controllers\Api\SaqController::class, 'answers'])->middleware('optional.sanctum');
 
     // Daftar Pekerjaan (Auto-complete / Dropdown)
     Route::get('/pekerjaan', [PermohonanInformasiController::class, 'getPekerjaanList']);
