@@ -385,6 +385,7 @@ class SaqController extends Controller
                         'content' => $l['deskripsi'] ?? $indicator->pertanyaan,
                         'category' => $klasifikasi,
                         'deskripsi' => $l['deskripsi'] ?? '',
+                        'visibility' => $visibility,
                         'published' => false,
                         'url' => $l['link'],
                         'unit_id' => $org->remote_id ?? null,
