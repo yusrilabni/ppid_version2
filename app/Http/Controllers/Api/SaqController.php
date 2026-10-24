@@ -34,13 +34,48 @@ class SaqController extends Controller
             ->orderBy('name')
             ->get(['id', 'name', 'slug', 'remote_id']);
 
-        $data = $opds->map(function ($opd) {
-            // Total pertanyaan sesuai scope OPD ini (dari mapping indicator_opd)
-            $totalQuestions = DB::table('indicator_opd')
-                ->where('organization_id', $opd->id)->count();
-            // Terisi = sudah ada jawaban Ya/Tidak
-            $answered = SaqAnswer::where('organization_id', $opd->id)
-                ->whereNotNull('jawaban')->count();
+        // Pohon indikator sekali pakai untuk menghitung total tampil (lihat di bawah).
+        $saqTabs = SaqIndicator::whereNull('parent_id')
+            ->with('children.children.children')
+            ->get();
+
+        $data = $opds->map(function ($opd) use ($saqTabs) {
+            // Scope OPD ini; Setda (42) menampilkan gabungan Bagian-bagiannya
+            // (sama seperti SaqController@structure), jadi totalnya juga gabungan.
+            $scopeOrgIds = [$opd->id];
+            if ($opd->id == 42) {
+                $scopeOrgIds = array_merge($scopeOrgIds, Organization::where('slug', 'like', 'bagian-%')->pluck('id')->toArray());
+            }
+            // Total = jumlah pertanyaan yang BENAR-BENAR TAMPIL di halaman ini,
+            // dihitung dengan logika yang sama persis dengan structure(): pertanyaan
+            // langsung di section bila terpetakan, pertanyaan dalam grup hanya bila
+            // induk grupnya juga terpetakan. Bukan COUNT semua baris indicator_opd
+            // (yang ikut menghitung grup induk + section sehingga header selalu
+            // lebih besar dari jumlah tampil, mis. Diskominfo 130 vs 100).
+            // Perbaikan 24 Okt 2026: header kini sama dengan jumlah tampil di halaman.
+            $mappedIds = DB::table('indicator_opd')
+                ->whereIn('organization_id', $scopeOrgIds)
+                ->pluck('indicator_id')->toArray();
+            $totalQuestions = 0;
+            foreach ($saqTabs as $tab) {
+                foreach ($tab->children as $sec) {
+                    foreach ($sec->children as $child) {
+                        if ($child->is_category) {
+                            // Grup tampil hanya bila induknya terpetakan ke scope ini
+                            if (!in_array($child->id, $mappedIds)) continue;
+                            foreach ($child->children as $qu) {
+                                if ($qu->is_category) continue;
+                                if (in_array($qu->id, $mappedIds)) $totalQuestions++;
+                            }
+                        } elseif (in_array($child->id, $mappedIds)) {
+                            $totalQuestions++;
+                        }
+                    }
+                }
+            }
+            // Terisi = pertanyaan berjawaban yang sudah ada jawaban Ya/Tidak (distinct)
+            $answered = SaqAnswer::whereIn('organization_id', $scopeOrgIds)
+                ->whereNotNull('jawaban')->distinct()->count('indicator_id');
             return [
                 'id' => $opd->id,
                 'name' => $opd->name,
