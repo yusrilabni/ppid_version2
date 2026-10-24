@@ -10,6 +10,8 @@ class SaqAnswerLink extends Model
         'saq_answer_id',
         'judul',
         'link',
+        'informasi_id',
+        'sumber_informasi',
         'deskripsi',
         'order',
     ];
