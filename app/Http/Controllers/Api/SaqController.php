@@ -126,46 +126,87 @@ class SaqController extends Controller
         $tabs = SaqIndicator::whereNull('parent_id')->orderBy('order')
             ->with(['children' => function ($q) {
                 $q->orderBy('order')->with(['children' => function ($qq) {
-                    $qq->orderBy('order');
+                    $qq->orderBy('order')->with(['children' => function ($qqq) {
+                        $qqq->orderBy('order');
+                    }]);
                 }]);
             }])
             ->get();
 
         $data = [];
+        // Helper untuk membangun array pertanyaan
+        $buildQuestion = function($qu) use ($orgId, $mappedIds, $bagianMap, $answeredIds, $jawabanMap) {
+            return [
+                'id' => $qu->id,
+                'kode' => $qu->kode,
+                'pertanyaan' => $qu->pertanyaan,
+                'bagian' => $bagianMap[$qu->id] ?? null,
+                'dokumen_upload' => $qu->dokumen_upload,
+                'input_type' => $qu->input_type ?? 'dokumen',
+                'klasifikasi_otomatis' => $qu->klasifikasi_otomatis,
+                'target_upload' => $qu->target_upload ?? 'ppid',
+                'terisi' => in_array($qu->id, $answeredIds),
+                'jawaban' => $jawabanMap[$qu->id] ?? null,
+            ];
+        };
+
         foreach ($tabs as $tab) {
             $sections = [];
             foreach ($tab->children as $sec) {
                 $questions = [];
-                foreach ($sec->children as $qu) {
-                    // Hanya tampilkan pertanyaan yang dipetakan ke org ini
-                    if ($orgId && !in_array($qu->id, $mappedIds)) continue;
-                    $questions[] = [
-                        'id' => $qu->id,
-                        'kode' => $qu->kode,
-                        'pertanyaan' => $qu->pertanyaan,
-                        'bagian' => $bagianMap[$qu->id] ?? null,
-                        'dokumen_upload' => $qu->dokumen_upload,
-                        'input_type' => $qu->input_type ?? 'dokumen',
-                        'klasifikasi_otomatis' => $qu->klasifikasi_otomatis,
-                        'target_upload' => $qu->target_upload ?? 'ppid',
-                        'terisi' => in_array($qu->id, $answeredIds),
-                        'jawaban' => $jawabanMap[$qu->id] ?? null,
-                    ];
+                $groups = [];
+                foreach ($sec->children as $child) {
+                    // Jika ini parent-group (is_category=1), buat grup dengan nested questions
+                    if ($child->is_category) {
+                        $groupQuestions = [];
+                        foreach ($child->children as $qu) {
+                            // Hanya tampilkan pertanyaan yang dipetakan ke org ini
+                            if ($orgId && !in_array($qu->id, $mappedIds)) continue;
+                            // Skip jika ini juga category (tidak seharusnya terjadi)
+                            if ($qu->is_category) continue;
+                            $groupQuestions[] = $buildQuestion($qu);
+                        }
+                        // Tampilkan grup jika ada pertanyaan di dalamnya, atau jika mode full
+                        // (parent juga harus ter-mapping ke org agar grup tampil)
+                        $parentMapped = !$orgId || in_array($child->id, $mappedIds);
+                        if (!empty($groupQuestions) && $parentMapped) {
+                            $gTerisi = count(array_filter($groupQuestions, fn($x) => $x['terisi']));
+                            $groups[] = [
+                                'id' => $child->id,
+                                'kode' => $child->kode,
+                                'pertanyaan' => $child->pertanyaan, // teks induk
+                                'questions' => $groupQuestions,
+                                'terisi' => $gTerisi,
+                                'total' => count($groupQuestions),
+                            ];
+                        }
+                    } else {
+                        // Pertanyaan standalone (langsung di bawah section)
+                        $qu = $child;
+                        // Hanya tampilkan pertanyaan yang dipetakan ke org ini
+                        if ($orgId && !in_array($qu->id, $mappedIds)) continue;
+                        $questions[] = $buildQuestion($qu);
+                    }
                 }
-                if (empty($questions)) continue; // seksi kosong -> sembunyikan
+                if (empty($questions) && empty($groups)) continue; // seksi kosong -> sembunyikan
                 $terisi = count(array_filter($questions, fn($x) => $x['terisi']));
+                $gTerisi = array_sum(array_map(fn($g) => $g['terisi'], $groups));
+                $gTotal = array_sum(array_map(fn($g) => $g['total'], $groups));
                 $sections[] = [
                     'kode' => $sec->kode,
                     'section' => $sec->section,
                     'questions' => $questions,
-                    'terisi' => $terisi,
-                    'total' => count($questions),
+                    'groups' => $groups,
+                    'terisi' => $terisi + $gTerisi,
+                    'total' => count($questions) + $gTotal,
                 ];
             }
             if (empty($sections)) continue; // tab kosong -> sembunyikan
             // Tandai tab PPID Utama bila semua pertanyaannya scope ppid_utama
-            $isPpidUtamaTab = $tab->children->flatMap(fn($s) => $s->children)
-                ->filter(fn($q) => !$orgId || in_array($q->id, $mappedIds))
+            $isPpidUtamaTab = $tab->children->flatMap(fn($s) => $s->children->flatMap(fn($c) =>
+                    $c->is_category ? $c->children : collect([$c])
+                ))
+                ->filter(fn($q) => !$q->is_category && (!$orgId || in_array($q->id, $mappedIds)))
                 ->every(fn($q) => $q->scope === 'ppid_utama');
             $data[] = [
                 'kode' => $tab->kode,
@@ -229,6 +270,15 @@ class SaqController extends Controller
             'links.*.link' => 'required_with:links|string|max:2000',
             'links.*.deskripsi' => 'nullable|string',
         ]);
+
+        // Validasi: parent-group (is_category=1) tidak bisa diisi jawaban
+        $indicator = SaqIndicator::find($validated['indicator_id']);
+        if ($indicator && $indicator->is_category) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pertanyaan induk (header) tidak dapat diisi jawaban.',
+            ], 422);
+        }
 
         // Otorisasi: hanya superadmin atau admin OPD pemilik yang boleh isi
         $user = $request->user();
