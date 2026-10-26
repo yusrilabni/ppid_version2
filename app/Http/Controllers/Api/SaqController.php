@@ -473,7 +473,8 @@ class SaqController extends Controller
                 }
 
                 $answer->links()->create([
-                    'judul' => $l['judul'],
+                    // Situs/foto tanpa judul: '' dari frontend diubah Laravel jadi null; kolom judul NOT NULL, pakai '' agar tidak 500.
+                    'judul' => $l['judul'] ?? '',
                     'link' => $l['link'],
                     'deskripsi' => $l['deskripsi'] ?? '',
                     'order' => $i,
