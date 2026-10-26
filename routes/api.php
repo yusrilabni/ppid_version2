@@ -46,7 +46,7 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
     Route::get('/informasi-pemkab/{slug}', [App\Http\Controllers\Api\InformasiPemkabController::class, 'show']);
 
     // SAQ E-Monev (navigasi tersembunyi /saq)
-    Route::get('/saq/opds', [App\Http\Controllers\Api\SaqController::class, 'opds']);
+    Route::get('/saq/opds', [App\Http\Controllers\Api\SaqController::class, 'opds'])->middleware('optional.sanctum');
     Route::get('/saq/structure', [App\Http\Controllers\Api\SaqController::class, 'structure'])->middleware('optional.sanctum');
     Route::get('/saq/answers', [App\Http\Controllers\Api\SaqController::class, 'answers'])->middleware('optional.sanctum');
     Route::get('/saq/all-answers', [App\Http\Controllers\Api\SaqController::class, 'allAnswers'])->middleware('optional.sanctum');

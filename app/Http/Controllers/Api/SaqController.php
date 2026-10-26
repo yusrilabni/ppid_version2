@@ -20,7 +20,7 @@ class SaqController extends Controller
      * beserta profil pimpinan & progres pengisian.
      * GET /api/v1/saq/opds
      */
-    public function opds()
+    public function opds(Request $request)
     {
         $opds = Organization::where('type', 'unit')
             ->where('name', 'not like', 'Kantor Kecamatan%')
@@ -39,7 +39,61 @@ class SaqController extends Controller
             ->with('children.children.children')
             ->get();
 
-        $data = $opds->map(function ($opd) use ($saqTabs) {
+        $data = $opds->map(function ($opd) use ($saqTabs, $request) {
+            // Kartu Kabupaten di /saq harus memakai progres konsolidasi full,
+            // bukan progres OPD 127 sendiri (19): total semua soal, terisi soal
+            // yang sudah dijawab minimal satu OPD (filter privasi sama seperti
+            // structure full / allAnswers, supaya angkanya sama dengan halaman detail).
+            if ($opd->slug === 'kabupaten-sinjai') {
+                $fullTotal = 0;
+                foreach ($saqTabs as $tab) {
+                    foreach ($tab->children as $sec) {
+                        foreach ($sec->children as $child) {
+                            if ($child->is_category) {
+                                foreach ($child->children as $qu) {
+                                    if (!$qu->is_category) $fullTotal++;
+                                }
+                            } else {
+                                $fullTotal++;
+                            }
+                        }
+                    }
+                }
+                $fullQuery = SaqAnswer::whereNotNull('jawaban');
+                $fullUser = $request->user();
+                $fullSuper = $fullUser && $fullUser->role === 'superadmin';
+                if (!$fullSuper) {
+                    $fullUserOrgId = null;
+                    if ($fullUser) {
+                        $fullUserOrg = \App\Models\Organization::where('remote_id', (string)$fullUser->unit_id)->first();
+                        $fullUserOrgId = $fullUserOrg ? $fullUserOrg->id : null;
+                    }
+                    $fullQuery->where(function($q) use ($fullUserOrgId) {
+                        $q->where('visibility', 'public')
+                          ->orWhere(function($qq) use ($fullUserOrgId) {
+                              $qq->where('visibility', 'private')
+                                 ->where('organization_id', $fullUserOrgId ?: -1);
+                          });
+                    });
+                }
+                $fullAnswered = $fullQuery->distinct()->count('indicator_id');
+                return [
+                    'id' => $opd->id,
+                    'name' => $opd->name,
+                    'slug' => $opd->slug,
+                    'is_ppid_utama' => true,
+                    'pimpinan' => $opd->officials->map(fn($o) => [
+                        'nama' => $o->full_name,
+                        'jabatan' => $o->position->name ?? null,
+                        'foto' => $o->photo,
+                    ])->values(),
+                    'progres' => [
+                        'terisi' => $fullAnswered,
+                        'total' => $fullTotal,
+                        'persen' => $fullTotal > 0 ? round($fullAnswered / $fullTotal * 100) : 0,
+                    ],
+                ];
+            }
             // Scope OPD ini; Setda (42) menampilkan gabungan Bagian-bagiannya
             // (sama seperti SaqController@structure), jadi totalnya juga gabungan.
             $scopeOrgIds = [$opd->id];
