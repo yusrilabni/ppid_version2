@@ -49,6 +49,7 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
     Route::get('/saq/opds', [App\Http\Controllers\Api\SaqController::class, 'opds']);
     Route::get('/saq/structure', [App\Http\Controllers\Api\SaqController::class, 'structure'])->middleware('optional.sanctum');
     Route::get('/saq/answers', [App\Http\Controllers\Api\SaqController::class, 'answers'])->middleware('optional.sanctum');
+    Route::get('/saq/all-answers', [App\Http\Controllers\Api\SaqController::class, 'allAnswers'])->middleware('optional.sanctum');
 
     // Daftar Pekerjaan (Auto-complete / Dropdown)
     Route::get('/pekerjaan', [PermohonanInformasiController::class, 'getPekerjaanList']);
@@ -367,7 +368,6 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
         Route::get('/saq-admin/opds', [\App\Http\Controllers\Admin\SaqAdminController::class, 'opds']);
         Route::get('/saq-admin/tabs', [\App\Http\Controllers\Admin\SaqAdminController::class, 'tabs']);
         Route::get('/saq/sync', [App\Http\Controllers\Api\SaqController::class, 'sync']);
-        Route::get('/saq/all-answers', [App\Http\Controllers\Api\SaqController::class, 'allAnswers']);
         
         // Twibbon CRUD
         Route::post('/twibbon', [\App\Http\Controllers\Admin\TwibbonController::class, 'store']);

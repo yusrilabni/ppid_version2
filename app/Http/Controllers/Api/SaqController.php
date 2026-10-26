@@ -113,6 +113,28 @@ class SaqController extends Controller
 
         $answeredIds = [];
         $jawabanMap = [];
+        // Mode full: terisi = soal yang punya minimal satu jawaban OPD yang lolos privasi.
+        // jawabanMap sengaja kosong: badge Ya/Tidak tunggal tidak berlaku untuk konsolidasi.
+        if ($request->boolean('full')) {
+            $fullQuery = SaqAnswer::whereNotNull('jawaban');
+            $fullUser = $request->user();
+            $fullSuper = $fullUser && $fullUser->role === 'superadmin';
+            if (!$fullSuper) {
+                $fullUserOrgId = null;
+                if ($fullUser) {
+                    $fullUserOrg = \App\Models\Organization::where('remote_id', (string)$fullUser->unit_id)->first();
+                    $fullUserOrgId = $fullUserOrg ? $fullUserOrg->id : null;
+                }
+                $fullQuery->where(function($q) use ($fullUserOrgId) {
+                    $q->where('visibility', 'public')
+                      ->orWhere(function($qq) use ($fullUserOrgId) {
+                          $qq->where('visibility', 'private')
+                             ->where('organization_id', $fullUserOrgId ?: -1);
+                      });
+                });
+            }
+            $answeredIds = $fullQuery->distinct()->pluck('indicator_id')->toArray();
+        }
         // Daftar indicator yang dipetakan ke org ini
         $mappedIds = [];
         $bagianMap = [];
@@ -289,6 +311,48 @@ class SaqController extends Controller
         $answers = $query->orderBy('id')->get();
 
         return response()->json(['success' => true, 'data' => $answers]);
+    }
+
+    /**
+     * Konsolidasi jawaban semua OPD per indikator, untuk halaman Kabupaten full.
+     * GET /api/v1/saq/all-answers (publik, optional.sanctum; privasi sama seperti answers()).
+     */
+    public function allAnswers(Request $request)
+    {
+        $query = SaqAnswer::whereNotNull('jawaban')
+            ->with(['organization:id,name', 'creator:id,name', 'links']);
+        $user = $request->user();
+        $isSuperadmin = $user && $user->role === 'superadmin';
+        if (!$isSuperadmin) {
+            $userOrgId = null;
+            if ($user) {
+                $userOrg = \App\Models\Organization::where('remote_id', (string)$user->unit_id)->first();
+                $userOrgId = $userOrg ? $userOrg->id : null;
+            }
+            $query->where(function($q) use ($userOrgId) {
+                $q->where('visibility', 'public')
+                  ->orWhere(function($qq) use ($userOrgId) {
+                      $qq->where('visibility', 'private')
+                         ->where('organization_id', $userOrgId ?: -1);
+                  });
+            });
+        }
+        $answers = $query->orderBy('organization_id')->orderBy('id')->get();
+        $data = [];
+        foreach ($answers as $a) {
+            $data[$a->indicator_id][] = [
+                'id' => $a->id,
+                'opd_name' => $a->organization->name ?? null,
+                'penulis' => $a->creator->name ?? null,
+                'jawaban' => $a->jawaban,
+                'links' => $a->links->map(fn($l) => [
+                    'id' => $l->id,
+                    'judul' => $l->judul,
+                    'link' => $l->link,
+                ])->values(),
+            ];
+        }
+        return response()->json(['success' => true, 'data' => $data]);
     }
 
     /**
