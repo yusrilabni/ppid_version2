@@ -425,12 +425,12 @@ class SaqController extends Controller
             'links.*.judul' => 'nullable|string|max:255',
             'links.*.link' => 'required_with:links|string|max:2000',
             'links.*.deskripsi' => 'nullable|string',
-            'links.*.mode' => 'nullable|in:baru,sync_ppid,link',
+            'links.*.mode' => 'nullable|in:baru,sync_ppid,link,drive,lampiran',
             'links.*.sync_url' => 'nullable|string|max:2000',
             // Jalur upload dokumen SAQ (2 tab): file lampiran, boleh >1 file.
             // Validasi file terpisah dari links agar FormData multipart lolos.
             'dokumen_files' => 'nullable|array|max:20',
-            'dokumen_files.*' => 'file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx|max:10240',
+            'dokumen_files.*' => 'file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx,jpg,jpeg,png|max:10240',
             'dokumen_judul' => 'nullable|array|max:20',
             'dokumen_judul.*' => 'nullable|string|max:255',
             'dokumen_deskripsi' => 'nullable|array|max:20',
@@ -527,6 +527,33 @@ class SaqController extends Controller
             }
         }
 
+        // Validasi mode drive / lampiran / baru SEBELUM ada tulisan (Blueprint v2 bagian 8).
+        foreach ($links as $l) {
+            $lm = $l['mode'] ?? 'baru';
+            $ll = trim((string)($l['link'] ?? ''));
+            if ($lm === 'drive') {
+                $host = strtolower((string)(parse_url($ll, PHP_URL_HOST) ?? ''));
+                if (!in_array($host, ['drive.google.com', 'www.drive.google.com', 'docs.google.com', 'www.docs.google.com'], true)) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Link Drive harus berupa link Google Drive (drive.google.com / docs.google.com). Domain lain ditolak di sub-mode Drive.',
+                    ], 422);
+                }
+            }
+            if ($lm === 'lampiran' && !str_contains($ll, '/storage/saq/')) {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Lampiran tersimpan tidak valid.',
+                ], 422);
+            }
+            if ($lm === 'baru' && trim((string)($l['judul'] ?? '')) === '') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Judul wajib diisi untuk bukti yang dijadikan Informasi.',
+                ], 422);
+            }
+        }
+
         // Privasi (koreksi 09:04): visibility HANYA berlaku bila ada bukti
         // yang dijadikan Informasi. Link/lampiran saja -> paksa public di
         // level jawaban, dan visibility tidak dipakai untuk Informasi (karena
@@ -576,14 +603,24 @@ class SaqController extends Controller
             foreach ($preAnswer->links as $ol) {
                 $olink = (string)($ol->link ?? '');
                 if (str_contains($olink, '/storage/saq/')) {
-                    $oldLampiranPaths[] = 'saq/' . basename(parse_url($olink, PHP_URL_PATH) ?? '');
-                    // basename saja tidak cukup bila subfolder; ambil sesudah /storage/
                     $pos = strpos($olink, '/storage/');
                     if ($pos !== false) $oldLampiranPaths[] = substr($olink, $pos + strlen('/storage/'));
                 }
             }
             $oldLampiranPaths = array_values(array_unique(array_filter($oldLampiranPaths)));
         }
+        // Lampiran storage yang dipertahankan di pengiriman baru (round-trip v2):
+        // file tersimpan yang tidak dihapus di UI dikirim lagi mode lampiran/baru
+        // dengan URL storage yang sama, jadi file itu JANGAN dihapus setelah commit.
+        $keptLampiranPaths = [];
+        foreach ($links as $l) {
+            $kl = (string)($l['link'] ?? '');
+            if (str_contains($kl, '/storage/saq/')) {
+                $pos = strpos($kl, '/storage/');
+                if ($pos !== false) $keptLampiranPaths[] = substr($kl, $pos + strlen('/storage/'));
+            }
+        }
+        $keptLampiranPaths = array_values(array_unique(array_filter($keptLampiranPaths)));
         try {
         $answer = SaqAnswer::updateOrCreate(
             [
@@ -663,8 +700,8 @@ class SaqController extends Controller
                 // Jejak mode tanpa tabel/kolom baru: 'link' = link biasa (bukan
                 // Informasi), null = link lama / mode baru (Informasi). Sync
                 // memakai 'informasi'/'informasi_pemkab' seperti sebelumnya.
-                if (\Schema::hasColumn('saq_answer_links', 'sumber_informasi') && (($l['mode'] ?? 'baru') === 'link')) {
-                    $linkRow['sumber_informasi'] = 'link';
+                if (\Schema::hasColumn('saq_answer_links', 'sumber_informasi') && in_array(($l['mode'] ?? 'baru'), ['link', 'drive', 'lampiran'], true)) {
+                    $linkRow['sumber_informasi'] = ($l['mode'] ?? 'baru');
                 }
                 $answer->links()->create($linkRow);
 
@@ -715,7 +752,27 @@ class SaqController extends Controller
                     $dDesk = trim((string)($dokumenDeskripsi[$di] ?? ''));
                     $dJadikanRaw = $dokumenJadikan[$di] ?? '0';
                     $dJadikan = in_array($dJadikanRaw, ['1', 1, true, 'true'], true);
-                    $dPath = Storage::disk('public')->putFile('saq', $df);
+                    $dExt = strtolower(pathinfo($df->getClientOriginalName(), PATHINFO_EXTENSION));
+                    if (in_array($dExt, ['jpg', 'jpeg', 'png'], true)) {
+                        ini_set('memory_limit', '512M');
+                        $dManager = new \Intervention\Image\ImageManager(new \Intervention\Image\Drivers\Gd\Driver());
+                        $dQuality = 80;
+                        $dTmp = tempnam(sys_get_temp_dir(), 'saq_dok_') . '.webp';
+                        $dImg = $dManager->read($df->path())->toWebp($dQuality);
+                        $dImg->save($dTmp);
+                        while (filesize($dTmp) > 2 * 1024 * 1024 && $dQuality > 20) {
+                            $dQuality -= 10;
+                            $dImg = $dManager->read($df->path())->toWebp($dQuality);
+                            $dImg->save($dTmp);
+                        }
+                        $dBase = pathinfo($df->getClientOriginalName(), PATHINFO_FILENAME);
+                        $dFileName = str_replace(' ', '_', $dBase) . '_' . time() . '_' . $di . '.webp';
+                        $dPath = 'saq/' . $dFileName;
+                        Storage::disk('public')->put($dPath, file_get_contents($dTmp));
+                        unlink($dTmp);
+                    } else {
+                        $dPath = Storage::disk('public')->putFile('saq', $df);
+                    }
                     $storedDokumenPaths[] = $dPath;
                     $dUrl = $request->getSchemeAndHttpHost() . '/storage/' . $dPath;
                     $upRow = [
@@ -824,8 +881,8 @@ class SaqController extends Controller
         DB::commit();
         // Baru hapus file lampiran lama setelah commit berhasil.
         foreach ($oldLampiranPaths as $olp) {
-            // Hanya hapus path di bawah saq/ (pengaman, jangan hapus galeri/dokumen lain).
-            if (str_starts_with($olp, 'saq/')) Storage::disk('public')->delete($olp);
+            // Hanya hapus path di bawah saq/ yang TIDAK dipertahankan (round-trip v2).
+            if (str_starts_with($olp, 'saq/') && !in_array($olp, $keptLampiranPaths, true)) Storage::disk('public')->delete($olp);
         }
         } catch (\Throwable $e) {
             DB::rollBack();
