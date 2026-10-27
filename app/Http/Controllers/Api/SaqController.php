@@ -425,7 +425,7 @@ class SaqController extends Controller
             'links.*.judul' => 'nullable|string|max:255',
             'links.*.link' => 'required_with:links|string|max:2000',
             'links.*.deskripsi' => 'nullable|string',
-            'links.*.mode' => 'nullable|in:baru,sync_ppid,link,drive,lampiran',
+            'links.*.mode' => 'nullable|in:baru,sync_ppid,link,drive,lampiran,galeri',
             'links.*.sync_url' => 'nullable|string|max:2000',
             // Jalur upload dokumen SAQ (2 tab): file lampiran, boleh >1 file.
             // Validasi file terpisah dari links agar FormData multipart lolos.
@@ -700,7 +700,7 @@ class SaqController extends Controller
                 // Jejak mode tanpa tabel/kolom baru: 'link' = link biasa (bukan
                 // Informasi), null = link lama / mode baru (Informasi). Sync
                 // memakai 'informasi'/'informasi_pemkab' seperti sebelumnya.
-                if (\Schema::hasColumn('saq_answer_links', 'sumber_informasi') && in_array(($l['mode'] ?? 'baru'), ['link', 'drive', 'lampiran'], true)) {
+                if (\Schema::hasColumn('saq_answer_links', 'sumber_informasi') && in_array(($l['mode'] ?? 'baru'), ['link', 'drive', 'lampiran', 'galeri'], true)) {
                     $linkRow['sumber_informasi'] = ($l['mode'] ?? 'baru');
                 }
                 $answer->links()->create($linkRow);
@@ -866,12 +866,19 @@ class SaqController extends Controller
                 ]);
                 $galeriId = $galeri->id;
                 $photoUrl = $request->getSchemeAndHttpHost() . '/storage/' . $imagePathFinal;
-                $answer->links()->create([
+                // Tab Galeri: link foto diberi sumber_informasi='galeri'
+                // supaya saat dibuka lagi kembali ke tab Galeri, bukan tab
+                // Link. Tetap category=null di Galeri: TIDAK membuat Informasi.
+                $photoLink = [
                     'judul' => trim($validated['judul_foto']),
                     'link' => $photoUrl,
                     'deskripsi' => '',
                     'order' => count($links) + count($dokumenFiles),
-                ]);
+                ];
+                if (\Schema::hasColumn('saq_answer_links', 'sumber_informasi')) {
+                    $photoLink['sumber_informasi'] = 'galeri';
+                }
+                $answer->links()->create($photoLink);
                 if (empty($links)) {
                     $answer->link = $photoUrl;
                     $answer->save();
