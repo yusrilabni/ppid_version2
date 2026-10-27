@@ -425,8 +425,18 @@ class SaqController extends Controller
             'links.*.judul' => 'nullable|string|max:255',
             'links.*.link' => 'required_with:links|string|max:2000',
             'links.*.deskripsi' => 'nullable|string',
-            'links.*.mode' => 'nullable|in:baru,sync_ppid',
+            'links.*.mode' => 'nullable|in:baru,sync_ppid,link',
             'links.*.sync_url' => 'nullable|string|max:2000',
+            // Jalur upload dokumen SAQ (2 tab): file lampiran, boleh >1 file.
+            // Validasi file terpisah dari links agar FormData multipart lolos.
+            'dokumen_files' => 'nullable|array|max:20',
+            'dokumen_files.*' => 'file|mimes:pdf,doc,docx,xls,xlsx,ppt,pptx|max:10240',
+            'dokumen_judul' => 'nullable|array|max:20',
+            'dokumen_judul.*' => 'nullable|string|max:255',
+            'dokumen_deskripsi' => 'nullable|array|max:20',
+            'dokumen_deskripsi.*' => 'nullable|string',
+            'dokumen_jadikan' => 'nullable|array|max:20',
+            'dokumen_jadikan.*' => 'nullable|in:0,1,true,false',
             // Jalur upload foto SAQ (hanya untuk pertanyaan tipe foto)
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'judul_foto' => 'nullable|string|max:255',
@@ -491,19 +501,55 @@ class SaqController extends Controller
             $validated['links'] ?? [],
             fn($l) => !empty($l['link'])
         ));
-
-        if ($validated['jawaban'] === 'ya' && empty($links) && !$hasFotoFile) {
+        // File dokumen upload: array paralel judul/deskripsi/jadikan.
+        $dokumenFiles = $request->file('dokumen_files') ?: [];
+        if (!is_array($dokumenFiles)) $dokumenFiles = [$dokumenFiles];
+        $dokumenFiles = array_values(array_filter($dokumenFiles));
+        $dokumenJudul = $request->input('dokumen_judul', []);
+        $dokumenDeskripsi = $request->input('dokumen_deskripsi', []);
+        $dokumenJadikan = $request->input('dokumen_jadikan', []);
+        $hasDokumenFile = !empty($dokumenFiles);
+        if ($validated['jawaban'] === 'ya' && empty($links) && !$hasFotoFile && !$hasDokumenFile) {
             return response()->json([
                 'success' => false,
-                'message' => 'Jawaban "Ya" wajib disertai minimal satu link dokumen.',
+                'message' => 'Jawaban "Ya" wajib disertai minimal satu dokumen upload, satu link, atau satu foto upload.',
             ], 422);
         }
+        if ($hasDokumenFile) {
+            foreach ($dokumenFiles as $di => $df) {
+                $dj = trim((string)($dokumenJudul[$di] ?? ''));
+                if ($dj === '') {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Judul wajib diisi untuk setiap dokumen yang diunggah.',
+                    ], 422);
+                }
+            }
+        }
 
-        $visibility = $validated['visibility'] ?? 'public';
+        // Privasi (koreksi 09:04): visibility HANYA berlaku bila ada bukti
+        // yang dijadikan Informasi. Link/lampiran saja -> paksa public di
+        // level jawaban, dan visibility tidak dipakai untuk Informasi (karena
+        // tidak ada Informasi yang dibuat). Perhitungan hasInformasi di bawah
+        // memakai mode link + toggle upload, bukan nilai visibility itu sendiri.
+        $isDokumenType = ($indicator->input_type ?? 'dokumen') === 'dokumen';
+        $hasInformasiEvidence = false;
+        if ($isDokumenType) {
+            foreach ($links as $l) {
+                if (($l['mode'] ?? 'baru') === 'baru') { $hasInformasiEvidence = true; break; }
+            }
+            if (!$hasInformasiEvidence) {
+                foreach ($dokumenFiles as $di => $df) {
+                    $jv = $dokumenJadikan[$di] ?? '0';
+                    if (in_array($jv, ['1', 1, true, 'true'], true)) { $hasInformasiEvidence = true; break; }
+                }
+            }
+        }
+        $visibility = $hasInformasiEvidence ? ($validated['visibility'] ?? 'public') : 'public';
 
         // Validasi awal mode sync: lookup semua baris sync SEBELUM ada tulisan,
         // supaya gagal sync tidak menyisakan jawaban/link/dokumen setengah jalan.
-        if (($indicator->input_type ?? 'dokumen') === 'dokumen') {
+        if (true) {
             foreach ($links as $l) {
                 if ((($l['mode'] ?? 'baru') === 'sync_ppid')
                     && !$this->lookupPpidDocument(trim($l['sync_url'] ?? $l['link']))) {
@@ -520,6 +566,24 @@ class SaqController extends Controller
         // tidak meninggalkan jawaban kosong (bug foto 2026-10-24).
         DB::beginTransaction();
         $storedFotoPath = null;
+        $storedDokumenPaths = [];
+        // Lampiran lama (storage saq/) yang akan diganti: kumpulkan dulu,
+        // dihapus SETELAH commit supaya rollback tidak kehilangan file.
+        $oldLampiranPaths = [];
+        $preAnswer = SaqAnswer::where('organization_id', $validated['organization_id'])
+            ->where('indicator_id', $validated['indicator_id'])->first();
+        if ($preAnswer) {
+            foreach ($preAnswer->links as $ol) {
+                $olink = (string)($ol->link ?? '');
+                if (str_contains($olink, '/storage/saq/')) {
+                    $oldLampiranPaths[] = 'saq/' . basename(parse_url($olink, PHP_URL_PATH) ?? '');
+                    // basename saja tidak cukup bila subfolder; ambil sesudah /storage/
+                    $pos = strpos($olink, '/storage/');
+                    if ($pos !== false) $oldLampiranPaths[] = substr($olink, $pos + strlen('/storage/'));
+                }
+            }
+            $oldLampiranPaths = array_values(array_unique(array_filter($oldLampiranPaths)));
+        }
         try {
         $answer = SaqAnswer::updateOrCreate(
             [
@@ -530,7 +594,7 @@ class SaqController extends Controller
                 'jawaban' => $validated['jawaban'],
                 // Kolom lama dipertahankan untuk kompatibilitas (diisi link pertama,
                 // atau judul foto bila hanya mengunggah foto tanpa link)
-                'judul' => $links[0]['judul'] ?? ($hasFotoFile ? trim($validated['judul_foto'] ?? '') : ''),
+                'judul' => $links[0]['judul'] ?? ($hasDokumenFile ? trim((string)($dokumenJudul[0] ?? '')) : ($hasFotoFile ? trim($validated['judul_foto'] ?? '') : '')),
                 'link' => $links[0]['link'] ?? '',
                 'created_by' => $request->user()->id,
             ]
@@ -559,8 +623,7 @@ class SaqController extends Controller
                 // (tanpa Informasi/InformasiPemkab baru, untuk semua target
                 // dan semua klasifikasi). Dokumen asli tidak pernah dihapus:
                 // simpan ulang hanya menghapus dokumen SAQ (saq_answer_id).
-                $isSync = ($indicator->input_type ?? 'dokumen') === 'dokumen'
-                    && (($l['mode'] ?? 'baru') === 'sync_ppid');
+                $isSync = (($l['mode'] ?? 'baru') === 'sync_ppid');
                 if ($isSync) {
                     $detailUrl = trim($l['sync_url'] ?? $l['link']);
                     $synced = $this->lookupPpidDocument($detailUrl);
@@ -590,17 +653,27 @@ class SaqController extends Controller
                     continue;
                 }
 
-                $answer->links()->create([
+                $linkRow = [
                     // Situs/foto tanpa judul: '' dari frontend diubah Laravel jadi null; kolom judul NOT NULL, pakai '' agar tidak 500.
                     'judul' => $l['judul'] ?? '',
                     'link' => $l['link'],
                     'deskripsi' => $l['deskripsi'] ?? '',
                     'order' => $i,
-                ]);
+                ];
+                // Jejak mode tanpa tabel/kolom baru: 'link' = link biasa (bukan
+                // Informasi), null = link lama / mode baru (Informasi). Sync
+                // memakai 'informasi'/'informasi_pemkab' seperti sebelumnya.
+                if (\Schema::hasColumn('saq_answer_links', 'sumber_informasi') && (($l['mode'] ?? 'baru') === 'link')) {
+                    $linkRow['sumber_informasi'] = 'link';
+                }
+                $answer->links()->create($linkRow);
 
-                // Simpan sebagai dokumen HANYA untuk tipe 'dokumen'
-                // Tipe 'situs'/'foto' hanya bukti URL, tidak jadi dokumen terkategori
-                $isDokumen = ($indicator->input_type ?? 'dokumen') === 'dokumen';
+                // Simpan sebagai dokumen HANYA untuk tipe 'dokumen' DAN mode 'baru'.
+                // Mode 'link' = link biasa (medsos/situs/Drive/dll) tanpa Informasi,
+                // sesuai koreksi 2 tab: link/lampiran tidak otomatis jadi Informasi.
+                // Tipe 'situs'/'foto' hanya bukti URL, tidak jadi dokumen terkategori.
+                $isDokumen = ($indicator->input_type ?? 'dokumen') === 'dokumen'
+                    && (($l['mode'] ?? 'baru') === 'baru');
                 if ($isDokumen && $indicator->target_upload === 'pemkab') {
                     $dok = InformasiPemkab::create([
                         'saq_answer_id' => $answer->id,
@@ -630,6 +703,67 @@ class SaqController extends Controller
                     ]);
                 }
                 if ($isDokumen) $dokumenIds[] = $dok->id ?? null;
+            }
+
+            // Jalur upload dokumen (2 tab): simpan file ke storage public/saq/,
+            // buat SaqAnswerLink ke URL storage. HANYA bila toggle jadikan
+            // aktif DAN tipe dokumen, buat Informasi/InformasiPemkab dengan
+            // file_path/url = URL storage. Bila toggle mati: lampiran saja.
+            if ($hasDokumenFile) {
+                foreach ($dokumenFiles as $di => $df) {
+                    $dJudul = trim((string)($dokumenJudul[$di] ?? pathinfo($df->getClientOriginalName(), PATHINFO_FILENAME)));
+                    $dDesk = trim((string)($dokumenDeskripsi[$di] ?? ''));
+                    $dJadikanRaw = $dokumenJadikan[$di] ?? '0';
+                    $dJadikan = in_array($dJadikanRaw, ['1', 1, true, 'true'], true);
+                    $dPath = Storage::disk('public')->putFile('saq', $df);
+                    $storedDokumenPaths[] = $dPath;
+                    $dUrl = $request->getSchemeAndHttpHost() . '/storage/' . $dPath;
+                    $upRow = [
+                        'judul' => $dJudul,
+                        'link' => $dUrl,
+                        'deskripsi' => $dDesk,
+                        'order' => count($links) + $di,
+                    ];
+                    if (\Schema::hasColumn('saq_answer_links', 'sumber_informasi') && !$dJadikan) {
+                        $upRow['sumber_informasi'] = 'lampiran';
+                    }
+                    $answer->links()->create($upRow);
+                    if ($dJadikan && ($indicator->input_type ?? 'dokumen') === 'dokumen') {
+                        if ($indicator->target_upload === 'pemkab') {
+                            $dok = InformasiPemkab::create([
+                                'saq_answer_id' => $answer->id,
+                                'judul' => $dJudul,
+                                'kategori' => $klasifikasi,
+                                'jenis_dokumen' => 'Dokumen SAQ',
+                                'deskripsi' => $dDesk !== '' ? $dDesk : $indicator->pertanyaan,
+                                'file_path' => $dUrl,
+                                'status' => 'draft',
+                                'visibility' => $visibility,
+                                'unit_id' => $org->id,
+                                'user_id' => $request->user()->id,
+                            ]);
+                        } else {
+                            $dok = Informasi::create([
+                                'saq_answer_id' => $answer->id,
+                                'title' => $dJudul,
+                                'content' => $dDesk !== '' ? $dDesk : $indicator->pertanyaan,
+                                'category' => $klasifikasi,
+                                'deskripsi' => $dDesk,
+                                'visibility' => $visibility,
+                                'published' => false,
+                                'url' => $dUrl,
+                                'unit_id' => $org->remote_id ?? null,
+                                'user_id' => $request->user()->id,
+                                'tanggal_upload' => now(),
+                            ]);
+                        }
+                        $dokumenIds[] = $dok->id ?? null;
+                    }
+                    if (empty($links) && $di === 0 && !$hasFotoFile) {
+                        $answer->link = $dUrl;
+                        $answer->save();
+                    }
+                }
             }
 
             // Jalur upload foto: olah seperti Admin GaleriController
@@ -679,7 +813,7 @@ class SaqController extends Controller
                     'judul' => trim($validated['judul_foto']),
                     'link' => $photoUrl,
                     'deskripsi' => '',
-                    'order' => count($links),
+                    'order' => count($links) + count($dokumenFiles),
                 ]);
                 if (empty($links)) {
                     $answer->link = $photoUrl;
@@ -688,10 +822,18 @@ class SaqController extends Controller
             }
         }
         DB::commit();
+        // Baru hapus file lampiran lama setelah commit berhasil.
+        foreach ($oldLampiranPaths as $olp) {
+            // Hanya hapus path di bawah saq/ (pengaman, jangan hapus galeri/dokumen lain).
+            if (str_starts_with($olp, 'saq/')) Storage::disk('public')->delete($olp);
+        }
         } catch (\Throwable $e) {
             DB::rollBack();
             if (!empty($storedFotoPath)) {
                 Storage::disk('public')->delete($storedFotoPath);
+            }
+            foreach ($storedDokumenPaths as $sdp) {
+                Storage::disk('public')->delete($sdp);
             }
             \Log::error('SAQ store gagal, transaksi dibatalkan', ['error' => $e->getMessage(), 'organization_id' => $validated['organization_id'], 'indicator_id' => $validated['indicator_id']]);
             return response()->json(['success' => false, 'message' => 'Gagal menyimpan jawaban SAQ.'], 500);
