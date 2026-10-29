@@ -33,6 +33,16 @@ class Organization extends Model
         return $this->hasMany(Official::class);
     }
 
+    public function saqIndicators()
+    {
+        return $this->belongsToMany(
+            SaqIndicator::class,
+            'indicator_opd',
+            'organization_id',
+            'indicator_id'
+        );
+    }
+
     public function getRouteKeyName()
     {
         return 'slug';

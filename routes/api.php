@@ -365,8 +365,14 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
         Route::put('/saq-admin/indicators/{id}', [\App\Http\Controllers\Admin\SaqAdminController::class, 'update']);
         Route::delete('/saq-admin/indicators/{id}', [\App\Http\Controllers\Admin\SaqAdminController::class, 'destroy']);
         Route::put('/saq-admin/indicators/{id}/mapping', [\App\Http\Controllers\Admin\SaqAdminController::class, 'updateMapping']);
+        Route::get('/saq-admin/indicators/{id}/similar', [\App\Http\Controllers\Admin\SaqAdminController::class, 'similar']);
+        Route::post('/saq-admin/indicators/{id}/move', [\App\Http\Controllers\Admin\SaqAdminController::class, 'move']);
+        Route::delete('/saq-admin/indicators/{id}/opd/{opd_id}', [\App\Http\Controllers\Admin\SaqAdminController::class, 'detachOpd']);
+        Route::post('/saq-admin/indicators/{id}/opd/{opd_id}', [\App\Http\Controllers\Admin\SaqAdminController::class, 'attachOpd']);
+        Route::post('/saq-admin/opd/{opd_id}/indicators', [\App\Http\Controllers\Admin\SaqAdminController::class, 'attachBatchOpd']);
         Route::get('/saq-admin/opds', [\App\Http\Controllers\Admin\SaqAdminController::class, 'opds']);
         Route::get('/saq-admin/tabs', [\App\Http\Controllers\Admin\SaqAdminController::class, 'tabs']);
+        Route::get('/saq-admin/sections', [\App\Http\Controllers\Admin\SaqAdminController::class, 'sections']);
         Route::get('/saq/sync', [App\Http\Controllers\Api\SaqController::class, 'sync']);
         
         // Twibbon CRUD
