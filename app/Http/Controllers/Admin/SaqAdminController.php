@@ -6,6 +6,7 @@ use App\Http\Controllers\Controller;
 use App\Models\Organization;
 use App\Models\SaqAnswer;
 use App\Models\SaqIndicator;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 
@@ -562,5 +563,54 @@ class SaqAdminController extends Controller
             ->get();
 
         return response()->json(['success' => true, 'data' => $sections]);
+    }
+
+    /**
+     * Ambil status penguncian pengisian SAQ.
+     * GET /api/v1/saq-admin/lock-status
+     */
+    public function getLockStatus(Request $request)
+    {
+        if ($err = $this->checkSuperAdmin($request)) return $err;
+
+        $val = Setting::where('key', 'saq_submissions_locked')->value('value');
+        $locked = $val === null ? true : in_array((string)$val, ['1', 'true'], true);
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'locked' => $locked,
+            ]
+        ]);
+    }
+
+    /**
+     * Ubah status penguncian pengisian SAQ (Superadmin only).
+     * POST /api/v1/saq-admin/toggle-lock
+     * Body: { locked: true|false }
+     */
+    public function toggleLock(Request $request)
+    {
+        if ($err = $this->checkSuperAdmin($request)) return $err;
+
+        $validated = $request->validate([
+            'locked' => 'required|boolean',
+        ]);
+
+        $newVal = $validated['locked'] ? '1' : '0';
+        Setting::updateOrCreate(
+            ['key' => 'saq_submissions_locked'],
+            ['value' => $newVal]
+        );
+
+        return response()->json([
+            'success' => true,
+            'message' => $validated['locked']
+                ? 'Pengisian SAQ berhasil DIKUNCI. Hanya Superadmin yang dapat mengisi jawaban.'
+                : 'Pengisian SAQ berhasil DIBUKA untuk seluruh Admin OPD.',
+            'data' => [
+                'locked' => (bool)$validated['locked'],
+            ]
+        ]);
     }
 }

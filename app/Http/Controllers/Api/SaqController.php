@@ -9,12 +9,39 @@ use App\Models\Galeri;
 use App\Models\Organization;
 use App\Models\SaqAnswer;
 use App\Models\SaqIndicator;
+use App\Models\Setting;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Facades\Storage;
 
 class SaqController extends Controller
 {
+    /**
+     * Cek status penguncian pengisian jawaban SAQ.
+     * Default adalah '1' (terkunci) jika belum ada di database.
+     */
+    public static function isLocked(): bool
+    {
+        $val = Setting::where('key', 'saq_submissions_locked')->value('value');
+        if ($val === null) {
+            return true;
+        }
+        return in_array((string)$val, ['1', 'true'], true);
+    }
+
+    /**
+     * Endpoint status penguncian SAQ publik.
+     * GET /api/v1/saq/lock-status
+     */
+    public function lockStatus()
+    {
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'locked' => self::isLocked(),
+            ]
+        ]);
+    }
     /**
      * Daftar OPD untuk SAQ: unit tanpa kecamatan/desa/kelurahan,
      * beserta profil pimpinan & progres pengisian.
@@ -454,7 +481,16 @@ class SaqController extends Controller
 
         // Otorisasi: hanya superadmin atau admin OPD pemilik yang boleh isi
         $user = $request->user();
-        $isSuperadmin = ($user->role === 'superadmin');
+        $isSuperadmin = ($user && $user->role === 'superadmin');
+
+        // Cek penguncian pengisian SAQ: jika terkunci, hanya superadmin yang diizinkan mengisi
+        if (self::isLocked() && !$isSuperadmin) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pengisian dan perubahan jawaban SAQ saat ini sedang dikunci oleh Superadmin. Hanya Superadmin yang dapat mengisi jawaban.',
+            ], 403);
+        }
+
         // Kabupaten Sinjai (PPID Utama, id 127) hanya boleh diisi superadmin
         if ((int)$validated['organization_id'] === 127 && !$isSuperadmin) {
             return response()->json([
@@ -922,7 +958,15 @@ class SaqController extends Controller
 
         // Otorisasi: hanya superadmin atau admin OPD pemilik yang boleh hapus
         $user = $request->user();
-        $isSuperadmin = ($user->role === 'superadmin');
+        $isSuperadmin = ($user && $user->role === 'superadmin');
+
+        // Cek penguncian pengisian SAQ: jika terkunci, hanya superadmin yang diizinkan menghapus
+        if (self::isLocked() && !$isSuperadmin) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Penghapusan jawaban SAQ saat ini sedang dikunci oleh Superadmin.',
+            ], 403);
+        }
         if (!$isSuperadmin) {
             $userOrg = \App\Models\Organization::where('remote_id', (string)$user->unit_id)->first();
             if (!$userOrg || (int)$userOrg->id !== (int)$answer->organization_id) {

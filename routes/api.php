@@ -46,6 +46,7 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
     Route::get('/informasi-pemkab/{slug}', [App\Http\Controllers\Api\InformasiPemkabController::class, 'show']);
 
     // SAQ E-Monev (navigasi tersembunyi /saq)
+    Route::get('/saq/lock-status', [App\Http\Controllers\Api\SaqController::class, 'lockStatus'])->middleware('optional.sanctum');
     Route::get('/saq/opds', [App\Http\Controllers\Api\SaqController::class, 'opds'])->middleware('optional.sanctum');
     Route::get('/saq/structure', [App\Http\Controllers\Api\SaqController::class, 'structure'])->middleware('optional.sanctum');
     Route::get('/saq/answers', [App\Http\Controllers\Api\SaqController::class, 'answers'])->middleware('optional.sanctum');
@@ -373,6 +374,8 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
         Route::get('/saq-admin/opds', [\App\Http\Controllers\Admin\SaqAdminController::class, 'opds']);
         Route::get('/saq-admin/tabs', [\App\Http\Controllers\Admin\SaqAdminController::class, 'tabs']);
         Route::get('/saq-admin/sections', [\App\Http\Controllers\Admin\SaqAdminController::class, 'sections']);
+        Route::get('/saq-admin/lock-status', [\App\Http\Controllers\Admin\SaqAdminController::class, 'getLockStatus']);
+        Route::post('/saq-admin/toggle-lock', [\App\Http\Controllers\Admin\SaqAdminController::class, 'toggleLock']);
         Route::get('/saq/sync', [App\Http\Controllers\Api\SaqController::class, 'sync']);
         
         // Twibbon CRUD
