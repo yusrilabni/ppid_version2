@@ -280,6 +280,7 @@ class SaqController extends Controller
             return [
                 'id' => $qu->id,
                 'kode' => $qu->kode,
+                'tab' => $qu->tab,
                 'pertanyaan' => $qu->pertanyaan,
                 'bagian' => $bagianMap[$qu->id] ?? null,
                 'dokumen_upload' => $qu->dokumen_upload,
@@ -537,6 +538,21 @@ class SaqController extends Controller
             $validated['links'] ?? [],
             fn($l) => !empty($l['link'])
         ));
+
+        // Khusus Digitalisasi: larang link Google Drive (harus link website/portal/aplikasi)
+        $isDigitalisasi = ($indicator->tab === 'Digitalisasi' || str_starts_with($indicator->kode ?? '', '2.'));
+        if ($isDigitalisasi && $validated['jawaban'] === 'ya') {
+            foreach ($links as $l) {
+                $host = parse_url($l['link'] ?? '', PHP_URL_HOST);
+                if ($host && in_array(strtolower($host), ['drive.google.com', 'docs.google.com'])) {
+                    return response()->json([
+                        'success' => false,
+                        'message' => 'Link Google Drive tidak diterima untuk indikator Digitalisasi. Harap masukkan link website/portal/aplikasi langsung.',
+                    ], 422);
+                }
+            }
+        }
+
         // File dokumen upload: array paralel judul/deskripsi/jadikan.
         $dokumenFiles = $request->file('dokumen_files') ?: [];
         if (!is_array($dokumenFiles)) $dokumenFiles = [$dokumenFiles];
@@ -555,10 +571,15 @@ class SaqController extends Controller
             foreach ($dokumenFiles as $di => $df) {
                 $dj = trim((string)($dokumenJudul[$di] ?? ''));
                 if ($dj === '') {
-                    return response()->json([
-                        'success' => false,
-                        'message' => 'Judul wajib diisi untuk setiap dokumen yang diunggah.',
-                    ], 422);
+                    // Jika di Digitalisasi, fallback judul ke nama asli file
+                    if ($isDigitalisasi && $df) {
+                        $dokumenJudul[$di] = pathinfo($df->getClientOriginalName(), PATHINFO_FILENAME);
+                    } else {
+                        return response()->json([
+                            'success' => false,
+                            'message' => 'Judul wajib diisi untuk setiap dokumen yang diunggah.',
+                        ], 422);
+                    }
                 }
             }
         }

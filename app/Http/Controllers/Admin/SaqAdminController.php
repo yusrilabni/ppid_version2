@@ -613,4 +613,90 @@ class SaqAdminController extends Controller
             ]
         ]);
     }
+
+    /**
+     * Hapus / Reset seluruh jawaban SAQ (Superadmin only).
+     * POST /api/v1/saq-admin/reset-answers
+     * Body: { organization_id?: int, all_opds?: bool }
+     */
+    public function resetAnswers(Request $request)
+    {
+        if ($err = $this->checkSuperAdmin($request)) return $err;
+
+        $allOpds = $request->boolean('all_opds');
+        $orgId = $request->input('organization_id');
+
+        if (!$allOpds && empty($orgId)) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Pilih OPD tertentu atau tentukan all_opds: true untuk mereset seluruh OPD.',
+            ], 422);
+        }
+
+        DB::beginTransaction();
+        try {
+            $query = SaqAnswer::query();
+            $targetLabel = 'seluruh OPD';
+
+            if (!$allOpds) {
+                $org = Organization::find($orgId);
+                $targetLabel = $org ? "OPD {$org->name}" : "OPD ID {$orgId}";
+                $query->where('organization_id', $orgId);
+            }
+
+            $answers = $query->get(['id']);
+            $answerIds = $answers->pluck('id')->toArray();
+            $totalDeleted = count($answerIds);
+
+            if ($totalDeleted > 0) {
+                // 1. Bersihkan file dokumen fisik di storage/saq
+                $links = DB::table('saq_answer_links')
+                    ->whereIn('saq_answer_id', $answerIds)
+                    ->where('sumber_informasi', 'lampiran')
+                    ->pluck('link');
+
+                foreach ($links as $linkUrl) {
+                    if (!empty($linkUrl)) {
+                        $parsedPath = parse_url($linkUrl, PHP_URL_PATH);
+                        $cleanPath = ltrim($parsedPath ?: '', '/');
+                        $cleanPath = preg_replace('#^storage/#', '', $cleanPath);
+                        if (str_starts_with($cleanPath, 'saq/')) {
+                            \Illuminate\Support\Facades\Storage::disk('public')->delete($cleanPath);
+                        }
+                    }
+                }
+
+                // 2. Hapus Informasi & InformasiPemkab yang terkait jawaban SAQ
+                \App\Models\Informasi::whereIn('saq_answer_id', $answerIds)->delete();
+                \App\Models\InformasiPemkab::whereIn('saq_answer_id', $answerIds)->delete();
+
+                // 3. Hapus Galeri yang terkait jawaban SAQ
+                \App\Models\Galeri::whereIn('saq_answer_id', $answerIds)->delete();
+
+                // 4. Hapus relasi link jawaban
+                DB::table('saq_answer_links')->whereIn('saq_answer_id', $answerIds)->delete();
+
+                // 5. Hapus records saq_answers
+                SaqAnswer::whereIn('id', $answerIds)->delete();
+            }
+
+            DB::commit();
+
+            return response()->json([
+                'success' => true,
+                'message' => "Berhasil mereset {$totalDeleted} jawaban SAQ untuk {$targetLabel}.",
+                'data' => [
+                    'deleted_count' => $totalDeleted,
+                    'target' => $targetLabel,
+                ],
+            ]);
+        } catch (\Throwable $e) {
+            DB::rollBack();
+            \Illuminate\Support\Facades\Log::error('Gagal reset jawaban SAQ: ' . $e->getMessage());
+            return response()->json([
+                'success' => false,
+                'message' => 'Gagal mereset jawaban SAQ: ' . $e->getMessage(),
+            ], 500);
+        }
+    }
 }

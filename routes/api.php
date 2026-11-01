@@ -376,6 +376,7 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
         Route::get('/saq-admin/sections', [\App\Http\Controllers\Admin\SaqAdminController::class, 'sections']);
         Route::get('/saq-admin/lock-status', [\App\Http\Controllers\Admin\SaqAdminController::class, 'getLockStatus']);
         Route::post('/saq-admin/toggle-lock', [\App\Http\Controllers\Admin\SaqAdminController::class, 'toggleLock']);
+        Route::post('/saq-admin/reset-answers', [\App\Http\Controllers\Admin\SaqAdminController::class, 'resetAnswers']);
         Route::get('/saq/sync', [App\Http\Controllers\Api\SaqController::class, 'sync']);
         
         // Twibbon CRUD
