@@ -441,6 +441,8 @@ class SaqController extends Controller
                     'id' => $l->id,
                     'judul' => $l->judul,
                     'link' => $l->link,
+                    'sumber_informasi' => $l->sumber_informasi ?? null,
+                    'deskripsi' => $l->deskripsi ?? null,
                 ])->values(),
             ];
         }
