@@ -239,9 +239,13 @@ class SaqController extends Controller
                       });
                 });
             }
-            $rows = $rowsQuery->get(['indicator_id', 'jawaban']);
+            $rows = $rowsQuery->get(['indicator_id', 'jawaban', 'alasan', 'judul']);
             $answeredIds = $rows->pluck('indicator_id')->toArray();
             $jawabanMap = $rows->pluck('jawaban', 'indicator_id')->toArray();
+            $alasanMap = [];
+            foreach ($rows as $r) {
+                $alasanMap[$r->indicator_id] = $r->alasan;
+            }
             $orgIds = [$orgId];
             $bagianIds = [];
             // Jika Setda, sertakan juga Bagian-bagiannya
@@ -276,7 +280,7 @@ class SaqController extends Controller
 
         $data = [];
         // Helper untuk membangun array pertanyaan
-        $buildQuestion = function($qu) use ($orgId, $mappedIds, $bagianMap, $answeredIds, $jawabanMap) {
+        $buildQuestion = function($qu) use ($orgId, $mappedIds, $bagianMap, $answeredIds, $jawabanMap, $alasanMap) {
             return [
                 'id' => $qu->id,
                 'kode' => $qu->kode,
@@ -289,6 +293,7 @@ class SaqController extends Controller
                 'target_upload' => $qu->target_upload ?? 'ppid',
                 'terisi' => in_array($qu->id, $answeredIds),
                 'jawaban' => $jawabanMap[$qu->id] ?? null,
+                'alasan' => $alasanMap[$qu->id] ?? null,
             ];
         };
 
@@ -427,6 +432,7 @@ class SaqController extends Controller
                 'opd_name' => $a->organization->name ?? null,
                 'penulis' => $a->creator->name ?? null,
                 'jawaban' => $a->jawaban,
+                'alasan' => $a->alasan,
                 'links' => $a->links->map(fn($l) => [
                     'id' => $l->id,
                     'judul' => $l->judul,
@@ -448,6 +454,7 @@ class SaqController extends Controller
             'organization_id' => 'required|integer|exists:organizations,id',
             'indicator_id' => 'required|integer|exists:saq_indicators,id',
             'jawaban' => 'required|in:ya,tidak',
+            'alasan' => 'nullable|string',
             'visibility' => 'nullable|in:public,private',
             'links' => 'nullable|array|max:20',
             'links.*.judul' => 'nullable|string|max:255',
@@ -470,6 +477,17 @@ class SaqController extends Controller
             'judul_foto' => 'nullable|string|max:255',
             'tanggal_upload' => 'nullable|date',
         ]);
+
+        // Validasi: jika jawaban Tidak Ada, alasan wajib diisi
+        if ($validated['jawaban'] === 'tidak') {
+            $alasanVal = trim((string)($request->input('alasan') ?? ''));
+            if ($alasanVal === '') {
+                return response()->json([
+                    'success' => false,
+                    'message' => 'Alasan wajib diisi jika memilih "Tidak Ada".',
+                ], 422);
+            }
+        }
 
         // Validasi: parent-group (is_category=1) tidak bisa diisi jawaban
         $indicator = SaqIndicator::find($validated['indicator_id']);
@@ -687,12 +705,18 @@ class SaqController extends Controller
             [
                 'jawaban' => $validated['jawaban'],
                 // Kolom lama dipertahankan untuk kompatibilitas (diisi link pertama,
-                // atau judul foto bila hanya mengunggah foto tanpa link)
-                'judul' => $links[0]['judul'] ?? ($hasDokumenFile ? trim((string)($dokumenJudul[0] ?? '')) : ($hasFotoFile ? trim($validated['judul_foto'] ?? '') : '')),
-                'link' => $links[0]['link'] ?? '',
+                // atau judul foto bila hanya mengunggah foto tanpa link, atau alasan jika tidak ada)
+                'judul' => $validated['jawaban'] === 'tidak'
+                    ? ('Tidak Ada: ' . mb_substr(trim((string)($request->input('alasan') ?? '')), 0, 240))
+                    : ($links[0]['judul'] ?? ($hasDokumenFile ? trim((string)($dokumenJudul[0] ?? '')) : ($hasFotoFile ? trim($validated['judul_foto'] ?? '') : ''))),
+                'link' => $validated['jawaban'] === 'tidak' ? '' : ($links[0]['link'] ?? ''),
                 'created_by' => $request->user()->id,
             ]
         );
+        if (\Schema::hasColumn('saq_answers', 'alasan')) {
+            $answer->alasan = $validated['jawaban'] === 'tidak' ? trim((string)($request->input('alasan') ?? '')) : null;
+            $answer->save();
+        }
         if (\Schema::hasColumn('saq_answers', 'visibility')) {
             $answer->visibility = $visibility;
             $answer->save();

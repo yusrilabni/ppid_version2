@@ -10,11 +10,23 @@ class SaqAnswer extends Model
         'organization_id',
         'indicator_id',
         'jawaban',
+        'alasan',
         'visibility',
         'judul',
         'link',
         'created_by',
     ];
+
+    public function getAlasanAttribute($value)
+    {
+        if ($value !== null && $value !== '') {
+            return $value;
+        }
+        if ($this->jawaban === 'tidak' && !empty($this->judul)) {
+            return str_starts_with($this->judul, 'Tidak Ada: ') ? substr($this->judul, 11) : $this->judul;
+        }
+        return null;
+    }
 
     protected $casts = [
         'jawaban' => 'string',
