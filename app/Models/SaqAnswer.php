@@ -17,7 +17,7 @@ class SaqAnswer extends Model
         'created_by',
     ];
 
-    public function getAlasanAttribute($value)
+    public function getAlasanAttribute($value = null)
     {
         if ($value !== null && $value !== '') {
             return $value;

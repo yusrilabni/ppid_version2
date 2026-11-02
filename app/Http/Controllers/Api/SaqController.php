@@ -194,6 +194,7 @@ class SaqController extends Controller
 
         $answeredIds = [];
         $jawabanMap = [];
+        $alasanMap = [];
         // Mode full: terisi = soal yang punya minimal satu jawaban OPD yang lolos privasi.
         // jawabanMap sengaja kosong: badge Ya/Tidak tunggal tidak berlaku untuk konsolidasi.
         if ($request->boolean('full')) {
@@ -239,10 +240,13 @@ class SaqController extends Controller
                       });
                 });
             }
-            $rows = $rowsQuery->get(['indicator_id', 'jawaban', 'alasan', 'judul']);
+            $cols = ['indicator_id', 'jawaban', 'judul'];
+            if (\Schema::hasColumn('saq_answers', 'alasan')) {
+                $cols[] = 'alasan';
+            }
+            $rows = $rowsQuery->get($cols);
             $answeredIds = $rows->pluck('indicator_id')->toArray();
             $jawabanMap = $rows->pluck('jawaban', 'indicator_id')->toArray();
-            $alasanMap = [];
             foreach ($rows as $r) {
                 $alasanMap[$r->indicator_id] = $r->alasan;
             }
