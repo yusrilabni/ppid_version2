@@ -450,6 +450,54 @@ class SaqController extends Controller
     }
 
     /**
+     * Download file bukti dukung SAQ dengan nama file deskriptif
+     * (mengandung kode soal dan nama OPD).
+     * GET /api/v1/saq/download-evidence
+     */
+    public function downloadEvidence(Request $request)
+    {
+        $rawUrl = (string)$request->get('url', '');
+        $requestedName = (string)$request->get('filename', '');
+
+        if (empty($rawUrl)) {
+            abort(404, 'URL berkas tidak ditemukan.');
+        }
+
+        // Ekstrak path storage relatif dari URL
+        $storagePath = null;
+        if (str_contains($rawUrl, '/storage/')) {
+            $storagePath = substr($rawUrl, strpos($rawUrl, '/storage/') + strlen('/storage/'));
+        } elseif (!str_starts_with($rawUrl, 'http://') && !str_starts_with($rawUrl, 'https://')) {
+            $storagePath = ltrim($rawUrl, '/');
+        }
+
+        // Sanitasi path untuk mencegah directory traversal
+        if (!$storagePath || str_contains($storagePath, '..') || str_starts_with($storagePath, '/') || str_starts_with($storagePath, '\\')) {
+            return redirect()->away($rawUrl);
+        }
+
+        // Cek keberadaan file di storage disk public
+        if (!Storage::disk('public')->exists($storagePath)) {
+            return redirect()->away($rawUrl);
+        }
+
+        // Tentukan nama file unduhan yang bersih (izinkan tanda kurung siku, kurung biasa, strip, titik)
+        $ext = strtolower(pathinfo($storagePath, PATHINFO_EXTENSION));
+        if (!empty($requestedName)) {
+            $safeName = preg_replace('/[^\w\s\.\-\(\)\[\]]/u', '_', $requestedName);
+            $safeName = preg_replace('/\s+/', '_', trim($safeName));
+            $safeName = preg_replace('/_+/', '_', $safeName);
+            if (!empty($ext) && !str_ends_with(strtolower($safeName), '.' . $ext)) {
+                $safeName .= '.' . $ext;
+            }
+        } else {
+            $safeName = 'Bukti_Dukung_SAQ_' . basename($storagePath);
+        }
+
+        return Storage::disk('public')->download($storagePath, $safeName);
+    }
+
+    /**
      * Simpan jawaban SAQ (admin login).
      * Bila `klasifikasi` diisi -> sekaligus tercatat sebagai Informasi (draft).
      * POST /api/v1/saq/answers (auth:sanctum)
