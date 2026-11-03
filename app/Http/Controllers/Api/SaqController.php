@@ -463,6 +463,29 @@ class SaqController extends Controller
             abort(404, 'URL berkas tidak ditemukan.');
         }
 
+        // Cek jika link Google Drive / Docs / Sheets -> redirect langsung ke URL download
+        if (str_contains($rawUrl, 'drive.google.com/file/d/')) {
+            if (preg_match('/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/', $rawUrl, $matches)) {
+                return redirect()->away('https://drive.google.com/uc?export=download&id=' . $matches[1]);
+            }
+        } elseif (str_contains($rawUrl, 'drive.google.com/open?id=') || str_contains($rawUrl, 'drive.google.com/uc?')) {
+            if (preg_match('/[?&]id=([a-zA-Z0-9_-]+)/', $rawUrl, $matches)) {
+                return redirect()->away('https://drive.google.com/uc?export=download&id=' . $matches[1]);
+            }
+        } elseif (str_contains($rawUrl, 'docs.google.com/document/d/')) {
+            if (preg_match('/docs\.google\.com\/document\/d\/([a-zA-Z0-9_-]+)/', $rawUrl, $matches)) {
+                return redirect()->away('https://docs.google.com/document/d/' . $matches[1] . '/export?format=pdf');
+            }
+        } elseif (str_contains($rawUrl, 'docs.google.com/spreadsheets/d/')) {
+            if (preg_match('/docs\.google\.com\/spreadsheets\/d\/([a-zA-Z0-9_-]+)/', $rawUrl, $matches)) {
+                return redirect()->away('https://docs.google.com/spreadsheets/d/' . $matches[1] . '/export?format=xlsx');
+            }
+        } elseif (str_contains($rawUrl, 'docs.google.com/presentation/d/')) {
+            if (preg_match('/docs\.google\.com\/presentation\/d\/([a-zA-Z0-9_-]+)/', $rawUrl, $matches)) {
+                return redirect()->away('https://docs.google.com/presentation/d/' . $matches[1] . '/export?format=pdf');
+            }
+        }
+
         // Ekstrak path storage relatif dari URL
         $storagePath = null;
         if (str_contains($rawUrl, '/storage/')) {
