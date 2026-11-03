@@ -463,6 +463,15 @@ class SaqController extends Controller
             abort(404, 'URL berkas tidak ditemukan.');
         }
 
+        // Jika URL adalah link detail dokumen PPID atau Portal Pemkab Sinjai,
+        // lookup dokumen untuk mendapatkan tautan file berkas aslinya.
+        if (str_contains($rawUrl, 'sinjaikab.go.id') && str_contains($rawUrl, '/informasi')) {
+            $doc = $this->lookupPpidDocument($rawUrl);
+            if ($doc && !empty($doc['file_url'])) {
+                $rawUrl = $doc['file_url'];
+            }
+        }
+
         // Cek jika link Google Drive / Docs / Sheets -> redirect langsung ke URL download
         if (str_contains($rawUrl, 'drive.google.com/file/d/')) {
             if (preg_match('/drive\.google\.com\/file\/d\/([a-zA-Z0-9_-]+)/', $rawUrl, $matches)) {
@@ -850,61 +859,83 @@ class SaqController extends Controller
                     continue;
                 }
 
-                $linkRow = [
-                    // Situs/foto tanpa judul: '' dari frontend diubah Laravel jadi null; kolom judul NOT NULL, pakai '' agar tidak 500.
-                    'judul' => $l['judul'] ?? '',
-                    'link' => $l['link'],
-                    'deskripsi' => $l['deskripsi'] ?? '',
-                    'order' => $i,
-                ];
-                // Jejak mode tanpa tabel/kolom baru: 'link' = link biasa (bukan
-                // Informasi), null = link lama / mode baru (Informasi). Sync
-                // memakai 'informasi'/'informasi_pemkab' seperti sebelumnya.
-                if (\Schema::hasColumn('saq_answer_links', 'sumber_informasi') && in_array(($l['mode'] ?? 'baru'), ['link', 'drive', 'lampiran', 'galeri'], true)) {
-                    $linkRow['sumber_informasi'] = ($l['mode'] ?? 'baru');
-                }
-                $answer->links()->create($linkRow);
-
                 // Simpan sebagai dokumen HANYA untuk tipe 'dokumen' DAN mode 'baru' / 'drive'.
                 $isDokumen = ($indicator->input_type ?? 'dokumen') === 'dokumen'
                     && in_array(($l['mode'] ?? 'baru'), ['baru', 'drive'], true);
-                if ($isDokumen && $indicator->target_upload === 'pemkab') {
-                    $dok = InformasiPemkab::create([
-                        'saq_answer_id' => $answer->id,
-                        'judul' => !empty($l['judul']) ? $l['judul'] : $indicator->pertanyaan,
-                        'kategori' => $klasifikasi,
-                        'jenis_dokumen' => $indicator->jenis_dokumen ?? 'Dokumen SAQ',
-                        'deskripsi' => !empty($l['deskripsi']) ? $l['deskripsi'] : $indicator->pertanyaan,
-                        'file_path' => $l['link'],
-                        'status' => $visibility === 'public' ? 'published' : 'draft',
-                        'visibility' => $visibility,
-                        'published_at' => $tanggalDok,
-                        'unit_id' => $org->id,
-                        'user_id' => $request->user()->id,
-                    ]);
-                } elseif ($isDokumen) {
-                    $dok = Informasi::create([
-                        'saq_answer_id' => $answer->id,
-                        'title' => !empty($l['judul']) ? $l['judul'] : $indicator->pertanyaan,
-                        'content' => !empty($l['deskripsi']) ? $l['deskripsi'] : $indicator->pertanyaan,
-                        'category' => $klasifikasi,
-                        'deskripsi' => !empty($l['deskripsi']) ? $l['deskripsi'] : $indicator->pertanyaan,
-                        'visibility' => $visibility,
-                        'published' => ($visibility === 'public'),
-                        'status' => $visibility === 'public' ? 'published' : 'draft',
-                        'url' => $l['link'],
-                        'unit_id' => $org->remote_id ?? null,
-                        'user_id' => $request->user()->id,
-                        'tanggal_upload' => $tanggalDok,
-                    ]);
+
+                $dok = null;
+                $linkToSave = $l['link'];
+                $sumberToSave = ($l['mode'] ?? 'baru');
+                $informasiIdToSave = null;
+
+                if ($isDokumen) {
+                    if ($indicator->target_upload === 'pemkab') {
+                        $dok = InformasiPemkab::create([
+                            'saq_answer_id' => $answer->id,
+                            'judul' => !empty($l['judul']) ? $l['judul'] : $indicator->pertanyaan,
+                            'kategori' => $klasifikasi,
+                            'jenis_dokumen' => $indicator->jenis_dokumen ?? 'Dokumen SAQ',
+                            'deskripsi' => !empty($l['deskripsi']) ? $l['deskripsi'] : $indicator->pertanyaan,
+                            'file_path' => $l['link'],
+                            'status' => $visibility === 'public' ? 'published' : 'draft',
+                            'visibility' => $visibility,
+                            'published_at' => $tanggalDok,
+                            'unit_id' => $org->id,
+                            'user_id' => $request->user()->id,
+                        ]);
+                        $linkToSave = 'https://sinjaikab.go.id/informasi/' . ($dok->slug ?? $dok->id);
+                        $sumberToSave = 'informasi_pemkab';
+                        $informasiIdToSave = $dok->id;
+                    } else {
+                        $dok = Informasi::create([
+                            'saq_answer_id' => $answer->id,
+                            'title' => !empty($l['judul']) ? $l['judul'] : $indicator->pertanyaan,
+                            'content' => !empty($l['deskripsi']) ? $l['deskripsi'] : $indicator->pertanyaan,
+                            'category' => $klasifikasi,
+                            'deskripsi' => !empty($l['deskripsi']) ? $l['deskripsi'] : $indicator->pertanyaan,
+                            'visibility' => $visibility,
+                            'published' => ($visibility === 'public'),
+                            'status' => $visibility === 'public' ? 'published' : 'draft',
+                            'url' => $l['link'],
+                            'unit_id' => $org->remote_id ?? null,
+                            'user_id' => $request->user()->id,
+                            'tanggal_upload' => $tanggalDok,
+                        ]);
+                        $linkToSave = 'https://ppid.sinjaikab.go.id/informasi/detail/' . ($dok->slug ?? $dok->id);
+                        $sumberToSave = 'informasi';
+                        $informasiIdToSave = $dok->id;
+                    }
+                    $dokumenIds[] = $dok->id ?? null;
                 }
-                if ($isDokumen) $dokumenIds[] = $dok->id ?? null;
+
+                $linkRow = [
+                    // Situs/foto tanpa judul: '' dari frontend diubah Laravel jadi null; kolom judul NOT NULL, pakai '' agar tidak 500.
+                    'judul' => $l['judul'] ?? '',
+                    'link' => $linkToSave,
+                    'deskripsi' => $l['deskripsi'] ?? '',
+                    'order' => $i,
+                ];
+                if (\Schema::hasColumn('saq_answer_links', 'sumber_informasi')) {
+                    $linkRow['sumber_informasi'] = $sumberToSave;
+                }
+                if (\Schema::hasColumn('saq_answer_links', 'informasi_id') && $informasiIdToSave) {
+                    $linkRow['informasi_id'] = $informasiIdToSave;
+                }
+                $answer->links()->create($linkRow);
+
+                if ($isDokumen && $i === 0) {
+                    $answer->link = $linkToSave;
+                    if (!empty($l['judul'])) {
+                        $answer->judul = $l['judul'];
+                    }
+                    $answer->save();
+                }
             }
 
             // Jalur upload dokumen (2 tab): simpan file ke storage public/saq/,
-            // buat SaqAnswerLink ke URL storage. HANYA bila toggle jadikan
-            // aktif DAN tipe dokumen, buat Informasi/InformasiPemkab dengan
-            // file_path/url = URL storage. Bila toggle mati: lampiran saja.
+            // buat SaqAnswerLink ke link detail dokumen resmi (bukan URL fisik storage).
+            // HANYA bila toggle jadikan aktif DAN tipe dokumen, buat Informasi/InformasiPemkab.
+            // Bila toggle mati: simpan sebagai lampiran file mentah.
             if ($hasDokumenFile) {
                 foreach ($dokumenFiles as $di => $df) {
                     $dJudul = trim((string)($dokumenJudul[$di] ?? pathinfo($df->getClientOriginalName(), PATHINFO_FILENAME)));
@@ -934,16 +965,11 @@ class SaqController extends Controller
                     }
                     $storedDokumenPaths[] = $dPath;
                     $dUrl = $request->getSchemeAndHttpHost() . '/storage/' . $dPath;
-                    $upRow = [
-                        'judul' => $dJudul ?: $indicator->pertanyaan,
-                        'link' => $dUrl,
-                        'deskripsi' => $dDesk ?: $indicator->pertanyaan,
-                        'order' => count($links) + $di,
-                    ];
-                    if (\Schema::hasColumn('saq_answer_links', 'sumber_informasi') && !$dJadikan) {
-                        $upRow['sumber_informasi'] = 'lampiran';
-                    }
-                    $answer->links()->create($upRow);
+
+                    $linkToSave = $dUrl;
+                    $sumberToSave = 'lampiran';
+                    $informasiIdToSave = null;
+
                     if ($dJadikan && ($indicator->input_type ?? 'dokumen') === 'dokumen') {
                         if ($indicator->target_upload === 'pemkab') {
                             $dok = InformasiPemkab::create([
@@ -959,6 +985,9 @@ class SaqController extends Controller
                                 'unit_id' => $org->id,
                                 'user_id' => $request->user()->id,
                             ]);
+                            $linkToSave = 'https://sinjaikab.go.id/informasi/' . ($dok->slug ?? $dok->id);
+                            $sumberToSave = 'informasi_pemkab';
+                            $informasiIdToSave = $dok->id;
                         } else {
                             $dok = Informasi::create([
                                 'saq_answer_id' => $answer->id,
@@ -974,11 +1003,30 @@ class SaqController extends Controller
                                 'user_id' => $request->user()->id,
                                 'tanggal_upload' => $tanggalDok,
                             ]);
+                            $linkToSave = 'https://ppid.sinjaikab.go.id/informasi/detail/' . ($dok->slug ?? $dok->id);
+                            $sumberToSave = 'informasi';
+                            $informasiIdToSave = $dok->id;
                         }
                         $dokumenIds[] = $dok->id ?? null;
                     }
+
+                    $upRow = [
+                        'judul' => $dJudul ?: $indicator->pertanyaan,
+                        'link' => $linkToSave,
+                        'deskripsi' => $dDesk ?: $indicator->pertanyaan,
+                        'order' => count($links) + $di,
+                    ];
+                    if (\Schema::hasColumn('saq_answer_links', 'sumber_informasi')) {
+                        $upRow['sumber_informasi'] = $sumberToSave;
+                    }
+                    if (\Schema::hasColumn('saq_answer_links', 'informasi_id') && $informasiIdToSave) {
+                        $upRow['informasi_id'] = $informasiIdToSave;
+                    }
+                    $answer->links()->create($upRow);
+
                     if (empty($links) && $di === 0 && !$hasFotoFile) {
-                        $answer->link = $dUrl;
+                        $answer->link = $linkToSave;
+                        $answer->judul = $dJudul ?: $indicator->pertanyaan;
                         $answer->save();
                     }
                 }
