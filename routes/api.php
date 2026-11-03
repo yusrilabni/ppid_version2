@@ -52,6 +52,7 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
     Route::get('/saq/answers', [App\Http\Controllers\Api\SaqController::class, 'answers'])->middleware('optional.sanctum');
     Route::get('/saq/all-answers', [App\Http\Controllers\Api\SaqController::class, 'allAnswers'])->middleware('optional.sanctum');
     Route::get('/saq/download-evidence', [App\Http\Controllers\Api\SaqController::class, 'downloadEvidence'])->middleware('optional.sanctum');
+    Route::get('/saq/sync', [App\Http\Controllers\Api\SaqController::class, 'sync'])->middleware('optional.sanctum');
 
     // Daftar Pekerjaan (Auto-complete / Dropdown)
     Route::get('/pekerjaan', [PermohonanInformasiController::class, 'getPekerjaanList']);
