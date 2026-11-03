@@ -1150,6 +1150,11 @@ class SaqController extends Controller
     /**
      * Parse link detail PPID atau Portal Pemkab -> slug, atau null bila bukan link detail.
      * Host yang diterima: ppid.sinjaikab.go.id dan sinjaikab.go.id.
+     * Format yang didukung:
+     * - https://ppid.sinjaikab.go.id/informasi/detail/{slug}
+     * - https://ppid.sinjaikab.go.id/informasi/{slug}
+     * - https://sinjaikab.go.id/informasi/{slug}
+     * - https://sinjaikab.go.id/informasi/detail/{slug}
      */
     private function parsePpidDetailSlug(string $url): ?string
     {
@@ -1162,11 +1167,35 @@ class SaqController extends Controller
             return null;
         }
         $path = trim($parts['path'] ?? '', '/');
-        $segments = explode('/', $path);
-        if (count($segments) < 2 || $segments[0] !== 'informasi' || $segments[1] === '') {
+        if (empty($path)) {
             return null;
         }
-        return urldecode($segments[1]);
+        $segments = array_values(array_filter(explode('/', $path), fn($s) => $s !== ''));
+        if (empty($segments)) {
+            return null;
+        }
+
+        // 1. Jika ada segmen 'detail' (misal: /informasi/detail/{slug})
+        $detailIdx = array_search('detail', $segments, true);
+        if ($detailIdx !== false && isset($segments[$detailIdx + 1]) && $segments[$detailIdx + 1] !== '') {
+            return urldecode($segments[$detailIdx + 1]);
+        }
+
+        // 2. Jika segmen pertama adalah 'informasi'
+        if ($segments[0] === 'informasi') {
+            if (count($segments) >= 2) {
+                // Ambil segmen terakhir yang bukan 'informasi' dan bukan 'detail'
+                $last = end($segments);
+                if ($last !== 'informasi' && $last !== 'detail') {
+                    return urldecode($last);
+                }
+            }
+            return null;
+        }
+
+        // 3. Fallback: segmen terakhir yang valid
+        $last = end($segments);
+        return (!empty($last) && !in_array($last, ['informasi', 'detail'], true)) ? urldecode($last) : null;
     }
 
     private function ppidDateStr($value): ?string
@@ -1191,7 +1220,7 @@ class SaqController extends Controller
     /**
      * Cari dokumen PPID atau Portal Pemkab dari sebuah URL.
      * Urutan:
-     * (1) link detail /informasi/{slug} -> cari di InformasiPemkab dan Informasi.
+     * (1) link detail /informasi/{slug} atau /informasi/detail/{slug} -> cari di InformasiPemkab dan Informasi.
      * (2) pencocokan URL / file / storage path.
      * Mengembalikan null bila tidak ditemukan.
      */
@@ -1203,9 +1232,6 @@ class SaqController extends Controller
         $isPemkabDomain = in_array($host, ['sinjaikab.go.id', 'www.sinjaikab.go.id'], true);
 
         if ($slug !== null) {
-            $baseDomain = $isPemkabDomain ? 'https://sinjaikab.go.id' : 'https://ppid.sinjaikab.go.id';
-            $detailUrl = $baseDomain . '/informasi/' . $slug;
-
             // Jika domain sinjaikab.go.id, dahulukan InformasiPemkab
             if ($isPemkabDomain) {
                 $pemkab = InformasiPemkab::with(['user:id,name', 'organization:id,name'])
@@ -1227,7 +1253,7 @@ class SaqController extends Controller
                         'opd' => $pemkab->organization->name ?? null,
                         'tanggal' => $this->ppidDateStr($pemkab->published_at ?? $pemkab->created_at),
                         'file_url' => $this->ppidFileUrl($pemkab->file_path),
-                        'detail_url' => $detailUrl,
+                        'detail_url' => 'https://sinjaikab.go.id/informasi/' . ($pemkab->slug ?? $pemkab->id),
                         'sumber' => 'informasi_pemkab',
                         'sumber_label' => 'Portal Pemkab Sinjai',
                     ];
@@ -1254,38 +1280,36 @@ class SaqController extends Controller
                     'opd' => $info->organization->name ?? null,
                     'tanggal' => $this->ppidDateStr($info->tanggal_upload ?? $info->created_at),
                     'file_url' => $this->ppidFileUrl($info->file),
-                    'detail_url' => 'https://ppid.sinjaikab.go.id/informasi/' . ($info->slug ?? $info->id),
+                    'detail_url' => 'https://ppid.sinjaikab.go.id/informasi/detail/' . ($info->slug ?? $info->id),
                     'sumber' => 'informasi',
                     'sumber_label' => 'PPID Kabupaten Sinjai',
                 ];
             }
 
-            // Fallback cari di InformasiPemkab bila bukan domain pemkab
-            if (!$isPemkabDomain) {
-                $pemkab = InformasiPemkab::with(['user:id,name', 'organization:id,name'])
-                    ->where(function ($q) use ($slug) {
-                        $q->where('slug', $slug);
-                        if (ctype_digit($slug)) {
-                            $q->orWhere('id', (int) $slug);
-                        }
-                    })
-                    ->first();
-                if ($pemkab) {
-                    return [
-                        'id' => $pemkab->id,
-                        'judul' => $pemkab->judul,
-                        'deskripsi' => $pemkab->deskripsi,
-                        'kategori' => $pemkab->kategori,
-                        'jenis_dokumen' => $pemkab->jenis_dokumen ?? 'Dokumen Pemkab',
-                        'pengupload' => $pemkab->user->name ?? null,
-                        'opd' => $pemkab->organization->name ?? null,
-                        'tanggal' => $this->ppidDateStr($pemkab->published_at ?? $pemkab->created_at),
-                        'file_url' => $this->ppidFileUrl($pemkab->file_path),
-                        'detail_url' => 'https://sinjaikab.go.id/informasi/' . ($pemkab->slug ?? $pemkab->id),
-                        'sumber' => 'informasi_pemkab',
-                        'sumber_label' => 'Portal Pemkab Sinjai',
-                    ];
-                }
+            // Fallback cari di InformasiPemkab bila belum ketemu
+            $pemkab = InformasiPemkab::with(['user:id,name', 'organization:id,name'])
+                ->where(function ($q) use ($slug) {
+                    $q->where('slug', $slug);
+                    if (ctype_digit($slug)) {
+                        $q->orWhere('id', (int) $slug);
+                    }
+                })
+                ->first();
+            if ($pemkab) {
+                return [
+                    'id' => $pemkab->id,
+                    'judul' => $pemkab->judul,
+                    'deskripsi' => $pemkab->deskripsi,
+                    'kategori' => $pemkab->kategori,
+                    'jenis_dokumen' => $pemkab->jenis_dokumen ?? 'Dokumen Pemkab',
+                    'pengupload' => $pemkab->user->name ?? null,
+                    'opd' => $pemkab->organization->name ?? null,
+                    'tanggal' => $this->ppidDateStr($pemkab->published_at ?? $pemkab->created_at),
+                    'file_url' => $this->ppidFileUrl($pemkab->file_path),
+                    'detail_url' => 'https://sinjaikab.go.id/informasi/' . ($pemkab->slug ?? $pemkab->id),
+                    'sumber' => 'informasi_pemkab',
+                    'sumber_label' => 'Portal Pemkab Sinjai',
+                ];
             }
 
             return null;
