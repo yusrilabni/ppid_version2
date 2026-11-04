@@ -971,13 +971,18 @@ class SaqController extends Controller
                     $informasiIdToSave = null;
 
                     if ($dJadikan && ($indicator->input_type ?? 'dokumen') === 'dokumen') {
+                        $autoJudul = trim($indicator->pertanyaan);
+                        $autoDesk = trim($indicator->pertanyaan);
+                        $dokTahun = !empty($tanggalDok) ? (int)date('Y', strtotime($tanggalDok)) : (int)date('Y');
+
                         if ($indicator->target_upload === 'pemkab') {
                             $dok = InformasiPemkab::create([
                                 'saq_answer_id' => $answer->id,
-                                'judul' => $dJudul ?: $indicator->pertanyaan,
+                                'judul' => $autoJudul,
                                 'kategori' => $klasifikasi,
                                 'jenis_dokumen' => $indicator->jenis_dokumen ?? 'Dokumen SAQ',
-                                'deskripsi' => $dDesk !== '' ? $dDesk : $indicator->pertanyaan,
+                                'deskripsi' => $autoDesk,
+                                'tahun' => $dokTahun,
                                 'file_path' => $dUrl,
                                 'status' => $visibility === 'public' ? 'published' : 'draft',
                                 'visibility' => $visibility,
@@ -991,13 +996,15 @@ class SaqController extends Controller
                         } else {
                             $dok = Informasi::create([
                                 'saq_answer_id' => $answer->id,
-                                'title' => $dJudul ?: $indicator->pertanyaan,
-                                'content' => $dDesk !== '' ? $dDesk : $indicator->pertanyaan,
+                                'title' => $autoJudul,
+                                'content' => $autoDesk,
                                 'category' => $klasifikasi,
-                                'deskripsi' => $dDesk !== '' ? $dDesk : $indicator->pertanyaan,
+                                'deskripsi' => $autoDesk,
+                                'tahun' => $dokTahun,
                                 'visibility' => $visibility,
                                 'published' => ($visibility === 'public'),
                                 'status' => $visibility === 'public' ? 'published' : 'draft',
+                                'file' => $dPath,
                                 'url' => $dUrl,
                                 'unit_id' => $org->remote_id ?? null,
                                 'user_id' => $request->user()->id,

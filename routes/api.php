@@ -36,14 +36,14 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
     Route::get('/officials/{slug}', [OfficialController::class, 'show']);
 
     // Informasi Publik & Laporan
-    Route::get('/informasi', [InformasiController::class, 'index']);
-    Route::get('/informasi/{slug}', [InformasiController::class, 'show']);
+    Route::get('/informasi', [InformasiController::class, 'index'])->middleware('optional.sanctum');
+    Route::get('/informasi/{slug}', [InformasiController::class, 'show'])->middleware('optional.sanctum');
     Route::get('/laporan', [LaporanController::class, 'index']);
     Route::get('/laporan/ppid/file/{token}', [App\Http\Controllers\FrontendController::class, 'serveLaporanFile']);
     
     // Informasi Pemkab
-    Route::get('/informasi-pemkab', [App\Http\Controllers\Api\InformasiPemkabController::class, 'index']);
-    Route::get('/informasi-pemkab/{slug}', [App\Http\Controllers\Api\InformasiPemkabController::class, 'show']);
+    Route::get('/informasi-pemkab', [App\Http\Controllers\Api\InformasiPemkabController::class, 'index'])->middleware('optional.sanctum');
+    Route::get('/informasi-pemkab/{slug}', [App\Http\Controllers\Api\InformasiPemkabController::class, 'show'])->middleware('optional.sanctum');
 
     // SAQ E-Monev (navigasi tersembunyi /saq)
     Route::get('/saq/lock-status', [App\Http\Controllers\Api\SaqController::class, 'lockStatus'])->middleware('optional.sanctum');

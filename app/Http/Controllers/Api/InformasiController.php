@@ -17,11 +17,42 @@ class InformasiController extends Controller
      */
     public function index(Request $request): JsonResponse
     {
-        $cacheKey = 'all_informasi_' . md5(json_encode($request->all()));
+        $user = $request->user();
+        $isSuperadmin = ($user && $user->role === 'superadmin');
+        $userUnitId = $user ? ($user->unit_id ?? null) : null;
+        $userScope = $isSuperadmin ? 'superadmin' : ($userUnitId ? 'unit_' . $userUnitId : 'guest');
+
+        $cacheKey = 'all_informasi_' . $userScope . '_' . md5(json_encode($request->all()));
         
-        $informasi = Cache::tags(['informasi'])->rememberForever($cacheKey, function () use ($request) {
-            $query = Informasi::with('official.position')
-                ->whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP']);
+        $informasi = Cache::tags(['informasi'])->rememberForever($cacheKey, function () use ($request, $user, $isSuperadmin, $userUnitId) {
+            $query = Informasi::with('official.position');
+
+            // Hak akses visibilitas & status dokumen
+            if ($isSuperadmin) {
+                // Superadmin: melihat semua dokumen publik dan private
+            } elseif ($user && $userUnitId) {
+                // Admin OPD: melihat semua dokumen publik + dokumen private milik unitnya
+                $query->where(function ($q) use ($userUnitId) {
+                    $q->where(function ($pubQ) {
+                        $pubQ->where(function ($vq) {
+                            $vq->where('visibility', 'public')
+                               ->orWhereNull('visibility');
+                        })->where(function ($sq) {
+                            $sq->whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP', 'published'])
+                               ->orWhere('published', 1);
+                        });
+                    })->orWhere('unit_id', $userUnitId);
+                });
+            } else {
+                // Pengunjung publik umum: HANYA dokumen public dan berstatus published/aktif/berlaku
+                $query->where(function ($vq) {
+                    $vq->where('visibility', 'public')
+                       ->orWhereNull('visibility');
+                })->where(function ($sq) {
+                    $sq->whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP', 'published'])
+                       ->orWhere('published', 1);
+                });
+            }
 
             // Pencarian Umum
             $searchTerm = $request->get('search', $request->get('q'));
@@ -125,13 +156,26 @@ class InformasiController extends Controller
     /**
      * Ambil detail informasi berdasarkan slug atau ID.
      */
-    public function show($slug): JsonResponse
+    public function show($slug, Request $request): JsonResponse
     {
         try {
             $item = Informasi::with(['user', 'official.position'])
                 ->where('slug', $slug)
                 ->orWhere('id', $slug)
                 ->firstOrFail();
+
+            // Pengecekan visibilitas private
+            $user = $request->user();
+            $isSuperadmin = ($user && $user->role === 'superadmin');
+            $userUnitId = $user ? ($user->unit_id ?? null) : null;
+            $isPrivate = ($item->visibility === 'private' || $item->status === 'draft' || $item->published == 0);
+
+            if ($isPrivate && !$isSuperadmin && (!$userUnitId || (string)$userUnitId !== (string)$item->unit_id)) {
+                return response()->json([
+                    'success' => false,
+                    'error' => 'Dokumen ini bersifat internal/private.'
+                ], 403);
+            }
 
             $item->increment('views_count');
 
