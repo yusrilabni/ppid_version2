@@ -23,7 +23,17 @@ class GoogleLoginController extends Controller
         // HARDCODE UNTUK SPA FLOW
         config(['services.google.redirect' => 'https://ppid.sinjaikab.go.id/google-callback']);
 
-        return Socialite::driver('google')->stateless()->with(['state' => $action])->redirect();
+        $driver = Socialite::driver('google')->stateless()->with(['state' => $action]);
+        $driver->setHttpClient(new \GuzzleHttp\Client([
+            'force_ip_resolve' => 'v4',
+            'curl' => [
+                CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
+            ],
+            'timeout' => 15,
+            'connect_timeout' => 10,
+        ]));
+
+        return $driver->redirect();
     }
 
     /**
@@ -43,7 +53,16 @@ class GoogleLoginController extends Controller
             if (!$request->has('code')) {
                 throw new \Exception('EMPTY PARAMS! Redirect URI in config: ' . config('services.google.redirect'));
             }
-            $googleUser = Socialite::driver('google')->stateless()->user();
+            $driver = Socialite::driver('google')->stateless();
+            $driver->setHttpClient(new \GuzzleHttp\Client([
+                'force_ip_resolve' => 'v4',
+                'curl' => [
+                    CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
+                ],
+                'timeout' => 15,
+                'connect_timeout' => 10,
+            ]));
+            $googleUser = $driver->user();
         } catch (\Exception $e) {
             return response()->json([
                 'success' => false,

@@ -17,7 +17,16 @@ class GoogleController extends Controller
      */
     public function redirectToGoogle()
     {
-        return Socialite::driver('google')->redirect();
+        $driver = Socialite::driver('google');
+        $driver->setHttpClient(new \GuzzleHttp\Client([
+            'force_ip_resolve' => 'v4',
+            'curl' => [
+                CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
+            ],
+            'timeout' => 15,
+            'connect_timeout' => 10,
+        ]));
+        return $driver->redirect();
     }
 
     /**
@@ -28,7 +37,16 @@ class GoogleController extends Controller
     public function handleGoogleCallback()
     {
         try {
-            $user = Socialite::driver('google')->user();
+            $driver = Socialite::driver('google');
+            $driver->setHttpClient(new \GuzzleHttp\Client([
+                'force_ip_resolve' => 'v4',
+                'curl' => [
+                    CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
+                ],
+                'timeout' => 15,
+                'connect_timeout' => 10,
+            ]));
+            $user = $driver->user();
 
             $finduser = User::where('google_id', $user->id)->first();
 
