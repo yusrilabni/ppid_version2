@@ -240,13 +240,14 @@ class SaqController extends Controller
                       });
                 });
             }
-            $cols = ['indicator_id', 'jawaban', 'judul'];
+            $cols = ['id', 'indicator_id', 'jawaban', 'judul'];
             if (\Schema::hasColumn('saq_answers', 'alasan')) {
                 $cols[] = 'alasan';
             }
             $rows = $rowsQuery->get($cols);
             $answeredIds = $rows->pluck('indicator_id')->toArray();
             $jawabanMap = $rows->pluck('jawaban', 'indicator_id')->toArray();
+            $answerIdMap = $rows->pluck('id', 'indicator_id')->toArray();
             foreach ($rows as $r) {
                 $alasanMap[$r->indicator_id] = $r->alasan;
             }
@@ -284,9 +285,10 @@ class SaqController extends Controller
 
         $data = [];
         // Helper untuk membangun array pertanyaan
-        $buildQuestion = function($qu) use ($orgId, $mappedIds, $bagianMap, $answeredIds, $jawabanMap, $alasanMap) {
+        $buildQuestion = function($qu) use ($orgId, $mappedIds, $bagianMap, $answeredIds, $jawabanMap, $alasanMap, $answerIdMap) {
             return [
                 'id' => $qu->id,
+                'answer_id' => $answerIdMap[$qu->id] ?? null,
                 'kode' => $qu->kode,
                 'tab' => $qu->tab,
                 'pertanyaan' => $qu->pertanyaan,
@@ -887,6 +889,7 @@ class SaqController extends Controller
                         $sumberToSave = 'informasi_pemkab';
                         $informasiIdToSave = $dok->id;
                     } else {
+                        $targetUnitId = ($org && $org->remote_id !== null && $org->remote_id !== '') ? (string)$org->remote_id : '0';
                         $dok = Informasi::create([
                             'saq_answer_id' => $answer->id,
                             'title' => !empty($l['judul']) ? $l['judul'] : $indicator->pertanyaan,
@@ -897,7 +900,7 @@ class SaqController extends Controller
                             'published' => ($visibility === 'public'),
                             'status' => $visibility === 'public' ? 'published' : 'draft',
                             'url' => $l['link'],
-                            'unit_id' => $org->remote_id ?? null,
+                            'unit_id' => $targetUnitId,
                             'user_id' => $request->user()->id,
                             'tanggal_upload' => $tanggalDok,
                         ]);
@@ -994,6 +997,7 @@ class SaqController extends Controller
                             $sumberToSave = 'informasi_pemkab';
                             $informasiIdToSave = $dok->id;
                         } else {
+                            $targetUnitId = ($org && $org->remote_id !== null && $org->remote_id !== '') ? (string)$org->remote_id : '0';
                             $dok = Informasi::create([
                                 'saq_answer_id' => $answer->id,
                                 'title' => $autoJudul,
@@ -1006,7 +1010,7 @@ class SaqController extends Controller
                                 'status' => $visibility === 'public' ? 'published' : 'draft',
                                 'file' => $dPath,
                                 'url' => $dUrl,
-                                'unit_id' => $org->remote_id ?? null,
+                                'unit_id' => $targetUnitId,
                                 'user_id' => $request->user()->id,
                                 'tanggal_upload' => $tanggalDok,
                             ]);
@@ -1157,13 +1161,29 @@ class SaqController extends Controller
             }
         }
 
+        // Hapus file fisik lampiran SAQ di storage bila ada
+        foreach ($answer->links as $ol) {
+            $olink = (string)($ol->link ?? '');
+            if (str_contains($olink, '/storage/saq/')) {
+                $pos = strpos($olink, '/storage/');
+                if ($pos !== false) {
+                    $path = substr($olink, $pos + strlen('/storage/'));
+                    if (Storage::disk('public')->exists($path)) {
+                        Storage::disk('public')->delete($path);
+                    }
+                }
+            }
+        }
+
         // Hapus juga dokumen terkait via saq_answer_id
         \App\Models\Informasi::where('saq_answer_id', $answer->id)->delete();
         \App\Models\InformasiPemkab::where('saq_answer_id', $answer->id)->delete();
         $answer->links()->delete();
         $answer->delete();
 
-        return response()->json(['success' => true, 'message' => 'Jawaban dihapus.']);
+        try { \Cache::tags(['informasi'])->flush(); } catch (\Exception $e) {}
+
+        return response()->json(['success' => true, 'message' => 'Jawaban dan dokumen bukti berhasil dihapus.']);
     }
 
     /**

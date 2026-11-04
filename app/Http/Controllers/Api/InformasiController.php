@@ -13,6 +13,34 @@ use Illuminate\Support\Facades\Cache;
 class InformasiController extends Controller
 {
     /**
+     * Resolusi nama organisasi/unit kerja secara akurat.
+     */
+    private function resolveOrganizationName($unitId, $unitData = null): string
+    {
+        $uId = (string)($unitId ?? '');
+        if ($uId === '' || $uId === '0' || strtolower($uId) === 'kabupaten') {
+            return 'Pemerintah Kabupaten Sinjai';
+        }
+
+        if ($unitData && $unitData->has($uId)) {
+            $unit = $unitData->get($uId);
+            if (!empty($unit['unit_nama'])) {
+                return $unit['unit_nama'];
+            }
+        }
+
+        $org = \App\Models\Organization::where('remote_id', $uId)
+            ->orWhere('id', $uId)
+            ->first();
+
+        if ($org && !empty($org->name)) {
+            return $org->name;
+        }
+
+        return 'Pemerintah Kabupaten Sinjai';
+    }
+
+    /**
      * Ambil daftar informasi publik (DIP) dengan paginasi lengkap.
      */
     public function index(Request $request): JsonResponse
@@ -24,7 +52,7 @@ class InformasiController extends Controller
 
         $cacheKey = 'all_informasi_' . $userScope . '_' . md5(json_encode($request->all()));
         
-        $informasi = Cache::tags(['informasi'])->rememberForever($cacheKey, function () use ($request, $user, $isSuperadmin, $userUnitId) {
+        $informasi = Cache::remember($cacheKey, 60, function () use ($request, $user, $isSuperadmin, $userUnitId) {
             $query = Informasi::with('official.position');
 
             // Hak akses visibilitas & status dokumen
@@ -127,8 +155,7 @@ class InformasiController extends Controller
             $unitData = GeneralHelper::getUnitData();
             
             $informasi->getCollection()->transform(function ($item) use ($unitData) {
-                $unit = $unitData->get((string)$item->unit_id);
-                $item->organization_name = $unit['unit_nama'] ?? 'Unit Tidak Terdaftar';
+                $item->organization_name = $this->resolveOrganizationName($item->unit_id, $unitData);
                 // ... rest of mapping
                 if ($item->file) {
                     $item->file_url = url('storage/' . $item->file);
@@ -184,8 +211,7 @@ class InformasiController extends Controller
             }
 
             $unitData = GeneralHelper::getUnitData();
-            $unit = $unitData->get((string)$item->unit_id);
-            $item->organization_name = $unit['unit_nama'] ?? 'Unit Tidak Terdaftar';
+            $item->organization_name = $this->resolveOrganizationName($item->unit_id, $unitData);
             
             if ($item->file) {
                 $item->file_url = url('storage/' . $item->file);
