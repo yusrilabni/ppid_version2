@@ -18,22 +18,22 @@ return new class extends Migration
         $sec31 = SaqIndicator::where('tab', 'Jenis Informasi')
             ->where(function($q) {
                 $q->where('kode', '3.1')->orWhere('section', 'A. Informasi Berkala');
-            })->where('level', 'section')->first();
+            })->where('is_category', true)->first();
 
         $sec34 = SaqIndicator::where('tab', 'Jenis Informasi')
             ->where(function($q) {
                 $q->where('kode', '3.4')->orWhere('section', 'B. Informasi Setiap Saat');
-            })->where('level', 'section')->first();
+            })->where('is_category', true)->first();
 
         $sec35 = SaqIndicator::where('tab', 'Jenis Informasi')
             ->where(function($q) {
                 $q->where('kode', '3.5')->orWhere('section', 'C. Informasi Serta Merta');
-            })->where('level', 'section')->first();
+            })->where('is_category', true)->first();
 
         $sec36 = SaqIndicator::where('tab', 'Jenis Informasi')
             ->where(function($q) {
                 $q->where('kode', '3.6')->orWhere('section', 'like', '%Pengadaan Barang%');
-            })->where('level', 'section')->first();
+            })->where('is_category', true)->first();
 
         if ($sec31) {
             $sec31->order = 1;
