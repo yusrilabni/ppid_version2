@@ -150,9 +150,12 @@ class AiSettingController extends Controller
     public function generateInformasi(Request $request)
     {
         $user = Auth::user();
+        $promptTitle = $request->input('prompt');
+        $context = $request->input('context', 'biasa');
+        $isSaqContext = in_array($context, ['saq', 'saq_pemkab'], true);
 
-        // Cek limit penggunaan AI (5 kali dalam 24 jam untuk admin biasa)
-        if (!$user->isSuperAdmin()) {
+        // Cek limit penggunaan AI (5 kali dalam 24 jam untuk admin biasa di luar instrumen SAQ resmi)
+        if (!$user->isSuperAdmin() && !$isSaqContext) {
             $usageCount = AiUsageLog::where('user_id', $user->id)
                 ->where('created_at', '>=', now()->subHours(24))
                 ->count();
@@ -174,14 +177,11 @@ class AiSettingController extends Controller
             ], 500);
         }
 
-        $promptTitle = $request->input('prompt');
-        $context = $request->input('context', 'biasa');
-
         $kategoriDanJenis = "";
         $jenisDokumenFormat = '"Jenis Dokumen"';
         $jenisDokumenInstruction = 'Pilih SATU kategori dan SATU jenis dokumen yang sesuai dari daftar.';
 
-        if ($context === 'pemkab') {
+        if ($context === 'pemkab' || $context === 'saq_pemkab') {
             $kategori_jenis = \App\Models\InformasiPemkab::KATEGORI_JENIS_DOKUMEN;
             $categories = array_keys($kategori_jenis);
             
@@ -212,7 +212,36 @@ class AiSettingController extends Controller
         }
 
         $currentYear = date('Y');
-        $systemPrompt = "Anda adalah asisten AI yang membantu admin PPID membuat detail informasi publik yang profesional dan sesuai aturan KIP (Keterbukaan Informasi Publik). 
+
+        if ($isSaqContext) {
+            $indikatorPertanyaan = $request->input('pertanyaan', '');
+            $systemPrompt = "Anda adalah asisten AI resmi PPID Pemerintah Kabupaten Sinjai yang bertugas menyusun metadata Informasi Publik resmi berdasarkan instrumen SAQ (Self Assessment Questionnaire) Monev Keterbukaan Informasi Publik.
+
+Tugas Anda:
+1. Buat judul dokumen informasi publik yang baku, formal, dan profesional (DILARANG BERUPA KALIMAT TANYA).
+PENTING: Gunakan kata kunci dokumen yang diberikan admin dan konteks indikator SAQ. Jika topik/dokumen tersebut memiliki singkatan atau akronim resmi umum (misal: Rencana Pembangunan Jangka Menengah Daerah disingkat RPJMD, Rencana Kerja Pemerintah Daerah disingkat RKPD, Rencana Umum Pengadaan disingkat RUP, Laporan Penyelenggaraan Pemerintahan Daerah disingkat LPPD, Laporan Keterangan Pertanggungjawaban disingkat LKPJ, Laporan Keuangan Pemerintah Daerah disingkat LKPD, Laporan Realisasi Anggaran disingkat LRA, Anggaran Pendapatan dan Belanja Daerah disingkat APBD, Sistem Informasi Rencana Umum Pengadaan disingkat SIRUP, Standar Operasional Prosedur disingkat SOP, dsb), Anda WAJIB menyertakan singkatan tersebut dalam tanda kurung di dalam judul (contoh: 'Rencana Umum Pengadaan (RUP) Pemerintah Kabupaten Sinjai Tahun 2026'). Jangan pernah gunakan kata tanya 'Apakah' atau tanda tanya '?'!
+2. Buat deskripsi singkat dokumen (1-2 paragraf) yang menjelaskan intisari dokumen tersebut secara formal dan informatif bagi publik.
+3. Buat penjelasan konten/ringkasan (doc_content) yang umum dan objektif mengenai apa isi dokumen tersebut pada umumnya.
+4. $jenisDokumenInstruction Pilih dari panduan berikut:
+$kategoriDanJenis
+5. Tentukan tahun dokumen ('tahun') dalam format 'YYYY-MM-DD' berdasarkan konteks di kata kunci/judul (gunakan 'YYYY-01-01'). Jika tidak ada tahun spesifik, gunakan tahun sekarang (" . $currentYear . "-01-01).
+6. Tentukan status ('status'). Jika dokumen lebih lama dari 2 tahun lalu, isi 'ARSIP'. Jika tahun ini atau masih aktif, isi 'BERLAKU'.
+
+Berikan jawaban HANYA dalam format JSON dengan kunci persis seperti berikut:
+{
+  \"title\": \"...\",
+  \"doc_desc\": \"...\",
+  \"doc_content\": \"...\",
+  \"category\": \"...\",
+  \"jenis_dokumen\": $jenisDokumenFormat,
+  \"tahun\": \"YYYY-MM-DD\",
+  \"status\": \"BERLAKU\"
+}
+Tanpa teks tambahan atau markdown block di luar JSON.";
+
+            $userPrompt = "Kata Kunci Dokumen dari Admin: " . $promptTitle . ($indikatorPertanyaan ? ("\nKonteks Indikator Pertanyaan SAQ: " . $indikatorPertanyaan) : "");
+        } else {
+            $systemPrompt = "Anda adalah asisten AI yang membantu admin PPID membuat detail informasi publik yang profesional dan sesuai aturan KIP (Keterbukaan Informasi Publik). 
 
 Tugas Anda:
 1. Perbaiki judul dokumen agar lebih baku dan profesional. PENTING: Jika judul/topik tersebut memiliki singkatan/akronim resmi atau umum (misal: Rencana Pembangunan Jangka Menengah Daerah disingkat RPJMD, Laporan Penyelenggaraan Pemerintahan Daerah disingkat LPPD), Anda WAJIB menyertakan singkatan tersebut dalam tanda kurung di dalam judul (contoh: 'Laporan Penyelenggaraan Pemerintahan Daerah (LPPD) Kabupaten Sinjai Tahun 2024'). Namun, jika dokumennya tidak memiliki singkatan yang wajar/umum, tidak perlu dipaksakan membuat singkatan buatan.
@@ -235,7 +264,8 @@ Berikan jawaban HANYA dalam format JSON dengan kunci persis seperti berikut:
 }
 Tanpa teks tambahan atau markdown block di luar JSON.";
 
-        $userPrompt = "Topik/Judul singkat dari admin: " . $promptTitle;
+            $userPrompt = "Topik/Judul singkat dari admin: " . $promptTitle;
+        }
 
         $lastErrorMessage = '';
 

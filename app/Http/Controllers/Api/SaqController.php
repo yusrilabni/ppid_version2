@@ -605,6 +605,9 @@ class SaqController extends Controller
             'upload_destination' => 'nullable|string|in:storage,informasi,galeri',
             'kategori' => 'nullable|string|max:255',
             'target_upload' => 'nullable|in:ppid,pemkab',
+            'kata_kunci' => 'nullable|string|max:255',
+            'doc_content' => 'nullable|string',
+            'jenis_dokumen' => 'nullable|string|max:255',
             // Jalur upload foto SAQ (hanya untuk pertanyaan tipe foto atau pilihan ke galeri)
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'judul_foto' => 'nullable|string|max:255',
@@ -912,13 +915,35 @@ class SaqController extends Controller
                 $informasiIdToSave = null;
 
                 if ($isDokumen) {
+                    $lJudul = trim((string)($l['judul'] ?? ''));
+                    $lDesk = trim((string)($l['deskripsi'] ?? ''));
+                    $lContent = trim((string)($request->input('doc_content') ?? ''));
+                    $kataKunci = trim((string)($request->input('kata_kunci') ?? ''));
+
+                    // Prioritaskan judul hasil AI / kata kunci daripada teks kalimat tanya indikator
+                    if (empty($lJudul) || $lJudul === trim($indicator->pertanyaan)) {
+                        if (!empty($kataKunci)) {
+                            $lJudul = $kataKunci;
+                        } else {
+                            $cleanTitle = preg_replace('/^(Apakah\s+Pemerintah\s+Kabupaten\/Kota\s+Saudara\s+mengumumkan\s+informasi\s+(tentang\s+)?|Mengumumkan\s+informasi\s+(tentang\s+)?|Apakah\s+OPD\s+memiliki\/memenuhi\s+indikator\s+ini\??\s*)/iu', '', $indicator->pertanyaan);
+                            $cleanTitle = rtrim(trim($cleanTitle), '? ');
+                            $lJudul = ucfirst($cleanTitle) . ' Kabupaten Sinjai';
+                        }
+                    }
+                    if (empty($lDesk) || $lDesk === trim($indicator->pertanyaan)) {
+                        $lDesk = "Dokumen publik " . $lJudul . " yang diumumkan secara resmi oleh Pemerintah Kabupaten Sinjai dalam rangka pemenuhan Keterbukaan Informasi Publik.";
+                    }
+                    if (empty($lContent)) {
+                        $lContent = $lDesk;
+                    }
+
                     if ($indicator->target_upload === 'pemkab') {
                         $dok = InformasiPemkab::create([
                             'saq_answer_id' => $answer->id,
-                            'judul' => !empty($l['judul']) ? $l['judul'] : $indicator->pertanyaan,
+                            'judul' => $lJudul,
                             'kategori' => $klasifikasi,
-                            'jenis_dokumen' => $indicator->jenis_dokumen ?? 'Dokumen SAQ',
-                            'deskripsi' => !empty($l['deskripsi']) ? $l['deskripsi'] : $indicator->pertanyaan,
+                            'jenis_dokumen' => $request->input('jenis_dokumen') ?: ($indicator->jenis_dokumen ?? 'Dokumen SAQ'),
+                            'deskripsi' => $lDesk,
                             'file_path' => $l['link'],
                             'status' => $visibility === 'public' ? 'published' : 'draft',
                             'visibility' => $visibility,
@@ -933,10 +958,10 @@ class SaqController extends Controller
                         $targetUnitId = ($org && $org->remote_id !== null && $org->remote_id !== '') ? (string)$org->remote_id : '0';
                         $dok = Informasi::create([
                             'saq_answer_id' => $answer->id,
-                            'title' => !empty($l['judul']) ? $l['judul'] : $indicator->pertanyaan,
-                            'content' => !empty($l['deskripsi']) ? $l['deskripsi'] : $indicator->pertanyaan,
+                            'title' => $lJudul,
+                            'content' => $lContent,
                             'category' => $klasifikasi,
-                            'deskripsi' => !empty($l['deskripsi']) ? $l['deskripsi'] : $indicator->pertanyaan,
+                            'deskripsi' => $lDesk,
                             'visibility' => $visibility,
                             'published' => ($visibility === 'public'),
                             'status' => $visibility === 'public' ? 'published' : 'draft',
@@ -950,6 +975,8 @@ class SaqController extends Controller
                         $informasiIdToSave = $dok->id;
                     }
                     $dokumenIds[] = $dok->id ?? null;
+                    $l['judul'] = $lJudul;
+                    $l['deskripsi'] = $lDesk;
                 }
 
                 $linkRow = [
@@ -1015,19 +1042,40 @@ class SaqController extends Controller
                     $informasiIdToSave = null;
 
                     if ($dJadikan) {
-                        $autoJudul = trim($indicator->pertanyaan);
-                        $autoDesk = trim($indicator->pertanyaan);
+                        $dJudul = trim((string)($dokumenJudul[$di] ?? ''));
+                        $dDesk = trim((string)($dokumenDeskripsi[$di] ?? ''));
+                        $dContent = trim((string)($request->input('doc_content') ?? ''));
+                        $kataKunci = trim((string)($request->input('kata_kunci') ?? ''));
+
+                        // Prioritaskan judul hasil AI / kata kunci daripada teks kalimat tanya indikator
+                        if (empty($dJudul) || $dJudul === trim($indicator->pertanyaan)) {
+                            if (!empty($kataKunci)) {
+                                $dJudul = $kataKunci;
+                            } else {
+                                $cleanTitle = preg_replace('/^(Apakah\s+Pemerintah\s+Kabupaten\/Kota\s+Saudara\s+mengumumkan\s+informasi\s+(tentang\s+)?|Mengumumkan\s+informasi\s+(tentang\s+)?|Apakah\s+OPD\s+memiliki\/memenuhi\s+indikator\s+ini\??\s*)/iu', '', $indicator->pertanyaan);
+                                $cleanTitle = rtrim(trim($cleanTitle), '? ');
+                                $dJudul = ucfirst($cleanTitle) . ' Kabupaten Sinjai';
+                            }
+                        }
+                        if (empty($dDesk) || $dDesk === trim($indicator->pertanyaan)) {
+                            $dDesk = "Dokumen publik " . $dJudul . " yang diumumkan secara resmi oleh Pemerintah Kabupaten Sinjai dalam rangka pemenuhan Keterbukaan Informasi Publik.";
+                        }
+                        if (empty($dContent)) {
+                            $dContent = $dDesk;
+                        }
+
                         $dokTahun = !empty($tanggalDok) ? (int)date('Y', strtotime($tanggalDok)) : (int)date('Y');
                         $targetSys = $request->input('target_upload') ?: ($indicator->target_upload ?? 'ppid');
                         $kategoriToSave = $request->input('kategori') ?: ($request->input('klasifikasi') ?: ($indicator->klasifikasi_otomatis ?? 'Informasi Berkala'));
+                        $jenisToSave = $request->input('jenis_dokumen') ?: ($indicator->jenis_dokumen ?? 'Dokumen SAQ');
 
                         if ($targetSys === 'pemkab') {
                             $dok = InformasiPemkab::create([
                                 'saq_answer_id' => $answer->id,
-                                'judul' => $autoJudul,
+                                'judul' => $dJudul,
                                 'kategori' => $kategoriToSave,
-                                'jenis_dokumen' => $indicator->jenis_dokumen ?? 'Dokumen SAQ',
-                                'deskripsi' => $autoDesk,
+                                'jenis_dokumen' => $jenisToSave,
+                                'deskripsi' => $dDesk,
                                 'tahun' => $dokTahun,
                                 'file_path' => $dUrl,
                                 'status' => $visibility === 'public' ? 'published' : 'draft',
@@ -1043,10 +1091,10 @@ class SaqController extends Controller
                             $targetUnitId = ($org && $org->remote_id !== null && $org->remote_id !== '') ? (string)$org->remote_id : '0';
                             $dok = Informasi::create([
                                 'saq_answer_id' => $answer->id,
-                                'title' => $autoJudul,
-                                'content' => $autoDesk,
+                                'title' => $dJudul,
+                                'content' => $dContent,
                                 'category' => $kategoriToSave,
-                                'deskripsi' => $autoDesk,
+                                'deskripsi' => $dDesk,
                                 'tahun' => $dokTahun,
                                 'visibility' => $visibility,
                                 'published' => ($visibility === 'public'),
@@ -1065,9 +1113,9 @@ class SaqController extends Controller
                     }
 
                     $upRow = [
-                        'judul' => $dJudul ?: $indicator->pertanyaan,
+                        'judul' => $dJudul,
                         'link' => $linkToSave,
-                        'deskripsi' => $dDesk ?: $indicator->pertanyaan,
+                        'deskripsi' => $dDesk,
                         'order' => count($links) + $di,
                     ];
                     if (\Schema::hasColumn('saq_answer_links', 'sumber_informasi')) {
