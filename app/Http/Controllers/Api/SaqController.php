@@ -602,7 +602,10 @@ class SaqController extends Controller
             'dokumen_deskripsi.*' => 'nullable|string',
             'dokumen_jadikan' => 'nullable|array|max:20',
             'dokumen_jadikan.*' => 'nullable|in:0,1,true,false',
-            // Jalur upload foto SAQ (hanya untuk pertanyaan tipe foto)
+            'upload_destination' => 'nullable|string|in:storage,informasi,galeri',
+            'kategori' => 'nullable|string|max:255',
+            'target_upload' => 'nullable|in:ppid,pemkab',
+            // Jalur upload foto SAQ (hanya untuk pertanyaan tipe foto atau pilihan ke galeri)
             'foto' => 'nullable|image|mimes:jpeg,png,jpg,gif,webp|max:2048',
             'judul_foto' => 'nullable|string|max:255',
             'tanggal_upload' => 'nullable|date',
@@ -675,20 +678,16 @@ class SaqController extends Controller
             ], 422);
         }
 
-        // Upload foto hanya berlaku untuk pertanyaan tipe foto, dan
-        // wajib disertai judul (judul dipakai sebagai title Galeri).
+        // Upload foto berlaku untuk pertanyaan tipe foto atau bila memilih tujuan galeri
         $hasFotoFile = $request->hasFile('foto');
-        if ($hasFotoFile && ($indicator->input_type ?? 'dokumen') !== 'foto') {
+        if ($hasFotoFile && ($indicator->input_type ?? 'dokumen') !== 'foto' && $request->input('upload_destination') !== 'galeri') {
             return response()->json([
                 'success' => false,
-                'message' => 'Upload foto hanya untuk pertanyaan bertipe foto.',
+                'message' => 'Upload foto hanya untuk pertanyaan bertipe foto atau pilihan masuk ke galeri.',
             ], 422);
         }
         if ($hasFotoFile && empty(trim($validated['judul_foto'] ?? ''))) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Judul foto wajib diisi bila mengunggah foto.',
-            ], 422);
+            $validated['judul_foto'] = $indicator->pertanyaan ?: 'Dokumentasi SAQ';
         }
 
         $links = array_values(array_filter(
@@ -728,15 +727,7 @@ class SaqController extends Controller
             foreach ($dokumenFiles as $di => $df) {
                 $dj = trim((string)($dokumenJudul[$di] ?? ''));
                 if ($dj === '') {
-                    // Jika di Digitalisasi, fallback judul ke nama asli file
-                    if ($isDigitalisasi && $df) {
-                        $dokumenJudul[$di] = pathinfo($df->getClientOriginalName(), PATHINFO_FILENAME);
-                    } else {
-                        return response()->json([
-                            'success' => false,
-                            'message' => 'Judul wajib diisi untuk setiap dokumen yang diunggah.',
-                        ], 422);
-                    }
+                    $dokumenJudul[$di] = $indicator->pertanyaan ?: pathinfo($df->getClientOriginalName(), PATHINFO_FILENAME);
                 }
             }
         }
@@ -1023,16 +1014,18 @@ class SaqController extends Controller
                     $sumberToSave = 'lampiran';
                     $informasiIdToSave = null;
 
-                    if ($dJadikan && ($indicator->input_type ?? 'dokumen') === 'dokumen') {
+                    if ($dJadikan) {
                         $autoJudul = trim($indicator->pertanyaan);
                         $autoDesk = trim($indicator->pertanyaan);
                         $dokTahun = !empty($tanggalDok) ? (int)date('Y', strtotime($tanggalDok)) : (int)date('Y');
+                        $targetSys = $request->input('target_upload') ?: ($indicator->target_upload ?? 'ppid');
+                        $kategoriToSave = $request->input('kategori') ?: ($request->input('klasifikasi') ?: ($indicator->klasifikasi_otomatis ?? 'Informasi Berkala'));
 
-                        if ($indicator->target_upload === 'pemkab') {
+                        if ($targetSys === 'pemkab') {
                             $dok = InformasiPemkab::create([
                                 'saq_answer_id' => $answer->id,
                                 'judul' => $autoJudul,
-                                'kategori' => $klasifikasi,
+                                'kategori' => $kategoriToSave,
                                 'jenis_dokumen' => $indicator->jenis_dokumen ?? 'Dokumen SAQ',
                                 'deskripsi' => $autoDesk,
                                 'tahun' => $dokTahun,
@@ -1052,7 +1045,7 @@ class SaqController extends Controller
                                 'saq_answer_id' => $answer->id,
                                 'title' => $autoJudul,
                                 'content' => $autoDesk,
-                                'category' => $klasifikasi,
+                                'category' => $kategoriToSave,
                                 'deskripsi' => $autoDesk,
                                 'tahun' => $dokTahun,
                                 'visibility' => $visibility,
