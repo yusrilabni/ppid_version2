@@ -392,7 +392,26 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
         Route::post('/profil/kelola-opd/{organization}', [ProfilController::class, 'updateOpdManage']);
 
         Route::get('/user', function (Request $request) {
-            return $request->user();
+            $user = $request->user();
+            if ($user && empty($user->unit_id) && !empty($user->nip)) {
+                $apiData = \App\Models\User::getDataFromApi($user->nip);
+                if (!empty($apiData['unit_id'])) {
+                    $user->unit_id = $apiData['unit_id'];
+                    $user->save();
+                }
+            }
+            if ($user && $user->unit_id) {
+                $org = \App\Models\Organization::where('remote_id', (string)$user->unit_id)
+                    ->orWhere('unit_id', (string)$user->unit_id)
+                    ->orWhere('id', $user->unit_id)
+                    ->first();
+                if ($org) {
+                    $user->organization_id = $org->id;
+                    $user->organization_slug = $org->slug;
+                    $user->organization_name = $org->name;
+                }
+            }
+            return $user;
         });
 
         // Profile Management

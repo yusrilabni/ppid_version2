@@ -161,6 +161,8 @@ class SaqController extends Controller
                 'id' => $opd->id,
                 'name' => $opd->name,
                 'slug' => $opd->slug,
+                'remote_id' => (string)($opd->remote_id ?? ''),
+                'unit_id' => (string)($opd->unit_id ?? $opd->remote_id ?? ''),
                 'is_ppid_utama' => $opd->slug === 'kabupaten-sinjai',
                 'pimpinan' => $opd->officials->map(fn($o) => [
                     'nama' => $o->full_name,
@@ -303,6 +305,7 @@ class SaqController extends Controller
                 'terisi' => in_array($qu->id, $answeredIds),
                 'jawaban' => $jawabanMap[$qu->id] ?? null,
                 'alasan' => $alasanMap[$qu->id] ?? null,
+                'order' => (int)($qu->order ?? 0),
             ];
         };
 
@@ -334,6 +337,7 @@ class SaqController extends Controller
                                 'questions' => $groupQuestions,
                                 'terisi' => $gTerisi,
                                 'total' => count($groupQuestions),
+                                'order' => (int)($child->order ?? 0),
                             ];
                         }
                     } else {
@@ -348,9 +352,18 @@ class SaqController extends Controller
                 $terisi = count(array_filter($questions, fn($x) => $x['terisi']));
                 $gTerisi = array_sum(array_map(fn($g) => $g['terisi'], $groups));
                 $gTotal = array_sum(array_map(fn($g) => $g['total'], $groups));
+
+                // Gabungkan questions dan groups ke satu alur berurutan berdasarkan kolom order
+                $allItems = array_merge(
+                    array_map(fn($q) => array_merge($q, ['type' => 'question']), $questions),
+                    array_map(fn($g) => array_merge($g, ['type' => 'group']), $groups)
+                );
+                usort($allItems, fn($a, $b) => ($a['order'] ?? 0) <=> ($b['order'] ?? 0));
+
                 $sections[] = [
                     'kode' => $sec->kode,
                     'section' => $sec->section,
+                    'items' => $allItems,
                     'questions' => $questions,
                     'groups' => $groups,
                     'terisi' => $terisi + $gTerisi,
@@ -372,7 +385,33 @@ class SaqController extends Controller
             ];
         }
 
-        return response()->json(['success' => true, 'data' => $data]);
+        $user = $request->user();
+        $canEdit = false;
+        if ($user) {
+            if ($user->role === 'superadmin' || $user->admin_kabupaten == 1) {
+                $canEdit = true;
+            } else if (!self::isLocked()) {
+                $uUnit = (string)($user->unit_id ?? '');
+                if (!$uUnit && $user->nip) {
+                    $apiData = \App\Models\User::getDataFromApi($user->nip);
+                    $uUnit = (string)($apiData['unit_id'] ?? '');
+                }
+                $userOrg = \App\Models\Organization::where('remote_id', $uUnit)
+                    ->orWhere('unit_id', $uUnit)
+                    ->orWhere('id', $uUnit)
+                    ->first();
+                if ($userOrg && (int)$userOrg->id === (int)$orgId) {
+                    $canEdit = true;
+                }
+            }
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => $data,
+            'can_edit' => $canEdit,
+            'locked' => self::isLocked(),
+        ]);
     }
 
     /**
@@ -611,7 +650,15 @@ class SaqController extends Controller
         }
         // Admin OPD hanya boleh isi OPD-nya sendiri
         if (!$isSuperadmin) {
-            $userOrg = \App\Models\Organization::where('remote_id', (string)$user->unit_id)->first();
+            $uUnit = (string)($user->unit_id ?? '');
+            if (!$uUnit && $user->nip) {
+                $apiData = \App\Models\User::getDataFromApi($user->nip);
+                $uUnit = (string)($apiData['unit_id'] ?? '');
+            }
+            $userOrg = \App\Models\Organization::where('remote_id', $uUnit)
+                ->orWhere('unit_id', $uUnit)
+                ->orWhere('id', $uUnit)
+                ->first();
             if (!$userOrg || (int)$userOrg->id !== (int)$validated['organization_id']) {
                 return response()->json([
                     'success' => false,
@@ -1155,7 +1202,15 @@ class SaqController extends Controller
             ], 403);
         }
         if (!$isSuperadmin) {
-            $userOrg = \App\Models\Organization::where('remote_id', (string)$user->unit_id)->first();
+            $uUnit = (string)($user->unit_id ?? '');
+            if (!$uUnit && $user->nip) {
+                $apiData = \App\Models\User::getDataFromApi($user->nip);
+                $uUnit = (string)($apiData['unit_id'] ?? '');
+            }
+            $userOrg = \App\Models\Organization::where('remote_id', $uUnit)
+                ->orWhere('unit_id', $uUnit)
+                ->orWhere('id', $uUnit)
+                ->first();
             if (!$userOrg || (int)$userOrg->id !== (int)$answer->organization_id) {
                 return response()->json([
                     'success' => false,
