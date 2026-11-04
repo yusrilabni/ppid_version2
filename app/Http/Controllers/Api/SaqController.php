@@ -195,6 +195,7 @@ class SaqController extends Controller
         $answeredIds = [];
         $jawabanMap = [];
         $alasanMap = [];
+        $answerIdMap = [];
         // Mode full: terisi = soal yang punya minimal satu jawaban OPD yang lolos privasi.
         // jawabanMap sengaja kosong: badge Ya/Tidak tunggal tidak berlaku untuk konsolidasi.
         if ($request->boolean('full')) {
@@ -216,6 +217,8 @@ class SaqController extends Controller
                 });
             }
             $answeredIds = $fullQuery->distinct()->pluck('indicator_id')->toArray();
+            $kabAnswers = SaqAnswer::where('organization_id', 127)->get(['id', 'indicator_id']);
+            $answerIdMap = $kabAnswers->pluck('id', 'indicator_id')->toArray();
         }
         // Daftar indicator yang dipetakan ke org ini
         $mappedIds = [];
