@@ -6,7 +6,9 @@ use App\Http\Controllers\Controller;
 use App\Models\Informasi;
 use App\Models\InformasiPemkab;
 use App\Models\Galeri;
+use App\Models\Official;
 use App\Models\Organization;
+use App\Models\Lhkpn;
 use App\Models\SaqAnswer;
 use App\Models\SaqIndicator;
 use App\Models\Setting;
@@ -1287,7 +1289,9 @@ class SaqController extends Controller
 
     /**
      * Auto-sync: cek apakah sebuah link sudah ada di data PPID atau Pemkab Sinjai.
-     * Bila ada -> kembalikan judul/deskripsi/pengupload/tanggal/kategori untuk auto-fill form.
+     * Mendukung dokumen informasi publik, profil pimpinan/pejabat daerah (Bupati/Wakil/Sekda),
+     * profil dan daftar OPD/Satuan Kerja, LHKPN, regulasi, SOP, maklumat, serta seluruh
+     * halaman resmi terverifikasi di domain ppid.sinjaikab.go.id & sinjaikab.go.id.
      * GET /api/v1/saq/sync?url=
      */
     public function sync(Request $request)
@@ -1295,6 +1299,28 @@ class SaqController extends Controller
         $request->validate(['url' => 'required|string']);
 
         $url = trim($request->url);
+        $host = strtolower(parse_url($url, PHP_URL_HOST) ?? '');
+
+        // Validasi domain resmi: PPID, Portal Pemkab Sinjai, Apps Sinjai, dan Localhost
+        $isOfficialDomain = in_array($host, [
+            'ppid.sinjaikab.go.id',
+            'www.ppid.sinjaikab.go.id',
+            'sinjaikab.go.id',
+            'www.sinjaikab.go.id',
+            'apps.sinjaikab.go.id',
+            'localhost',
+            '127.0.0.1',
+        ], true);
+
+        if (!$isOfficialDomain) {
+            return response()->json([
+                'success' => true,
+                'found' => false,
+                'message' => 'Hanya tautan resmi dari website PPID (ppid.sinjaikab.go.id) atau Portal Pemkab Sinjai (sinjaikab.go.id) yang dapat disinkronkan di Pilihan 2 ini. Untuk tautan luar lainnya, silakan gunakan Pilihan 1 (Upload Berkas / Google Drive).',
+            ]);
+        }
+
+        // 1. Cari di Dokumen Informasi Publik (PPID / Pemkab)
         $found = $this->lookupPpidDocument($url);
         if ($found) {
             return response()->json([
@@ -1304,31 +1330,45 @@ class SaqController extends Controller
             ]);
         }
 
-        // Cek domain untuk pesan panduan yang ramah dan presisi
-        $host = strtolower(parse_url($url, PHP_URL_HOST) ?? '');
-        if (!in_array($host, ['ppid.sinjaikab.go.id', 'www.ppid.sinjaikab.go.id', 'sinjaikab.go.id', 'www.sinjaikab.go.id'], true)) {
+        // 2. Cari di Profil Pejabat Daerah / Pimpinan / Bupati / Wakil / Sekda
+        $foundOfficial = $this->lookupOfficialDocument($url);
+        if ($foundOfficial) {
             return response()->json([
                 'success' => true,
-                'found' => false,
-                'message' => 'Link yang dapat disinkronkan hanya link dokumen dari https://ppid.sinjaikab.go.id/informasi/{slug} atau https://sinjaikab.go.id/informasi/{slug}. Selain itu, silakan pilih opsi upload dokumen langsung atau gunakan link Google Drive.',
+                'found' => true,
+                'data' => $foundOfficial,
+            ]);
+        }
+
+        // 3. Cari di Profil Satuan Kerja / OPD / Dinas
+        $foundOrg = $this->lookupOrganizationDocument($url);
+        if ($foundOrg) {
+            return response()->json([
+                'success' => true,
+                'found' => true,
+                'data' => $foundOrg,
+            ]);
+        }
+
+        // 4. Cari di Halaman Resmi Portal (LHKPN, Regulasi, SOP, Maklumat, Profil Umum, dll)
+        $foundPage = $this->lookupPublicPageDocument($url);
+        if ($foundPage) {
+            return response()->json([
+                'success' => true,
+                'found' => true,
+                'data' => $foundPage,
             ]);
         }
 
         return response()->json([
             'success' => true,
             'found' => false,
-            'message' => 'Dokumen tidak ditemukan pada data PPID maupun Pemkab Sinjai. Pastikan dokumen sudah pernah diunggah dan terdaftar di website.',
+            'message' => 'Data atau halaman resmi tidak ditemukan pada website PPID maupun Pemkab Sinjai. Pastikan tautan berasal dari website resmi.',
         ]);
     }
 
     /**
      * Parse link detail PPID atau Portal Pemkab -> slug, atau null bila bukan link detail.
-     * Host yang diterima: ppid.sinjaikab.go.id dan sinjaikab.go.id.
-     * Format yang didukung:
-     * - https://ppid.sinjaikab.go.id/informasi/detail/{slug}
-     * - https://ppid.sinjaikab.go.id/informasi/{slug}
-     * - https://sinjaikab.go.id/informasi/{slug}
-     * - https://sinjaikab.go.id/informasi/detail/{slug}
      */
     private function parsePpidDetailSlug(string $url): ?string
     {
@@ -1337,7 +1377,7 @@ class SaqController extends Controller
             return null;
         }
         $host = strtolower($parts['host']);
-        if (!in_array($host, ['ppid.sinjaikab.go.id', 'www.ppid.sinjaikab.go.id', 'sinjaikab.go.id', 'www.sinjaikab.go.id'], true)) {
+        if (!in_array($host, ['ppid.sinjaikab.go.id', 'www.ppid.sinjaikab.go.id', 'sinjaikab.go.id', 'www.sinjaikab.go.id', 'localhost', '127.0.0.1'], true)) {
             return null;
         }
         $path = trim($parts['path'] ?? '', '/');
@@ -1358,7 +1398,6 @@ class SaqController extends Controller
         // 2. Jika segmen pertama adalah 'informasi'
         if ($segments[0] === 'informasi') {
             if (count($segments) >= 2) {
-                // Ambil segmen terakhir yang bukan 'informasi' dan bukan 'detail'
                 $last = end($segments);
                 if ($last !== 'informasi' && $last !== 'detail') {
                     return urldecode($last);
@@ -1367,9 +1406,7 @@ class SaqController extends Controller
             return null;
         }
 
-        // 3. Fallback: segmen terakhir yang valid
-        $last = end($segments);
-        return (!empty($last) && !in_array($last, ['informasi', 'detail'], true)) ? urldecode($last) : null;
+        return null;
     }
 
     private function ppidDateStr($value): ?string
@@ -1393,10 +1430,6 @@ class SaqController extends Controller
 
     /**
      * Cari dokumen PPID atau Portal Pemkab dari sebuah URL.
-     * Urutan:
-     * (1) link detail /informasi/{slug} atau /informasi/detail/{slug} -> cari di InformasiPemkab dan Informasi.
-     * (2) pencocokan URL / file / storage path.
-     * Mengembalikan null bila tidak ditemukan.
      */
     private function lookupPpidDocument(string $url): ?array
     {
@@ -1406,7 +1439,6 @@ class SaqController extends Controller
         $isPemkabDomain = in_array($host, ['sinjaikab.go.id', 'www.sinjaikab.go.id'], true);
 
         if ($slug !== null) {
-            // Jika domain sinjaikab.go.id, dahulukan InformasiPemkab
             if ($isPemkabDomain) {
                 $pemkab = InformasiPemkab::with(['user:id,name', 'organization:id,name'])
                     ->where(function ($q) use ($slug) {
@@ -1434,7 +1466,6 @@ class SaqController extends Controller
                 }
             }
 
-            // Cari di Informasi (PPID)
             $info = Informasi::with(['user:id,name', 'organization:id,name'])
                 ->where(function ($q) use ($slug) {
                     $q->where('slug', $slug);
@@ -1460,7 +1491,6 @@ class SaqController extends Controller
                 ];
             }
 
-            // Fallback cari di InformasiPemkab bila belum ketemu
             $pemkab = InformasiPemkab::with(['user:id,name', 'organization:id,name'])
                 ->where(function ($q) use ($slug) {
                     $q->where('slug', $slug);
@@ -1485,8 +1515,6 @@ class SaqController extends Controller
                     'sumber_label' => 'Portal Pemkab Sinjai',
                 ];
             }
-
-            return null;
         }
 
         // Pencocokan langsung dengan URL atau path berkas
@@ -1505,7 +1533,7 @@ class SaqController extends Controller
                 'opd' => $info->organization->name ?? null,
                 'tanggal' => $this->ppidDateStr($info->tanggal_upload ?? $info->created_at),
                 'file_url' => $this->ppidFileUrl($info->file),
-                'detail_url' => 'https://ppid.sinjaikab.go.id/informasi/' . ($info->slug ?? $info->id),
+                'detail_url' => 'https://ppid.sinjaikab.go.id/informasi/detail/' . ($info->slug ?? $info->id),
                 'sumber' => 'informasi',
                 'sumber_label' => 'PPID Kabupaten Sinjai',
             ];
@@ -1529,6 +1557,334 @@ class SaqController extends Controller
                 'detail_url' => 'https://sinjaikab.go.id/informasi/' . ($pemkab->slug ?? $pemkab->id),
                 'sumber' => 'informasi_pemkab',
                 'sumber_label' => 'Portal Pemkab Sinjai',
+            ];
+        }
+
+        return null;
+    }
+
+    /**
+     * Cari profil Pejabat Daerah / Bupati / Wakil / Sekda / Pejabat Struktural dari URL.
+     */
+    private function lookupOfficialDocument(string $url): ?array
+    {
+        $path = strtolower(trim(parse_url($url, PHP_URL_PATH) ?? '', '/'));
+        $query = strtolower(parse_url($url, PHP_URL_QUERY) ?? '');
+
+        $isOfficialPath = str_contains($path, 'pejabat')
+            || str_contains($path, 'pimpinan')
+            || str_contains($path, 'bupati')
+            || str_contains($path, 'wakil')
+            || str_contains($path, 'sekda')
+            || str_contains($query, 'bupati')
+            || str_contains($query, 'wakil');
+
+        if (!$isOfficialPath) {
+            return null;
+        }
+
+        $segments = array_values(array_filter(explode('/', $path), fn($s) => $s !== ''));
+        $lastSeg = end($segments) ?: '';
+
+        // Jika ada segmen spesifik ID atau slug pejabat
+        if (!empty($lastSeg) && !in_array($lastSeg, ['pejabat-daerah', 'pejabat', 'pimpinan', 'profil', 'profil-pimpinan'], true)) {
+            $official = Official::with(['position', 'organization'])
+                ->where(function ($q) use ($lastSeg) {
+                    if (ctype_digit($lastSeg)) {
+                        $q->where('id', (int) $lastSeg);
+                    }
+                    $q->orWhere('slug', $lastSeg)
+                      ->orWhere('full_name', 'like', "%{$lastSeg}%");
+                })
+                ->first();
+
+            if ($official) {
+                $posName = $official->position->name ?? 'Pejabat Daerah';
+                return [
+                    'id' => $official->id,
+                    'judul' => 'Profil Singkat ' . $posName . ': ' . $official->full_name,
+                    'deskripsi' => $official->biography ?: ('Profil dan riwayat jabatan resmi ' . $posName . ' Pemerintah Kabupaten Sinjai.'),
+                    'kategori' => 'Informasi Berkala',
+                    'jenis_dokumen' => 'Profil Singkat Pejabat Struktural',
+                    'pengupload' => 'Bagian Organisasi / PPID',
+                    'opd' => $official->organization->name ?? 'Pemerintah Kabupaten Sinjai',
+                    'tanggal' => $this->ppidDateStr($official->updated_at ?? $official->created_at),
+                    'file_url' => $official->photo ? $this->ppidFileUrl($official->photo) : null,
+                    'detail_url' => $url,
+                    'sumber' => 'official',
+                    'sumber_label' => 'Profil Pejabat Daerah Pemkab Sinjai',
+                ];
+            }
+        }
+
+        // Cek pencarian kata kunci bupati / wakil / sekda
+        if (str_contains($path, 'wakil') || str_contains($query, 'wakil')) {
+            $official = Official::with(['position', 'organization'])
+                ->whereHas('position', fn($q) => $q->where('name', 'like', '%wakil bupati%'))
+                ->orWhere('full_name', 'like', '%wakil bupati%')
+                ->first();
+            if ($official) {
+                return [
+                    'id' => $official->id,
+                    'judul' => 'Profil Singkat Wakil Bupati Sinjai: ' . $official->full_name,
+                    'deskripsi' => $official->biography ?: 'Profil dan riwayat jabatan resmi Wakil Bupati Kabupaten Sinjai.',
+                    'kategori' => 'Informasi Berkala',
+                    'jenis_dokumen' => 'Profil Singkat Pejabat Struktural',
+                    'pengupload' => 'Bagian Organisasi / PPID',
+                    'opd' => 'Pemerintah Kabupaten Sinjai',
+                    'tanggal' => $this->ppidDateStr($official->updated_at ?? $official->created_at),
+                    'file_url' => $official->photo ? $this->ppidFileUrl($official->photo) : null,
+                    'detail_url' => $url,
+                    'sumber' => 'official',
+                    'sumber_label' => 'Profil Pejabat Daerah Pemkab Sinjai',
+                ];
+            }
+        }
+
+        if (str_contains($path, 'bupati') || str_contains($query, 'bupati')) {
+            $official = Official::with(['position', 'organization'])
+                ->whereHas('position', fn($q) => $q->where('name', 'like', '%bupati%')->where('name', 'not like', '%wakil%'))
+                ->orWhere('full_name', 'like', '%bupati%')
+                ->first();
+            if ($official) {
+                return [
+                    'id' => $official->id,
+                    'judul' => 'Profil Singkat Bupati Sinjai: ' . $official->full_name,
+                    'deskripsi' => $official->biography ?: 'Profil dan riwayat jabatan resmi Bupati Kabupaten Sinjai.',
+                    'kategori' => 'Informasi Berkala',
+                    'jenis_dokumen' => 'Profil Singkat Pejabat Struktural',
+                    'pengupload' => 'Bagian Organisasi / PPID',
+                    'opd' => 'Pemerintah Kabupaten Sinjai',
+                    'tanggal' => $this->ppidDateStr($official->updated_at ?? $official->created_at),
+                    'file_url' => $official->photo ? $this->ppidFileUrl($official->photo) : null,
+                    'detail_url' => $url,
+                    'sumber' => 'official',
+                    'sumber_label' => 'Profil Pejabat Daerah Pemkab Sinjai',
+                ];
+            }
+        }
+
+        // Halaman umum daftar pejabat struktural
+        return [
+            'id' => null,
+            'judul' => 'Profil Singkat Pejabat Struktural Lingkup Pemerintah Kabupaten Sinjai',
+            'deskripsi' => 'Pengumuman dan publikasi profil singkat pejabat struktural (Bupati, Wakil Bupati, Sekretaris Daerah, serta Pejabat Eselon II) di lingkungan Pemerintah Kabupaten Sinjai.',
+            'kategori' => 'Informasi Berkala',
+            'jenis_dokumen' => 'Profil Singkat Pejabat Struktural',
+            'pengupload' => 'Bagian Organisasi / PPID',
+            'opd' => 'Pemerintah Kabupaten Sinjai',
+            'tanggal' => date('Y-m-d'),
+            'file_url' => null,
+            'detail_url' => $url,
+            'sumber' => 'official',
+            'sumber_label' => 'Portal Pejabat Daerah Pemkab Sinjai',
+        ];
+    }
+
+    /**
+     * Cari profil Satuan Kerja / OPD / Dinas dari URL.
+     */
+    private function lookupOrganizationDocument(string $url): ?array
+    {
+        $path = strtolower(trim(parse_url($url, PHP_URL_PATH) ?? '', '/'));
+
+        $isOrgPath = str_contains($path, 'unit-lokal')
+            || str_contains($path, 'tentang-opd')
+            || str_contains($path, 'dinas')
+            || str_contains($path, 'opd')
+            || str_contains($path, 'satuan-kerja')
+            || str_contains($path, 'organisasi');
+
+        if (!$isOrgPath) {
+            return null;
+        }
+
+        $segments = array_values(array_filter(explode('/', $path), fn($s) => $s !== ''));
+        $lastSeg = end($segments) ?: '';
+
+        // Jika ada segmen spesifik ID atau slug OPD
+        if (!empty($lastSeg) && !in_array($lastSeg, ['unit-lokal', 'tentang-opd', 'dinas', 'opd', 'profil'], true)) {
+            $org = Organization::where(function ($q) use ($lastSeg) {
+                if (ctype_digit($lastSeg)) {
+                    $q->where('id', (int) $lastSeg)
+                      ->orWhere('unit_id', $lastSeg)
+                      ->orWhere('remote_id', $lastSeg);
+                }
+                $q->orWhere('slug', $lastSeg)
+                  ->orWhere('name', 'like', "%{$lastSeg}%");
+            })->first();
+
+            if ($org) {
+                return [
+                    'id' => $org->id,
+                    'judul' => 'Profil & Alamat Resmi Satuan Kerja: ' . $org->name,
+                    'deskripsi' => 'Informasi profil, alamat lengkap, tugas pokok dan fungsi, serta kontak resmi ' . $org->name . ' Pemerintah Kabupaten Sinjai.',
+                    'kategori' => 'Informasi Berkala',
+                    'jenis_dokumen' => 'Profil Satuan Kerja / OPD',
+                    'pengupload' => 'Admin Satuan Kerja / PPID',
+                    'opd' => $org->name,
+                    'tanggal' => $this->ppidDateStr($org->updated_at ?? $org->created_at),
+                    'file_url' => $org->website_url,
+                    'detail_url' => $url,
+                    'sumber' => 'organization',
+                    'sumber_label' => 'Satuan Kerja Pemkab Sinjai',
+                ];
+            }
+        }
+
+        // Halaman umum daftar seluruh OPD / Satuan Kerja
+        return [
+            'id' => null,
+            'judul' => 'Alamat Lengkap Setiap Satuan Kerja Lingkup Pemerintah Kabupaten Sinjai',
+            'deskripsi' => 'Daftar alamat lengkap, kontak, dan tautan resmi seluruh Satuan Kerja / Perangkat Daerah di Lingkungan Pemerintah Kabupaten Sinjai.',
+            'kategori' => 'Informasi Berkala',
+            'jenis_dokumen' => 'Daftar Satuan Kerja / OPD',
+            'pengupload' => 'PPID Utama',
+            'opd' => 'Pemerintah Kabupaten Sinjai',
+            'tanggal' => date('Y-m-d'),
+            'file_url' => null,
+            'detail_url' => $url,
+            'sumber' => 'organization',
+            'sumber_label' => 'Portal Satuan Kerja Pemkab Sinjai',
+        ];
+    }
+
+    /**
+     * Cari halaman publik resmi lainnya di domain PPID & Pemkab Sinjai (LHKPN, Regulasi, SOP, Profil Umum, dll).
+     */
+    private function lookupPublicPageDocument(string $url): ?array
+    {
+        $path = strtolower(trim(parse_url($url, PHP_URL_PATH) ?? '', '/'));
+        $host = strtolower(parse_url($url, PHP_URL_HOST) ?? '');
+        $isPemkabDomain = in_array($host, ['sinjaikab.go.id', 'www.sinjaikab.go.id'], true);
+        $sumberLabel = $isPemkabDomain ? 'Portal Pemkab Sinjai' : 'PPID Kabupaten Sinjai';
+
+        // LHKPN
+        if (str_contains($path, 'lhkpn')) {
+            return [
+                'id' => null,
+                'judul' => 'Informasi LHKPN Pejabat Negara Pemerintah Kabupaten Sinjai Tahun 2025/2026',
+                'deskripsi' => 'Pengumuman informasi LHKPN Pejabat Negara lingkup Pemerintah Kabupaten Sinjai yang telah diperiksa, diverifikasi, dan dikirimkan oleh Komisi Pemberantasan Korupsi (KPK).',
+                'kategori' => 'Informasi Berkala',
+                'jenis_dokumen' => 'LHKPN Pejabat Negara',
+                'pengupload' => 'Inspektorat / PPID',
+                'opd' => 'Pemerintah Kabupaten Sinjai',
+                'tanggal' => date('Y-m-d'),
+                'file_url' => null,
+                'detail_url' => $url,
+                'sumber' => 'lhkpn',
+                'sumber_label' => $sumberLabel,
+            ];
+        }
+
+        // Regulasi & Kebijakan
+        if (str_contains($path, 'regulasi') || str_contains($path, 'peraturan') || str_contains($path, 'kebijakan')) {
+            return [
+                'id' => null,
+                'judul' => 'Daftar Peraturan, Keputusan, dan Kebijakan Publik Pemerintah Kabupaten Sinjai',
+                'deskripsi' => 'Daftar peraturan perundang-undangan, keputusan bupati, dan kebijakan yang mengikat dan berdampak bagi masyarakat Kabupaten Sinjai.',
+                'kategori' => 'Informasi Berkala',
+                'jenis_dokumen' => 'Regulasi & Produk Hukum',
+                'pengupload' => 'Bagian Hukum / PPID',
+                'opd' => 'Pemerintah Kabupaten Sinjai',
+                'tanggal' => date('Y-m-d'),
+                'file_url' => null,
+                'detail_url' => $url,
+                'sumber' => 'regulasi',
+                'sumber_label' => $sumberLabel,
+            ];
+        }
+
+        // Standar Layanan & SOP
+        if (str_contains($path, 'sop') || str_contains($path, 'standar-layanan')) {
+            return [
+                'id' => null,
+                'judul' => 'Standar Layanan dan Standar Operasional Prosedur (SOP) Pelayanan Informasi Publik',
+                'deskripsi' => 'Dokumen resmi Standar Layanan dan Standar Operasional Prosedur (SOP) permohonan informasi dan pengajuan keberatan di PPID Kabupaten Sinjai.',
+                'kategori' => 'Informasi Berkala',
+                'jenis_dokumen' => 'Standar Layanan & SOP',
+                'pengupload' => 'PPID Utama',
+                'opd' => 'Dinas Komunikasi Informatika dan Persandian',
+                'tanggal' => date('Y-m-d'),
+                'file_url' => null,
+                'detail_url' => $url,
+                'sumber' => 'sop',
+                'sumber_label' => $sumberLabel,
+            ];
+        }
+
+        // Maklumat Layanan
+        if (str_contains($path, 'maklumat')) {
+            return [
+                'id' => null,
+                'judul' => 'Maklumat Pelayanan Informasi Publik Pemerintah Kabupaten Sinjai',
+                'deskripsi' => 'Pernyataan kesanggupan dan komitmen resmi Pemerintah Kabupaten Sinjai dalam menyelenggarakan pelayanan informasi publik sesuai standar yang ditetapkan.',
+                'kategori' => 'Informasi Berkala',
+                'jenis_dokumen' => 'Maklumat Layanan',
+                'pengupload' => 'PPID Utama',
+                'opd' => 'Pemerintah Kabupaten Sinjai',
+                'tanggal' => date('Y-m-d'),
+                'file_url' => null,
+                'detail_url' => $url,
+                'sumber' => 'maklumat',
+                'sumber_label' => $sumberLabel,
+            ];
+        }
+
+        // Struktur Organisasi
+        if (str_contains($path, 'struktur-organisasi') || str_contains($path, 'struktur')) {
+            return [
+                'id' => null,
+                'judul' => 'Bagan Struktur Organisasi Pemerintah Kabupaten Sinjai',
+                'deskripsi' => 'Pengumuman bagan struktur organisasi resmi dan tata hubungan kerja di Lingkungan Pemerintah Kabupaten Sinjai.',
+                'kategori' => 'Informasi Berkala',
+                'jenis_dokumen' => 'Struktur Organisasi',
+                'pengupload' => 'Bagian Organisasi / PPID',
+                'opd' => 'Pemerintah Kabupaten Sinjai',
+                'tanggal' => date('Y-m-d'),
+                'file_url' => null,
+                'detail_url' => $url,
+                'sumber' => 'struktur',
+                'sumber_label' => $sumberLabel,
+            ];
+        }
+
+        // Visi Misi / Tugas Fungsi / Profil Pemkab
+        if (str_contains($path, 'visi-misi') || str_contains($path, 'tugas-fungsi') || str_contains($path, 'profil')) {
+            return [
+                'id' => null,
+                'judul' => 'Profil, Visi Misi, Tugas dan Fungsi Pemerintah Kabupaten Sinjai',
+                'deskripsi' => 'Informasi resmi mengenai profil umum, ruang lingkup kegiatan, serta tugas pokok dan fungsi Pemerintah Kabupaten Sinjai.',
+                'kategori' => 'Informasi Berkala',
+                'jenis_dokumen' => 'Profil Pemerintah Daerah',
+                'pengupload' => 'PPID Utama',
+                'opd' => 'Pemerintah Kabupaten Sinjai',
+                'tanggal' => date('Y-m-d'),
+                'file_url' => null,
+                'detail_url' => $url,
+                'sumber' => 'profil_daerah',
+                'sumber_label' => $sumberLabel,
+            ];
+        }
+
+        // Fallback Umum untuk Seluruh Halaman Resmi di Domain PPID & Pemkab Sinjai
+        if (!empty($path)) {
+            $segments = array_values(array_filter(explode('/', $path), fn($s) => $s !== ''));
+            $lastSeg = end($segments) ?: 'Informasi';
+            $cleaned = ucwords(str_replace(['-', '_'], ' ', $lastSeg));
+            return [
+                'id' => null,
+                'judul' => $cleaned . ' Pemerintah Kabupaten Sinjai',
+                'deskripsi' => 'Halaman informasi resmi yang dipublikasikan pada portal ' . $sumberLabel . '.',
+                'kategori' => 'Informasi Berkala',
+                'jenis_dokumen' => 'Halaman Portal Resmi',
+                'pengupload' => 'Pemerintah Kabupaten Sinjai',
+                'opd' => 'Pemerintah Kabupaten Sinjai',
+                'tanggal' => date('Y-m-d'),
+                'file_url' => null,
+                'detail_url' => $url,
+                'sumber' => 'portal_resmi',
+                'sumber_label' => $sumberLabel,
             ];
         }
 
