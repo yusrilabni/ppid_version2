@@ -393,17 +393,22 @@ class SaqController extends Controller
             if ($user->role === 'superadmin' || $user->admin_kabupaten == 1) {
                 $canEdit = true;
             } else if (!self::isLocked()) {
-                $uUnit = (string)($user->unit_id ?? '');
-                if (!$uUnit && $user->nip) {
-                    $apiData = \App\Models\User::getDataFromApi($user->nip);
-                    $uUnit = (string)($apiData['unit_id'] ?? '');
-                }
-                $userOrg = \App\Models\Organization::where('remote_id', $uUnit)
-                    ->orWhere('unit_id', $uUnit)
-                    ->orWhere('id', $uUnit)
-                    ->first();
-                if ($userOrg && (int)$userOrg->id === (int)$orgId) {
+                // Semua admin OPD diizinkan mengisi SAQ di Kabupaten Sinjai (id 127)
+                if ((int)$orgId === 127) {
                     $canEdit = true;
+                } else {
+                    $uUnit = (string)($user->unit_id ?? '');
+                    if (!$uUnit && $user->nip) {
+                        $apiData = \App\Models\User::getDataFromApi($user->nip);
+                        $uUnit = (string)($apiData['unit_id'] ?? '');
+                    }
+                    $userOrg = \App\Models\Organization::where('remote_id', $uUnit)
+                        ->orWhere('unit_id', $uUnit)
+                        ->orWhere('id', $uUnit)
+                        ->first();
+                    if ($userOrg && (int)$userOrg->id === (int)$orgId) {
+                        $canEdit = true;
+                    }
                 }
             }
         }
@@ -649,15 +654,11 @@ class SaqController extends Controller
             ], 403);
         }
 
-        // Kabupaten Sinjai (PPID Utama, id 127) hanya boleh diisi superadmin
-        if ((int)$validated['organization_id'] === 127 && !$isSuperadmin) {
-            return response()->json([
-                'success' => false,
-                'message' => 'Hanya superadmin yang dapat mengisi SAQ PPID Utama (Kabupaten Sinjai).',
-            ], 403);
-        }
-        // Admin OPD hanya boleh isi OPD-nya sendiri
-        if (!$isSuperadmin) {
+        // Admin OPD dan Superadmin diizinkan mengisi SAQ Kabupaten Sinjai (id 127)
+        $isKabupaten = ((int)$validated['organization_id'] === 127);
+
+        // Jika bukan superadmin dan bukan pengisian untuk Kabupaten Sinjai, pastikan OPD milik user sendiri
+        if (!$isSuperadmin && !$isKabupaten) {
             $uUnit = trim((string)($user->unit_id ?? ''));
             if ($uUnit === '' && !empty($user->nip)) {
                 try {
@@ -1278,9 +1279,9 @@ class SaqController extends Controller
     {
         $answer = SaqAnswer::findOrFail($id);
 
-        // Otorisasi: hanya superadmin atau admin OPD pemilik yang boleh hapus
+        // Otorisasi: superadmin, admin kabupaten, atau admin OPD
         $user = $request->user();
-        $isSuperadmin = ($user && $user->role === 'superadmin');
+        $isSuperadmin = ($user && ($user->role === 'superadmin' || !empty($user->admin_kabupaten)));
 
         // Cek penguncian pengisian SAQ: jika terkunci, hanya superadmin yang diizinkan menghapus
         if (self::isLocked() && !$isSuperadmin) {
@@ -1289,7 +1290,8 @@ class SaqController extends Controller
                 'message' => 'Penghapusan jawaban SAQ saat ini sedang dikunci oleh Superadmin.',
             ], 403);
         }
-        if (!$isSuperadmin) {
+        $isKabupatenAnswer = ((int)$answer->organization_id === 127);
+        if (!$isSuperadmin && !$isKabupatenAnswer) {
             $uUnit = (string)($user->unit_id ?? '');
             if (!$uUnit && $user->nip) {
                 $apiData = \App\Models\User::getDataFromApi($user->nip);
