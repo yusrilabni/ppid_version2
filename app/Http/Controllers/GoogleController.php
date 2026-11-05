@@ -18,14 +18,7 @@ class GoogleController extends Controller
     public function redirectToGoogle()
     {
         $driver = Socialite::driver('google');
-        $driver->setHttpClient(new \GuzzleHttp\Client([
-            'force_ip_resolve' => 'v4',
-            'curl' => [
-                CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
-            ],
-            'timeout' => 15,
-            'connect_timeout' => 10,
-        ]));
+        $driver->setHttpClient(\App\Http\Controllers\Api\GoogleLoginController::getGoogleHttpClient());
         return $driver->redirect();
     }
 
@@ -38,14 +31,7 @@ class GoogleController extends Controller
     {
         try {
             $driver = Socialite::driver('google');
-            $driver->setHttpClient(new \GuzzleHttp\Client([
-                'force_ip_resolve' => 'v4',
-                'curl' => [
-                    CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
-                ],
-                'timeout' => 15,
-                'connect_timeout' => 10,
-            ]));
+            $driver->setHttpClient(\App\Http\Controllers\Api\GoogleLoginController::getGoogleHttpClient());
             $user = $driver->user();
 
             $finduser = User::where('google_id', $user->id)->first();

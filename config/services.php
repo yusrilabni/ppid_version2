@@ -43,8 +43,17 @@ return [
             'force_ip_resolve' => 'v4',
             'curl' => [
                 CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
+                CURLOPT_RESOLVE => [
+                    'www.googleapis.com:443:172.217.115.4',
+                    'www.googleapis.com:443:142.250.185.202',
+                    'www.googleapis.com:443:172.217.194.95',
+                    'oauth2.googleapis.com:443:142.251.10.95',
+                    'oauth2.googleapis.com:443:172.217.115.4',
+                    'accounts.google.com:443:64.233.170.84',
+                    'accounts.google.com:443:172.217.115.4',
+                ],
             ],
-            'timeout' => 15,
+            'timeout' => 20,
             'connect_timeout' => 10,
         ],
     ],

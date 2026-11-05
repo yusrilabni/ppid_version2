@@ -637,9 +637,9 @@ class SaqController extends Controller
             ], 422);
         }
 
-        // Otorisasi: hanya superadmin atau admin OPD pemilik yang boleh isi
+        // Otorisasi: superadmin, admin kabupaten, atau admin OPD pemilik yang boleh isi
         $user = $request->user();
-        $isSuperadmin = ($user && $user->role === 'superadmin');
+        $isSuperadmin = ($user && ($user->role === 'superadmin' || !empty($user->admin_kabupaten)));
 
         // Cek penguncian pengisian SAQ: jika terkunci, hanya superadmin yang diizinkan mengisi
         if (self::isLocked() && !$isSuperadmin) {
@@ -658,16 +658,47 @@ class SaqController extends Controller
         }
         // Admin OPD hanya boleh isi OPD-nya sendiri
         if (!$isSuperadmin) {
-            $uUnit = (string)($user->unit_id ?? '');
-            if (!$uUnit && $user->nip) {
-                $apiData = \App\Models\User::getDataFromApi($user->nip);
-                $uUnit = (string)($apiData['unit_id'] ?? '');
+            $uUnit = trim((string)($user->unit_id ?? ''));
+            if ($uUnit === '' && !empty($user->nip)) {
+                try {
+                    $apiData = \App\Models\User::getDataFromApi($user->nip);
+                    $uUnit = trim((string)($apiData['unit_id'] ?? ''));
+                } catch (\Exception $e) {}
             }
-            $userOrg = \App\Models\Organization::where('remote_id', $uUnit)
-                ->orWhere('unit_id', $uUnit)
-                ->orWhere('id', $uUnit)
-                ->first();
-            if (!$userOrg || (int)$userOrg->id !== (int)$validated['organization_id']) {
+            $reqOrgId = (int)$validated['organization_id'];
+            $targetOrg = \App\Models\Organization::find($reqOrgId);
+
+            $userOrg = null;
+            if ($uUnit !== '') {
+                $userOrg = \App\Models\Organization::where('remote_id', $uUnit)
+                    ->orWhere('unit_id', $uUnit)
+                    ->orWhere('id', $uUnit)
+                    ->first();
+            }
+            if (!$userOrg && !empty($user->name)) {
+                $userOrg = \App\Models\Organization::where('name', 'like', "%{$user->name}%")->first();
+            }
+
+            $isMatch = ($userOrg && (int)$userOrg->id === $reqOrgId);
+            if (!$isMatch && $targetOrg) {
+                if ($uUnit !== '') {
+                    $targetUnits = array_filter([
+                        (string)$targetOrg->id,
+                        (string)($targetOrg->remote_id ?? ''),
+                        (string)($targetOrg->unit_id ?? '')
+                    ]);
+                    if (in_array($uUnit, $targetUnits, true)) {
+                        $isMatch = true;
+                    }
+                }
+                if (!$isMatch && !empty($user->name)) {
+                    if (stripos($targetOrg->name, $user->name) !== false || stripos($user->name, $targetOrg->name) !== false) {
+                        $isMatch = true;
+                    }
+                }
+            }
+
+            if (!$isMatch) {
                 return response()->json([
                     'success' => false,
                     'message' => 'Anda hanya dapat mengisi SAQ untuk OPD Anda sendiri.',
@@ -789,10 +820,10 @@ class SaqController extends Controller
         if (true) {
             foreach ($links as $l) {
                 if ((($l['mode'] ?? 'baru') === 'sync_ppid')
-                    && !$this->lookupPpidDocument(trim($l['sync_url'] ?? $l['link']))) {
+                    && !$this->lookupAnyPortalDocument(trim($l['sync_url'] ?? $l['link']))) {
                     return response()->json([
                         'success' => false,
-                        'message' => 'Link detail PPID tidak ditemukan di data PPID. Pastikan link berupa https://ppid.sinjaikab.go.id/informasi/{slug} dari dokumen yang sudah ada di web PPID.',
+                        'message' => 'Link dokumen atau halaman resmi tidak ditemukan di database. Pastikan link berasal dari website resmi PPID atau Pemkab Sinjai.',
                     ], 422);
                 }
             }
@@ -880,26 +911,25 @@ class SaqController extends Controller
                 $isSync = (($l['mode'] ?? 'baru') === 'sync_ppid');
                 if ($isSync) {
                     $detailUrl = trim($l['sync_url'] ?? $l['link']);
-                    $synced = $this->lookupPpidDocument($detailUrl);
+                    $synced = $this->lookupAnyPortalDocument($detailUrl);
                     if (!$synced) {
                         DB::rollBack();
                         return response()->json([
                             'success' => false,
-                            'message' => 'Link detail PPID atau Pemkab tidak ditemukan di database. Pastikan link berupa https://ppid.sinjaikab.go.id/informasi/{slug} atau https://sinjaikab.go.id/informasi/{slug} dari dokumen yang sudah terdaftar.',
+                            'message' => 'Link dokumen atau halaman resmi tidak ditemukan di database. Pastikan link berupa https://ppid.sinjaikab.go.id/... atau https://sinjaikab.go.id/... dari data yang sudah terdaftar.',
                         ], 422);
                     }
                     $syncLink = [
                         'judul' => $synced['judul'],
                         'link' => $detailUrl,
                         'deskripsi' => ($synced['kategori'] ? 'Kategori: ' . $synced['kategori'] . '. ' : '')
-                            . 'Dokumen terdaftar (' . ($synced['sumber_label'] ?? $synced['sumber']) . ').'
+                            . 'Dokumen/Halaman terdaftar (' . ($synced['sumber_label'] ?? $synced['sumber']) . ').'
                             . ($synced['tanggal'] ? ' Tanggal: ' . $synced['tanggal'] : '')
                             . ($synced['file_url'] ? '. File: ' . $synced['file_url'] : ''),
                         'order' => $i,
                     ];
-                    // Kolom jejak hanya bila migrasi sudah jalan (pengaman
-                    // bila frontend ter-deploy sebelum migrate production).
-                    if (\Schema::hasColumn('saq_answer_links', 'informasi_id')) {
+                    // Kolom jejak hanya bila migrasi sudah jalan
+                    if (\Schema::hasColumn('saq_answer_links', 'informasi_id') && !empty($synced['id'])) {
                         $syncLink['informasi_id'] = $synced['id'];
                         $syncLink['sumber_informasi'] = $synced['sumber'];
                     }
@@ -939,6 +969,7 @@ class SaqController extends Controller
                         $lContent = $lDesk;
                     }
 
+                    $dokTahun = !empty($tanggalDok) ? (int)date('Y', strtotime($tanggalDok)) : (int)date('Y');
                     if ($indicator->target_upload === 'pemkab') {
                         $dok = InformasiPemkab::create([
                             'saq_answer_id' => $answer->id,
@@ -946,6 +977,7 @@ class SaqController extends Controller
                             'kategori' => $klasifikasi,
                             'jenis_dokumen' => $request->input('jenis_dokumen') ?: ($indicator->jenis_dokumen ?? 'Dokumen SAQ'),
                             'deskripsi' => $lDesk,
+                            'tahun' => $dokTahun,
                             'file_path' => $l['link'],
                             'status' => $visibility === 'public' ? 'published' : 'draft',
                             'visibility' => $visibility,
@@ -958,12 +990,19 @@ class SaqController extends Controller
                         $informasiIdToSave = $dok->id;
                     } else {
                         $targetUnitId = ($org && $org->remote_id !== null && $org->remote_id !== '') ? (string)$org->remote_id : '0';
+                        $cleanCat = match (true) {
+                            str_contains(strtolower((string)$klasifikasi), 'setiap saat') => 'Informasi Setiap Saat',
+                            str_contains(strtolower((string)$klasifikasi), 'serta merta') => 'Informasi Serta Merta',
+                            str_contains(strtolower((string)$klasifikasi), 'dikecualikan') => 'Informasi Dikecualikan',
+                            default => 'Informasi Berkala',
+                        };
                         $dok = Informasi::create([
                             'saq_answer_id' => $answer->id,
                             'title' => $lJudul,
                             'content' => $lContent,
-                            'category' => $klasifikasi,
+                            'category' => $cleanCat,
                             'deskripsi' => $lDesk,
+                            'tahun' => $dokTahun,
                             'visibility' => $visibility,
                             'published' => ($visibility === 'public'),
                             'status' => $visibility === 'public' ? 'published' : 'draft',
@@ -1091,11 +1130,17 @@ class SaqController extends Controller
                             $informasiIdToSave = $dok->id;
                         } else {
                             $targetUnitId = ($org && $org->remote_id !== null && $org->remote_id !== '') ? (string)$org->remote_id : '0';
+                            $cleanCat = match (true) {
+                                str_contains(strtolower((string)$kategoriToSave), 'setiap saat') => 'Informasi Setiap Saat',
+                                str_contains(strtolower((string)$kategoriToSave), 'serta merta') => 'Informasi Serta Merta',
+                                str_contains(strtolower((string)$kategoriToSave), 'dikecualikan') => 'Informasi Dikecualikan',
+                                default => 'Informasi Berkala',
+                            };
                             $dok = Informasi::create([
                                 'saq_answer_id' => $answer->id,
                                 'title' => $dJudul,
                                 'content' => $dContent,
-                                'category' => $kategoriToSave,
+                                'category' => $cleanCat,
                                 'deskripsi' => $dDesk,
                                 'tahun' => $dokTahun,
                                 'visibility' => $visibility,
@@ -1320,43 +1365,13 @@ class SaqController extends Controller
             ]);
         }
 
-        // 1. Cari di Dokumen Informasi Publik (PPID / Pemkab)
-        $found = $this->lookupPpidDocument($url);
+        // Cari di Dokumen PPID/Pemkab, Pejabat Daerah, OPD, atau Halaman Resmi Portal
+        $found = $this->lookupAnyPortalDocument($url);
         if ($found) {
             return response()->json([
                 'success' => true,
                 'found' => true,
                 'data' => $found,
-            ]);
-        }
-
-        // 2. Cari di Profil Pejabat Daerah / Pimpinan / Bupati / Wakil / Sekda
-        $foundOfficial = $this->lookupOfficialDocument($url);
-        if ($foundOfficial) {
-            return response()->json([
-                'success' => true,
-                'found' => true,
-                'data' => $foundOfficial,
-            ]);
-        }
-
-        // 3. Cari di Profil Satuan Kerja / OPD / Dinas
-        $foundOrg = $this->lookupOrganizationDocument($url);
-        if ($foundOrg) {
-            return response()->json([
-                'success' => true,
-                'found' => true,
-                'data' => $foundOrg,
-            ]);
-        }
-
-        // 4. Cari di Halaman Resmi Portal (LHKPN, Regulasi, SOP, Maklumat, Profil Umum, dll)
-        $foundPage = $this->lookupPublicPageDocument($url);
-        if ($foundPage) {
-            return response()->json([
-                'success' => true,
-                'found' => true,
-                'data' => $foundPage,
             ]);
         }
 
@@ -1426,6 +1441,17 @@ class SaqController extends Controller
             return $file;
         }
         return url('storage/' . $file);
+    }
+
+    /**
+     * Cari dokumen atau halaman resmi apapun di domain PPID & Pemkab Sinjai.
+     */
+    private function lookupAnyPortalDocument(string $url): ?array
+    {
+        return $this->lookupPpidDocument($url)
+            ?? $this->lookupOfficialDocument($url)
+            ?? $this->lookupOrganizationDocument($url)
+            ?? $this->lookupPublicPageDocument($url);
     }
 
     /**

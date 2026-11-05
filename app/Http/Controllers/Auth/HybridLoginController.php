@@ -204,7 +204,9 @@ class HybridLoginController extends Controller
      */
     public function redirectToGoogle()
     {
-        return Socialite::driver('google')->redirect();
+        $driver = Socialite::driver('google');
+        $driver->setHttpClient(\App\Http\Controllers\Api\GoogleLoginController::getGoogleHttpClient());
+        return $driver->redirect();
     }
 
     /**
@@ -213,7 +215,9 @@ class HybridLoginController extends Controller
     public function handleGoogleCallback(Request $request)
     {
         try {
-            $googleUser = Socialite::driver('google')->user();
+            $driver = Socialite::driver('google');
+            $driver->setHttpClient(\App\Http\Controllers\Api\GoogleLoginController::getGoogleHttpClient());
+            $googleUser = $driver->user();
             
             $user = User::where('email', $googleUser->email)->first();
             

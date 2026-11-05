@@ -12,6 +12,48 @@ use Illuminate\Support\Str;
 class GoogleLoginController extends Controller
 {
     /**
+     * Client HTTP tahan banting untuk Google OAuth.
+     * Menggunakan CURLOPT_RESOLVE ke Anycast IPv4 resmi Google sehingga kebal
+     * terhadap kendala kegagalan DNS (cURL error 6) maupun IPv6 (cURL error 7).
+     */
+    public static function getGoogleHttpClient(): \GuzzleHttp\Client
+    {
+        $defaultResolves = [
+            'www.googleapis.com:443:172.217.115.4',
+            'www.googleapis.com:443:142.250.185.202',
+            'www.googleapis.com:443:172.217.194.95',
+            'oauth2.googleapis.com:443:142.251.10.95',
+            'oauth2.googleapis.com:443:172.217.115.4',
+            'accounts.google.com:443:64.233.170.84',
+            'accounts.google.com:443:172.217.115.4',
+        ];
+
+        $dynamicResolves = [];
+        foreach (['www.googleapis.com', 'oauth2.googleapis.com', 'accounts.google.com'] as $host) {
+            $ips = @gethostbynamel($host);
+            if (!empty($ips) && is_array($ips)) {
+                foreach ($ips as $ip) {
+                    if (filter_var($ip, FILTER_VALIDATE_IP, FILTER_FLAG_IPV4)) {
+                        $dynamicResolves[] = "{$host}:443:{$ip}";
+                    }
+                }
+            }
+        }
+
+        $resolves = !empty($dynamicResolves) ? array_values(array_unique(array_merge($dynamicResolves, $defaultResolves))) : $defaultResolves;
+
+        return new \GuzzleHttp\Client([
+            'force_ip_resolve' => 'v4',
+            'curl' => [
+                CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
+                CURLOPT_RESOLVE => $resolves,
+            ],
+            'timeout' => 20,
+            'connect_timeout' => 10,
+        ]);
+    }
+
+    /**
      * Redirect the user to the Google authentication page.
      *
      * @return \Illuminate\Http\JsonResponse
@@ -24,14 +66,7 @@ class GoogleLoginController extends Controller
         config(['services.google.redirect' => 'https://ppid.sinjaikab.go.id/google-callback']);
 
         $driver = Socialite::driver('google')->stateless()->with(['state' => $action]);
-        $driver->setHttpClient(new \GuzzleHttp\Client([
-            'force_ip_resolve' => 'v4',
-            'curl' => [
-                CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
-            ],
-            'timeout' => 15,
-            'connect_timeout' => 10,
-        ]));
+        $driver->setHttpClient(self::getGoogleHttpClient());
 
         return $driver->redirect();
     }
@@ -54,14 +89,7 @@ class GoogleLoginController extends Controller
                 throw new \Exception('EMPTY PARAMS! Redirect URI in config: ' . config('services.google.redirect'));
             }
             $driver = Socialite::driver('google')->stateless();
-            $driver->setHttpClient(new \GuzzleHttp\Client([
-                'force_ip_resolve' => 'v4',
-                'curl' => [
-                    CURLOPT_IPRESOLVE => CURL_IPRESOLVE_V4,
-                ],
-                'timeout' => 15,
-                'connect_timeout' => 10,
-            ]));
+            $driver->setHttpClient(self::getGoogleHttpClient());
             $googleUser = $driver->user();
         } catch (\Exception $e) {
             return response()->json([
