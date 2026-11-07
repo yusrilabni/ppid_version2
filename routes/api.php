@@ -57,10 +57,15 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
     // Daftar Pekerjaan (Auto-complete / Dropdown)
     Route::get('/pekerjaan', [PermohonanInformasiController::class, 'getPekerjaanList']);
     
-    // Permohonan Informasi (Formulir via Android)
+    // Permohonan Informasi (Formulir via Android / Web)
     Route::post('/permohonan', [PermohonanInformasiController::class, 'store'])->middleware('check.spam');
     Route::get('/permohonan/status/{code}', [PermohonanInformasiController::class, 'checkStatus']);
     Route::get('/permohonan/status/{code}/pdf', [PermohonanInformasiController::class, 'downloadPdf']);
+
+    // Keberatan atas Permohonan Informasi (UU No. 14/2008 & Perki No. 1/2021)
+    Route::post('/keberatan', [\App\Http\Controllers\Api\KeberatanInformasiController::class, 'store'])->middleware('check.spam');
+    Route::get('/keberatan/status/{code}', [\App\Http\Controllers\Api\KeberatanInformasiController::class, 'checkStatus']);
+    Route::get('/laporan-keberatan', [\App\Http\Controllers\Api\KeberatanInformasiController::class, 'indexPublic']);
 
     // Berita, Galeri, Pejabat
     Route::get('/berita', [\App\Http\Controllers\Admin\BeritaController::class, 'index']);
@@ -423,6 +428,10 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
         Route::get('/my-requests', [PermohonanInformasiController::class, 'myRequests']);
         Route::get('/my-requests/{id}', [PermohonanInformasiController::class, 'show']);
         Route::post('/my-requests/{id}', [PermohonanInformasiController::class, 'update']); // Use POST as proxy for update due to common mobile fetch limitations
+
+        // My Objections (Keberatan Informasi)
+        Route::get('/keberatan/saya', [\App\Http\Controllers\Api\KeberatanInformasiController::class, 'myRequests']);
+        Route::get('/keberatan/{id}', [\App\Http\Controllers\Api\KeberatanInformasiController::class, 'show']);
 
         Route::post('/logout', [App\Http\Controllers\Api\LoginController::class, 'logout']);
         Route::post('/force-change-password', [App\Http\Controllers\Api\LoginController::class, 'forceChangePassword']);

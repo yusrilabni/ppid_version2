@@ -28,6 +28,27 @@ class GeneralHelper
     }
 
     /**
+     * Sensor nama untuk privasi anonim (misal: "Ahmad Dahlan" -> "A***d D***n")
+     */
+    public static function maskName($name)
+    {
+        if (empty($name)) return 'Anonim';
+        $words = explode(' ', trim($name));
+        $maskedWords = [];
+        foreach ($words as $word) {
+            $len = mb_strlen($word);
+            if ($len <= 2) {
+                $maskedWords[] = mb_substr($word, 0, 1) . '*';
+            } else {
+                $first = mb_substr($word, 0, 1);
+                $last = mb_substr($word, -1);
+                $maskedWords[] = $first . '***' . $last;
+            }
+        }
+        return implode(' ', $maskedWords);
+    }
+
+    /**
      * Escape special characters for Telegram Markdown.
      */
     public static function escapeTelegramMarkdown($text)
