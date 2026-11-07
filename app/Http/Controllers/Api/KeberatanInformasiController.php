@@ -61,12 +61,18 @@ class KeberatanInformasiController extends Controller
             $validatedData = $validator->validated();
 
             // Cek keterkaitan dengan permohonan informasi asal
-            $permohonan = PermohonanInformasi::where('unique_code', $validatedData['nomor_pendaftaran_pemohon'])
-                ->orWhere('id', $validatedData['nomor_pendaftaran_pemohon'])
+            $rawReg = trim($validatedData['nomor_pendaftaran_pemohon']);
+            $cleanedReg = preg_replace('/^[#\s]+/', '', $rawReg);
+            $cleanedReg = preg_replace('/^REG[-_\s]?/i', '', $cleanedReg);
+
+            $permohonan = PermohonanInformasi::where('unique_code', $cleanedReg)
+                ->orWhere('unique_code', $rawReg)
+                ->orWhere('id', $cleanedReg)
                 ->first();
 
             if ($permohonan) {
                 $validatedData['permohonan_informasi_id'] = $permohonan->id;
+                $validatedData['nomor_pendaftaran_pemohon'] = $permohonan->unique_code;
             }
 
             // Upload Surat Kuasa jika dilampirkan

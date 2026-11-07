@@ -279,8 +279,15 @@ class PermohonanInformasiController extends Controller
     public function checkStatus($code): JsonResponse
     {
         try {
+            // Bersihkan format input jika ada tanda pagar '#' atau prefix 'REG-'
+            $cleanedCode = trim((string)$code);
+            $cleanedCode = preg_replace('/^[#\s]+/', '', $cleanedCode);
+            $cleanedCode = preg_replace('/^REG[-_\s]?/i', '', $cleanedCode);
+
             $permohonan = PermohonanInformasi::with('responses.user')
-                ->where('unique_code', $code)
+                ->where('unique_code', $cleanedCode)
+                ->orWhere('unique_code', $code)
+                ->orWhere('id', $cleanedCode)
                 ->firstOrFail();
 
             $user = auth('sanctum')->user();
