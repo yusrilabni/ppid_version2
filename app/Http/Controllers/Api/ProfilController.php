@@ -131,7 +131,28 @@ class ProfilController extends Controller
             return 'eselon2';
         });
 
+        // Ambil Pimpinan Daerah (Bupati, Wakil Bupati, Sekretaris Daerah)
+        $pimpinanQuery = Official::whereHas('position', function($q) {
+            $q->where('name', 'like', '%Bupati%')
+              ->orWhere('name', 'like', '%Sekretaris Daerah%')
+              ->orWhere('slug', 'like', '%bupati%')
+              ->orWhere('slug', 'like', '%sekda%');
+        })->with(['position', 'organization']);
+
+        if (!$user || ($user && !$user->isAdmin())) {
+            $pimpinanQuery->where('status', 'active');
+        }
+
+        $pimpinanDaerah = $pimpinanQuery->get()->sortBy(function($item) {
+            $pos = strtolower($item->position->name ?? '');
+            if (str_contains($pos, 'wakil')) return 2;
+            if (str_contains($pos, 'bupati')) return 1;
+            if (str_contains($pos, 'sekretaris') || str_contains($pos, 'sekda')) return 3;
+            return 4;
+        })->values();
+
         return response()->json([
+            'pimpinan' => $pimpinanDaerah,
             'kepalaOpds' => $kepalaOpds,
         ]);
     }
