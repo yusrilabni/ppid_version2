@@ -35,11 +35,25 @@ class SaqAdminController extends Controller
     {
         if ($err = $this->checkSuperAdmin($request)) return $err;
 
-        $query = SaqIndicator::withCount('organizations')
-            ->with(['parent:id,kode,pertanyaan', 'organizations:id,name,slug']);
+        $tabMapping = [
+            'SARANA DAN PRASARANA' => 'Sarana dan Prasarana',
+            'DIGITALISASI' => 'Digitalisasi',
+            'JENIS INFORMASI' => 'Jenis Informasi',
+            'KUALITAS INFORMASI' => 'Kualitas Informasi',
+            'KOMITMEN ORGANISASI' => 'Komitmen Organisasi',
+        ];
 
+        $query = SaqIndicator::withCount('organizations')
+            ->with(['parent.parent', 'organizations:id,name,slug']);
+
+        // Filter tab case-insensitively
         if ($request->filled('tab')) {
-            $query->where('tab', $request->get('tab'));
+            $tabVal = $request->get('tab');
+            $query->where(function ($q) use ($tabVal) {
+                $q->where('tab', $tabVal)
+                  ->orWhere('tab', strtoupper($tabVal))
+                  ->orWhere('tab', mb_convert_case($tabVal, MB_CASE_TITLE));
+            });
         }
         if ($request->filled('section')) {
             $query->where('section', $request->get('section'));
@@ -55,7 +69,8 @@ class SaqAdminController extends Controller
         }
         if ($request->filled('organization_id')) {
             $orgId = (int)$request->get('organization_id');
-            if ($orgId > 0) {
+            // Kabupaten Sinjai (127) memuat seluruh pertanyaan master (203 soal)
+            if ($orgId > 0 && $orgId !== 127) {
                 $query->whereHas('organizations', function ($q) use ($orgId) {
                     $q->where('organizations.id', $orgId);
                 });
@@ -64,10 +79,18 @@ class SaqAdminController extends Controller
         if ($request->filled('input_type')) {
             $query->where('input_type', $request->get('input_type'));
         }
-        if ($request->get('type') === 'question') {
-            $query->whereNotNull('parent_id');
-        } elseif ($request->get('type') === 'category') {
+
+        // Tipe data: secara default tampilkan 203 pertanyaan nyata yang dapat diatur/dijawab
+        if ($request->get('type') === 'category') {
             $query->where('is_category', true);
+        } elseif ($request->get('type') === 'all') {
+            // Semua indikator termasuk header/kategori
+        } else {
+            // Default 'question': Hanya pertanyaan aktual (bukan header tab atau kategori induk kosong)
+            $query->whereNotNull('parent_id')
+                  ->where(function ($q) {
+                      $q->where('is_category', false)->orWhereNull('is_category');
+                  });
         }
 
         // Deteksi pertanyaan serupa (duplikat teks pertanyaan)
@@ -89,16 +112,62 @@ class SaqAdminController extends Controller
             }
         }
 
-        $query->orderBy('tab')->orderBy('order')->orderBy('id');
+        // Urutan tampil persis seperti hierarki form Pemkab Sinjai:
+        // Tab (1 s/d 5) -> Section/Parent -> Order -> ID
+        $query->orderByRaw("
+            CASE 
+                WHEN UPPER(tab) LIKE '%SARANA%' THEN 1
+                WHEN UPPER(tab) LIKE '%DIGITAL%' THEN 2
+                WHEN UPPER(tab) LIKE '%JENIS%' THEN 3
+                WHEN UPPER(tab) LIKE '%KUALITAS%' THEN 4
+                WHEN UPPER(tab) LIKE '%KOMITMEN%' THEN 5
+                ELSE 6
+            END
+        ")
+        ->orderBy('parent_id')
+        ->orderBy('order')
+        ->orderBy('id');
+
+        $transformItem = function ($item) use ($duplicateCounts, $tabMapping) {
+            $norm = trim(mb_strtolower($item->pertanyaan ?? ''));
+            $item->similar_count = $duplicateCounts[$norm] ?? 1;
+
+            // Normalisasi nama tab ke Title Case
+            $item->tab = $tabMapping[$item->tab] ?? $item->tab;
+
+            // Resolusi nama seksi dari parent/grandparent jika seksi kosong
+            $sec = $item->section;
+            $curr = $item;
+            while ($curr && empty($sec) && $curr->parent_id) {
+                $p = $curr->parent;
+                if ($p && !empty($p->section)) {
+                    $sec = $p->section;
+                    break;
+                }
+                $curr = $p;
+            }
+            $item->section = $sec ?: 'A. Umum';
+
+            // Resolusi informasi grup induk
+            if ($item->parent && $item->parent->is_category) {
+                $item->group_id = $item->parent->id;
+                $item->group_kode = $item->parent->kode;
+                $item->group_pertanyaan = $item->parent->pertanyaan;
+                $item->group_order = $item->parent->order ?? 0;
+            } else {
+                $item->group_id = null;
+                $item->group_kode = null;
+                $item->group_pertanyaan = null;
+                $item->group_order = null;
+            }
+
+            return $item;
+        };
 
         // Mode all (tanpa pagination kaku)
         if ($request->get('per_page') === 'all' || (int)$request->get('per_page') === -1) {
             $items = $query->get();
-            $items->transform(function ($item) use ($duplicateCounts) {
-                $norm = trim(mb_strtolower($item->pertanyaan ?? ''));
-                $item->similar_count = $duplicateCounts[$norm] ?? 1;
-                return $item;
-            });
+            $items->transform($transformItem);
 
             return response()->json([
                 'success' => true,
@@ -119,12 +188,7 @@ class SaqAdminController extends Controller
         $perPage = max(10, min(500, $perPage));
 
         $data = $query->paginate($perPage);
-
-        $data->getCollection()->transform(function ($item) use ($duplicateCounts) {
-            $norm = trim(mb_strtolower($item->pertanyaan ?? ''));
-            $item->similar_count = $duplicateCounts[$norm] ?? 1;
-            return $item;
-        });
+        $data->getCollection()->transform($transformItem);
 
         return response()->json([
             'success' => true,
@@ -510,6 +574,11 @@ class SaqAdminController extends Controller
     {
         if ($err = $this->checkSuperAdmin($request)) return $err;
 
+        $totalMasterQuestions = SaqIndicator::whereNotNull('parent_id')
+            ->where(function ($q) {
+                $q->where('is_category', false)->orWhereNull('is_category');
+            })->count();
+
         $opds = Organization::where('type', 'unit')
             ->where('name', 'not like', 'Kantor Kecamatan%')
             ->where('name', 'not like', 'Desa %')
@@ -518,6 +587,13 @@ class SaqAdminController extends Controller
             ->orderByRaw("CASE WHEN slug = 'kabupaten-sinjai' THEN 0 ELSE 1 END")
             ->orderBy('name')
             ->get(['id', 'name', 'slug']);
+
+        $opds->transform(function ($opd) use ($totalMasterQuestions) {
+            if ($opd->slug === 'kabupaten-sinjai') {
+                $opd->saq_indicators_count = $totalMasterQuestions;
+            }
+            return $opd;
+        });
 
         return response()->json(['success' => true, 'data' => $opds]);
     }
@@ -530,15 +606,50 @@ class SaqAdminController extends Controller
     {
         if ($err = $this->checkSuperAdmin($request)) return $err;
 
-        $tabs = SaqIndicator::whereNotNull('tab')
-            ->where('tab', '!=', '')
-            ->select('tab')
-            ->distinct()
-            ->orderBy('tab')
-            ->get()
-            ->map(fn($t) => ['tab' => $t->tab]);
+        $standardTabs = [
+            'Sarana dan Prasarana',
+            'Digitalisasi',
+            'Jenis Informasi',
+            'Kualitas Informasi',
+            'Komitmen Organisasi',
+        ];
 
-        return response()->json(['success' => true, 'data' => $tabs]);
+        // Hitung jumlah pertanyaan aktual per tab
+        $questions = SaqIndicator::whereNotNull('parent_id')
+            ->where(function ($q) {
+                $q->where('is_category', false)->orWhereNull('is_category');
+            })
+            ->select('tab')
+            ->get();
+
+        $tabMapping = [
+            'SARANA DAN PRASARANA' => 'Sarana dan Prasarana',
+            'Sarana dan Prasarana' => 'Sarana dan Prasarana',
+            'DIGITALISASI' => 'Digitalisasi',
+            'Digitalisasi' => 'Digitalisasi',
+            'JENIS INFORMASI' => 'Jenis Informasi',
+            'Jenis Informasi' => 'Jenis Informasi',
+            'KUALITAS INFORMASI' => 'Kualitas Informasi',
+            'Kualitas Informasi' => 'Kualitas Informasi',
+            'KOMITMEN ORGANISASI' => 'Komitmen Organisasi',
+            'Komitmen Organisasi' => 'Komitmen Organisasi',
+        ];
+
+        $counts = [];
+        foreach ($questions as $q) {
+            $normalized = $tabMapping[$q->tab] ?? $q->tab;
+            $counts[$normalized] = ($counts[$normalized] ?? 0) + 1;
+        }
+
+        $result = [];
+        foreach ($standardTabs as $tabName) {
+            $result[] = [
+                'tab' => $tabName,
+                'count' => $counts[$tabName] ?? 0,
+            ];
+        }
+
+        return response()->json(['success' => true, 'data' => $result]);
     }
 
     /**
