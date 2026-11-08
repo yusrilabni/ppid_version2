@@ -2049,6 +2049,9 @@ class SaqController extends Controller
 
         $docId = $request->input('document_id');
         $sumber = $request->input('sumber', $link->sumber_informasi);
+        $keluarkanDariInformasi = $request->boolean('keluarkan_dari_informasi') || 
+                                  $request->input('category') === 'keluarkan' || 
+                                  $request->input('category') === 'tidak_berkategori';
 
         // Jika dokumen adalah Informasi (PPID)
         if ($sumber === 'informasi' || empty($sumber) || (!empty($docId) && $sumber !== 'informasi_pemkab')) {
@@ -2076,20 +2079,34 @@ class SaqController extends Controller
                     $info->deskripsi = $validated['deskripsi'];
                     $info->content = 'dokumen';
                 }
-                if ($request->filled('category')) {
-                    $info->category = $validated['category'];
-                }
-                if ($request->filled('jenis_dokumen')) {
-                    $info->jenis_dokumen = $validated['jenis_dokumen'];
-                }
-                // Pastikan visibility asli si pengunggah tetap dipertahankan
-                // $info->visibility tidak disentuh sama sekali
 
-                $info->save(); // Otomatis trigger static::saving untuk regenerasi slug unik
+                if ($keluarkanDariInformasi) {
+                    // KELUARKAN DARI INFORMASI PUBLIK:
+                    // Ubah link bukti dukung SAQ menjadi link langsung ke file storage
+                    $fileUrl = $this->ppidFileUrl($info->file);
+                    if ($fileUrl) {
+                        $newLinkUrl = $fileUrl;
+                    }
+                    $info->category = null;
+                    $info->status = 'arsip_internal';
+                    $info->published = 0;
+                    $info->save();
 
-                $newLinkUrl = 'https://ppid.sinjaikab.go.id/informasi/detail/' . ($info->slug ?? $info->id);
-                $link->informasi_id = $info->id;
-                $link->sumber_informasi = 'informasi';
+                    $link->sumber_informasi = 'lampiran';
+                } else {
+                    if ($request->filled('category')) {
+                        $info->category = $validated['category'];
+                    }
+                    if ($request->filled('jenis_dokumen')) {
+                        $info->jenis_dokumen = $validated['jenis_dokumen'];
+                    }
+                    // Pastikan visibility asli si pengunggah tetap dipertahankan
+                    $info->save(); // Otomatis trigger static::saving untuk regenerasi slug unik
+
+                    $newLinkUrl = 'https://ppid.sinjaikab.go.id/informasi/detail/' . ($info->slug ?? $info->id);
+                    $link->informasi_id = $info->id;
+                    $link->sumber_informasi = 'informasi';
+                }
             }
         }
         // Jika dokumen adalah InformasiPemkab (Portal Pemkab)
@@ -2116,18 +2133,29 @@ class SaqController extends Controller
                 if ($request->filled('deskripsi')) {
                     $pemkab->deskripsi = $validated['deskripsi'];
                 }
-                if ($request->filled('category')) {
-                    $pemkab->kategori = $validated['category'];
-                }
-                if ($request->filled('jenis_dokumen')) {
-                    $pemkab->jenis_dokumen = $validated['jenis_dokumen'];
-                }
-                // Pastikan visibility asli si pengunggah tetap dipertahankan
-                $pemkab->save(); // Otomatis trigger updating/saving untuk regenerasi slug unik
 
-                $newLinkUrl = 'https://sinjaikab.go.id/informasi/' . ($pemkab->slug ?? $pemkab->id);
-                $link->informasi_id = $pemkab->id;
-                $link->sumber_informasi = 'informasi_pemkab';
+                if ($keluarkanDariInformasi) {
+                    $fileUrl = $this->ppidFileUrl($pemkab->file_path);
+                    if ($fileUrl) {
+                        $newLinkUrl = $fileUrl;
+                    }
+                    $pemkab->kategori = null;
+                    $pemkab->save();
+
+                    $link->sumber_informasi = 'lampiran';
+                } else {
+                    if ($request->filled('category')) {
+                        $pemkab->kategori = $validated['category'];
+                    }
+                    if ($request->filled('jenis_dokumen')) {
+                        $pemkab->jenis_dokumen = $validated['jenis_dokumen'];
+                    }
+                    $pemkab->save(); // Otomatis trigger updating/saving untuk regenerasi slug unik
+
+                    $newLinkUrl = 'https://sinjaikab.go.id/informasi/' . ($pemkab->slug ?? $pemkab->id);
+                    $link->informasi_id = $pemkab->id;
+                    $link->sumber_informasi = 'informasi_pemkab';
+                }
             }
         }
 
