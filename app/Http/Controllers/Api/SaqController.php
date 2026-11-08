@@ -2051,14 +2051,26 @@ class SaqController extends Controller
         $sumber = $request->input('sumber', $link->sumber_informasi);
 
         // Jika dokumen adalah Informasi (PPID)
-        if ($sumber === 'informasi' || (!empty($docId) && $sumber !== 'informasi_pemkab')) {
+        if ($sumber === 'informasi' || empty($sumber) || (!empty($docId) && $sumber !== 'informasi_pemkab')) {
             $info = !empty($docId) ? Informasi::find($docId) : null;
             if (!$info && !empty($link->informasi_id)) {
                 $info = Informasi::find($link->informasi_id);
             }
+            // Fallback lookup dari URL link jika informasi_id belum tersambung
+            if (!$info && !empty($oldLinkUrl)) {
+                $slug = $this->parsePpidDetailSlug($oldLinkUrl);
+                if ($slug) {
+                    $info = Informasi::where('slug', $slug)
+                        ->orWhere(function ($q) use ($slug) {
+                            if (ctype_digit($slug)) {
+                                $q->where('id', (int)$slug);
+                            }
+                        })->first();
+                }
+            }
 
             if ($info) {
-                // JANGAN UBAH user_id DAN unit_id!
+                // JANGAN UBAH user_id, unit_id, DAN visibility! Tetap milik pengunggah asli
                 $info->title = $validated['judul'];
                 if ($request->filled('deskripsi')) {
                     $info->deskripsi = $validated['deskripsi'];
@@ -2070,9 +2082,14 @@ class SaqController extends Controller
                 if ($request->filled('jenis_dokumen')) {
                     $info->jenis_dokumen = $validated['jenis_dokumen'];
                 }
-                $info->save(); // Otomatis trigger updating/saving untuk regenerasi slug unik
+                // Pastikan visibility asli si pengunggah tetap dipertahankan
+                // $info->visibility tidak disentuh sama sekali
+
+                $info->save(); // Otomatis trigger static::saving untuk regenerasi slug unik
 
                 $newLinkUrl = 'https://ppid.sinjaikab.go.id/informasi/detail/' . ($info->slug ?? $info->id);
+                $link->informasi_id = $info->id;
+                $link->sumber_informasi = 'informasi';
             }
         }
         // Jika dokumen adalah InformasiPemkab (Portal Pemkab)
@@ -2081,9 +2098,20 @@ class SaqController extends Controller
             if (!$pemkab && !empty($link->informasi_id)) {
                 $pemkab = InformasiPemkab::find($link->informasi_id);
             }
+            if (!$pemkab && !empty($oldLinkUrl)) {
+                $slug = $this->parsePpidDetailSlug($oldLinkUrl);
+                if ($slug) {
+                    $pemkab = InformasiPemkab::where('slug', $slug)
+                        ->orWhere(function ($q) use ($slug) {
+                            if (ctype_digit($slug)) {
+                                $q->where('id', (int)$slug);
+                            }
+                        })->first();
+                }
+            }
 
             if ($pemkab) {
-                // JANGAN UBAH user_id DAN unit_id!
+                // JANGAN UBAH user_id, unit_id, DAN visibility!
                 $pemkab->judul = $validated['judul'];
                 if ($request->filled('deskripsi')) {
                     $pemkab->deskripsi = $validated['deskripsi'];
@@ -2094,9 +2122,12 @@ class SaqController extends Controller
                 if ($request->filled('jenis_dokumen')) {
                     $pemkab->jenis_dokumen = $validated['jenis_dokumen'];
                 }
+                // Pastikan visibility asli si pengunggah tetap dipertahankan
                 $pemkab->save(); // Otomatis trigger updating/saving untuk regenerasi slug unik
 
                 $newLinkUrl = 'https://sinjaikab.go.id/informasi/' . ($pemkab->slug ?? $pemkab->id);
+                $link->informasi_id = $pemkab->id;
+                $link->sumber_informasi = 'informasi_pemkab';
             }
         }
 
@@ -2108,7 +2139,7 @@ class SaqController extends Controller
 
         // SINKRONISASI KE TABEL SaqAnswer (parent) jika link utama merujuk ke URL lama
         if ($answer) {
-            if ($answer->link === $oldLinkUrl || empty($answer->link)) {
+            if ($answer->link === $oldLinkUrl || empty($answer->link) || str_contains((string)$answer->link, (string)$oldLinkUrl)) {
                 $answer->link = $newLinkUrl;
                 $answer->judul = $validated['judul'];
                 $answer->save();
