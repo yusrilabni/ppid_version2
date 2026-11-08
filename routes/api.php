@@ -366,6 +366,8 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
         // SAQ E-Monev (admin login)
         Route::post('/saq/answers', [App\Http\Controllers\Api\SaqController::class, 'store']);
         Route::delete('/saq/answers/{id}', [App\Http\Controllers\Api\SaqController::class, 'destroy']);
+        Route::get('/saq/evidence-document-detail', [App\Http\Controllers\Api\SaqController::class, 'getEvidenceDocumentDetail']);
+        Route::post('/saq/repair-evidence-document', [App\Http\Controllers\Api\SaqController::class, 'repairEvidenceDocument']);
 
         // SAQ Admin Management (superadmin only)
         Route::get('/saq-admin/indicators', [\App\Http\Controllers\Admin\SaqAdminController::class, 'index']);

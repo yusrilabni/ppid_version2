@@ -492,6 +492,7 @@ class SaqController extends Controller
                     'id' => $l->id,
                     'judul' => $l->judul,
                     'link' => $l->link,
+                    'informasi_id' => $l->informasi_id ?? null,
                     'sumber_informasi' => $l->sumber_informasi ?? null,
                     'deskripsi' => $l->deskripsi ?? null,
                 ])->values(),
@@ -1917,5 +1918,218 @@ class SaqController extends Controller
         }
 
         return null;
+    }
+
+    /**
+     * Mengambil detail dokumen bukti dukung SAQ untuk modal perbaikan Superadmin.
+     * GET /api/v1/saq/evidence-document-detail?link_id=...
+     */
+    public function getEvidenceDocumentDetail(Request $request)
+    {
+        $user = $request->user();
+        if (!$user || $user->role !== 'superadmin') {
+            return response()->json(['success' => false, 'message' => 'Hanya Superadmin yang memiliki akses untuk memperbaiki dokumen.'], 403);
+        }
+
+        $linkId = $request->query('link_id');
+        $link = SaqAnswerLink::with(['answer.organization', 'answer.creator'])->find($linkId);
+
+        if (!$link) {
+            return response()->json(['success' => false, 'message' => 'Data tautan bukti dukung tidak ditemukan.'], 404);
+        }
+
+        $url = $link->link;
+        $doc = null;
+
+        // Cek jika informasi_id & sumber_informasi ada
+        if (!empty($link->informasi_id) && !empty($link->sumber_informasi)) {
+            if ($link->sumber_informasi === 'informasi') {
+                $info = Informasi::with(['user:id,name', 'organization:id,name'])->find($link->informasi_id);
+                if ($info) {
+                    $doc = [
+                        'sumber' => 'informasi',
+                        'document_id' => $info->id,
+                        'judul' => $info->title,
+                        'deskripsi' => $info->deskripsi ?? $info->content,
+                        'category' => $info->category,
+                        'jenis_dokumen' => $info->jenis_dokumen,
+                        'pengupload' => $info->user->name ?? $link->answer->creator->name ?? 'Admin',
+                        'opd' => $info->organization->name ?? $link->answer->organization->name ?? 'OPD',
+                        'file_url' => $this->ppidFileUrl($info->file),
+                        'detail_url' => 'https://ppid.sinjaikab.go.id/informasi/detail/' . ($info->slug ?? $info->id),
+                    ];
+                }
+            } elseif ($link->sumber_informasi === 'informasi_pemkab') {
+                $pemkab = InformasiPemkab::with(['user:id,name', 'organization:id,name'])->find($link->informasi_id);
+                if ($pemkab) {
+                    $doc = [
+                        'sumber' => 'informasi_pemkab',
+                        'document_id' => $pemkab->id,
+                        'judul' => $pemkab->judul,
+                        'deskripsi' => $pemkab->deskripsi,
+                        'category' => $pemkab->kategori,
+                        'jenis_dokumen' => $pemkab->jenis_dokumen,
+                        'pengupload' => $pemkab->user->name ?? $link->answer->creator->name ?? 'Admin',
+                        'opd' => $pemkab->organization->name ?? $link->answer->organization->name ?? 'OPD',
+                        'file_url' => $this->ppidFileUrl($pemkab->file_path),
+                        'detail_url' => 'https://sinjaikab.go.id/informasi/' . ($pemkab->slug ?? $pemkab->id),
+                    ];
+                }
+            }
+        }
+
+        // Jika belum ketemu lewat relasi, coba lookup dari URL tautan
+        if (!$doc && !empty($url)) {
+            $lookup = $this->lookupPpidDocument($url);
+            if ($lookup && !empty($lookup['id']) && in_array($lookup['sumber'], ['informasi', 'informasi_pemkab'], true)) {
+                $doc = [
+                    'sumber' => $lookup['sumber'],
+                    'document_id' => $lookup['id'],
+                    'judul' => $lookup['judul'],
+                    'deskripsi' => $lookup['deskripsi'],
+                    'category' => $lookup['kategori'] ?? '',
+                    'jenis_dokumen' => $lookup['jenis_dokumen'] ?? '',
+                    'pengupload' => $lookup['pengupload'] ?? $link->answer->creator->name ?? 'Admin',
+                    'opd' => $lookup['opd'] ?? $link->answer->organization->name ?? 'OPD',
+                    'file_url' => $lookup['file_url'],
+                    'detail_url' => $lookup['detail_url'],
+                ];
+            }
+        }
+
+        // Fallback untuk link bukti mandiri (Google Drive / Lampiran file mentah)
+        if (!$doc) {
+            $doc = [
+                'sumber' => $link->sumber_informasi ?: 'lampiran',
+                'document_id' => null,
+                'judul' => $link->judul ?: 'Bukti Dukung',
+                'deskripsi' => $link->deskripsi ?: '',
+                'category' => 'Informasi Berkala',
+                'jenis_dokumen' => 'Dokumen Bukti Dukung',
+                'pengupload' => $link->answer->creator->name ?? 'Admin Pengunggah',
+                'opd' => $link->answer->organization->name ?? 'OPD Terkait',
+                'file_url' => $link->link,
+                'detail_url' => $link->link,
+            ];
+        }
+
+        return response()->json([
+            'success' => true,
+            'data' => [
+                'link_id' => $link->id,
+                'saq_answer_id' => $link->saq_answer_id,
+                'document' => $doc
+            ]
+        ]);
+    }
+
+    /**
+     * Memperbarui dokumen bukti dukung & menyinkronkan otomatis ke jawaban SAQ.
+     * POST /api/v1/saq/repair-evidence-document
+     */
+    public function repairEvidenceDocument(Request $request)
+    {
+        $user = $request->user();
+        if (!$user || $user->role !== 'superadmin') {
+            return response()->json(['success' => false, 'message' => 'Hanya Superadmin yang memiliki akses untuk memperbaiki dokumen.'], 403);
+        }
+
+        $validated = $request->validate([
+            'link_id' => 'required|integer',
+            'judul' => 'required|string|max:255',
+            'deskripsi' => 'nullable|string',
+            'category' => 'nullable|string|max:255',
+            'jenis_dokumen' => 'nullable|string|max:255',
+        ]);
+
+        $link = SaqAnswerLink::with('answer')->findOrFail($validated['link_id']);
+        $answer = $link->answer;
+        $oldLinkUrl = $link->link;
+        $newLinkUrl = $oldLinkUrl;
+
+        $docId = $request->input('document_id');
+        $sumber = $request->input('sumber', $link->sumber_informasi);
+
+        // Jika dokumen adalah Informasi (PPID)
+        if ($sumber === 'informasi' || (!empty($docId) && $sumber !== 'informasi_pemkab')) {
+            $info = !empty($docId) ? Informasi::find($docId) : null;
+            if (!$info && !empty($link->informasi_id)) {
+                $info = Informasi::find($link->informasi_id);
+            }
+
+            if ($info) {
+                // JANGAN UBAH user_id DAN unit_id!
+                $info->title = $validated['judul'];
+                if ($request->filled('deskripsi')) {
+                    $info->deskripsi = $validated['deskripsi'];
+                    $info->content = 'dokumen';
+                }
+                if ($request->filled('category')) {
+                    $info->category = $validated['category'];
+                }
+                if ($request->filled('jenis_dokumen')) {
+                    $info->jenis_dokumen = $validated['jenis_dokumen'];
+                }
+                $info->save(); // Otomatis trigger updating/saving untuk regenerasi slug unik
+
+                $newLinkUrl = 'https://ppid.sinjaikab.go.id/informasi/detail/' . ($info->slug ?? $info->id);
+            }
+        }
+        // Jika dokumen adalah InformasiPemkab (Portal Pemkab)
+        elseif ($sumber === 'informasi_pemkab') {
+            $pemkab = !empty($docId) ? InformasiPemkab::find($docId) : null;
+            if (!$pemkab && !empty($link->informasi_id)) {
+                $pemkab = InformasiPemkab::find($link->informasi_id);
+            }
+
+            if ($pemkab) {
+                // JANGAN UBAH user_id DAN unit_id!
+                $pemkab->judul = $validated['judul'];
+                if ($request->filled('deskripsi')) {
+                    $pemkab->deskripsi = $validated['deskripsi'];
+                }
+                if ($request->filled('category')) {
+                    $pemkab->kategori = $validated['category'];
+                }
+                if ($request->filled('jenis_dokumen')) {
+                    $pemkab->jenis_dokumen = $validated['jenis_dokumen'];
+                }
+                $pemkab->save(); // Otomatis trigger updating/saving untuk regenerasi slug unik
+
+                $newLinkUrl = 'https://sinjaikab.go.id/informasi/' . ($pemkab->slug ?? $pemkab->id);
+            }
+        }
+
+        // SINKRONISASI KE TABEL SaqAnswerLink
+        $link->judul = $validated['judul'];
+        $link->deskripsi = $validated['deskripsi'] ?? $link->deskripsi;
+        $link->link = $newLinkUrl;
+        $link->save();
+
+        // SINKRONISASI KE TABEL SaqAnswer (parent) jika link utama merujuk ke URL lama
+        if ($answer) {
+            if ($answer->link === $oldLinkUrl || empty($answer->link)) {
+                $answer->link = $newLinkUrl;
+                $answer->judul = $validated['judul'];
+                $answer->save();
+            }
+        }
+
+        // Clear cache
+        \Illuminate\Support\Facades\Cache::forget('all_home');
+        try { \Illuminate\Support\Facades\Cache::tags(['informasi'])->flush(); } catch (\Exception $e) {}
+
+        return response()->json([
+            'success' => true,
+            'message' => 'Dokumen berhasil diperbarui dan disinkronkan ke SAQ tanpa mengubah pengunggah dan dinas asli.',
+            'data' => [
+                'link_id' => $link->id,
+                'saq_answer_id' => $link->saq_answer_id,
+                'judul' => $link->judul,
+                'link' => $link->link,
+                'deskripsi' => $link->deskripsi,
+                'sumber_informasi' => $link->sumber_informasi
+            ]
+        ]);
     }
 }
