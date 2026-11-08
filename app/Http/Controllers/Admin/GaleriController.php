@@ -84,6 +84,7 @@ class GaleriController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'type' => 'required|in:foto,video',
+            'visibility' => 'nullable|string|in:public,private',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'video' => 'nullable|url',
             'category' => 'nullable|string|in:Informasi Berkala,Informasi Setiap Saat,Informasi Serta Merta,Informasi Dikecualikan',
@@ -91,6 +92,7 @@ class GaleriController extends Controller
         ]);
 
         $data = $request->except(['image']);
+        $data['visibility'] = $request->input('visibility', 'public');
         $imagePathFinal = null;
 
         if ($request->hasFile('image')) {
@@ -223,6 +225,7 @@ class GaleriController extends Controller
             'title' => 'required|string|max:255',
             'description' => 'nullable|string',
             'type' => 'required|in:foto,video',
+            'visibility' => 'nullable|string|in:public,private',
             'image' => 'nullable|image|mimes:jpeg,png,jpg,gif|max:2048',
             'video' => 'nullable|url',
             'category' => 'nullable|string|in:Informasi Berkala,Informasi Setiap Saat,Informasi Serta Merta,Informasi Dikecualikan',
@@ -232,6 +235,7 @@ class GaleriController extends Controller
         $informasi = Informasi::where('title', $galeri->title)->where('content', 'galeri')->first();
 
         $data = $request->except(['image']);
+        $data['visibility'] = $request->input('visibility', $galeri->visibility ?? 'public');
         $imagePathFinal = $galeri->image;
 
         if ($request->hasFile('image')) {

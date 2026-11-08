@@ -86,7 +86,9 @@ class HomeController extends Controller
                                 $item->organization_name = $unit['unit_nama'] ?? 'Unit Kerja';
                                 return $item;
                             }),
-                            'gallery' => Galeri::orderBy('is_pinned', 'desc')->orderBy('created_at', 'desc')->take(8)->get(),
+                            'gallery' => Galeri::where(function($q) {
+                                $q->whereNull('visibility')->orWhere('visibility', 'public');
+                            })->orderBy('is_pinned', 'desc')->orderBy('created_at', 'desc')->take(8)->get(),
                             'statistics' => [
                                 'total_informasi' => Informasi::whereIn('status', ['AKTIF', 'BERLAKU', 'ARSIP'])->count(),
                                 'total_permohonan' => PermohonanInformasi::count(),

@@ -71,6 +71,7 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
     Route::get('/berita', [\App\Http\Controllers\Admin\BeritaController::class, 'index']);
     Route::get('/berita/{slug}', [\App\Http\Controllers\Admin\BeritaController::class, 'show']);
     Route::get('/galeri', [GaleriController::class, 'index']);
+    Route::get('/galeri/{id}', [GaleriController::class, 'show']);
     Route::get('/galeri/{id}/download', [GaleriController::class, 'download']);
     Route::get('/pejabat', [OfficialController::class, 'index']);
     
@@ -389,6 +390,14 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
         Route::post('/twibbon', [\App\Http\Controllers\Admin\TwibbonController::class, 'store']);
         Route::post('/twibbon/{slug}', [\App\Http\Controllers\Admin\TwibbonController::class, 'update']);
         Route::delete('/twibbon/{id}', [\App\Http\Controllers\Admin\TwibbonController::class, 'destroy']);
+        
+        // Galeri Admin CRUD
+        Route::get('/admin/galeri', [GaleriController::class, 'adminIndex']);
+        Route::post('/admin/galeri', [GaleriController::class, 'store']);
+        Route::get('/admin/galeri/{id}', [GaleriController::class, 'show']);
+        Route::post('/admin/galeri/{id}', [GaleriController::class, 'update']);
+        Route::delete('/admin/galeri/{id}', [GaleriController::class, 'destroy']);
+        Route::post('/admin/galeri/{id}/toggle-pin', [GaleriController::class, 'togglePin']);
         
         Route::get('/profil/pimpinan/{slug}/edit', [ProfilController::class, 'editOfficial']);
         Route::post('/profil/pimpinan/{slug}', [ProfilController::class, 'updateOfficial']);

@@ -105,6 +105,30 @@
                 <div id="jenis_dokumen_desc" class="mt-2 text-xs text-blue-600 font-medium italic min-h-[1rem]"></div>
             </div>
 
+            <div class="mb-6">
+                <label class="block text-sm font-medium text-gray-700 mb-2">Visibilitas Galeri *</label>
+                <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <label class="flex items-start p-4 border rounded-xl cursor-pointer transition hover:border-blue-500 {{ old('visibility', 'public') === 'public' ? 'border-blue-600 bg-blue-50/50 ring-1 ring-blue-600' : 'border-gray-200' }}">
+                        <input type="radio" name="visibility" value="public" class="mt-1 text-blue-600 focus:ring-blue-500" {{ old('visibility', 'public') === 'public' ? 'checked' : '' }}>
+                        <div class="ml-3">
+                            <span class="block text-sm font-bold text-gray-800 flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-green-500"></span> Publik (Tampil di Beranda)
+                            </span>
+                            <span class="block text-xs text-gray-500 mt-0.5">Foto/video akan tampil di beranda depan dan halaman galeri publik portal PPID.</span>
+                        </div>
+                    </label>
+                    <label class="flex items-start p-4 border rounded-xl cursor-pointer transition hover:border-amber-500 {{ old('visibility') === 'private' ? 'border-amber-600 bg-amber-50/50 ring-1 ring-amber-600' : 'border-gray-200' }}">
+                        <input type="radio" name="visibility" value="private" class="mt-1 text-amber-600 focus:ring-amber-500" {{ old('visibility') === 'private' ? 'checked' : '' }}>
+                        <div class="ml-3">
+                            <span class="block text-sm font-bold text-gray-800 flex items-center gap-1.5">
+                                <span class="w-2 h-2 rounded-full bg-amber-500"></span> Privat (Hanya Belakang Layar)
+                            </span>
+                            <span class="block text-xs text-gray-500 mt-0.5">Foto/video hanya tersimpan di database internal admin dan <strong>TIDAK masuk</strong> ke beranda publik.</span>
+                        </div>
+                    </label>
+                </div>
+            </div>
+
             <div class="flex items-center space-x-4">
                 <button type="submit" class="bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-6 rounded-lg transition">
                     Tambah Galeri
