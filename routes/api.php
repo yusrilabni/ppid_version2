@@ -444,6 +444,20 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
         Route::get('/keberatan/saya', [\App\Http\Controllers\Api\KeberatanInformasiController::class, 'myRequests']);
         Route::get('/keberatan/{id}', [\App\Http\Controllers\Api\KeberatanInformasiController::class, 'show']);
 
+        // === Admin Permohonan & Keberatan & Laporan PDF ===
+        Route::prefix('admin')->group(function () {
+            Route::get('/permohonan', [\App\Http\Controllers\Api\Admin\PermohonanKeberatanAdminController::class, 'getPermohonan']);
+            Route::get('/permohonan/{id}', [\App\Http\Controllers\Api\Admin\PermohonanKeberatanAdminController::class, 'showPermohonan']);
+            Route::post('/permohonan/{id}/respond', [\App\Http\Controllers\Api\Admin\PermohonanKeberatanAdminController::class, 'respondPermohonan']);
+            Route::post('/permohonan/{id}/status', [\App\Http\Controllers\Api\Admin\PermohonanKeberatanAdminController::class, 'updatePermohonanStatus']);
+
+            Route::get('/keberatan', [\App\Http\Controllers\Api\Admin\PermohonanKeberatanAdminController::class, 'getKeberatan']);
+            Route::get('/keberatan/{id}', [\App\Http\Controllers\Api\Admin\PermohonanKeberatanAdminController::class, 'showKeberatan']);
+            Route::post('/keberatan/{id}/respond', [\App\Http\Controllers\Api\Admin\PermohonanKeberatanAdminController::class, 'respondKeberatan']);
+
+            Route::get('/reports/export-pdf', [\App\Http\Controllers\Api\Admin\PermohonanKeberatanAdminController::class, 'exportLaporanPdf']);
+        });
+
         Route::post('/logout', [App\Http\Controllers\Api\LoginController::class, 'logout']);
         Route::post('/force-change-password', [App\Http\Controllers\Api\LoginController::class, 'forceChangePassword']);
     });
