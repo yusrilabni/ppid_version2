@@ -508,6 +508,202 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
             Route::post('/security-blocks', [\App\Http\Controllers\Api\Admin\UnifiedAdminCrudController::class, 'storeSecurityBlock']);
             Route::put('/security-blocks/{id}', [\App\Http\Controllers\Api\Admin\UnifiedAdminCrudController::class, 'updateSecurityBlock']);
             Route::delete('/security-blocks/{id}', [\App\Http\Controllers\Api\Admin\UnifiedAdminCrudController::class, 'deleteSecurityBlock']);
+
+            // Informasi Admin Index
+            Route::get('/informasi', function (\Illuminate\Http\Request $request) {
+                $user = $request->user();
+                $isSuperAdmin = ($user && $user->role === 'superadmin');
+                $userUnitId = $user ? ($user->unit_id ?? null) : null;
+
+                $query = \App\Models\Informasi::query();
+                if (!$isSuperAdmin && $userUnitId) {
+                    $query->where('unit_id', $userUnitId);
+                }
+
+                if ($request->filled('category')) {
+                    $query->where('category', $request->category);
+                }
+                if ($request->filled('q')) {
+                    $q = $request->q;
+                    $query->where(function($sub) use ($q) {
+                        $sub->where('title', 'LIKE', "%{$q}%")
+                            ->orWhere('deskripsi', 'LIKE', "%{$q}%");
+                    });
+                }
+
+                $informasi = $query->orderBy('created_at', 'desc')->paginate($request->get('per_page', 15));
+                return response()->json([
+                    'success' => true,
+                    'data' => $informasi
+                ]);
+            });
+
+            // Laporan Tahunan & Layanan Admin Endpoints
+            Route::get('/laporan', function (\Illuminate\Http\Request $request) {
+                $query = \App\Models\Laporan::query();
+                if ($request->filled('type')) {
+                    $query->where('type', $request->type);
+                }
+                if ($request->filled('tahun')) {
+                    $query->where('tahun', $request->tahun);
+                }
+                if ($request->filled('q')) {
+                    $query->where('title', 'LIKE', "%{$request->q}%");
+                }
+                $data = $query->orderBy('tahun', 'desc')->latest()->paginate($request->get('per_page', 10));
+                return response()->json(['success' => true, 'data' => $data]);
+            });
+
+            Route::get('/laporan/{id}', function ($id) {
+                $item = \App\Models\Laporan::findOrFail($id);
+                return response()->json(['success' => true, 'data' => $item]);
+            });
+
+            Route::post('/laporan', function (\Illuminate\Http\Request $request) {
+                $validated = $request->validate([
+                    'title' => 'required|string|max:255',
+                    'tahun' => 'required|integer',
+                    'type' => 'nullable|string',
+                    'content' => 'nullable|string',
+                    'cover' => 'nullable|image|max:2048',
+                    'file' => 'nullable|file|mimes:pdf|max:20480',
+                    'published' => 'nullable',
+                ]);
+
+                $coverPath = null;
+                if ($request->hasFile('cover')) {
+                    $coverPath = $request->file('cover')->store('laporan/covers', 'public');
+                }
+                $filePath = null;
+                if ($request->hasFile('file')) {
+                    $filePath = $request->file('file')->store('laporan/files', 'public');
+                }
+
+                $laporan = \App\Models\Laporan::create([
+                    'title' => $validated['title'],
+                    'tahun' => $validated['tahun'],
+                    'type' => $request->input('type', 'tahunan'),
+                    'content' => $request->input('content'),
+                    'cover' => $coverPath,
+                    'file' => $filePath,
+                    'published' => filter_var($request->input('published', true), FILTER_VALIDATE_BOOLEAN),
+                ]);
+
+                return response()->json(['success' => true, 'data' => $laporan]);
+            });
+
+            Route::post('/laporan/{id}', function (\Illuminate\Http\Request $request, $id) {
+                $laporan = \App\Models\Laporan::findOrFail($id);
+                $validated = $request->validate([
+                    'title' => 'required|string|max:255',
+                    'tahun' => 'required|integer',
+                    'type' => 'nullable|string',
+                    'content' => 'nullable|string',
+                    'cover' => 'nullable|image|max:2048',
+                    'file' => 'nullable|file|mimes:pdf|max:20480',
+                    'published' => 'nullable',
+                ]);
+
+                $updateData = [
+                    'title' => $validated['title'],
+                    'tahun' => $validated['tahun'],
+                    'type' => $request->input('type', $laporan->type ?? 'tahunan'),
+                    'content' => $request->input('content', $laporan->content),
+                    'published' => filter_var($request->input('published', $laporan->published), FILTER_VALIDATE_BOOLEAN),
+                ];
+
+                if ($request->hasFile('cover')) {
+                    if ($laporan->cover) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->delete($laporan->cover);
+                    }
+                    $updateData['cover'] = $request->file('cover')->store('laporan/covers', 'public');
+                }
+
+                if ($request->hasFile('file')) {
+                    if ($laporan->file) {
+                        \Illuminate\Support\Facades\Storage::disk('public')->delete($laporan->file);
+                    }
+                    $updateData['file'] = $request->file('file')->store('laporan/files', 'public');
+                }
+
+                $laporan->update($updateData);
+                return response()->json(['success' => true, 'data' => $laporan]);
+            });
+
+            Route::delete('/laporan/{id}', function ($id) {
+                $laporan = \App\Models\Laporan::findOrFail($id);
+                if ($laporan->cover) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($laporan->cover);
+                }
+                if ($laporan->file) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($laporan->file);
+                }
+                $laporan->delete();
+                return response()->json(['success' => true, 'message' => 'Laporan berhasil dihapus.']);
+            });
+
+            // LHKPN Admin Endpoints
+            Route::get('/lhkpn-admin', function (\Illuminate\Http\Request $request) {
+                $year = $request->get('year', \App\Models\Lhkpn::max('report_year') ?? date('Y'));
+                $query = \App\Models\Lhkpn::with(['official.organization', 'official.position', 'organization']);
+                if ($request->filled('year')) {
+                    $query->where('report_year', $request->year);
+                }
+                if ($request->filled('q')) {
+                    $q = $request->q;
+                    $query->whereHas('official', function($sub) use ($q) {
+                        $sub->where('full_name', 'LIKE', "%{$q}%");
+                    });
+                }
+                $data = $query->latest()->paginate($request->get('per_page', 15));
+                return response()->json(['success' => true, 'data' => $data, 'selected_year' => $year]);
+            });
+
+            Route::post('/lhkpn-admin', function (\Illuminate\Http\Request $request) {
+                $validated = $request->validate([
+                    'official_id' => 'nullable|integer',
+                    'organization_id' => 'nullable|integer',
+                    'report_year' => 'required|integer',
+                    'status' => 'required|string',
+                    'submission_date' => 'nullable|date',
+                    'announcement_date' => 'nullable|date',
+                    'receipt_number' => 'nullable|string',
+                    'elhkpn_url' => 'nullable|url',
+                    'receipt_file' => 'nullable|file|mimes:pdf,jpg,png|max:5120',
+                    'is_special_official' => 'nullable|boolean',
+                    'notes' => 'nullable|string'
+                ]);
+
+                $filePath = null;
+                if ($request->hasFile('receipt_file')) {
+                    $filePath = $request->file('receipt_file')->store('lhkpn', 'public');
+                }
+
+                $lhkpn = \App\Models\Lhkpn::create([
+                    'official_id' => $validated['official_id'] ?? null,
+                    'organization_id' => $validated['organization_id'] ?? null,
+                    'report_year' => $validated['report_year'],
+                    'status' => $validated['status'],
+                    'submission_date' => $validated['submission_date'] ?? null,
+                    'announcement_date' => $validated['announcement_date'] ?? null,
+                    'receipt_number' => $validated['receipt_number'] ?? null,
+                    'elhkpn_url' => $validated['elhkpn_url'] ?? null,
+                    'receipt_file_path' => $filePath,
+                    'is_special_official' => $request->boolean('is_special_official'),
+                    'notes' => $validated['notes'] ?? null
+                ]);
+
+                return response()->json(['success' => true, 'data' => $lhkpn]);
+            });
+
+            Route::delete('/lhkpn-admin/{id}', function ($id) {
+                $item = \App\Models\Lhkpn::findOrFail($id);
+                if ($item->receipt_file_path) {
+                    \Illuminate\Support\Facades\Storage::disk('public')->delete($item->receipt_file_path);
+                }
+                $item->delete();
+                return response()->json(['success' => true, 'message' => 'Data LHKPN berhasil dihapus.']);
+            });
         });
 
         Route::post('/logout', [App\Http\Controllers\Api\LoginController::class, 'logout']);
