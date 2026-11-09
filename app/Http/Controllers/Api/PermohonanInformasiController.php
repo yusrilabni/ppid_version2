@@ -77,6 +77,7 @@ class PermohonanInformasiController extends Controller
             $permohonan = PermohonanInformasi::create($validatedData);
 
             // Notifikasi Telegram
+            $frontendUrl = config('app.frontend_url', 'https://ppid.sinjaikab.go.id');
             $message = "<b>📄 Permohonan Informasi Baru (Mobile)</b>\n\n";
             $message .= "<b>🆔 Kode:</b> #{$permohonan->unique_code}\n";
             $message .= "<b>👤 Pemohon:</b> " . htmlspecialchars($permohonan->nama_pemohon) . "\n";
@@ -84,7 +85,7 @@ class PermohonanInformasiController extends Controller
             $message .= "<b>📍 Alamat:</b> " . htmlspecialchars($permohonan->alamat_pemohon) . "\n";
             $message .= "<b>📝 Detail:</b>\n" . htmlspecialchars(substr($permohonan->detail_informasi, 0, 150)) . "...\n\n";
             $message .= "<b>🔒 Privasi:</b> {$permohonan->privacy_status}\n";
-            $message .= '<a href="' . url('/admin/permohonan-informasi/' . $permohonan->id) . '">🔗 Lihat Detail di Website</a>';
+            $message .= '<a href="' . rtrim($frontendUrl, '/') . '/admin/permohonan/' . $permohonan->id . '">🔗 Lihat Detail di Website</a>';
             
             GeneralHelper::sendTelegramMessage($message);
 

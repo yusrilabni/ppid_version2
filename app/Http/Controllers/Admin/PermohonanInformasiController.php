@@ -85,13 +85,15 @@ class PermohonanInformasiController extends Controller
                 $tgMsg .= "📁 *Lampiran:* Tersedia di sistem\n";
             }
 
+            $frontendUrl = config('app.frontend_url', 'https://ppid.sinjaikab.go.id');
             $tgMsg .= "🛠️ *Oleh Admin:* {$adminName}\n"
                    . "📌 Status: *Diproses*.\n\n"
-                   . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan->id) . ")";
+                   . "🔗 [Lihat Detail](" . rtrim($frontendUrl, '/') . "/admin/permohonan/" . $permohonan->id . ")";
             
             // Siapkan URL WhatsApp untuk Pemohon
+            $frontendUrl = config('app.frontend_url', 'https://ppid.sinjaikab.go.id');
             $waPhone = GeneralHelper::formatPhoneNumber($permohonan->nomor_telepon_pemohon);
-            $directLink = route('laporan.permohonan.show', $permohonan->unique_code);
+            $directLink = rtrim($frontendUrl, '/') . '/laporan/permohonan/' . $permohonan->unique_code;
             $adminPesan = strlen($request->message) > 300 
                 ? "_Pesan admin terlalu panjang. Silakan klik tautan di bawah untuk membaca rincian tanggapan lengkap._" 
                 : "_{$request->message}_";
@@ -198,11 +200,12 @@ class PermohonanInformasiController extends Controller
                . "🛠️ *Oleh Admin:* {$adminName}\n"
                . "🪪 *NIP:* {$adminNip}\n"
                . "🏁 Permohonan telah ditandai sebagai *Selesai* oleh Admin.\n\n"
-               . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan_informasi->id) . ")";
+               . "🔗 [Lihat Detail](" . rtrim(config('app.frontend_url', 'https://ppid.sinjaikab.go.id'), '/') . "/admin/permohonan/" . $permohonan_informasi->id . ")";
         
         // Notifikasi WhatsApp Selesai
+        $frontendUrl = config('app.frontend_url', 'https://ppid.sinjaikab.go.id');
         $waPhone = GeneralHelper::formatPhoneNumber($permohonan_informasi->nomor_telepon_pemohon);
-        $directLink = route('laporan.permohonan.show', $permohonan_informasi->unique_code);
+        $directLink = rtrim($frontendUrl, '/') . '/laporan/permohonan/' . $permohonan_informasi->unique_code;
         $waMessage = "*NOTIFIKASI PPID KABUPATEN SINJAI*\n\n"
                    . "Halo {$permohonan_informasi->nama_pemohon},\n"
                    . "Permohonan Informasi Anda (#{$permohonan_informasi->unique_code}) telah dinyatakan *SELESAI* oleh Admin.\n\n"
@@ -251,7 +254,7 @@ class PermohonanInformasiController extends Controller
                . "🛠️ *Oleh Admin:* {$adminName}\n"
                . "🪪 *NIP:* {$adminNip}\n"
                . "🚫 Permohonan telah *Ditolak* oleh Admin.\n\n"
-               . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan_informasi->id) . ")";
+               . "🔗 [Lihat Detail](" . rtrim(config('app.frontend_url', 'https://ppid.sinjaikab.go.id'), '/') . "/admin/permohonan/" . $permohonan_informasi->id . ")";
         
         // Optionally, add a default rejection response
         PermohonanResponse::create([
@@ -262,8 +265,9 @@ class PermohonanInformasiController extends Controller
         ]);
 
         // Notifikasi WhatsApp Ditolak
+        $frontendUrl = config('app.frontend_url', 'https://ppid.sinjaikab.go.id');
         $waPhone = GeneralHelper::formatPhoneNumber($permohonan_informasi->nomor_telepon_pemohon);
-        $directLink = route('laporan.permohonan.show', $permohonan_informasi->unique_code);
+        $directLink = rtrim($frontendUrl, '/') . '/laporan/permohonan/' . $permohonan_informasi->unique_code;
         $waMessage = "*NOTIFIKASI PPID KABUPATEN SINJAI*\n\n"
                    . "Mohon maaf {$permohonan_informasi->nama_pemohon},\n"
                    . "Permohonan Informasi Anda (#{$permohonan_informasi->unique_code}) telah *DITOLAK* oleh Admin.\n\n"
@@ -312,11 +316,12 @@ class PermohonanInformasiController extends Controller
                . "🛠️ *Oleh Admin:* {$adminName}\n"
                . "🪪 *NIP:* {$adminNip}\n"
                . "📢 Notifikasi dikirim ulang ke WhatsApp Pemohon.\n"
-               . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonan->id) . ")";
+               . "🔗 [Lihat Detail](" . rtrim(config('app.frontend_url', 'https://ppid.sinjaikab.go.id'), '/') . "/admin/permohonan/" . $permohonan->id . ")";
         
         // WhatsApp Notification
+        $frontendUrl = config('app.frontend_url', 'https://ppid.sinjaikab.go.id');
         $waPhone = GeneralHelper::formatPhoneNumber($permohonan->nomor_telepon_pemohon);
-        $directLink = route('laporan.permohonan.show', $permohonan->unique_code);
+        $directLink = rtrim($frontendUrl, '/') . '/laporan/permohonan/' . $permohonan->unique_code;
         $adminPesan = strlen($response->message) > 300 
             ? "_Pesan admin terlalu panjang. Silakan klik tautan di bawah untuk membaca rincian tanggapan lengkap._" 
             : "_{$response->message}_";

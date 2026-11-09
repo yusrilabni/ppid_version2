@@ -146,7 +146,7 @@ class LaporanPermohonanController extends Controller
                . "<b>📝 Informasi (Baru):</b>\n" . htmlspecialchars($permohonanInformasi->detail_informasi) . "\n\n"
                . "<b>🎯 Tujuan:</b>\n" . htmlspecialchars($permohonanInformasi->tujuan_penggunaan_informasi) . "\n\n"
                . "<b>🔒 Privasi:</b> {$permohonanInformasi->privacy_status}\n\n"
-               . '<a href="' . route('admin.permohonan-informasi.show', $permohonanInformasi->id) . '">🔗 Lihat Detail di Website</a>';
+               . '<a href="' . rtrim(config('app.frontend_url', 'https://ppid.sinjaikab.go.id'), '/') . '/admin/permohonan/' . $permohonanInformasi->id . '">🔗 Lihat Detail di Website</a>';
         
         $buttons = [
             [
@@ -285,7 +285,7 @@ class LaporanPermohonanController extends Controller
                . "<b>📝 Informasi:</b>\n" . htmlspecialchars($permohonan->detail_informasi) . "\n\n"
                . "<b>🎯 Tujuan:</b>\n" . htmlspecialchars($permohonan->tujuan_penggunaan_informasi) . "\n\n"
                . "<b>🔒 Privasi:</b> {$permohonan->privacy_status}\n\n"
-               . '<a href="' . route('admin.permohonan-informasi.show', $permohonan->id) . '">🔗 Lihat Detail di Website</a>';
+               . '<a href="' . rtrim(config('app.frontend_url', 'https://ppid.sinjaikab.go.id'), '/') . '/admin/permohonan/' . $permohonan->id . '">🔗 Lihat Detail di Website</a>';
         
         $buttons = [
             [
@@ -348,7 +348,7 @@ class LaporanPermohonanController extends Controller
                . "👤 *Dari:* {$escNama}\n"
                . "📧 *Email:* {$escEmail}\n"
                . "📩 *Pesan:* \n_{$escMessage}_\n\n"
-               . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonanInformasi->id) . ")";
+               . "🔗 [Lihat Detail](" . rtrim(config('app.frontend_url', 'https://ppid.sinjaikab.go.id'), '/') . "/admin/permohonan/" . $permohonanInformasi->id . ")";
         
         GeneralHelper::sendTelegramMessage($tgMsg);
 
@@ -428,7 +428,7 @@ class LaporanPermohonanController extends Controller
         }
 
         $tgMsg .= "\n" . ($isFirstRating ? "🏁 *Permohonan Selesai*" : "🔄 *Penilaian Diperbarui*") . "\n"
-               . "🔗 [Lihat Detail](" . route('admin.permohonan-informasi.show', $permohonanInformasi->id) . ")";
+               . "🔗 [Lihat Detail](" . rtrim(config('app.frontend_url', 'https://ppid.sinjaikab.go.id'), '/') . "/admin/permohonan/" . $permohonanInformasi->id . ")";
         
         GeneralHelper::sendTelegramMessage($tgMsg);
 

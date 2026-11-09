@@ -115,6 +115,7 @@ class KeberatanInformasiController extends Controller
 
             // Notifikasi Telegram untuk Petugas & Atasan PPID
             try {
+                $frontendUrl = config('app.frontend_url', 'https://ppid.sinjaikab.go.id');
                 $message = "⚖️ <b>Pengajuan Keberatan Informasi Publik Baru</b>\n\n";
                 $message .= "<b>🆔 Kode Keberatan:</b> #{$keberatan->unique_code}\n";
                 $message .= "<b>📄 No. Registrasi Permohonan:</b> {$keberatan->nomor_pendaftaran_pemohon}\n";
@@ -130,6 +131,7 @@ class KeberatanInformasiController extends Controller
                 $message .= "<b>⚠️ Alasan Keberatan:</b> " . htmlspecialchars($alasanText) . "\n";
                 $message .= "<b>📝 Kasus Posisi:</b>\n" . htmlspecialchars(substr($keberatan->kasus_posisi, 0, 160)) . "...\n\n";
                 $message .= "<b>🔒 Status Privasi:</b> {$keberatan->privacy_status}\n";
+                $message .= '<a href="' . rtrim($frontendUrl, '/') . '/admin/keberatan/' . $keberatan->id . '">🔗 Lihat Detail Keberatan</a>' . "\n\n";
                 $message .= "<i>Tanggapan Atasan PPID wajib diberikan maksimal 30 hari kerja sesuai UU No. 14/2008.</i>";
 
                 GeneralHelper::sendTelegramMessage($message);
