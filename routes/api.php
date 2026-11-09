@@ -456,6 +456,35 @@ Route::prefix('v1')->middleware('throttle:60,1')->group(function () {
             Route::post('/keberatan/{id}/respond', [\App\Http\Controllers\Api\Admin\PermohonanKeberatanAdminController::class, 'respondKeberatan']);
 
             Route::get('/reports/export-pdf', [\App\Http\Controllers\Api\Admin\PermohonanKeberatanAdminController::class, 'exportLaporanPdf']);
+
+            // === Unified Admin CRUD ===
+            Route::get('/standar-layanan', [\App\Http\Controllers\Api\Admin\UnifiedAdminCrudController::class, 'getStandarLayanan']);
+            Route::post('/standar-layanan', [\App\Http\Controllers\Api\Admin\UnifiedAdminCrudController::class, 'storeStandarLayanan']);
+            Route::delete('/standar-layanan/{id}', [\App\Http\Controllers\Api\Admin\UnifiedAdminCrudController::class, 'deleteStandarLayanan']);
+
+            Route::get('/profil-ppid', [\App\Http\Controllers\Api\Admin\UnifiedAdminCrudController::class, 'getProfilPpid']);
+            Route::post('/profil-ppid', [\App\Http\Controllers\Api\Admin\UnifiedAdminCrudController::class, 'updateProfilPpid']);
+
+            Route::get('/officials', [\App\Http\Controllers\Api\Admin\UnifiedAdminCrudController::class, 'getOfficials']);
+            Route::post('/officials', [\App\Http\Controllers\Api\Admin\UnifiedAdminCrudController::class, 'storeOfficial']);
+            Route::delete('/officials/{id}', [\App\Http\Controllers\Api\Admin\UnifiedAdminCrudController::class, 'deleteOfficial']);
+
+            Route::get('/organizations', [\App\Http\Controllers\Api\Admin\UnifiedAdminCrudController::class, 'getOrganizations']);
+            Route::post('/organizations', [\App\Http\Controllers\Api\Admin\UnifiedAdminCrudController::class, 'storeOrganization']);
+            Route::delete('/organizations/{id}', [\App\Http\Controllers\Api\Admin\UnifiedAdminCrudController::class, 'deleteOrganization']);
+
+            Route::get('/sliders', [\App\Http\Controllers\Api\Admin\UnifiedAdminCrudController::class, 'getSliders']);
+            Route::post('/sliders', [\App\Http\Controllers\Api\Admin\UnifiedAdminCrudController::class, 'storeSlider']);
+            Route::delete('/sliders/{id}', [\App\Http\Controllers\Api\Admin\UnifiedAdminCrudController::class, 'deleteSlider']);
+
+            Route::get('/surveys', [\App\Http\Controllers\Api\Admin\UnifiedAdminCrudController::class, 'getSurveys']);
+            Route::get('/pbj-questions', [\App\Http\Controllers\Api\Admin\UnifiedAdminCrudController::class, 'getPbjQuestions']);
+
+            Route::get('/users', [\App\Http\Controllers\Api\Admin\UnifiedAdminCrudController::class, 'getUsers']);
+            Route::post('/users', [\App\Http\Controllers\Api\Admin\UnifiedAdminCrudController::class, 'storeUser']);
+            Route::delete('/users/{id}', [\App\Http\Controllers\Api\Admin\UnifiedAdminCrudController::class, 'deleteUser']);
+
+            Route::get('/security-blocks', [\App\Http\Controllers\Api\Admin\UnifiedAdminCrudController::class, 'getSecurityBlocks']);
         });
 
         Route::post('/logout', [App\Http\Controllers\Api\LoginController::class, 'logout']);
