@@ -321,6 +321,14 @@ class InformasiController extends Controller
                     ->with('success', 'Data sudah berhasil disimpan sebelumnya.');
             }
 
+            $messages = [
+            'file.required' => 'File dokumen wajib dipilih. Ukuran maksimal 2 MB - jika file lebih besar, gunakan opsi Link File.',
+            'file.file' => 'File yang dipilih tidak valid.',
+            'file.max' => 'Ukuran file melebihi batas maksimal 2 MB. Silakan pilih file yang lebih kecil atau gunakan opsi Link File.',
+            'file.mimes' => 'Format file tidak didukung. Gunakan PDF, Word, Excel, JPG, PNG, atau WEBP.',
+            'url.required' => 'Link file wajib diisi saat memilih Link File.',
+            ];
+
             $validationRules = [
                 'title' => 'required|string|min:5|max:255',
                 'doc_desc' => 'required|string',
@@ -339,11 +347,11 @@ class InformasiController extends Controller
             if ($request->file_type === 'url') {
                 $validationRules['url'] = 'required|string';
             } else {
-                $validationRules['file'] = 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,webp|max:10240'; // Naikkan ke 10MB agar kompresi gambar jalan
+                $validationRules['file'] = 'required|file|mimes:pdf,doc,docx,xls,xlsx,jpg,jpeg,png,webp|max:2048'; // Batas efektif PHP upload_max_filesize adalah 2MB
             }
 
             \Log::info('VALIDATION_START');
-            $validatedData = $request->validate($validationRules);
+            $validatedData = $request->validate($validationRules, $messages);
             \Log::info('VALIDATION_SUCCESS');
 
             $dataToSave = [
@@ -409,6 +417,14 @@ class InformasiController extends Controller
             $request->merge(['url' => 'B64_' . base64_encode($request->url_raw)]);
         }
 
+        $messages = [
+        'file.required' => 'File dokumen wajib dipilih. Ukuran maksimal 2 MB - jika file lebih besar, gunakan opsi Link File.',
+        'file.file' => 'File yang dipilih tidak valid.',
+        'file.max' => 'Ukuran file melebihi batas maksimal 2 MB. Silakan pilih file yang lebih kecil atau gunakan opsi Link File.',
+        'file.mimes' => 'Format file tidak didukung. Gunakan PDF, Word, Excel, JPG, PNG, atau WEBP.',
+        'url.required' => 'Link file wajib diisi saat memilih Link File.',
+        ];
+
         $validationRules = [
             'title' => 'required|string|min:5|max:255',
             'doc_desc' => 'required|string|max:65535',
@@ -428,10 +444,10 @@ class InformasiController extends Controller
         if ($request->input('file_type') === 'url') {
             $validationRules['url'] = 'required|string';
         } else {
-            $validationRules['file'] = 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,png|max:10240';
+            $validationRules['file'] = 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,jpg,png|max:2048';
         }
         
-        $validatedData = $request->validate($validationRules);
+        $validatedData = $request->validate($validationRules, $messages);
 
         try {
             $oldFileToDelete = null; // Simpan path file lama

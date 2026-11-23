@@ -75,6 +75,16 @@ class InformasiPemkabController extends Controller
 
     public function store(Request $request)
     {
+        $messages = [
+            'file.required' => 'File dokumen wajib dipilih.',
+            'file.required_if' => 'File dokumen wajib dipilih saat metode upload adalah File. Ukuran maksimal 2 MB - jika file lebih besar, gunakan opsi Link File.',
+            'file.file' => 'File yang dipilih tidak valid.',
+            'file.max' => 'Ukuran file melebihi batas maksimal 2 MB. Silakan pilih file yang lebih kecil atau gunakan opsi Link File.',
+            'file.mimes' => 'Format file tidak didukung. Gunakan PDF, Word, Excel, ZIP, PNG, JPG, WEBP, atau SVG.',
+            'link.required_if' => 'Link dokumen wajib diisi saat metode upload adalah Link.',
+            'link.url' => 'Link dokumen harus berupa URL yang valid.',
+        ];
+
         $rules = [
             'judul' => 'required|string|max:255',
             'kategori' => 'required|string',
@@ -83,7 +93,7 @@ class InformasiPemkabController extends Controller
             'tanggal_dokumen' => 'required|date',
             'deskripsi' => 'nullable|string',
             'upload_method' => 'required|in:file,link',
-            'file' => 'nullable|required_if:upload_method,file|file|mimes:pdf,doc,docx,xls,xlsx,zip,rar,png,jpg,jpeg,webp,svg|max:10240',
+            'file' => 'nullable|required_if:upload_method,file|file|mimes:pdf,doc,docx,xls,xlsx,zip,rar,png,jpg,jpeg,webp,svg|max:2048',
             'link' => 'nullable|required_if:upload_method,link|url|max:2048',
             'status' => 'required|in:draft,published,scheduled',
             'visibility' => 'required|in:public,private',
@@ -93,7 +103,7 @@ class InformasiPemkabController extends Controller
             $rules['target_unit'] = 'required|string';
         }
 
-        $request->validate($rules);
+        $request->validate($rules, $messages);
 
         try {
             $user = Auth::user();
@@ -236,6 +246,16 @@ class InformasiPemkabController extends Controller
             abort(403, 'Akses ditolak. Anda tidak berhak memperbarui dokumen dinas lain.');
         }
 
+        $messages = [
+            'file.required' => 'File dokumen wajib dipilih.',
+            'file.required_if' => 'File dokumen wajib dipilih saat metode upload adalah File. Ukuran maksimal 2 MB - jika file lebih besar, gunakan opsi Link File.',
+            'file.file' => 'File yang dipilih tidak valid.',
+            'file.max' => 'Ukuran file melebihi batas maksimal 2 MB. Silakan pilih file yang lebih kecil atau gunakan opsi Link File.',
+            'file.mimes' => 'Format file tidak didukung. Gunakan PDF, Word, Excel, ZIP, PNG, JPG, WEBP, atau SVG.',
+            'link.required_if' => 'Link dokumen wajib diisi saat metode upload adalah Link.',
+            'link.url' => 'Link dokumen harus berupa URL yang valid.',
+        ];
+
         $rules = [
             'judul' => 'required|string|max:255',
             'kategori' => 'required|string',
@@ -244,7 +264,7 @@ class InformasiPemkabController extends Controller
             'tanggal_dokumen' => 'required|date',
             'deskripsi' => 'nullable|string',
             'upload_method' => 'required|in:file,link',
-            'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,zip,rar,png,jpg,jpeg,webp,svg|max:10240',
+            'file' => 'nullable|file|mimes:pdf,doc,docx,xls,xlsx,zip,rar,png,jpg,jpeg,webp,svg|max:2048',
             'link' => 'nullable|url|max:2048',
             'status' => 'required|in:draft,published,scheduled',
             'visibility' => 'required|in:public,private',
@@ -255,7 +275,7 @@ class InformasiPemkabController extends Controller
             $rules['target_unit'] = 'required|string';
         }
 
-        $request->validate($rules);
+        $request->validate($rules, $messages);
 
         try {
             $data = $request->except(['file', 'link', 'upload_method', 'target_unit']);
