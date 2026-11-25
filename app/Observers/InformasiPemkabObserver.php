@@ -3,6 +3,7 @@
 namespace App\Observers;
 
 use App\Models\InformasiPemkab;
+use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Http;
 use Illuminate\Support\Facades\Log;
 
@@ -20,8 +21,12 @@ class InformasiPemkabObserver
             return;
         }
 
-        $isPublic = $document->visibility === 'public'
-            && in_array($document->status, ['published', 'scheduled'], true);
+        $isPublished = $document->status === 'published';
+        $isScheduledAndDue = $document->status === 'scheduled'
+            && !empty($document->published_at)
+            && now()->gte(Carbon::parse($document->published_at));
+
+        $isPublic = $document->visibility === 'public' && ($isPublished || $isScheduledAndDue);
 
         if (!$isPublic) {
             $this->deleteFromSupabase((int) $document->id, $url, $key);

@@ -63,3 +63,4 @@ insert_jurnal_content.ps1
 !/storage/framework/sessions/.gitignore
 /storage/framework/views/*
 !/storage/framework/views/.gitignore
+error_log

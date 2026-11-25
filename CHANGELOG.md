@@ -14,3 +14,6 @@ and this project adheres to [Semantic Versioning](https://semver.org/spec/v2.0.0
 
 ### Changed
 - Penambahan aturan ignore direktori unggahan dan runtime storage Laravel (`storage/app/public/*`, `storage/logs/*`, `storage/framework/{cache,sessions,views}/*`) pada `.gitignore`.
+
+### Fixed
+- Pengetatan filter status `scheduled` (`published_at <= now()`) pada `InformasiPemkabObserver` dan perintah `ppid:sync-supabase` agar dokumen terjadwal masa depan tidak tersinkronisasi lebih awal ke Supabase, serta penambahan `error_log` ke `.gitignore`.

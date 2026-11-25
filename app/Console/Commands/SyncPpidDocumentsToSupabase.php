@@ -36,7 +36,14 @@ class SyncPpidDocumentsToSupabase extends Command
 
         InformasiPemkab::with('organization')
             ->where('visibility', 'public')
-            ->whereIn('status', ['published', 'scheduled'])
+            ->where(function ($query) {
+                $query->where('status', 'published')
+                    ->orWhere(function ($scheduledQuery) {
+                        $scheduledQuery->where('status', 'scheduled')
+                            ->whereNotNull('published_at')
+                            ->where('published_at', '<=', now());
+                    });
+            })
             ->orderBy('id')
             ->chunkById(50, function ($documents) use ($observer, &$count) {
                 foreach ($documents as $document) {
