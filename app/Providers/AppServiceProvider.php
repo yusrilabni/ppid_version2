@@ -39,6 +39,7 @@ class AppServiceProvider extends ServiceProvider
         // Register Observers
         \App\Models\Berita::observe(\App\Observers\BeritaObserver::class);
         \App\Models\Informasi::observe(\App\Observers\InformasiObserver::class);
+        \App\Models\InformasiPemkab::observe(\App\Observers\InformasiPemkabObserver::class);
 
         // Paksa HTTPS jika di production
         if (config('app.env') === 'production') {
